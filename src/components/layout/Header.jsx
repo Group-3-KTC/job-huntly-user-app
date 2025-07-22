@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Eye,
   Headphones,
+  User,
 } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
@@ -283,6 +284,16 @@ export const Header = () => {
 
           {/* Right Navigation */}
           <ul className="flex items-center space-x-2">
+            <li>
+              <Link href="/candidate">
+                <Button
+                  variant="ghost"
+                  className="text-white hover:bg-white/20 p-2"
+                >
+                  <User className="w-5 h-5" />
+                </Button>
+              </Link>
+            </li>
             <li>
               <Link href="/register">
                 <Button
