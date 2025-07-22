@@ -1,0 +1,89 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  User,
+  FileText,
+  Mail,
+  Bell,
+  Settings,
+  LayoutDashboard,
+  Briefcase
+} from "lucide-react";
+
+const navItems = [
+  {
+    href: "/candidate/dashboard",
+    label: "Dashboard",
+    icon: <LayoutDashboard className="w-5 h-5 mr-2" />,
+  },
+  {
+    href: "/candidate/profile",
+    label: "Profile",
+    icon: <User className="w-5 h-5 mr-2" />,
+  },
+  {
+    href: "/candidate/profile/manage-cv",
+    label: "Manage CV",
+    icon: <FileText className="w-5 h-5 mr-2" />,
+  },
+  {
+    href: "/candidate/jobInvitation",
+    label: "Job Invitations",
+    icon: <Mail className="w-5 h-5 mr-2" />,
+  },
+  {
+    href: "/candidate/jobs",
+    label: "My Jobs",
+    icon: <Briefcase className="w-5 h-5 mr-2" />, 
+  },
+  {
+    href: "/candidate/notifications",
+    label: "Notifications",
+    icon: <Bell className="w-5 h-5 mr-2" />,
+  },
+  {
+    href: "/candidate/settings",
+    label: "Settings",
+    icon: <Settings className="w-5 h-5 mr-2" />,
+  },
+];
+
+export default function CandidateSidebar() {
+  const pathname = usePathname();
+
+  return (
+    <aside className="hidden w-full mr-6 lg:block">
+      <div className="p-4 bg-white shadow-md rounded-xl">
+        <div className="p-2">
+          <div className="flex items-center gap-2 mb-2">
+            <p className="text-sm">Welcome</p>
+            {/* Thay var(--color-primary-main) bằng blue-600 */}
+          </div>
+          <h3 className="mb-2 text-xl font-bold text-gray-900">
+            Hoang Phuc Vo
+          </h3>
+        </div>
+        <ul className="space-y-2 text-base font-medium">
+          {navItems.map((item) => {
+            const isActive = pathname.startsWith(item.href);
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center px-2 py-3 rounded cursor-pointer hover:bg-blue-600 hover:text-white ${
+                    isActive ? "bg-blue-600 text-white" : ""
+                  }`}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </aside>
+  );
+}
