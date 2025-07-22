@@ -11,7 +11,7 @@ import CallToActionSection from "@/components/home/CallToActionSection";
 
 export default function HomePage() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container px-4 py-8 mx-auto">
       <HeroSection />
       <StatsSection />
       <CategoriesSection />

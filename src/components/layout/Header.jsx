@@ -34,40 +34,40 @@ export const Header = () => {
     <div className="flex gap-8">
       <div className="flex-1">
         <div className="mb-6">
-          <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+          <div className="mb-3 text-xs font-medium tracking-wide text-gray-500 uppercase">
             VIỆC LÀM
           </div>
           <div className="space-y-2">
             <Link href="/search">
-            <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+            <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
               <Search className="w-4 h-4 text-gray-600" />
               <span className="text-sm">Tìm việc làm</span>
             </div>
             </Link>
-            <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+            <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
               <Bookmark className="w-4 h-4 text-gray-600" />
               <span className="text-sm">Việc làm đã lưu</span>
             </div>
-            <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+            <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
               <ListChecks className="w-4 h-4 text-gray-600" />
               <span className="text-sm">Việc làm đã ứng tuyển</span>
             </div>
-            <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+            <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
               <ClipboardCheck className="w-4 h-4 text-gray-600" />
               <span className="text-sm">Việc làm phù hợp</span>
             </div>
           </div>
         </div>
         <div>
-          <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+          <div className="mb-3 text-xs font-medium tracking-wide text-gray-500 uppercase">
             CÔNG TY
           </div>
           <div className="space-y-2">
-            <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+            <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
               <Building className="w-4 h-4 text-gray-600" />
               <span className="text-sm">Danh sách công ty</span>
             </div>
-            <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+            <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
               <Star className="w-4 h-4 text-gray-600" />
               <span className="text-sm">Top công ty</span>
             </div>
@@ -75,7 +75,7 @@ export const Header = () => {
         </div>
       </div>
       <div className="flex-1">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+        <div className="mb-3 text-xs font-medium tracking-wide text-gray-500 uppercase">
           VIỆC LÀM THEO VỊ TRÍ
         </div>
         <div className="grid grid-cols-2 gap-2">
@@ -99,7 +99,7 @@ export const Header = () => {
           ].map((job, index) => (
             <div
               key={index}
-              className="text-sm p-2 hover:bg-gray-50 rounded cursor-pointer"
+              className="p-2 text-sm rounded cursor-pointer hover:bg-gray-50"
             >
               {job}
             </div>
@@ -111,10 +111,10 @@ export const Header = () => {
 
   const cvContent = (
     <div>
-      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+      <div className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
         Công cụ tạo CV
       </div>
-      <div className="text-sm text-gray-600 mb-4">
+      <div className="mb-4 text-sm text-gray-600">
         Tạo CV chuyên nghiệp trong vài phút
       </div>
       <div className="space-y-2">
@@ -128,7 +128,7 @@ export const Header = () => {
         ].map((item, index) => (
           <div
             key={index}
-            className="text-sm p-2 hover:bg-gray-50 rounded cursor-pointer"
+            className="p-2 text-sm rounded cursor-pointer hover:bg-gray-50"
           >
             {item}
           </div>
@@ -139,7 +139,7 @@ export const Header = () => {
 
   const toolsContent = (
     <div>
-      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+      <div className="mb-3 text-xs font-medium tracking-wide text-gray-500 uppercase">
         Công cụ hỗ trợ
       </div>
       <div className="space-y-2">
@@ -152,7 +152,7 @@ export const Header = () => {
         ].map((item, index) => (
           <div
             key={index}
-            className="text-sm p-2 hover:bg-gray-50 rounded cursor-pointer"
+            className="p-2 text-sm rounded cursor-pointer hover:bg-gray-50"
           >
             {item}
           </div>
@@ -163,14 +163,14 @@ export const Header = () => {
 
   const guideContent = (
     <div>
-      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-4">
+      <div className="mb-4 text-xs font-medium tracking-wide text-gray-500 uppercase">
         Bài viết nổi bật
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="flex gap-3">
-          <div className="w-16 h-16 bg-gray-200 rounded flex-shrink-0"></div>
+          <div className="flex-shrink-0 w-16 h-16 bg-gray-200 rounded"></div>
           <div>
-            <div className="font-medium text-sm mb-1">
+            <div className="mb-1 text-sm font-medium">
               5 mẹo viết CV gây ấn tượng
             </div>
             <div className="text-xs text-gray-600">
@@ -179,9 +179,9 @@ export const Header = () => {
           </div>
         </div>
         <div className="flex gap-3">
-          <div className="w-16 h-16 bg-gray-200 rounded flex-shrink-0"></div>
+          <div className="flex-shrink-0 w-16 h-16 bg-gray-200 rounded"></div>
           <div>
-            <div className="font-medium text-sm mb-1">
+            <div className="mb-1 text-sm font-medium">
               Cách tìm việc hiệu quả 2024
             </div>
             <div className="text-xs text-gray-600">
@@ -190,7 +190,7 @@ export const Header = () => {
           </div>
         </div>
       </div>
-      <div className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
+      <div className="text-sm text-blue-600 cursor-pointer hover:text-blue-800">
         Xem tất cả bài viết
       </div>
     </div>
@@ -198,30 +198,30 @@ export const Header = () => {
 
   const premiumContent = (
     <div>
-      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+      <div className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
         TopCV Pro
       </div>
-      <div className="text-sm text-gray-600 mb-4">
+      <div className="mb-4 text-sm text-gray-600">
         Nâng cấp tài khoản để sử dụng các tính năng cao cấp
       </div>
       <div className="space-y-2">
-        <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+        <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
           <Crown className="w-4 h-4 text-yellow-500" />
           <span className="text-sm">CV Pro Template</span>
         </div>
-        <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+        <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
           <TrendingUp className="w-4 h-4 text-green-500" />
           <span className="text-sm">Thống kê CV</span>
         </div>
-        <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+        <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
           <Eye className="w-4 h-4 text-blue-500" />
           <span className="text-sm">Xem NTD đã xem CV</span>
         </div>
-        <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+        <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
           <Star className="w-4 h-4 text-yellow-500" />
           <span className="text-sm">Ưu tiên hiển thị</span>
         </div>
-        <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+        <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
           <Headphones className="w-4 h-4 text-purple-500" />
           <span className="text-sm">Hỗ trợ ưu tiên</span>
         </div>
@@ -247,7 +247,7 @@ export const Header = () => {
             alt="JobHuntly Logo"
             width={120}
             height={40}
-            className="h-10 w-auto"
+            className="w-auto h-10"
           />
         </div>
 
@@ -278,7 +278,7 @@ export const Header = () => {
             {/* Dropdown Menu */}
             {activeDropdown && (
               <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-lg min-w-[592px] p-5 z-50">
-                <div className="absolute -top-3 left-0 w-full h-3"></div>
+                <div className="absolute left-0 w-full h-3 -top-3"></div>
                 {dropdownContent[activeDropdown]}
               </div>
             )}
@@ -290,7 +290,7 @@ export const Header = () => {
               <Link href="/candidate">
                 <Button
                   variant="ghost"
-                  className="text-white hover:bg-white/20 p-2"
+                  className="p-2 text-white hover:bg-white/20"
                 >
                   <User className="w-5 h-5" />
                 </Button>
@@ -310,7 +310,7 @@ export const Header = () => {
               <Link href="/login">
                 <Button
                   variant="outline"
-                  className="border-white text-white hover:bg-white/20 hover:text-white bg-transparent"
+                  className="text-white bg-transparent border-white hover:bg-white/20 hover:text-white"
                 >
                   Đăng nhập
                 </Button>
@@ -321,12 +321,12 @@ export const Header = () => {
                 Đăng tuyển & tìm hồ sơ
               </Button>
             </li>
-            <li className="flex items-center text-white/80 text-sm">
+            <li className="flex items-center text-sm text-white/80">
               <button className="px-2 py-1 rounded hover:bg-white/20 hover:text-white">
                 EN
               </button>
               <span className="mx-1">|</span>
-              <button className="px-2 py-1 rounded bg-white/20 text-white font-semibold">
+              <button className="px-2 py-1 font-semibold text-white rounded bg-white/20">
                 VI
               </button>
             </li>

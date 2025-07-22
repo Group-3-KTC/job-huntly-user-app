@@ -9,9 +9,11 @@ import {
   Bell,
   Settings,
   LayoutDashboard,
-  Briefcase
+  Briefcase,
 } from "lucide-react";
-
+import Image from "next/image";
+import userImg from "@/assets/images/user-img.png";
+import { use } from "react";
 const navItems = [
   {
     href: "/candidate/dashboard",
@@ -36,7 +38,7 @@ const navItems = [
   {
     href: "/candidate/jobs",
     label: "My Jobs",
-    icon: <Briefcase className="w-5 h-5 mr-2" />, 
+    icon: <Briefcase className="w-5 h-5 mr-2" />,
   },
   {
     href: "/candidate/notifications",
@@ -57,17 +59,24 @@ export default function CandidateSidebar() {
     <aside className="hidden w-full mr-6 lg:block">
       <div className="p-4 bg-white shadow-md rounded-xl">
         <div className="p-2">
-          <div className="flex items-center gap-2 mb-2">
-            <p className="text-sm">Welcome</p>
-            {/* Thay var(--color-primary-main) bằng blue-600 */}
+          <div className="flex flex-row items-center my-2">
+            <Image
+              src={userImg}
+              alt="User Image"
+              className="items-end object-cover mr-2 rounded-full w-[40px]"
+            />
+            <div className="flex flex-col ml-2">
+              <p className="text-sm">Welcome</p>
+
+              <h3 className="text-2xl font-bold text-gray-900">
+                Hoang Phuc Vo
+              </h3>
+            </div>
           </div>
-          <h3 className="mb-2 text-xl font-bold text-gray-900">
-            Hoang Phuc Vo
-          </h3>
         </div>
         <ul className="space-y-2 text-base font-medium">
           {navItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const isActive = pathname === item.href;
             return (
               <li key={item.href}>
                 <Link
@@ -75,6 +84,7 @@ export default function CandidateSidebar() {
                   className={`flex items-center px-2 py-3 rounded cursor-pointer hover:bg-blue-600 hover:text-white ${
                     isActive ? "bg-blue-600 text-white" : ""
                   }`}
+                  prefetch={false}
                 >
                   {item.icon}
                   {item.label}

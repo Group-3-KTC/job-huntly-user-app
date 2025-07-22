@@ -5,7 +5,7 @@ export default function ClientLayout({ children }) {
   return (
     <div className="flex flex-col min-h-screen text-gray-900 bg-gray-100">
       <Header />
-      <main className="flex-grow w-full px-4 py-6 mx-auto max-w-7xl">
+      <main className="flex-grow min-w-full py-6 mx-auto">
         {children}
       </main>
       <Footer />

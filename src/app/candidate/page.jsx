@@ -1,5 +1,6 @@
-import CandidateDashboard from "@/app/candidate/dashboard/page";
+import { redirect } from "next/navigation";
+
 
 export default function CandidatePage() {
-  return <CandidateDashboard />;
+  return redirect("/candidate/dashboard");
 }
