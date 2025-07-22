@@ -2,8 +2,8 @@
 
 export default function Page() {
   return <PricingPage />;
-}
-**/
+}**/
+
 
 import JobPostingForm from "@/app/recruiters/createjob/jobposting";
 
