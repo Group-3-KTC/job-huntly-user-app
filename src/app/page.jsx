@@ -5,6 +5,9 @@ import CategoriesSection from "@/components/home/CategoriesSection";
 import VacanciesSection from "@/components/home/VacanciesSection";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
 import FeaturedJobsSection from "@/components/home/FeaturedJobsSection";
+import TopCompaniesSection from "@/components/home/TopCompaniesSection";
+import TestimonialsSection from "@/components/home/TestimonialsSection";
+import CallToActionSection from "@/components/home/CallToActionSection";
 
 export default function HomePage() {
   return (
@@ -15,6 +18,9 @@ export default function HomePage() {
       <VacanciesSection />
       <HowItWorksSection />
       <FeaturedJobsSection />
+      <TopCompaniesSection />
+      <TestimonialsSection />
+      <CallToActionSection />
     </div>
   );
 }
