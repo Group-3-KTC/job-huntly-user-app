@@ -38,10 +38,12 @@ export const Header = () => {
             VIỆC LÀM
           </div>
           <div className="space-y-2">
+            <Link href="/search">
             <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
               <Search className="w-4 h-4 text-gray-600" />
               <span className="text-sm">Tìm việc làm</span>
             </div>
+            </Link>
             <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
               <Bookmark className="w-4 h-4 text-gray-600" />
               <span className="text-sm">Việc làm đã lưu</span>
