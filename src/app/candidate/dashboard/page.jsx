@@ -3,7 +3,7 @@ import React from 'react'
 function CandidateDashboard() {
    return (
      <div>
-       <h1 className="text-2xl font-bold mb-4">
+       <h1 className="mb-4 text-2xl font-bold">
          Chào mừng bạn đến với Dashboard
        </h1>
        <p>
