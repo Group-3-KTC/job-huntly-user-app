@@ -10,7 +10,7 @@ import { Eye, EyeOff, User, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function LoginPage() {
+const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("candidate");
 
@@ -328,4 +328,6 @@ export default function LoginPage() {
       </main>
     </div>
   );
-}
+};
+
+export default LoginPage;
