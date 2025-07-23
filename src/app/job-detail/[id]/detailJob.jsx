@@ -22,7 +22,7 @@ export default function DetailJob({ job }) {
       <div className="w-full flex gap-6">
         {/* LEFT SIDE: 3/4 width */}
         <div className="w-[78%] flex flex-col gap-6 mr-4 ml-10">
-          {/* BLOCK 1 */}
+
           <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
             <h1 className="text-3xl font-bold text-gray-800">{job.title}</h1>
 
@@ -65,7 +65,6 @@ export default function DetailJob({ job }) {
             </div>
           </div>
 
-          {/* BLOCK 3 */}
           <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
             <h2 className="text-xl font-semibold text-gray-800">
               About the job
@@ -109,7 +108,7 @@ export default function DetailJob({ job }) {
 
         {/* RIGHT SIDE: 1/4 width */}
         <div className="w-[22%] flex flex-col gap-4 mr-4">
-          {/* BLOCK 2 */}
+
           <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center justify-center text-center space-y-3">
             <img
               src={job.avatar}
@@ -121,7 +120,6 @@ export default function DetailJob({ job }) {
             </p>
           </div>
 
-          {/* BLOCK 4 */}
           <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
             <h2 className="text-xl font-semibold text-gray-800">
               Thông tin chung

@@ -52,7 +52,6 @@ function JobCard({ job }) {
   return (
     <div className="border rounded-2xl p-4 bg-white shadow hover:shadow-md transition duration-200">
       <div className="flex justify-between items-start gap-4">
-        {/* Avatar + Info */}
         <div className="flex gap-4">
           <div className="w-16 h-16 rounded-full overflow-hidden border">
             <img
@@ -66,8 +65,6 @@ function JobCard({ job }) {
             <p className="text-sm text-gray-600">{job.companyName}</p>
           </div>
         </div>
-
-        {/* Heart */}
         <button onClick={() => setLiked(!liked)}>
           <Heart
             size={20}
@@ -77,8 +74,6 @@ function JobCard({ job }) {
           />
         </button>
       </div>
-
-      {/* Skills */}
       <div className="mt-3 flex flex-wrap gap-2">
         {job.skill?.map((skill, i) => (
           <span
@@ -89,8 +84,6 @@ function JobCard({ job }) {
           </span>
         ))}
       </div>
-
-      {/* Xem chi tiết */}
       <div className="mt-4 flex justify-between items-center">
         <span className="text-sm text-gray-600">{job.salary}</span>
         <Link
