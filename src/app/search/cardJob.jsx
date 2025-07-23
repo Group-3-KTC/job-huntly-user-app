@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart, HeartIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CardJob({ searchTerm, filters }) {
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [liked, setLiked] = useState({});
+  const router = useRouter();
 
   const toggleLike = (jobId) => {
     setLiked((prev) => ({
@@ -129,7 +131,10 @@ export default function CardJob({ searchTerm, filters }) {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button className="bg-[#0a66c2] text-white px-4 py-1 rounded-full">
+                <Button
+                  className="bg-[#0a66c2] text-white px-4 py-1 rounded-full"
+                  onClick={() => router.push(`/job-detail/${job.id}`)}
+                >
                   Xem chi tiết
                 </Button>
                 <button
