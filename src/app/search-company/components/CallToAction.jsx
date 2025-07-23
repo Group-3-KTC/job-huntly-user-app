@@ -1,40 +1,40 @@
+"use client";
+
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 const CallToAction = () => {
   return (
-    <div className="bg-indigo-600 rounded-xl my-16 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 py-12 md:py-0 flex flex-col md:flex-row items-center">
-        <div className="md:w-1/2 mb-8 md:mb-0">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Start posting <br /> jobs today
+    <section className="bg-blue-600 text-white rounded-2xl overflow-hidden">
+      <div className="px-8 py-12 md:py-16 md:px-12 relative z-10">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Bạn là một nhà tuyển dụng?
           </h2>
-          <p className="text-indigo-100 mb-6">
-            Start posting jobs for only $49
+          <p className="text-xl mb-8 text-blue-100">
+            Đăng ký miễn phí để quảng cáo công ty của bạn và tiếp cận với hàng ngàn ứng viên tiềm năng!
           </p>
-          <Link 
-            href="/recruiters/createjob"
-            className="inline-block px-6 py-3 bg-white text-indigo-600 font-medium rounded-md hover:bg-indigo-50 transition-colors"
-          >
-            Sign Up For Free
-          </Link>
-        </div>
-        
-        <div className="md:w-1/2 flex justify-center">
-          <div className="relative w-full max-w-md">
-            <Image 
-              src="/example.png" 
-              alt="Job posting dashboard" 
-              width={500}
-              height={400}
-              className="object-contain"
-              priority
-            />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/recruiters/createjob"
+              className="px-8 py-3 bg-white text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition-colors focus:ring-4 focus:ring-blue-300"
+            >
+              Đăng tin tuyển dụng
+            </Link>
+            <Link
+              href="/recruiters/paymoney"
+              className="px-8 py-3 bg-blue-700 text-white hover:bg-blue-800 font-medium rounded-lg transition-colors border border-blue-500 focus:ring-4 focus:ring-blue-300"
+            >
+              Xem các gói dịch vụ
+            </Link>
           </div>
         </div>
       </div>
-    </div>
+      
+      {/* Pattern decorations */}
+      <div className="absolute top-0 left-0 w-40 h-40 bg-blue-500 rounded-full opacity-20 -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-60 h-60 bg-blue-500 rounded-full opacity-20 translate-x-1/3 translate-y-1/3"></div>
+    </section>
   );
 };
 

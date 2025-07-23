@@ -1,15 +1,11 @@
-"use client";
-
 import React from 'react';
-import dynamic from 'next/dynamic';
+import SearchPageContent from './components/SearchPageContent';
 
-// Import động trang tìm kiếm để tránh lỗi liên quan đến useRouter
-const SearchCompanyPage = dynamic(() => import('./pages/searchPage'), {
-  ssr: false,
-});
-
-const SearchCompany = () => {
-  return <SearchCompanyPage />;
+export const metadata = {
+  title: 'Tìm kiếm công ty | JobHuntly',
+  description: 'Tìm kiếm công ty phù hợp với sở thích và kỹ năng của bạn',
 };
 
-export default SearchCompany; 
+export default function SearchCompanyPage() {
+  return <SearchPageContent />;
+} 
