@@ -1,5 +1,8 @@
+"use client";
 import ClientLayout from "@/layout/ClientLayout";
 import "@/styles/globals.css";
+import { appStore } from "@/store/appStore";
+import { Provider } from "react-redux";
 
 export default function RootLayout({ children }) {
   return (
@@ -11,7 +14,9 @@ export default function RootLayout({ children }) {
       </head>
       <body data-scrolling-animations="true">
         <div className="sp-body ">
-          <ClientLayout>{children}</ClientLayout>
+          <Provider store={appStore}>
+            <ClientLayout>{children}</ClientLayout>
+          </Provider>
         </div>
       </body>
     </html>

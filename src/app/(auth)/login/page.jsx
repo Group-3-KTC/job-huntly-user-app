@@ -1,17 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, User, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import CandidateLoginForm from "@/components/auth/CandidateLoginForm";
+import RecruiterLoginForm from "@/components/auth/RecruiterLoginForm";
 
 const LoginPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("candidate");
 
   return (
@@ -51,166 +48,12 @@ const LoginPage = () => {
                     </TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="candidate" className="space-y-4">
-                    {/* Social Login Buttons */}
-                    <div className="space-y-3">
-                      <Button
-                        variant="outline"
-                        className="w-full flex items-center justify-center gap-2 bg-transparent"
-                      >
-                        <Image
-                          src="/placeholder.svg?height=24&width=24&text=G"
-                          alt="Google"
-                          width={24}
-                          height={24}
-                        />
-                        Tiếp tục với Google
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="w-full flex items-center justify-center gap-2 bg-gray-800 text-white hover:bg-gray-700"
-                      >
-                        <Image
-                          src="/placeholder.svg?height=24&width=24&text=GH"
-                          alt="GitHub"
-                          width={24}
-                          height={24}
-                        />
-                        Tiếp tục với GitHub
-                      </Button>
-                    </div>
-
-                    <p className="text-center text-sm text-gray-500">
-                      Bằng việc tiếp tục, bạn đồng ý với{" "}
-                      <Link href="#" className="text-blue-500 hover:underline">
-                        Điều khoản Sử Dụng
-                      </Link>{" "}
-                      và{" "}
-                      <Link href="#" className="text-blue-500 hover:underline">
-                        Chính Sách Bảo Mật
-                      </Link>{" "}
-                      của Job Huntly.
-                    </p>
-
-                    <div className="border-t pt-6">
-                      <p className="mb-4 font-medium">
-                        Vui lòng{" "}
-                        <span className="text-orange-500">Đăng nhập</span> để
-                        tiếp tục sử dụng dịch vụ của Job Huntly
-                      </p>
-
-                      <form className="space-y-4">
-                        <div>
-                          <Label htmlFor="username">ID tài khoản</Label>
-                          <div className="relative">
-                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                            <Input
-                              id="username"
-                              type="text"
-                              placeholder="Email / Username"
-                              className="pl-10"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <Label htmlFor="password">Mật khẩu</Label>
-                          <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                            <Input
-                              id="password"
-                              type={showPassword ? "text" : "password"}
-                              placeholder="Mật khẩu"
-                              className="pl-10 pr-10"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword(!showPassword)}
-                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                            >
-                              {showPassword ? (
-                                <EyeOff className="h-4 w-4" />
-                              ) : (
-                                <Eye className="h-4 w-4" />
-                              )}
-                            </button>
-                          </div>
-                        </div>
-
-                        <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                          Đăng Nhập
-                        </Button>
-
-                        <div className="text-center">
-                          <Link
-                            href="#"
-                            className="text-sm text-blue-500 hover:underline"
-                          >
-                            Quên mật khẩu?
-                          </Link>
-                        </div>
-                      </form>
-                    </div>
+                  <TabsContent value="candidate">
+                    <CandidateLoginForm />
                   </TabsContent>
 
-                  <TabsContent value="employer" className="space-y-4">
-                    <p className="mb-4 font-medium">
-                      Vui lòng{" "}
-                      <span className="text-orange-500">Đăng nhập</span> để tiếp
-                      tục sử dụng dịch vụ của Job Huntly
-                    </p>
-
-                    <form className="space-y-4">
-                      <div>
-                        <Label htmlFor="employer-username">ID tài khoản</Label>
-                        <div className="relative">
-                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                          <Input
-                            id="employer-username"
-                            type="text"
-                            placeholder="Email / Username"
-                            className="pl-10"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label htmlFor="employer-password">Mật khẩu</Label>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                          <Input
-                            id="employer-password"
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Mật khẩu"
-                            className="pl-10 pr-10"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                          >
-                            {showPassword ? (
-                              <EyeOff className="h-4 w-4" />
-                            ) : (
-                              <Eye className="h-4 w-4" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
-
-                      <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                        Đăng Nhập
-                      </Button>
-
-                      <div className="text-center">
-                        <Link
-                          href="#"
-                          className="text-sm text-blue-500 hover:underline"
-                        >
-                          Quên mật khẩu?
-                        </Link>
-                      </div>
-                    </form>
+                  <TabsContent value="employer">
+                    <RecruiterLoginForm />
                   </TabsContent>
                 </Tabs>
 
