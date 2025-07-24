@@ -9,29 +9,29 @@ import ProvinceCombobox from "@/components/home/ProvinceCombobox";
 
 const HeroSection = () => {
   return (
-    <section className="bg-gray-50 py-16 lg:py-24">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
+    <section className="py-16 lg:py-24">
+      <div className="container px-4 mx-auto">
+        <div className="flex flex-col items-center gap-12 lg:flex-row">
           <div className="flex-1 max-w-2xl">
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h1 className="mb-6 text-4xl font-bold text-gray-900 lg:text-5xl">
               Find a job that suits your interest & skills.
             </h1>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="mb-8 text-lg text-gray-600">
               Aliquam vitae turpis in diam convallis finibus in at risus. Nullam
               in scelerisque leo, eget sollicitudin velit bestibulum.
             </p>
 
             {/* Search Form */}
-            <div className="bg-white p-2 rounded-lg shadow-lg flex flex-col sm:flex-row gap-2 mb-6">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <div className="flex flex-col gap-2 p-2 mb-6 bg-white rounded-lg shadow-lg sm:flex-row">
+              <div className="relative flex-1">
+                <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                 <Input
                   placeholder="Job title, Keyword..."
                   className="pl-10 border-0 focus-visible:ring-0"
                 />
               </div>
-              <div className="flex-1 relative">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <div className="relative flex-1">
+                <MapPin className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                 <div className="pl-10">
                   <ProvinceCombobox />
                 </div>
@@ -40,7 +40,7 @@ const HeroSection = () => {
                 {/*  className="pl-10 border-0 focus-visible:ring-0"*/}
                 {/*/>*/}
               </div>
-              <Button className="bg-blue-600 hover:bg-blue-700 px-8">
+              <Button className="px-8 bg-blue-600 hover:bg-blue-700">
                 Find Job
               </Button>
             </div>

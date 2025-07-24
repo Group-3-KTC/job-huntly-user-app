@@ -73,19 +73,19 @@ const CategoriesSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-12">
+    <section className="py-16">
+      <div className="container px-4 mx-auto">
+        <div className="flex items-center justify-between mb-12">
           <h2 className="text-3xl font-bold text-gray-900">Popular category</h2>
           <Link
             href="#"
-            className="flex items-center text-blue-600 hover:text-blue-700 font-medium"
+            className="flex items-center font-medium text-blue-600 hover:text-blue-700"
           >
-            View All <ArrowRight className="ml-2 h-4 w-4" />
+            View All <ArrowRight className="w-4 h-4 ml-2" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category, index) => (
             <div
               key={index}

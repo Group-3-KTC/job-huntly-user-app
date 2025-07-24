@@ -115,27 +115,27 @@ const FeaturedJobsSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-12">
+    <section className="py-16">
+      <div className="container px-4 mx-auto">
+        <div className="flex items-center justify-between mb-12">
           <h2 className="text-3xl font-bold text-gray-900">Featured job</h2>
           <Link
             href="#"
-            className="flex items-center text-blue-600 hover:text-blue-700 font-medium"
+            className="flex items-center font-medium text-blue-600 hover:text-blue-700"
           >
-            View All <ArrowRight className="ml-2 h-4 w-4" />
+            View All <ArrowRight className="w-4 h-4 ml-2" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {jobs.map((job, index) => (
             <div
               key={index}
-              className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
+              className="p-6 transition-shadow bg-white border border-gray-200 rounded-lg hover:shadow-lg"
             >
-              <div className="flex justify-between items-start mb-4">
+              <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
+                  <h3 className="mb-2 font-semibold text-gray-900">
                     {job.title}
                   </h3>
                   <section
@@ -143,27 +143,27 @@ const FeaturedJobsSection = () => {
                   >
                     {job.type}
                   </section>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="mt-1 text-sm text-gray-600">
                     Salary: {job.salary}
                   </p>
                 </div>
                 <button className="text-gray-400 hover:text-gray-600">
-                  <Bookmark className="h-5 w-5" />
+                  <Bookmark className="w-5 h-5" />
                 </button>
               </div>
 
               <div className="flex items-center mb-4">
-                <div className="w-10 h-10 mr-3 rounded-full overflow-hidden bg-white shadow-sm flex items-center justify-center">
+                <div className="flex items-center justify-center w-10 h-10 mr-3 overflow-hidden bg-white rounded-full shadow-sm">
                   <img
                     src={job.logo}
                     alt={job.company}
-                    className="w-full h-full object-contain"
+                    className="object-contain w-full h-full"
                   />
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">{job.company}</p>
                   <div className="flex items-center text-sm text-gray-600">
-                    <MapPin className="h-4 w-4 mr-1" />
+                    <MapPin className="w-4 h-4 mr-1" />
                     {job.location}
                   </div>
                 </div>

@@ -18,7 +18,7 @@ export default function CertificatesSection({ data, onEdit, onDelete }) {
           className="flex items-start justify-between py-3 my-2 border-t-4 border-blue-600"
         >
           <div className="flex-1">
-            <h4 className="font-medium text-gray-900">{certificate.name}</h4>
+            <h4 className="text-xl font-medium text-gray-900">{certificate.name}</h4>
             <p className="text-sm text-gray-600">{certificate.issuer}</p>
             <p className="text-xs text-gray-500">{certificate.date}</p>
             {certificate.description && (
