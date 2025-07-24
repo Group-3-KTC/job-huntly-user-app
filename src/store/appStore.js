@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "@/features/auth/authSlice";
-import profileReducer from "@/features/profile/profileSlice";
+import { jobApi } from "@/services/jobService";
+import { authApi } from "@/features/auth/authApi";
 
 export const appStore = configureStore({
-  reducer: {
-    profile: profileReducer,
-    auth: authReducer,
-  },
+    reducer: {
+        [authApi.reducerPath]: authApi.reducer,
+        [jobApi.reducerPath]: jobApi.reducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(authApi.middleware, jobApi.middleware),
 });
