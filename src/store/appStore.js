@@ -3,7 +3,6 @@ import profileReducer from "@/features/profile/profileSlice";
 import authReducer from "@/features/auth/authSlice";
 import { jobApi } from "@/services/jobService";
 import { authApi } from "@/features/auth/authApi";
-import authReducer from "@/features/auth/authSlice";
 import toastSlice from "../store/slices/toastSlices";
 
 export const appStore = configureStore({
