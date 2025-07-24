@@ -116,7 +116,7 @@ export default function CardJob() {
                   className="w-20 h-20 rounded object-cover object-center"
                 />
                 <div className="space-y-1">
-                  <h3 className="font-semibold text-lg text-[#0a66c2]" onClick={() => router.push(`/job-detail/${job.id}`)}>
+                  <h3 className="font-semibold text-lg text-[#0a66c2] hover:underline" onClick={() => router.push(`/job-detail/${job.id}`)}>
                     {job.title}
                   </h3>
                   <p className="text-sm text-gray-600 font-medium">

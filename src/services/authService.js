@@ -22,6 +22,7 @@ export const login = async ({ email, password, role }) => {
         );
     }
     const token = await signToken({ email: user.email, role: user.role });
+    console.log(new Date());
     return new Promise((resolve) =>
         setTimeout(() => resolve({ user, token }), 3000),
     );

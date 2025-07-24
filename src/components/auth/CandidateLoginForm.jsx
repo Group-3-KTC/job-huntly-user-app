@@ -35,7 +35,7 @@ const CandidateLoginForm = ({ role }) => {
             localStorage.setItem("role", res.user.role);
 
             alert("Candidate đăng nhập thành công!");
-            router.push("/candidate/dashboard");
+            router.push("/");
         } catch (err) {
             const msg = err?.data?.message || "Đăng nhập thất bại";
             setErrorMessage(msg);

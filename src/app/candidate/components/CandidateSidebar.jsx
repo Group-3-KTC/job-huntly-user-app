@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import userImg from "@/assets/images/user-img.png";
-import { use } from "react";
+
 const navItems = [
   {
     href: "/candidate/dashboard",
@@ -56,7 +56,7 @@ export default function CandidateSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-full mr-6 lg:block">
+    <aside className="hidden w-full mr-6 lg:block ">
       <div className="p-4 bg-white shadow-md rounded-xl">
         <div className="p-2">
           <div className="flex flex-row items-center my-2">
@@ -67,7 +67,6 @@ export default function CandidateSidebar() {
             />
             <div className="flex flex-col ml-2">
               <p className="text-sm">Welcome</p>
-
               <h3 className="text-2xl font-bold text-gray-900">
                 Hoang Phuc Vo
               </h3>
