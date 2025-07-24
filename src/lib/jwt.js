@@ -1,9 +1,6 @@
 import { jwtVerify, SignJWT } from "jose";
 
-// const SECRET = process.env.JWT_SECRET;
-const SECRET = new TextEncoder().encode("fbcb21b477ce89f9fdfae598210eb685");
-// const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
-// console.log("Secret: ", SECRET);
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function signToken(payload) {
     return await new SignJWT(payload)

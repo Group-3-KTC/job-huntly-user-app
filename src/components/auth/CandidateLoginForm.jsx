@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { loginSchema } from "@/validation/loginSchema";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Eye, EyeOff, Lock, User } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Image from "next/image";
 import googleLogo from "@/assets/images/logo-gg.png";
 import { useRouter } from "next/navigation";
@@ -35,7 +35,7 @@ const CandidateLoginForm = ({ role }) => {
             localStorage.setItem("role", res.user.role);
 
             alert("Candidate đăng nhập thành công!");
-            router.push("/candidate/dashboard");
+            router.push("/");
         } catch (err) {
             const msg = err?.data?.message || "Đăng nhập thất bại";
             setErrorMessage(msg);
@@ -85,7 +85,7 @@ const CandidateLoginForm = ({ role }) => {
                 <div>
                     <Label htmlFor="email">ID tài khoản</Label>
                     <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                         <Input
                             id="email"
                             type="email"
@@ -131,7 +131,7 @@ const CandidateLoginForm = ({ role }) => {
                     )}
                 </div>
 
-                <Button className="w-full bg-orange-500 hover:bg-orange-600">
+                <Button className="w-full bg-blue-500 hover:bg-blue-600">
                     Đăng Nhập
                 </Button>
 
