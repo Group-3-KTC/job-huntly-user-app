@@ -1,51 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart, HeartIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useJobSearchStore } from "@/store/jobSearchStore";
+import { useGetJobsQuery } from "@/services/jobService";
 
-export default function CardJob({ searchTerm, filters }) {
-  const [jobs, setJobs] = useState([]);
+export default function CardJob() {
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [liked, setLiked] = useState({});
   const router = useRouter();
 
-  const toggleLike = (jobId) => {
-    setLiked((prev) => ({
-      ...prev,
-      [jobId]: !prev[jobId],
+  const { searchTerm, filters } = useJobSearchStore();
+
+  const { data: jobs = [], isLoading, error } = useGetJobsQuery();
+
+  useEffect(() => {
+    if (!jobs.length) return;
+
+    const normalized = jobs.map((job) => ({
+      ...job,
+      workType: Array.isArray(job.workType)
+        ? job.workType
+        : job.workType?.split(",").map((s) => s.trim()) || [],
+      level: Array.isArray(job.level)
+        ? job.level
+        : job.level?.split(",").map((s) => s.trim()) || [],
+      category: Array.isArray(job.category)
+        ? job.category
+        : job.category?.split(",").map((s) => s.trim()) || [],
+      skill: Array.isArray(job.skill)
+        ? job.skill
+        : job.skill?.split(",").map((s) => s.trim()) || [],
     }));
-  };
 
-  useEffect(() => {
-    fetch("https://687076977ca4d06b34b6dc20.mockapi.io/api/v1/jobs")
-      .then((res) => res.json())
-      .then((data) => {
-        const normalized = data.map((job) => ({
-          ...job,
-          workType: Array.isArray(job.workType)
-            ? job.workType
-            : job.workType?.split(",").map((s) => s.trim()) || [],
-          level: Array.isArray(job.level)
-            ? job.level
-            : job.level?.split(",").map((s) => s.trim()) || [],
-          category: Array.isArray(job.category)
-            ? job.category
-            : job.category?.split(",").map((s) => s.trim()) || [],
-          skill: Array.isArray(job.skill)
-            ? job.skill
-            : job.skill?.split(",").map((s) => s.trim()) || [],
-        }));
-        setJobs(normalized);
-        setFilteredJobs(normalized);
-      });
-  }, []);
+    let filtered = [...normalized];
 
-  useEffect(() => {
-    let filtered = [...jobs];
-
-    // Search
     if (searchTerm?.keyword) {
       const keyword = searchTerm.keyword.toLowerCase();
       filtered = filtered.filter(
@@ -70,7 +61,6 @@ export default function CardJob({ searchTerm, filters }) {
       });
     }
 
-    // Filters
     if (filters.workTypes.length) {
       filtered = filtered.filter((job) =>
         job.workType.some((type) => filters.workTypes.includes(type))
@@ -88,6 +78,7 @@ export default function CardJob({ searchTerm, filters }) {
         job.category.some((cat) => filters.categories.includes(cat))
       );
     }
+
     if (filters.skills.length) {
       filtered = filtered.filter((job) =>
         job.skill.some((sk) => filters.skills.includes(sk))
@@ -95,7 +86,20 @@ export default function CardJob({ searchTerm, filters }) {
     }
 
     setFilteredJobs(filtered);
-  }, [searchTerm, filters, jobs]);
+  }, [jobs, searchTerm, filters]);
+
+  const toggleLike = (jobId) => {
+    setLiked((prev) => ({ ...prev, [jobId]: !prev[jobId] }));
+  };
+
+  if (isLoading)
+    return <p className="text-center text-gray-500">Đang tải dữ liệu...</p>;
+  if (error)
+    return (
+      <p className="text-center text-red-500">
+        Lỗi khi tải công việc: {error.message}
+      </p>
+    );
 
   return (
     <div className="w-full max-w-[1000px] bg-white p-6 rounded-xl shadow-md space-y-6 mx-auto">
@@ -112,7 +116,7 @@ export default function CardJob({ searchTerm, filters }) {
                   className="w-20 h-20 rounded object-cover object-center"
                 />
                 <div className="space-y-1">
-                  <h3 className="font-semibold text-lg text-[#0a66c2]">
+                  <h3 className="font-semibold text-lg text-[#0a66c2]" onClick={() => router.push(`/job-detail/${job.id}`)}>
                     {job.title}
                   </h3>
                   <p className="text-sm text-gray-600 font-medium">

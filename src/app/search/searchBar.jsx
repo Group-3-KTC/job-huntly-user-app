@@ -17,12 +17,15 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import { useJobSearchStore } from "@/store/jobSearchStore";
 
-export default function SearchBar({ onSearch }) {
+export default function SearchBar() {
   const [keyword, setKeyword] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
   const [openProvince, setOpenProvince] = useState(false);
   const [provinces, setProvinces] = useState([]);
+
+  const setSearchTerm = useJobSearchStore((state) => state.setSearchTerm);
 
   useEffect(() => {
     fetch("https://provinces.open-api.vn/api/?depth=1")
@@ -32,23 +35,19 @@ export default function SearchBar({ onSearch }) {
   }, []);
 
   const handleSearch = () => {
-    if (onSearch) {
-      onSearch({
-        keyword,
-        province: selectedProvince,
-      });
-    }
+    setSearchTerm({
+      keyword,
+      province: selectedProvince,
+    });
   };
 
   const handleReset = () => {
     setKeyword("");
     setSelectedProvince("");
-    if (onSearch) {
-      onSearch({
-        keyword: "",
-        province: "",
-      });
-    }
+    setSearchTerm({
+      keyword: "",
+      province: "",
+    });
   };
 
   return (
