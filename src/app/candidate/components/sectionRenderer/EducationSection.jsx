@@ -4,7 +4,7 @@ import { Edit, Trash2 } from "lucide-react";
 export default function EducationSection({ data, onEdit, onDelete }) {
   if (!data || data.length === 0) {
     return (
-      <p className="text-sm text-gray-800  ">Share your background education</p>
+      <p className="text-sm text-gray-800 ">Share your background education</p>
     );
   }
 
@@ -13,10 +13,10 @@ export default function EducationSection({ data, onEdit, onDelete }) {
       {data.map((education, index) => (
         <div
           key={index}
-          className="flex items-start justify-between  py-3 border-t-4 border-blue-600 my-2"
+          className="flex items-start justify-between py-3 my-2 border-t-4 border-blue-600"
         >
           <div className="flex-1">
-            <h4 className="font-medium text-gray-900">{education.school}</h4>
+            <h4 className="text-xl font-medium text-gray-900 ">{education.school}</h4>
             <p className="text-sm text-gray-600">{education.degree}</p>
             <p className="text-sm text-gray-600">{education.major}</p>
             <p className="text-xs text-gray-500">{education.date}</p>

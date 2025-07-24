@@ -29,27 +29,27 @@ const HowItWorksSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+    <section className="py-16">
+      <div className="container px-4 mx-auto">
+        <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold text-gray-900">
             How JobHuntly work
           </h2>
         </div>
 
         <div className="relative">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
             {steps.map((step, index) => (
-              <div key={index} className="text-center relative">
-                <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <div key={index} className="relative text-center">
+                <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-white rounded-full shadow-lg">
                   <step.icon
                     className={`h-8 w-8 ${index === 1 ? "text-white bg-blue-600 rounded-full p-1" : "text-blue-600"}`}
                   />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="mb-2 text-lg font-semibold text-gray-900">
                   {step.title}
                 </h3>
-                <p className="text-gray-600 text-sm">{step.description}</p>
+                <p className="text-sm text-gray-600">{step.description}</p>
 
                 {index < steps.length - 1 && (
                   <div className="hidden md:block absolute right-[-50px] top-8 w-24">
