@@ -50,33 +50,33 @@ const TopCompaniesSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-12">
+    <section className="py-16 ">
+      <div className="container px-4 mx-auto">
+        <div className="flex items-center justify-between mb-12">
+          <h2 className="mb-12 text-3xl font-bold text-gray-900">
             Top companies
           </h2>
           <Link
             href="#"
-            className="flex items-center text-blue-600 hover:text-blue-700 font-medium"
+            className="flex items-center font-medium text-blue-600 hover:text-blue-700"
           >
-            View All <ArrowRight className="ml-2 h-4 w-4" />
+            View All <ArrowRight className="w-4 h-4 ml-2" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {companies.map((company, index) => (
             <div
               key={index}
-              className="bg-white rounded-lg p-6 hover:shadow-lg transition-shadow"
+              className="p-6 transition-shadow bg-white rounded-lg hover:shadow-lg"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-white border mr-3 flex items-center justify-center">
+                  <div className="flex items-center justify-center w-12 h-12 mr-3 overflow-hidden bg-white border rounded-lg">
                     <img
                       src={company.logo}
                       alt={company.name}
-                      className="w-full h-full object-contain"
+                      className="object-contain w-full h-full"
                     />
                   </div>
                   <div>
@@ -92,12 +92,12 @@ const TopCompaniesSection = () => {
                 </div>
               </div>
 
-              <div className="flex items-center text-sm text-gray-600 mb-4">
-                <MapPin className="h-4 w-4 mr-1" />
+              <div className="flex items-center mb-4 text-sm text-gray-600">
+                <MapPin className="w-4 h-4 mr-1" />
                 {company.location}
               </div>
 
-              <Button className="w-full bg-blue-50 text-blue-600 hover:bg-blue-100">
+              <Button className="w-full text-blue-600 bg-blue-50 hover:bg-blue-100">
                 Open Positions ({company.openPositions})
               </Button>
             </div>

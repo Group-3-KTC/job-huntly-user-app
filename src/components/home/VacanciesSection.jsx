@@ -20,22 +20,22 @@ const VacanciesSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-gray-900 mb-12">
+    <section className="py-16">
+      <div className="container px-4 mx-auto">
+        <h2 className="mb-12 text-3xl font-bold text-gray-900">
           Most Popular Vacancies
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {vacancies.map((vacancy, index) => (
             <div
               key={index}
-              className="group hover:bg-blue-50 p-4 rounded-lg transition-colors cursor-pointer"
+              className="p-4 transition-colors bg-white rounded-lg cursor-pointer group hover:bg-blue-600"
             >
-              <h3 className={`font-semibold mb-2 group-hover:text-blue-600`}>
+              <h3 className={`font-semibold mb-2 group-hover:text-white`}>
                 {vacancy.title}
               </h3>
-              <p className="text-sm text-gray-600 group-hover:text-blue-500">
+              <p className="text-sm text-gray-600 group-hover:text-white">
                 {vacancy.positions}
               </p>
             </div>
