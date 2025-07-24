@@ -6,14 +6,29 @@ import languageImage from "@/assets/images/languages.png";
 import highlightProjectImage from "@/assets/images/highlight-project.png";
 import certificatesImage from "@/assets/images/certificates.png";
 import awardsImage from "@/assets/images/awards.png";
+import PersonalDetailSection from "@/app/candidate/components/sectionRenderer/PersonalDetailSection";
 import AboutMeSection from "@/app/candidate/components/sectionRenderer/AboutMeSection";
 import EducationSection from "@/app/candidate/components/sectionRenderer/EducationSection";
 import WorkExperienceSection from "@/app/candidate/components/sectionRenderer/WorkExperienceSection";
 import LanguageSection from "@/app/candidate/components/sectionRenderer/LanguageSection";
 import AwardsSection from "@/app/candidate/components/sectionRenderer/AwardsSection";
-import { profileDataFromAPI } from "@/mock/userProfile";
+import CertificatesSection from "@/app/candidate/components/sectionRenderer/CertificatesSection";
+import HighlightProjectSection from "@/app/candidate/components/sectionRenderer/HighlightProjectSection";
+import SkillsSection from "@/app/candidate/components/sectionRenderer/SkillsSection";
 
 export const getProfileSectionData = (profileData) => [
+  {
+    id: "personalDetail",
+    title: "Personal Detail",
+    description: "Update your personal information",
+    imageSrc: null,
+    imageAlt: "Personal Detail",
+    renderComponent: PersonalDetailSection,
+    content:
+      profileData.personalDetail && profileData.personalDetail.name ? (
+        <PersonalDetailSection data={profileData.personalDetail} />
+      ) : null,
+  },
   {
     id: "aboutMe",
     title: "About Me",
@@ -21,9 +36,10 @@ export const getProfileSectionData = (profileData) => [
     imageSrc: aboutMeImage,
     imageAlt: "About Me",
     renderComponent: AboutMeSection,
-    content: profileDataFromAPI.aboutMe ? (
-      <AboutMeSection data={profileData.aboutMe} />
-    ) : null,
+    content:
+      profileData.aboutMe && profileData.aboutMe.text ? (
+        <AboutMeSection data={profileData.aboutMe} />
+      ) : null,
   },
   {
     id: "education",
@@ -32,9 +48,10 @@ export const getProfileSectionData = (profileData) => [
     imageSrc: educationImage,
     imageAlt: "Education",
     renderComponent: EducationSection,
-    content: profileData.education ? (
-      <EducationSection data={profileData.education} />
-    ) : null,
+    content:
+      profileData.education && profileData.education.length > 0 ? (
+        <EducationSection data={profileData.education} />
+      ) : null,
   },
   {
     id: "workExperience",
@@ -43,9 +60,10 @@ export const getProfileSectionData = (profileData) => [
     imageSrc: workExperienceImage,
     imageAlt: "Work Experience",
     renderComponent: WorkExperienceSection,
-    content: profileData.workExperience ? (
-      <WorkExperienceSection data={profileData.workExperience} />
-    ) : null,
+    content:
+      profileData.workExperience && profileData.workExperience.length > 0 ? (
+        <WorkExperienceSection data={profileData.workExperience} />
+      ) : null,
   },
   {
     id: "skills",
@@ -53,8 +71,11 @@ export const getProfileSectionData = (profileData) => [
     description: "Showcase your skills and proficiencies",
     imageSrc: skillsImage,
     imageAlt: "Skills",
-    renderComponent: null, // Placeholder for future implementation
-    content: null,
+    renderComponent: SkillsSection,
+    content:
+      profileData.skills && profileData.skills.length > 0 ? (
+        <SkillsSection data={profileData.skills} />
+      ) : null,
   },
   {
     id: "language",
@@ -63,9 +84,10 @@ export const getProfileSectionData = (profileData) => [
     imageSrc: languageImage,
     imageAlt: "Foreign Language",
     renderComponent: LanguageSection,
-    content: profileData.language ? (
-      <LanguageSection data={profileData.language} />
-    ) : null,
+    content:
+      Array.isArray(profileData.language) && profileData.language.length > 0 ? (
+        <LanguageSection data={profileData.language} />
+      ) : null, // Chỉ hiển thị nếu là mảng và có dữ liệu
   },
   {
     id: "highlightProject",
@@ -73,8 +95,12 @@ export const getProfileSectionData = (profileData) => [
     description: "Showcase your highlight project",
     imageSrc: highlightProjectImage,
     imageAlt: "Highlight Project",
-    renderComponent: null, // Placeholder for future implementation
-    content: null,
+    renderComponent: HighlightProjectSection,
+    content:
+      profileData.highlightProject &&
+      profileData.highlightProject.length > 0 ? (
+        <HighlightProjectSection data={profileData.highlightProject} />
+      ) : null,
   },
   {
     id: "certificates",
@@ -82,8 +108,11 @@ export const getProfileSectionData = (profileData) => [
     description: "Provides evidence of your specific expertise and skills",
     imageSrc: certificatesImage,
     imageAlt: "Certificates",
-    renderComponent: null, // Placeholder for future implementation
-    content: null,
+    renderComponent: CertificatesSection,
+    content:
+      profileData.certificates && profileData.certificates.length > 0 ? (
+        <CertificatesSection data={profileData.certificates} />
+      ) : null,
   },
   {
     id: "awards",
@@ -91,10 +120,10 @@ export const getProfileSectionData = (profileData) => [
     description: "Highlight your awards or recognitions",
     imageSrc: awardsImage,
     imageAlt: "Awards",
-    isCustom: true,
     renderComponent: AwardsSection,
-    content: profileData.awards ? (
-      <AwardsSection data={profileData.awards} />
-    ) : null,
+    content:
+      profileData.awards && profileData.awards.length > 0 ? (
+        <AwardsSection data={profileData.awards} />
+      ) : null,
   },
 ];

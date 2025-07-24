@@ -13,8 +13,8 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-orange-50">
-      <main className="container mx-auto py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+      <main className="container py-8 mx-auto">
+        <div className="flex flex-col gap-8 lg:flex-row">
           {/* Login Form */}
           <div className="w-full lg:w-1/2">
             <Card className="shadow-md">
@@ -62,7 +62,7 @@ const LoginPage = () => {
                     Chưa có tài khoản?{" "}
                     <Link
                       href="/register"
-                      className="text-orange-500 hover:underline font-medium"
+                      className="font-medium text-orange-500 hover:underline"
                     >
                       Đăng ký ngay
                     </Link>
@@ -78,7 +78,7 @@ const LoginPage = () => {
               <CardContent className="p-6">
                 {activeTab === "candidate" ? (
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">
+                    <h3 className="mb-4 text-lg font-semibold">
                       Chào mừng bạn đến với{" "}
                       <strong className="text-blue-600">Job Huntly</strong>
                     </h3>
@@ -103,7 +103,7 @@ const LoginPage = () => {
                       />
                     </div>
                     <div className="mb-6">
-                      <h4 className="font-semibold mb-2">
+                      <h4 className="mb-2 font-semibold">
                         Đăng nhập ngay để tận dụng tối đa các công cụ của Job
                         Huntly và gia tăng cơ hội tiếp cận việc làm hot nhất
                       </h4>
@@ -117,7 +117,7 @@ const LoginPage = () => {
                           "Thực hiện bài trắc nghiệm đánh giá tính cách làm việc",
                         ].map((benefit, index) => (
                           <li key={index} className="flex items-start">
-                            <div className="text-orange-500 mr-2">•</div>
+                            <div className="mr-2 text-orange-500">•</div>
                             <span>{benefit}</span>
                           </li>
                         ))}
@@ -131,7 +131,7 @@ const LoginPage = () => {
                   </div>
                 ) : (
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">
+                    <h3 className="mb-4 text-lg font-semibold">
                       Chào mừng Nhà tuyển dụng đến với{" "}
                       <strong className="text-blue-600">Job Huntly</strong>
                     </h3>
@@ -144,7 +144,7 @@ const LoginPage = () => {
                       />
                     </div>
                     <div className="mb-6">
-                      <h4 className="font-semibold mb-2">
+                      <h4 className="mb-2 font-semibold">
                         Đăng nhập để truy cập các công cụ tuyển dụng mạnh mẽ
                       </h4>
                       <ul className="mt-4 space-y-2">
@@ -156,7 +156,7 @@ const LoginPage = () => {
                           "Hỗ trợ tư vấn tuyển dụng",
                         ].map((benefit, index) => (
                           <li key={index} className="flex items-start">
-                            <div className="text-orange-500 mr-2">•</div>
+                            <div className="mr-2 text-orange-500">•</div>
                             <span>{benefit}</span>
                           </li>
                         ))}

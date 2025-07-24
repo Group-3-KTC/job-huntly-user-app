@@ -1,31 +1,25 @@
 "use client";
 import { Edit, Trash2 } from "lucide-react";
 
-export default function AwardsSection({ data, onEdit, onDelete }) {
+export default function SkillsSection({ data, onEdit, onDelete }) {
   if (!data || data.length === 0) {
     return (
-      <p className="text-sm text-gray-800 ">
-        Highlight your awards or recognitions
+      <p className="text-sm text-gray-800  ">
+        Showcase your skills and proficiencies
       </p>
     );
   }
 
   return (
     <div className="space-y-3">
-      {data.map((award, index) => (
+      {data.map((skill, index) => (
         <div
           key={index}
-          className="flex items-start justify-between py-3 border-t-4 border-blue-600"
+          className="flex items-start justify-between  py-3 border-t-4 border-blue-600 my-2"
         >
           <div className="flex-1">
-            <h4 className="font-medium text-gray-900">{award.name}</h4>
-            <p className="text-sm text-gray-600">{award.organization}</p>
-            <p className="text-xs text-gray-500">
-              {award.issueDate?.month} {award.issueDate?.year}
-            </p>
-            {award.description && (
-              <p className="mt-1 text-sm text-gray-700">{award.description}</p>
-            )}
+            <h4 className="font-medium text-gray-900">{skill.name}</h4>
+            <p className="text-sm text-gray-600">Level: {skill.level}</p>
           </div>
           <div className="flex gap-2 ml-3">
             <button

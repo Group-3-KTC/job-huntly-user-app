@@ -51,8 +51,8 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-orange-50">
-      <main className="container mx-auto py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+      <main className="container py-8 mx-auto">
+        <div className="flex flex-col gap-8 lg:flex-row">
           {/* Login Form */}
           <div className="w-full lg:w-1/2">
             <Card className="shadow-md">
@@ -91,7 +91,7 @@ const LoginPage = () => {
                     <div className="space-y-3">
                       <Button
                         variant="outline"
-                        className="w-full flex items-center justify-center gap-2 bg-transparent"
+                        className="flex items-center justify-center w-full gap-2 bg-transparent"
                       >
                         <Image
                           src="/placeholder.svg?height=24&width=24&text=G"
@@ -103,7 +103,7 @@ const LoginPage = () => {
                       </Button>
                       <Button
                         variant="outline"
-                        className="w-full flex items-center justify-center gap-2 bg-gray-800 text-white hover:bg-gray-700"
+                        className="flex items-center justify-center w-full gap-2 text-white bg-gray-800 hover:bg-gray-700"
                       >
                         <Image
                           src="/placeholder.svg?height=24&width=24&text=GH"
@@ -115,7 +115,7 @@ const LoginPage = () => {
                       </Button>
                     </div>
 
-                    <p className="text-center text-sm text-gray-500">
+                    <p className="text-sm text-center text-gray-500">
                       Bằng việc tiếp tục, bạn đồng ý với{" "}
                       <Link href="#" className="text-blue-500 hover:underline">
                         Điều khoản Sử Dụng
@@ -127,7 +127,7 @@ const LoginPage = () => {
                       của Job Huntly.
                     </p>
 
-                    <div className="border-t pt-6">
+                    <div className="pt-6 border-t">
                       <p className="mb-4 font-medium">
                         Vui lòng{" "}
                         <span className="text-orange-500">Đăng nhập</span> để
@@ -141,7 +141,7 @@ const LoginPage = () => {
                         <div>
                           <Label htmlFor="username">ID tài khoản</Label>
                           <div className="relative">
-                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                            <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                             <Input
                               id="email"
                               type="email"
@@ -151,7 +151,7 @@ const LoginPage = () => {
                             />
                           </div>
                           {errors.username && (
-                            <p className="text-sm text-red-500 mt-1">
+                            <p className="mt-1 text-sm text-red-500">
                               {errors.username.message}
                             </p>
                           )}
@@ -160,7 +160,7 @@ const LoginPage = () => {
                         <div>
                           <Label htmlFor="password">Mật khẩu</Label>
                           <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                            <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                             <Input
                               id="password"
                               type={showPassword ? "text" : "password"}
@@ -171,17 +171,17 @@ const LoginPage = () => {
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                              className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
                             >
                               {showPassword ? (
-                                <EyeOff className="h-4 w-4" />
+                                <EyeOff className="w-4 h-4" />
                               ) : (
-                                <Eye className="h-4 w-4" />
+                                <Eye className="w-4 h-4" />
                               )}
                             </button>
                           </div>
                           {errors.password && (
-                            <p className="text-sm text-red-500 mt-1">
+                            <p className="mt-1 text-sm text-red-500">
                               {errors.password.message}
                             </p>
                           )}
@@ -214,7 +214,7 @@ const LoginPage = () => {
                       <div>
                         <Label htmlFor="employer-username">ID tài khoản</Label>
                         <div className="relative">
-                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                           <Input
                             id="employer-username"
                             type="text"
@@ -227,7 +227,7 @@ const LoginPage = () => {
                       <div>
                         <Label htmlFor="employer-password">Mật khẩu</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                           <Input
                             id="employer-password"
                             type={showPassword ? "text" : "password"}
@@ -237,12 +237,12 @@ const LoginPage = () => {
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                            className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
                           >
                             {showPassword ? (
-                              <EyeOff className="h-4 w-4" />
+                              <EyeOff className="w-4 h-4" />
                             ) : (
-                              <Eye className="h-4 w-4" />
+                              <Eye className="w-4 h-4" />
                             )}
                           </button>
                         </div>
@@ -269,7 +269,7 @@ const LoginPage = () => {
                     Chưa có tài khoản?{" "}
                     <Link
                       href="/register"
-                      className="text-orange-500 hover:underline font-medium"
+                      className="font-medium text-orange-500 hover:underline"
                     >
                       Đăng ký ngay
                     </Link>
@@ -285,7 +285,7 @@ const LoginPage = () => {
               <CardContent className="p-6">
                 {activeTab === "candidate" ? (
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">
+                    <h3 className="mb-4 text-lg font-semibold">
                       Chào mừng bạn đến với{" "}
                       <strong className="text-blue-600">Job Huntly</strong>
                     </h3>
@@ -310,7 +310,7 @@ const LoginPage = () => {
                       />
                     </div>
                     <div className="mb-6">
-                      <h4 className="font-semibold mb-2">
+                      <h4 className="mb-2 font-semibold">
                         Đăng nhập ngay để tận dụng tối đa các công cụ của Job
                         Huntly và gia tăng cơ hội tiếp cận việc làm hot nhất
                       </h4>
@@ -324,13 +324,13 @@ const LoginPage = () => {
                           "Thực hiện bài trắc nghiệm đánh giá tính cách làm việc",
                         ].map((benefit, index) => (
                           <li key={index} className="flex items-start">
-                            <div className="text-orange-500 mr-2">•</div>
+                            <div className="mr-2 text-orange-500">•</div>
                             <span>{benefit}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-800 ">
                       Nếu bạn gặp khó khăn trong việc đăng nhập / tạo tài khoản,
                       vui lòng liên hệ với Job Huntly qua email
                       contact@JobHuntly.vn
@@ -338,7 +338,7 @@ const LoginPage = () => {
                   </div>
                 ) : (
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">
+                    <h3 className="mb-4 text-lg font-semibold">
                       Chào mừng Nhà tuyển dụng đến với{" "}
                       <strong className="text-blue-600">Job Huntly</strong>
                     </h3>
@@ -351,7 +351,7 @@ const LoginPage = () => {
                       />
                     </div>
                     <div className="mb-6">
-                      <h4 className="font-semibold mb-2">
+                      <h4 className="mb-2 font-semibold">
                         Đăng nhập để truy cập các công cụ tuyển dụng mạnh mẽ
                       </h4>
                       <ul className="mt-4 space-y-2">
@@ -363,7 +363,7 @@ const LoginPage = () => {
                           "Hỗ trợ tư vấn tuyển dụng",
                         ].map((benefit, index) => (
                           <li key={index} className="flex items-start">
-                            <div className="text-orange-500 mr-2">•</div>
+                            <div className="mr-2 text-orange-500">•</div>
                             <span>{benefit}</span>
                           </li>
                         ))}

@@ -76,23 +76,23 @@ export default function Component() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+      <div className="container px-4 py-16 mx-auto">
+        <div className="grid items-center gap-12 mb-16 lg:grid-cols-2">
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
+            <div className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 rounded-full">
               <Briefcase className="w-4 h-4" />
               Job Posting Platform
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+            <h1 className="text-4xl font-bold leading-tight text-gray-900 lg:text-5xl">
               Buy Premium Subscription to{" "}
               <span className="text-blue-600">Post a Job</span>
             </h1>
-            <p className="text-lg text-gray-600 leading-relaxed">
+            <p className="text-lg leading-relaxed text-gray-600">
               Unlock the power of premium job posting with advanced features,
               extended visibility, and priority support. Connect with top talent
               faster and more efficiently than ever before.
             </p>
-            <div className="flex items-center gap-4 text-sm text-gray-500">
+            <div className="flex items-center gap-4 text-sm text-gray-800 ">
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-green-500" /> No setup fees
               </div>
@@ -105,17 +105,17 @@ export default function Component() {
             </div>
           </div>
           <div className="relative">
-            <div className="bg-gradient-to-br from-blue-100 to-indigo-200 rounded-3xl p-8 relative overflow-hidden">
+            <div className="relative p-8 overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-200 rounded-3xl">
               <img
                 src="https://i.pinimg.com/736x/10/d3/83/10d3832519e968a1294ca62cfd502889.jpg"
                 alt="Job posting illustration"
-                className="w-full h-auto relative z-10"
+                className="relative z-10 w-full h-auto"
               />
             </div>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="grid gap-8 mx-auto md:grid-cols-3 max-w-7xl">
           {plans.map((plan) => (
             <Card
               key={plan.name}
@@ -125,8 +125,8 @@ export default function Component() {
                   : "border border-gray-200 hover:border-blue-300"
               }`}
             >
-              <CardHeader className="text-center pb-8">
-                <CardTitle className="text-lg font-semibold text-gray-900 mb-2">
+              <CardHeader className="pb-8 text-center">
+                <CardTitle className="mb-2 text-lg font-semibold text-gray-900">
                   {plan.name}
                 </CardTitle>
                 <CardDescription className="text-gray-600 mb-6 min-h-[3rem]">
@@ -137,7 +137,7 @@ export default function Component() {
                     <span className="text-4xl font-bold text-gray-900">
                       ${plan.price}
                     </span>
-                    <span className="text-gray-500 font-medium">/Monthly</span>
+                    <span className="font-medium text-gray-500">/Monthly</span>
                   </div>
                 </div>
               </CardHeader>
@@ -145,7 +145,7 @@ export default function Component() {
                 {plan.features.map((feature, idx) => (
                   <div key={idx} className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-green-500" />
-                    <span className="text-gray-700 text-sm">{feature}</span>
+                    <span className="text-sm text-gray-700">{feature}</span>
                   </div>
                 ))}
               </CardContent>
@@ -163,21 +163,21 @@ export default function Component() {
                   }}
                 >
                   {plan.buttonText}
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                 </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
 
-        <div className="text-center mt-16 space-y-4">
+        <div className="mt-16 space-y-4 text-center">
           <p className="text-gray-600">
             Need a custom solution? Our enterprise plans offer unlimited
             flexibility.
           </p>
           <Button
             variant="outline"
-            className="border-blue-600 text-blue-600 hover:bg-blue-50 bg-transparent"
+            className="text-blue-600 bg-transparent border-blue-600 hover:bg-blue-50"
           >
             Contact Sales Team
           </Button>
@@ -189,14 +189,14 @@ export default function Component() {
           <DialogHeader>
             <DialogTitle>Checkout</DialogTitle>
           </DialogHeader>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid gap-6 md:grid-cols-2">
             <Tabs defaultValue="credit" className="w-full">
               <TabsList>
                 <TabsTrigger value="credit">Credit Card</TabsTrigger>
                 <TabsTrigger value="paypal">PayPal</TabsTrigger>
               </TabsList>
               <TabsContent value="credit" className="space-y-4">
-                <div className="space-y-3 border rounded-md p-4">
+                <div className="p-4 space-y-3 border rounded-md">
                   <label className="text-sm font-medium">Name on Card</label>
                   <Input placeholder="Name" />
                   <label className="text-sm font-medium">Credit Card</label>
@@ -214,21 +214,21 @@ export default function Component() {
               </TabsContent>
             </Tabs>
 
-            <div className="border rounded-lg p-6 space-y-4 bg-muted/30">
+            <div className="p-6 space-y-4 border rounded-lg bg-muted/30">
               <div className="text-sm text-muted-foreground">
                 Pricing Plan:{" "}
                 <span className="font-semibold text-gray-700">
                   {selectedPlan?.name}
                 </span>
               </div>
-              <div className="text-lg font-semibold text-gray-900 flex justify-between">
+              <div className="flex justify-between text-lg font-semibold text-gray-900">
                 <span>Total:</span>
                 <span>${selectedPlan?.price} USD</span>
               </div>
-              <Button className="w-full flex justify-center items-center gap-2">
+              <Button className="flex items-center justify-center w-full gap-2">
                 Confirm Payment <ArrowRight className="w-4 h-4" />
               </Button>
-              <p className="text-xs text-muted-foreground text-center">
+              <p className="text-xs text-center text-muted-foreground">
                 This package will expire after one month.
               </p>
             </div>
