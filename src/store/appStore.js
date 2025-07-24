@@ -15,10 +15,6 @@ export const appStore = configureStore({
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(authApi.middleware, jobApi.middleware),
-  reducer: {
-    auth: authReducer,
-    toast: toastSlice,
-  },
 });
 
 export default appStore;
