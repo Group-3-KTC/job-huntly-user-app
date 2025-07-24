@@ -1,11 +1,14 @@
 import React from 'react';
-import SearchPageContent from './components/SearchPageContent';
 
 export const metadata = {
   title: 'Tìm kiếm công ty | JobHuntly',
   description: 'Tìm kiếm công ty phù hợp với sở thích và kỹ năng của bạn',
 };
 
-export default function SearchCompanyPage() {
-  return <SearchPageContent />;
+export default function CompanySearchLayout({ children }) {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {children}
+    </div>
+  );
 } 

@@ -36,8 +36,8 @@ const PopularSearches = () => {
             {popularIndustries.map(industry => (
               <Link 
                 key={industry.slug}
-                href={`/search-company/results?industry=${encodeURIComponent(industry.name)}`}
-                className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-full text-sm transition-colors"
+                href={`/company/company-search/results?industry=${encodeURIComponent(industry.name)}`}
+                className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-[#0A66C2] rounded-full text-sm transition-colors"
               >
                 {industry.name}
               </Link>
@@ -52,7 +52,7 @@ const PopularSearches = () => {
             {popularLocations.map(location => (
               <Link
                 key={location.slug}
-                href={`/search-company/results?location=${encodeURIComponent(location.name)}`}
+                href={`/company/company-search/results?location=${encodeURIComponent(location.name)}`}
                 className="px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-full text-sm transition-colors"
               >
                 {location.name}

@@ -21,20 +21,22 @@ const ResultItem = ({ company }) => {
       <div className="flex items-start">
         {/* Logo */}
         <div className="w-16 h-16 flex-shrink-0 mr-4 overflow-hidden rounded-md bg-gray-50 p-1">
-          <Image
-            src={company.logo || '/file.svg'}
-            alt={company.name}
-            width={64}
-            height={64}
-            className="object-contain"
-          />
+          <Link href={`/company/company-detail/${company.id}`}>
+            <Image
+              src={company.logo || '/logo_example.png'}
+              alt={company.name}
+              width={64}
+              height={64}
+              className="object-contain"
+            />
+          </Link>
         </div>
         
         {/* Thông tin công ty */}
         <div className="flex-1">
           <div className="flex flex-wrap justify-between mb-2">
-            <h3 className="text-lg font-semibold text-blue-700 hover:text-blue-800">
-              <Link href={`/company/${company.id}`}>
+            <h3 className="text-lg font-semibold text-[#0A66C2] hover:underline">
+              <Link href={`/company/company-detail/${company.id}`}>
                 {company.name}
               </Link>
             </h3>

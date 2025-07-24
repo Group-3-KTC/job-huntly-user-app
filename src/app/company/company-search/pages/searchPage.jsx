@@ -24,7 +24,7 @@ const SearchCompanyPage = () => {
       queryParams.append('location', searchParams.location);
     }
     
-    router.push(`/search-company/results?${queryParams.toString()}`);
+    router.push(`/company/company-search/results?${queryParams.toString()}`);
   };
 
   return (
@@ -49,7 +49,7 @@ const SearchCompanyPage = () => {
       <CompanyGrid 
         companies={designCompanies}
         title="Design Companies"
-        viewMoreLink="/search-company/results?category=design"
+        viewMoreLink="/company/company-search/results?category=design"
       />
     </div>
   );

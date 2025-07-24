@@ -122,7 +122,7 @@ const ResultPage = () => {
         queryParams.append('location', searchParams.location);
       }
       
-      router.push(`/search-company/results?${queryParams.toString()}`);
+      router.push(`/company/company-search/results?${queryParams.toString()}`);
       
       // Reset lại trạng thái chuyển tiếp
       setTimeout(() => {

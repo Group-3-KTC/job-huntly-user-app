@@ -1,14 +1,22 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import SearchBar from './SearchBar';
-import PopularSearches from './PopularSearches';
-import RecommendedCompanies from './RecommendedCompanies';
-import CallToAction from './CallToAction';
+import SearchBar from '../components/SearchBar';
+import PopularSearches from '../components/PopularSearches';
+import RecommendedCompanies from '../components/RecommendedCompanies';
+import CallToAction from '../components/CallToAction';
+import useCompanySearchStore from '../store/companySearchStore';
 
 const SearchPageContent = () => {
   const router = useRouter();
+  const { fetchCompanies, fetchIndustries } = useCompanySearchStore();
+  
+  useEffect(() => {
+    // Tải trước dữ liệu cho trang tìm kiếm
+    fetchCompanies();
+    fetchIndustries();
+  }, [fetchCompanies, fetchIndustries]);
 
   const handleSearch = (searchParams) => {
     const queryParams = new URLSearchParams();
@@ -21,7 +29,7 @@ const SearchPageContent = () => {
       queryParams.append('location', searchParams.location);
     }
     
-    router.push(`/search-company/results?${queryParams.toString()}`);
+    router.push(`/company/company-search/results?${queryParams.toString()}`);
   };
 
   return (
