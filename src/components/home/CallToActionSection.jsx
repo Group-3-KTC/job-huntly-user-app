@@ -4,61 +4,65 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 const CallToActionSection = () => {
-  return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Candidate CTA */}
-          <div className="bg-gray-100 rounded-lg p-8 flex items-center">
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Become a Candidate
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras
-                cursus a dolor convallis efficitur.
-              </p>
-              <Link href="/register">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                  Register Now <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-            <div className="flex-shrink-0 ml-8">
-              <img
-                src="/placeholder.svg?height=200&width=200&text=Candidate"
-                alt="Become a Candidate"
-                className="w-48 h-48 object-cover"
-              />
-            </div>
-          </div>
+    return (
+        <section className="py-16">
+            <div className="container px-4 mx-auto">
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                    <div className="flex items-center p-8 bg-gray-100 rounded-lg">
+                        <div className="flex-1">
+                            <h3 className="mb-4 text-2xl font-bold text-gray-900">
+                                Become a Candidate
+                            </h3>
+                            <p className="mb-6 text-gray-600">
+                                Lorem ipsum dolor sit amet, consectetur
+                                adipiscing elit. Cras cursus a dolor convallis
+                                efficitur.
+                            </p>
+                            <Link href="/register">
+                                <Button className="text-white bg-blue-600 hover:bg-blue-700">
+                                    Register Now{" "}
+                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                </Button>
+                            </Link>
+                        </div>
+                        <div className="flex-shrink-0 ml-8">
+                            <img
+                                src="/placeholder.svg?height=200&width=200&text=Candidate"
+                                alt="Become a Candidate"
+                                className="object-cover w-48 h-48"
+                            />
+                        </div>
+                    </div>
 
-          {/* Employer CTA */}
-          <div className="bg-blue-600 rounded-lg p-8 flex items-center text-white">
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold mb-4">Become a Recruiter</h3>
-              <p className="text-blue-100 mb-6">
-                Cras in massa pellentesque, mollis ligula non, luctus dui. Morbi
-                sed efficitur dolor. Pelque augue risus, aliqu.
-              </p>
-              <Link href="/register">
-                <Button className="bg-white text-blue-600 hover:bg-gray-100">
-                  Register Now <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+                    <div className="flex items-center p-8 text-white bg-blue-600 rounded-lg">
+                        <div className="flex-1">
+                            <h3 className="mb-4 text-2xl font-bold">
+                                Become a Recruiter
+                            </h3>
+                            <p className="mb-6 text-blue-100">
+                                Cras in massa pellentesque, mollis ligula non,
+                                luctus dui. Morbi sed efficitur dolor. Pelque
+                                augue risus, aliqu.
+                            </p>
+                            <Link href="/register">
+                                <Button className="text-blue-600 bg-white hover:bg-gray-100">
+                                    Register Now{" "}
+                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                </Button>
+                            </Link>
+                        </div>
+                        <div className="flex-shrink-0 ml-8">
+                            <img
+                                src=""
+                                alt="Become an Recruiter"
+                                className="object-cover w-48 h-48"
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="flex-shrink-0 ml-8">
-              <img
-                src="/placeholder.svg?height=200&width=200&text=Employer"
-                alt="Become an Recruiter"
-                className="w-48 h-48 object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+        </section>
+    );
 };
 
 export default CallToActionSection;

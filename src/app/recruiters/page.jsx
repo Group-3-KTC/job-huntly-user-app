@@ -1,8 +1,8 @@
-/**import PricingPage from "@/app/recruiters/paymoney/pricingpage";
+// import PricingPage from "@/app/recruiters/paymoney/pricingpage";
 
-export default function Page() {
-  return <PricingPage />;
-}**/
+// export default function Page() {
+//   return <PricingPage />;
+// }
 
 
 import JobPostingForm from "@/app/recruiters/createjob/jobposting";

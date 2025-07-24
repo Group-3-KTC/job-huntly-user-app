@@ -1,25 +1,106 @@
-import { PlusCircle } from "lucide-react";
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import { PlusCircle, Edit, Trash2 } from "lucide-react";
 
 export default function SectionCard({
+  id,
   title,
   description,
   imageSrc,
   imageAlt,
+  content,
+  data,
+  onAdd,
+  onEdit,
+  onDelete,
 }) {
+  const hasContent =
+    data &&
+    (Array.isArray(data)
+      ? data.length > 0
+      : id === "aboutMe"
+      ? !!data.text
+      : Object.keys(data).length > 0);
+
+  const handleMainClick = () => {
+    if (hasContent && onEdit) {
+      onEdit();
+    } else if (!hasContent && onAdd) {
+      onAdd();
+    }
+  };
+
+  const renderContent = () => {
+    if (!hasContent) {
+      return <p className="text-sm text-gray-400">{description}</p>;
+    }
+    return <div className="p-3 mt-2 rounded-md ">{content}</div>;
+  };
+
   return (
-    <div className="flex items-start justify-between p-4 transition-shadow bg-white rounded-lg shadow-sm cursor-pointer hover:shadow-md">
-      <div>
-        <h3 className="text-lg font-bold text-black">{title}</h3>
-        <p className="text-sm text-gray-500">{description}</p>
-      </div>
-      <div className="flex flex-col items-end gap-2">
-        <PlusCircle
-          size={24}
-          className="text-[var(--color-primary-main)] hover:scale-105 transition-transform"
-        />
-        {imageSrc && (
-          <img src={imageSrc} alt={imageAlt} className="w-20 h-20 opacity-75" />
-        )}
+    <div className="relative p-4 transition-shadow bg-white shadow-sm rounded-xl hover:shadow-md">
+      <div
+        className="flex items-start justify-between cursor-pointer"
+        onClick={handleMainClick}
+      >
+        <div className="flex-1">
+          <h3 className="text-lg font-bold text-black">{title}</h3>
+          {renderContent()}
+        </div>
+
+        <div className="flex flex-col items-end gap-2 ml-4 shrink-0">
+          <div className="flex items-center gap-2">
+            {hasContent ? (
+              <>
+                {!Array.isArray(data) && (
+                  <Edit
+                    size={20}
+                    className="text-blue-600 transition-transform hover:scale-105"
+                  />
+                )}
+                {Array.isArray(data) && (
+                  <PlusCircle
+                    size={20}
+                    className="text-green-600 transition-transform hover:scale-105"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAdd && onAdd();
+                    }}
+                  />
+                )}
+              </>
+            ) : (
+              <PlusCircle
+                size={24}
+                className="text-blue-800 transition-transform hover:scale-105"
+              />
+            )}
+
+            {onDelete && (
+              <Trash2
+                size={18}
+                className="text-red-500 transition-transform hover:scale-105"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+              />
+            )}
+          </div>
+
+          {imageSrc && (
+            <div className="relative w-16 h-16 opacity-80">
+              <Image
+                src={imageSrc}
+                alt={imageAlt || title}
+                fill
+                className="object-contain"
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

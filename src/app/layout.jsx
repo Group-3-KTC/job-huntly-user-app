@@ -3,7 +3,7 @@ import ClientLayout from "@/layout/ClientLayout";
 import "@/styles/globals.css";
 import { appStore } from "@/store/appStore";
 import { Provider } from "react-redux";
-
+import ToastProvider from "../components/ui/toast";
 export default function RootLayout({ children }) {
   return (
     <html lang="vi">
@@ -15,6 +15,7 @@ export default function RootLayout({ children }) {
       <body data-scrolling-animations="true">
         <div className="sp-body ">
           <Provider store={appStore}>
+            <ToastProvider />
             <ClientLayout>{children}</ClientLayout>
           </Provider>
         </div>

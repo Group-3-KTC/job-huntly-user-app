@@ -93,9 +93,9 @@ const TestimonialsSection = () => {
   };
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+    <section className="py-16">
+      <div className="container px-4 mx-auto">
+        <h2 className="mb-12 text-3xl font-bold text-center text-gray-900">
           Clients Testimonial
         </h2>
 
@@ -105,9 +105,9 @@ const TestimonialsSection = () => {
               variant="outline"
               size="icon"
               onClick={prevSlide}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg"
+              className="absolute left-0 z-10 transform -translate-y-1/2 bg-white shadow-lg top-1/2"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="w-4 h-4" />
             </Button>
 
             {/* Slide container */}
@@ -121,17 +121,17 @@ const TestimonialsSection = () => {
                     key={index}
                     className="min-w-full md:min-w-[33.3333%] px-2"
                   >
-                    <div className="bg-white p-6 rounded-lg shadow-sm h-full flex flex-col justify-between">
+                    <div className="flex flex-col justify-between h-full p-6 bg-white rounded-lg shadow-sm">
                       <div>
                         <div className="flex mb-4">
                           {[...Array(testimonial.rating)].map((_, i) => (
                             <Star
                               key={i}
-                              className="h-5 w-5 fill-yellow-400 text-yellow-400"
+                              className="w-5 h-5 text-yellow-400 fill-yellow-400"
                             />
                           ))}
                         </div>
-                        <p className="text-gray-600 mb-6 italic">
+                        <p className="mb-6 italic text-gray-600">
                           "{testimonial.text}"
                         </p>
                       </div>
@@ -139,7 +139,7 @@ const TestimonialsSection = () => {
                         <img
                           src={testimonial.avatar || "/placeholder.svg"}
                           alt={testimonial.name}
-                          className="w-10 h-10 rounded-full mr-3"
+                          className="w-10 h-10 mr-3 rounded-full"
                         />
                         <div>
                           <p className="font-semibold text-gray-900">
@@ -160,9 +160,9 @@ const TestimonialsSection = () => {
               variant="outline"
               size="icon"
               onClick={nextSlide}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg"
+              className="absolute right-0 z-10 transform -translate-y-1/2 bg-white shadow-lg top-1/2"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
 

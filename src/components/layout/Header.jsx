@@ -238,101 +238,105 @@ export const Header = () => {
   };
 
   return (
-    <header className="h-18 bg-[#0a66c2] relative">
-      <div className="flex items-center h-full px-4">
-        {/* Logo */}
-        <div className="flex-shrink-0">
-          <Image
-            src={logo}
-            alt="JobHuntly Logo"
-            width={120}
-            height={40}
-            className="w-auto h-10"
-          />
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex justify-between w-full ml-8">
-          {/* Left Navigation */}
-          <div className="relative" onMouseLeave={handleMouseLeave}>
-            <ul className="flex items-center space-x-1">
-              {[
-                { key: "jobs", label: "Việc làm" },
-                { key: "cv", label: "Tạo CV" },
-                { key: "tools", label: "Công cụ" },
-                { key: "guide", label: "Cẩm nang nghề nghiệp" },
-                { key: "premium", label: "TopCV" },
-              ].map((item) => (
-                <li key={item.key}>
-                  <div
-                    className="group flex items-center gap-1 text-white font-medium px-3 py-2 rounded-lg cursor-pointer hover:bg-[#d0e5f9] hover:text-[#0a66c2] transition-colors"
-                    onMouseEnter={() => handleMouseEnter(item.key)}
-                  >
-                    <span>{item.label}</span>
-                    <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
+      <header className="h-18 bg-[#0a66c2] relative">
+          <div className="flex items-center h-full px-4">
+              {/* Logo */}
+              <Link href="/">
+                  <div className="flex-shrink-0">
+                      <Image
+                          src={logo}
+                          alt="JobHuntly Logo"
+                          width={120}
+                          height={40}
+                          className="w-auto h-10"
+                      />
                   </div>
-                </li>
-              ))}
-            </ul>
+              </Link>
 
-            {/* Dropdown Menu */}
-            {activeDropdown && (
-              <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-lg min-w-[592px] p-5 z-50">
-                <div className="absolute left-0 w-full h-3 -top-3"></div>
-                {dropdownContent[activeDropdown]}
-              </div>
-            )}
+              {/* Navigation */}
+              <nav className="flex justify-between w-full ml-8">
+                  {/* Left Navigation */}
+                  <div className="relative" onMouseLeave={handleMouseLeave}>
+                      <ul className="flex items-center space-x-1">
+                          {[
+                              { key: "jobs", label: "Việc làm" },
+                              { key: "cv", label: "Tạo CV" },
+                              { key: "tools", label: "Công cụ" },
+                              { key: "guide", label: "Cẩm nang nghề nghiệp" },
+                              { key: "premium", label: "TopCV" },
+                          ].map((item) => (
+                              <li key={item.key}>
+                                  <div
+                                      className="group flex items-center gap-1 text-white font-medium px-3 py-2 rounded-lg cursor-pointer hover:bg-[#d0e5f9] hover:text-[#0a66c2] transition-colors"
+                                      onMouseEnter={() =>
+                                          handleMouseEnter(item.key)
+                                      }
+                                  >
+                                      <span>{item.label}</span>
+                                      <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
+                                  </div>
+                              </li>
+                          ))}
+                      </ul>
+
+                      {/* Dropdown Menu */}
+                      {activeDropdown && (
+                          <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-lg min-w-[592px] p-5 z-50">
+                              <div className="absolute left-0 w-full h-3 -top-3"></div>
+                              {dropdownContent[activeDropdown]}
+                          </div>
+                      )}
+                  </div>
+
+                  {/* Right Navigation */}
+                  <ul className="flex items-center space-x-2">
+                      <li>
+                          <Link href="/candidate">
+                              <Button
+                                  variant="ghost"
+                                  className="p-2 text-white hover:bg-white/20"
+                              >
+                                  <User className="w-5 h-5" />
+                              </Button>
+                          </Link>
+                      </li>
+                      <li>
+                          <Link href="/register">
+                              <Button
+                                  variant="secondary"
+                                  className="bg-[#d6eaff] text-[#0a66c2] hover:bg-[#b6dbfb] font-semibold"
+                              >
+                                  Đăng ký
+                              </Button>
+                          </Link>
+                      </li>
+                      <li>
+                          <Link href="/login">
+                              <Button
+                                  variant="outline"
+                                  className="text-white bg-transparent border-white hover:bg-white/20 hover:text-white"
+                              >
+                                  Đăng nhập
+                              </Button>
+                          </Link>
+                      </li>
+                      <li>
+                          <Button className="bg-[#ff8a00] hover:bg-[#e67600] text-white">
+                              Đăng tuyển & tìm hồ sơ
+                          </Button>
+                      </li>
+                      <li className="flex items-center text-sm text-white/80">
+                          <button className="px-2 py-1 rounded hover:bg-white/20 hover:text-white">
+                              EN
+                          </button>
+                          <span className="mx-1">|</span>
+                          <button className="px-2 py-1 font-semibold text-white rounded bg-white/20">
+                              VI
+                          </button>
+                      </li>
+                  </ul>
+              </nav>
           </div>
-
-          {/* Right Navigation */}
-          <ul className="flex items-center space-x-2">
-            <li>
-              <Link href="/candidate">
-                <Button
-                  variant="ghost"
-                  className="p-2 text-white hover:bg-white/20"
-                >
-                  <User className="w-5 h-5" />
-                </Button>
-              </Link>
-            </li>
-            <li>
-              <Link href="/register">
-                <Button
-                  variant="secondary"
-                  className="bg-[#d6eaff] text-[#0a66c2] hover:bg-[#b6dbfb] font-semibold"
-                >
-                  Đăng ký
-                </Button>
-              </Link>
-            </li>
-            <li>
-              <Link href="/login">
-                <Button
-                  variant="outline"
-                  className="text-white bg-transparent border-white hover:bg-white/20 hover:text-white"
-                >
-                  Đăng nhập
-                </Button>
-              </Link>
-            </li>
-            <li>
-              <Button className="bg-[#ff8a00] hover:bg-[#e67600] text-white">
-                Đăng tuyển & tìm hồ sơ
-              </Button>
-            </li>
-            <li className="flex items-center text-sm text-white/80">
-              <button className="px-2 py-1 rounded hover:bg-white/20 hover:text-white">
-                EN
-              </button>
-              <span className="mx-1">|</span>
-              <button className="px-2 py-1 font-semibold text-white rounded bg-white/20">
-                VI
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+      </header>
   );
 };
