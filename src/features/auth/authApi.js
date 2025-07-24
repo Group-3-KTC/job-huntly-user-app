@@ -1,5 +1,9 @@
 import * as authService from "@/services/authService";
-import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+    createApi,
+    fakeBaseQuery,
+    fetchBaseQuery,
+} from "@reduxjs/toolkit/query/react";
 
 export const authApi = createApi({
     reducerPath: "authApi",
@@ -29,32 +33,18 @@ export const authApi = createApi({
                     const result = await authService.register(data);
                     return { data: result };
                 } catch (error) {
-                    return { error: { message: error.message } };
+                    return {
+                        error: {
+                            status: "REGISTER_ERROR",
+                            data: {
+                                message: error.message,
+                            },
+                        },
+                    };
                 }
             },
         }),
     }),
 });
-
-// export const authApi = createApi({
-//     reducerPath: "authApi",
-//     baseQuery: fetchBaseQuery({ baseUrl: "/" }),
-//     endpoints: (builder) => ({
-//         login: builder.mutation({
-//             query: (credentials) => ({
-//                 url: "/login",
-//                 method: "POST",
-//                 body: credentials,
-//             }),
-//         }),
-//         register: builder.mutation({
-//             query: (data) => ({
-//                 url: "/register",
-//                 method: "POST",
-//                 body: data,
-//             }),
-//         }),
-//     }),
-// });
 
 export const { useLoginMutation, useRegisterMutation } = authApi;

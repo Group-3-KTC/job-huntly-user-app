@@ -12,7 +12,7 @@ const LoginPage = () => {
     const [activeTab, setActiveTab] = useState("candidate");
 
     return (
-        <div className="min-h-screen ">
+        <div className="min-h-screen">
             <main className="container mx-auto py-8">
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Login Form */}
@@ -36,7 +36,7 @@ const LoginPage = () => {
                                     <TabsList className="grid w-full grid-cols-2">
                                         <TabsTrigger
                                             value="candidate"
-                                            className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
+                                            className="data-[state=active]:border-blue-500 data-[state=active]:text-blue-500"
                                         >
                                             Ứng viên
                                         </TabsTrigger>
