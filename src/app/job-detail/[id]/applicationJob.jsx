@@ -11,7 +11,6 @@ const ApplicationModal = ({ onClose, jobTitle = "" }) => {
             <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
             <div className="fixed inset-0 flex items-center justify-center p-4">
                 <Dialog.Panel className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl space-y-5 overflow-y-auto max-h-[90vh]">
-                    {/* Header */}
                     <div className="flex justify-between items-start">
                         <div>
                             <Dialog.Title className="text-lg font-semibold text-blue-600 mb-1">
@@ -29,7 +28,6 @@ const ApplicationModal = ({ onClose, jobTitle = "" }) => {
                         </button>
                     </div>
 
-                    {/* Option 1: CV gần nhất */}
                     <label className="block cursor-pointer">
                         <input
                             type="radio"
@@ -63,7 +61,6 @@ const ApplicationModal = ({ onClose, jobTitle = "" }) => {
                         </div>
                     </label>
 
-                    {/* Option 2: Thư viện CV */}
                     <label className="block cursor-pointer">
                         <input
                             type="radio"
@@ -78,7 +75,6 @@ const ApplicationModal = ({ onClose, jobTitle = "" }) => {
                         </div>
                     </label>
 
-                    {/* Option 3: Upload CV */}
                     <label className="block cursor-pointer">
                         <input
                             type="radio"
@@ -98,7 +94,6 @@ const ApplicationModal = ({ onClose, jobTitle = "" }) => {
                         </div>
                     </label>
 
-                    {/* Cover letter */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Thư giới thiệu:
@@ -110,7 +105,6 @@ const ApplicationModal = ({ onClose, jobTitle = "" }) => {
                         ></textarea>
                     </div>
 
-                    {/* Actions */}
                     <div className="flex justify-end gap-2 border-t pt-4">
                         <Button variant="ghost" onClick={onClose}>
                             Hủy
