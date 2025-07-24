@@ -1,34 +1,29 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useJobSearchStore } from "@/store/jobSearchStore";
 
-export default function FilterBar({ onFilterChange }) {
-  const [categories, setCategories] = useState([]);
-  const [levels, setLevels] = useState([]);
-  const [workTypes, setWorkTypes] = useState([]);
-
+export default function FilterBar() {
   const [allCategories, setAllCategories] = useState([]);
   const [allLevels, setAllLevels] = useState([]);
   const [allWorkTypes, setAllWorkTypes] = useState([]);
-
-  const [skills, setSkills] = useState([]);
   const [allSkills, setAllSkills] = useState([]);
-  const [showSkills, setShowSkills] = useState(true);
 
-  //dropdown visibility
   const [showCategories, setShowCategories] = useState(true);
   const [showLevels, setShowLevels] = useState(true);
   const [showWorkTypes, setShowWorkTypes] = useState(true);
+  const [showSkills, setShowSkills] = useState(true);
 
-  const toggleValue = (list, value, setter) => {
-    setter((prev) =>
-      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
-    );
+  const { filters, setFilters } = useJobSearchStore();
+
+  const toggleValue = (listName, value) => {
+    setFilters({
+      ...filters,
+      [listName]: filters[listName].includes(value)
+        ? filters[listName].filter((v) => v !== value)
+        : [...filters[listName], value],
+    });
   };
-
-  useEffect(() => {
-    onFilterChange({ categories, levels, workTypes, skills });
-  }, [categories, levels, workTypes, skills]);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -44,19 +39,19 @@ export default function FilterBar({ onFilterChange }) {
         const skillSet = new Set();
 
         data.forEach((job) => {
-          const { category, level, workType } = job;
+          const { category, level, workType, skill } = job;
 
-          (Array.isArray(category) ? category : [category]).forEach((cat) =>
-            categorySet.add(cat)
+          (Array.isArray(category) ? category : [category]).forEach((c) =>
+            categorySet.add(c)
           );
-          (Array.isArray(level) ? level : [level]).forEach((lvl) =>
-            levelSet.add(lvl)
+          (Array.isArray(level) ? level : [level]).forEach((l) =>
+            levelSet.add(l)
           );
-          (Array.isArray(workType) ? workType : [workType]).forEach((wt) =>
-            workTypeSet.add(wt)
+          (Array.isArray(workType) ? workType : [workType]).forEach((w) =>
+            workTypeSet.add(w)
           );
-          (Array.isArray(job.skill) ? job.skill : [job.skill]).forEach((sk) =>
-            skillSet.add(sk)
+          (Array.isArray(skill) ? skill : [skill]).forEach((s) =>
+            skillSet.add(s)
           );
         });
 
@@ -74,7 +69,7 @@ export default function FilterBar({ onFilterChange }) {
 
   return (
     <div className="space-y-4 p-4 bg-white rounded-lg shadow">
-
+      {/* Work Types */}
       <div>
         <div
           onClick={() => setShowWorkTypes(!showWorkTypes)}
@@ -89,8 +84,8 @@ export default function FilterBar({ onFilterChange }) {
               <label>
                 <input
                   type="checkbox"
-                  checked={workTypes.includes(type)}
-                  onChange={() => toggleValue(workTypes, type, setWorkTypes)}
+                  checked={filters.workTypes.includes(type)}
+                  onChange={() => toggleValue("workTypes", type)}
                 />
                 <span className="ml-2">{type}</span>
               </label>
@@ -98,7 +93,7 @@ export default function FilterBar({ onFilterChange }) {
           ))}
       </div>
 
-
+      {/* Levels */}
       <div>
         <div
           onClick={() => setShowLevels(!showLevels)}
@@ -113,8 +108,8 @@ export default function FilterBar({ onFilterChange }) {
               <label>
                 <input
                   type="checkbox"
-                  checked={levels.includes(level)}
-                  onChange={() => toggleValue(levels, level, setLevels)}
+                  checked={filters.levels.includes(level)}
+                  onChange={() => toggleValue("levels", level)}
                 />
                 <span className="ml-2">{level}</span>
               </label>
@@ -122,7 +117,7 @@ export default function FilterBar({ onFilterChange }) {
           ))}
       </div>
 
-
+      {/* Categories */}
       <div>
         <div
           onClick={() => setShowCategories(!showCategories)}
@@ -137,8 +132,8 @@ export default function FilterBar({ onFilterChange }) {
               <label>
                 <input
                   type="checkbox"
-                  checked={categories.includes(cat)}
-                  onChange={() => toggleValue(categories, cat, setCategories)}
+                  checked={filters.categories.includes(cat)}
+                  onChange={() => toggleValue("categories", cat)}
                 />
                 <span className="ml-2">{cat}</span>
               </label>
@@ -146,6 +141,7 @@ export default function FilterBar({ onFilterChange }) {
           ))}
       </div>
 
+      {/* Skills */}
       <div>
         <div
           onClick={() => setShowSkills(!showSkills)}
@@ -160,8 +156,8 @@ export default function FilterBar({ onFilterChange }) {
               <label>
                 <input
                   type="checkbox"
-                  checked={skills.includes(skill)}
-                  onChange={() => toggleValue(skills, skill, setSkills)}
+                  checked={filters.skills.includes(skill)}
+                  onChange={() => toggleValue("skills", skill)}
                 />
                 <span className="ml-2">{skill}</span>
               </label>

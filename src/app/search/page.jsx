@@ -1,23 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import SearchBar from "./searchBar";
 import FilterBar from "./filterBar";
 import CardJob from "./cardJob";
+import { useJobSearchStore } from "@/store/jobSearchStore";
 
 export default function SearchPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filters, setFilters] = useState({
-    categories: [],
-    levels: [],
-    workTypes: [],
-    skills: [],
-  });
+  const { searchTerm, filters, setSearchTerm, setFilters } = useJobSearchStore();
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-6 md:px-8 lg:px-20">
       <section className="mb-6 max-w-7xl w-full mx-auto">
-        <SearchBar onSearch={(value) => setSearchTerm(value)} />
+        <SearchBar onSearch={setSearchTerm} />
       </section>
 
       <section className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">

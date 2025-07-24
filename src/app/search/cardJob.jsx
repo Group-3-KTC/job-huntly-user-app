@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart, HeartIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useJobSearchStore } from "@/store/jobSearchStore";
 
-export default function CardJob({ searchTerm, filters }) {
+export default function CardJob() {
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [liked, setLiked] = useState({});
   const router = useRouter();
+
+  const { searchTerm, filters } = useJobSearchStore();
 
   const toggleLike = (jobId) => {
     setLiked((prev) => ({
@@ -18,6 +21,7 @@ export default function CardJob({ searchTerm, filters }) {
     }));
   };
 
+  // Fetch jobs
   useEffect(() => {
     fetch("https://687076977ca4d06b34b6dc20.mockapi.io/api/v1/jobs")
       .then((res) => res.json())
@@ -42,10 +46,11 @@ export default function CardJob({ searchTerm, filters }) {
       });
   }, []);
 
+  // Filter jobs
   useEffect(() => {
     let filtered = [...jobs];
 
-    // Search
+    // Keyword filter
     if (searchTerm?.keyword) {
       const keyword = searchTerm.keyword.toLowerCase();
       filtered = filtered.filter(
@@ -55,6 +60,7 @@ export default function CardJob({ searchTerm, filters }) {
       );
     }
 
+    // Province filter
     if (searchTerm?.province) {
       const provinceLower = searchTerm.province.toLowerCase();
       filtered = filtered.filter((job) => {
@@ -70,7 +76,7 @@ export default function CardJob({ searchTerm, filters }) {
       });
     }
 
-    // Filters
+    // Filters (skills, level, category, work type)
     if (filters.workTypes.length) {
       filtered = filtered.filter((job) =>
         job.workType.some((type) => filters.workTypes.includes(type))
@@ -88,6 +94,7 @@ export default function CardJob({ searchTerm, filters }) {
         job.category.some((cat) => filters.categories.includes(cat))
       );
     }
+
     if (filters.skills.length) {
       filtered = filtered.filter((job) =>
         job.skill.some((sk) => filters.skills.includes(sk))
