@@ -3,23 +3,16 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import googleLogo from "@/assets/images/logo-gg.png";
+import CandidateRegisterForm from "@/components/auth/CandidateRegisterForm";
+import RecruiterRegisterForm from "@/components/auth/RecruiterRegisterForm";
 
 export default function RegisterPage() {
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [activeTab, setActiveTab] = useState("candidate");
 
     return (
-        <div className="min-h-screen bg-orange-50">
+        <div className="min-h-screen">
             <main className="container mx-auto py-8">
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Register Form */}
@@ -43,7 +36,7 @@ export default function RegisterPage() {
                                     <TabsList className="grid w-full grid-cols-2">
                                         <TabsTrigger
                                             value="candidate"
-                                            className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
+                                            className="data-[state=active]:border-blue-500 data-[state=active]:text-blue-500"
                                         >
                                             Ứng viên
                                         </TabsTrigger>
@@ -55,361 +48,16 @@ export default function RegisterPage() {
                                         </TabsTrigger>
                                     </TabsList>
 
-                                    <TabsContent
-                                        value="candidate"
-                                        className="space-y-4"
-                                    >
-                                        {/* Social Register Buttons */}
-                                        <div className="space-y-3">
-                                            <Button
-                                                variant="outline"
-                                                className="w-full flex items-center justify-center gap-2 bg-transparent"
-                                            >
-                                                <Image
-                                                    src={googleLogo}
-                                                    alt="Google"
-                                                    width={24}
-                                                    height={24}
-                                                />
-                                                Đăng ký với Google
-                                            </Button>
-                                        </div>
-
-                                        <div className="relative">
-                                            <div className="absolute inset-0 flex items-center">
-                                                <span className="w-full border-t" />
-                                            </div>
-                                            <div className="relative flex justify-center text-xs uppercase">
-                                                <span className="bg-white px-2 text-gray-500">
-                                                    Hoặc
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <form className="space-y-4">
-                                            <div>
-                                                <Label htmlFor="fullname">
-                                                    Họ và tên
-                                                </Label>
-                                                <Input
-                                                    id="fullname"
-                                                    type="text"
-                                                    placeholder="Nhập họ và tên"
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <Label htmlFor="email">
-                                                    Email
-                                                </Label>
-                                                <Input
-                                                    id="email"
-                                                    type="email"
-                                                    placeholder="Nhập email"
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <Label htmlFor="phone">
-                                                    Số điện thoại
-                                                </Label>
-                                                <Input
-                                                    id="phone"
-                                                    type="tel"
-                                                    placeholder="Nhập số điện thoại"
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <Label htmlFor="password">
-                                                    Mật khẩu
-                                                </Label>
-                                                <div className="relative">
-                                                    <Input
-                                                        id="password"
-                                                        type={
-                                                            showPassword
-                                                                ? "text"
-                                                                : "password"
-                                                        }
-                                                        placeholder="Nhập mật khẩu"
-                                                        className="pr-10"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setShowPassword(
-                                                                !showPassword,
-                                                            )
-                                                        }
-                                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                                                    >
-                                                        {showPassword ? (
-                                                            <EyeOff className="h-4 w-4" />
-                                                        ) : (
-                                                            <Eye className="h-4 w-4" />
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <Label htmlFor="confirmPassword">
-                                                    Xác nhận mật khẩu
-                                                </Label>
-                                                <div className="relative">
-                                                    <Input
-                                                        id="confirmPassword"
-                                                        type={
-                                                            showConfirmPassword
-                                                                ? "text"
-                                                                : "password"
-                                                        }
-                                                        placeholder="Vui lòng xác nhận mật khẩu"
-                                                        className="pr-10"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setShowConfirmPassword(
-                                                                !showConfirmPassword,
-                                                            )
-                                                        }
-                                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                                                    >
-                                                        {showConfirmPassword ? (
-                                                            <EyeOff className="h-4 w-4" />
-                                                        ) : (
-                                                            <Eye className="h-4 w-4" />
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-center space-x-2">
-                                                <Checkbox id="terms" />
-                                                <Label
-                                                    htmlFor="terms"
-                                                    className="text-sm"
-                                                >
-                                                    Tôi đã đọc và chấp nhận{" "}
-                                                    <Link
-                                                        href="#"
-                                                        className="text-blue-500 hover:underline"
-                                                    >
-                                                        Điều Khoản Sử Dụng
-                                                    </Link>{" "}
-                                                    và{" "}
-                                                    <Link
-                                                        href="#"
-                                                        className="text-blue-500 hover:underline"
-                                                    >
-                                                        Chính Sách Bảo Mật
-                                                    </Link>{" "}
-                                                    của Job Huntly
-                                                </Label>
-                                            </div>
-
-                                            <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                                                Đăng Ký
-                                            </Button>
-                                        </form>
+                                    <TabsContent value="candidate">
+                                        <CandidateRegisterForm
+                                            role={activeTab}
+                                        />
                                     </TabsContent>
 
-                                    <TabsContent
-                                        value="recruiter"
-                                        className="space-y-4"
-                                    >
-                                        <form className="space-y-4">
-                                            <div>
-                                                <Label htmlFor="recruiter-fullname">
-                                                    Họ và tên
-                                                </Label>
-                                                <Input
-                                                    id="recruiter-fullname"
-                                                    type="text"
-                                                    placeholder="Nhập họ và tên"
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <Label htmlFor="recruiter-email">
-                                                    Email
-                                                </Label>
-                                                <Input
-                                                    id="recruiter-email"
-                                                    type="email"
-                                                    placeholder="Nhập email"
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <Label htmlFor="recruiter-phone">
-                                                    Số điện thoại
-                                                </Label>
-                                                <Input
-                                                    id="recruiter-phone"
-                                                    type="tel"
-                                                    placeholder="Nhập số điện thoại liên hệ"
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <Label htmlFor="recruiter-password">
-                                                    Mật khẩu
-                                                </Label>
-                                                <div className="relative">
-                                                    <Input
-                                                        id="recruiter-password"
-                                                        type={
-                                                            showPassword
-                                                                ? "text"
-                                                                : "password"
-                                                        }
-                                                        placeholder="Nhập mật khẩu"
-                                                        className="pr-10"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setShowPassword(
-                                                                !showPassword,
-                                                            )
-                                                        }
-                                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                                                    >
-                                                        {showPassword ? (
-                                                            <EyeOff className="h-4 w-4" />
-                                                        ) : (
-                                                            <Eye className="h-4 w-4" />
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <Label htmlFor="recruiter-confirmPassword">
-                                                    Xác nhận mật khẩu
-                                                </Label>
-                                                <div className="relative">
-                                                    <Input
-                                                        id="recruiter-confirmPassword"
-                                                        type={
-                                                            showConfirmPassword
-                                                                ? "text"
-                                                                : "password"
-                                                        }
-                                                        placeholder="Vui lòng xác nhận mật khẩu"
-                                                        className="pr-10"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setShowConfirmPassword(
-                                                                !showConfirmPassword,
-                                                            )
-                                                        }
-                                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                                                    >
-                                                        {showConfirmPassword ? (
-                                                            <EyeOff className="h-4 w-4" />
-                                                        ) : (
-                                                            <Eye className="h-4 w-4" />
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <div className="border-t pt-4">
-                                                <h4 className="text-orange-500 font-medium mb-4">
-                                                    Thông Tin Công Ty
-                                                </h4>
-
-                                                <div className="space-y-4">
-                                                    <div>
-                                                        <Label htmlFor="taxCode">
-                                                            Mã số thuế
-                                                        </Label>
-                                                        <Input
-                                                            id="taxCode"
-                                                            type="text"
-                                                            placeholder="Nhập mã số thuế"
-                                                        />
-                                                    </div>
-
-                                                    <div>
-                                                        <Label htmlFor="companyName">
-                                                            Tên công ty đăng ký
-                                                            kinh doanh
-                                                        </Label>
-                                                        <Input
-                                                            id="companyName"
-                                                            type="text"
-                                                            placeholder="Nhập tên công ty đăng ký kinh doanh"
-                                                        />
-                                                    </div>
-
-                                                    <div>
-                                                        <Label className="text-sm font-medium">
-                                                            Công ty bạn đang có
-                                                            nhu cầu tuyển dụng
-                                                            không?
-                                                        </Label>
-                                                        <RadioGroup
-                                                            defaultValue="yes"
-                                                            className="flex space-x-4 mt-2"
-                                                        >
-                                                            <div className="flex items-center space-x-2">
-                                                                <RadioGroupItem
-                                                                    value="yes"
-                                                                    id="hiring-yes"
-                                                                />
-                                                                <Label htmlFor="hiring-yes">
-                                                                    Có
-                                                                </Label>
-                                                            </div>
-                                                            <div className="flex items-center space-x-2">
-                                                                <RadioGroupItem
-                                                                    value="no"
-                                                                    id="hiring-no"
-                                                                />
-                                                                <Label htmlFor="hiring-no">
-                                                                    Không
-                                                                </Label>
-                                                            </div>
-                                                        </RadioGroup>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-center space-x-2">
-                                                <Checkbox id="recruiter-terms" />
-                                                <Label
-                                                    htmlFor="recruiter-terms"
-                                                    className="text-sm"
-                                                >
-                                                    Tôi đã đọc và chấp nhận{" "}
-                                                    <Link
-                                                        href="#"
-                                                        className="text-blue-500 hover:underline"
-                                                    >
-                                                        Điều Khoản Sử Dụng
-                                                    </Link>{" "}
-                                                    và{" "}
-                                                    <Link
-                                                        href="#"
-                                                        className="text-blue-500 hover:underline"
-                                                    >
-                                                        Chính Sách Bảo Mật
-                                                    </Link>{" "}
-                                                    của Job Huntly
-                                                </Label>
-                                            </div>
-
-                                            <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                                                Đăng Ký
-                                            </Button>
-                                        </form>
+                                    <TabsContent value="recruiter">
+                                        <RecruiterRegisterForm
+                                            role={activeTab}
+                                        />
                                     </TabsContent>
                                 </Tabs>
 
@@ -427,7 +75,6 @@ export default function RegisterPage() {
                             </CardContent>
                         </Card>
                     </div>
-
                     {/* Right Side Content */}
                     <div className="w-full lg:w-1/2">
                         <Card className="shadow-md">
