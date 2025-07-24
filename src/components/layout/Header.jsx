@@ -63,10 +63,12 @@ export const Header = () => {
             CÔNG TY
           </div>
           <div className="space-y-2">
-            <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-              <Building className="w-4 h-4 text-gray-600" />
-              <span className="text-sm">Danh sách công ty</span>
-            </div>
+            <Link href="/company/company-search">
+              <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
+                <Building className="w-4 h-4 text-gray-600" />
+                <span className="text-sm">Danh sách công ty</span>
+              </div>
+            </Link>
             <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
               <Star className="w-4 h-4 text-gray-600" />
               <span className="text-sm">Top công ty</span>
