@@ -9,6 +9,7 @@ export const appStore = configureStore({
     reducer: {
         profile: profileReducer,
         auth: authReducer,
+        toast: toastSlice,
         [authApi.reducerPath]: authApi.reducer,
         [jobApi.reducerPath]: jobApi.reducer,
     },
@@ -17,4 +18,3 @@ export const appStore = configureStore({
 });
 
 export default appStore;
-
