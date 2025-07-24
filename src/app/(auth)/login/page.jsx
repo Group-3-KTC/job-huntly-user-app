@@ -13,8 +13,8 @@ const LoginPage = () => {
 
     return (
         <div className="min-h-screen ">
-            <main className="container mx-auto py-8">
-                <div className="flex flex-col lg:flex-row gap-8">
+            <main className="container py-8 mx-auto">
+                <div className="flex flex-col gap-8 lg:flex-row">
                     {/* Login Form */}
                     <div className="w-full lg:w-1/2">
                         <Card className="shadow-md">
@@ -62,7 +62,7 @@ const LoginPage = () => {
                                         Chưa có tài khoản?{" "}
                                         <Link
                                             href="/register"
-                                            className="text-orange-500 hover:underline font-medium"
+                                            className="font-medium text-orange-500 hover:underline"
                                         >
                                             Đăng ký ngay
                                         </Link>
@@ -78,7 +78,7 @@ const LoginPage = () => {
                             <CardContent className="p-6">
                                 {activeTab === "candidate" ? (
                                     <div>
-                                        <h3 className="text-lg font-semibold mb-4">
+                                        <h3 className="mb-4 text-lg font-semibold">
                                             Chào mừng bạn đến với{" "}
                                             <strong className="text-blue-600">
                                                 Job Huntly
@@ -105,7 +105,7 @@ const LoginPage = () => {
                                             />
                                         </div>
                                         <div className="mb-6">
-                                            <h4 className="font-semibold mb-2">
+                                            <h4 className="mb-2 font-semibold">
                                                 Đăng nhập ngay để tận dụng tối
                                                 đa các công cụ của Job Huntly và
                                                 gia tăng cơ hội tiếp cận việc
@@ -124,7 +124,7 @@ const LoginPage = () => {
                                                         key={index}
                                                         className="flex items-start"
                                                     >
-                                                        <div className="text-orange-500 mr-2">
+                                                        <div className="mr-2 text-orange-500">
                                                             •
                                                         </div>
                                                         <span>{benefit}</span>
@@ -141,7 +141,7 @@ const LoginPage = () => {
                                     </div>
                                 ) : (
                                     <div>
-                                        <h3 className="text-lg font-semibold mb-4">
+                                        <h3 className="mb-4 text-lg font-semibold">
                                             Chào mừng Nhà tuyển dụng đến với{" "}
                                             <strong className="text-blue-600">
                                                 Job Huntly
@@ -156,7 +156,7 @@ const LoginPage = () => {
                                             />
                                         </div>
                                         <div className="mb-6">
-                                            <h4 className="font-semibold mb-2">
+                                            <h4 className="mb-2 font-semibold">
                                                 Đăng nhập để truy cập các công
                                                 cụ tuyển dụng mạnh mẽ
                                             </h4>
@@ -172,7 +172,7 @@ const LoginPage = () => {
                                                         key={index}
                                                         className="flex items-start"
                                                     >
-                                                        <div className="text-orange-500 mr-2">
+                                                        <div className="mr-2 text-orange-500">
                                                             •
                                                         </div>
                                                         <span>{benefit}</span>

@@ -154,18 +154,18 @@ export default function JobPostingForm() {
         className="min-h-[120px] resize-none"
         maxLength={maxLength}
       />
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
             <Bold className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
             <Italic className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
             <List className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
             <Link className="w-4 h-4" />
           </Button>
         </div>
@@ -177,8 +177,8 @@ export default function JobPostingForm() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen py-8 bg-gray-50">
+      <div className="max-w-4xl px-4 mx-auto">
         {/* Step Indicator */}
         <div className="flex justify-center mb-8">
           <div className="flex items-center space-x-8">
@@ -212,7 +212,7 @@ export default function JobPostingForm() {
                   </div>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="w-16 h-px bg-gray-300 mx-4" />
+                  <div className="w-16 h-px mx-4 bg-gray-300" />
                 )}
               </div>
             ))}
@@ -226,7 +226,7 @@ export default function JobPostingForm() {
             {currentStep === 1 && (
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h2 className="mb-2 text-2xl font-bold text-gray-900">
                     Basic Information
                   </h2>
                   <p className="text-gray-600">
@@ -311,7 +311,7 @@ export default function JobPostingForm() {
                           className="w-24"
                         />
                       </div>
-                      <span className="text-sm text-gray-500">to</span>
+                      <span className="text-sm text-gray-800 ">to</span>
                       <div className="flex items-center space-x-2">
                         <span className="text-sm">$</span>
                         <Input
@@ -376,7 +376,7 @@ export default function JobPostingForm() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-blue-600 border-blue-600 bg-transparent"
+                      className="text-blue-600 bg-transparent border-blue-600"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Add Skills
@@ -396,7 +396,7 @@ export default function JobPostingForm() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-4 w-4 p-0 ml-2 hover:bg-transparent"
+                          className="w-4 h-4 p-0 ml-2 hover:bg-transparent"
                           onClick={() => handleSkillRemove(skill)}
                         >
                           <X className="w-3 h-3" />
@@ -412,7 +412,7 @@ export default function JobPostingForm() {
             {currentStep === 2 && (
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h2 className="mb-2 text-2xl font-bold text-gray-900">
                     Details
                   </h2>
                   <p className="text-gray-600">
@@ -436,7 +436,7 @@ export default function JobPostingForm() {
                       setFormData((prev) => ({
                         ...prev,
                         jobDescription: value,
-                      }))
+                      })),
                   )}
                 </div>
 
@@ -455,7 +455,7 @@ export default function JobPostingForm() {
                       setFormData((prev) => ({
                         ...prev,
                         responsibilities: value,
-                      }))
+                      })),
                   )}
                 </div>
 
@@ -472,7 +472,7 @@ export default function JobPostingForm() {
                       setFormData((prev) => ({
                         ...prev,
                         qualifications: value,
-                      }))
+                      })),
                   )}
                 </div>
 
@@ -487,7 +487,7 @@ export default function JobPostingForm() {
                     "Enter nice-to-haves",
                     formData.niceToHaves,
                     (value) =>
-                      setFormData((prev) => ({ ...prev, niceToHaves: value }))
+                      setFormData((prev) => ({ ...prev, niceToHaves: value })),
                   )}
                 </div>
               </div>
@@ -497,7 +497,7 @@ export default function JobPostingForm() {
             {currentStep === 3 && (
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h2 className="mb-2 text-2xl font-bold text-gray-900">
                     Basic Information
                   </h2>
                   <p className="text-gray-600">
@@ -513,7 +513,7 @@ export default function JobPostingForm() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-blue-600 border-blue-600 bg-transparent"
+                      className="text-blue-600 bg-transparent border-blue-600"
                       onClick={addBenefit}
                     >
                       <Plus className="w-4 h-4 mr-2" />
@@ -531,7 +531,7 @@ export default function JobPostingForm() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="absolute top-4 right-4 h-8 w-8 p-0"
+                          className="absolute w-8 h-8 p-0 top-4 right-4"
                           onClick={() => handleBenefitRemove(benefit.id)}
                         >
                           <X className="w-4 h-4" />
@@ -542,10 +542,10 @@ export default function JobPostingForm() {
                               {getBenefitIcon(benefit.icon)}
                             </div>
                             <div className="flex-1">
-                              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                              <h3 className="mb-2 text-lg font-semibold text-gray-900">
                                 {benefit.title}
                               </h3>
-                              <p className="text-gray-600 text-sm leading-relaxed">
+                              <p className="text-sm leading-relaxed text-gray-600">
                                 {benefit.description}
                               </p>
                             </div>
