@@ -26,7 +26,7 @@ export default function DetailJob({ job }) {
     const [openReportModal, setOpenReportModal] = useState(false);
 
     const handleFlagClick = () => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("authToken");
         if (!token) return router.push("/login");
 
         try {
@@ -43,7 +43,7 @@ export default function DetailJob({ job }) {
     };
 
     const handleApply = () => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("authToken");
         if (!token) {
             return router.push("/login");
         }
@@ -237,7 +237,7 @@ export default function DetailJob({ job }) {
                                 <strong>Post Date:</strong>{" "}
                                 {job.datePost
                                     ? new Date(job.datePost).toLocaleDateString(
-                                          "vi-VN"
+                                          "vi-VN",
                                       )
                                     : "N/A"}
                             </p>
@@ -249,7 +249,7 @@ export default function DetailJob({ job }) {
                                 <strong>Expired Date:</strong>{" "}
                                 {job.expiredDate
                                     ? new Date(
-                                          job.expiredDate
+                                          job.expiredDate,
                                       ).toLocaleDateString("vi-VN")
                                     : "N/A"}
                             </p>

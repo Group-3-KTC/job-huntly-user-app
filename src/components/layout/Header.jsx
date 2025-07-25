@@ -266,7 +266,7 @@ export const Header = () => {
     const premiumContent = (
         <div>
             <div className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                TopCV Pro
+                JobHuntly Pro
             </div>
             <div className="mb-4 text-sm text-gray-600">
                 Nâng cấp tài khoản để sử dụng các tính năng cao cấp
@@ -340,7 +340,7 @@ export const Header = () => {
                                 { key: "cv", label: "Tạo CV" },
                                 { key: "tools", label: "Công cụ" },
                                 { key: "guide", label: "Cẩm nang nghề nghiệp" },
-                                { key: "premium", label: "TopCV" },
+                                { key: "premium", label: "JobHuntly" },
                             ].map((item) => (
                                 <li key={item.key}>
                                     <div
