@@ -425,13 +425,6 @@ export default function JobPostingForm() {
                 setLastSyncTime(new Date());
 
                 if (!silent) {
-                    dispatch(
-                        addToast({
-                            title: "Data Synchronized",
-                            description: `Job levels and work types updated. Found ${levels.length} levels and ${extractedWorkTypes.length} work types.`,
-                            variant: "success",
-                        })
-                    );
                 }
             } else {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -461,14 +454,6 @@ export default function JobPostingForm() {
             setWorkTypes(defaultWorkTypes);
 
             if (!silent) {
-                dispatch(
-                    addToast({
-                        title: "Sync Failed",
-                        description:
-                            "Failed to sync data. Using default values.",
-                        variant: "destructive",
-                    })
-                );
             }
         } finally {
             if (!silent) {
