@@ -68,18 +68,6 @@ export const Header = () => {
     const handleMouseLeave = () => {
         setActiveDropdown(null);
     };
-
-    const handleLogout = async () => {
-        try {
-            await logoutMutation().unwrap();
-            router.push("/");
-        } catch (error) {
-            console.error("Lỗi đăng xuất:", error);
-            router.push("/");
-        }
-    };
-    console.log("user in Header:", user);
-
     const handleRegisterClick = () => {
         router.push("/register");
     };
@@ -90,6 +78,15 @@ export const Header = () => {
 
     const handleProfileClick = () => {
         router.push("/candidate");
+    };
+    const handleLogout = async () => {
+        try {
+            await logoutMutation().unwrap();
+            router.push("/");
+        } catch (error) {
+            console.error("Lỗi đăng xuất:", error);
+            router.push("/");
+        }
     };
 
     const jobsContent = (
@@ -127,10 +124,14 @@ export const Header = () => {
                         CÔNG TY
                     </div>
                     <div className="space-y-2">
-                        <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                            <Building className="w-4 h-4 text-gray-600" />
-                            <span className="text-sm">Danh sách công ty</span>
-                        </div>
+                        <Link href="/company/company-search">
+                            <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
+                                <Building className="w-4 h-4 text-gray-600" />
+                                <span className="text-sm">
+                                    Danh sách công ty
+                                </span>
+                            </div>
+                        </Link>
                         <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
                             <Star className="w-4 h-4 text-gray-600" />
                             <span className="text-sm">Top công ty</span>
@@ -144,6 +145,14 @@ export const Header = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                     {[
+                        "Việc làm IT",
+                        "Việc làm Marketing",
+                        "Việc làm Sales",
+                        "Việc làm Kế toán",
+                        "Việc làm Nhân sự",
+                        "Việc làm Tài chính",
+                        "Việc làm Kinh doanh",
+                        "Việc làm Logistics",
                         "Việc làm IT",
                         "Việc làm Marketing",
                         "Việc làm Sales",
@@ -257,7 +266,7 @@ export const Header = () => {
     const premiumContent = (
         <div>
             <div className="mb-2 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                TopCV Pro
+                JobHuntly Pro
             </div>
             <div className="mb-4 text-sm text-gray-600">
                 Nâng cấp tài khoản để sử dụng các tính năng cao cấp
@@ -331,7 +340,7 @@ export const Header = () => {
                                 { key: "cv", label: "Tạo CV" },
                                 { key: "tools", label: "Công cụ" },
                                 { key: "guide", label: "Cẩm nang nghề nghiệp" },
-                                { key: "premium", label: "TopCV" },
+                                { key: "premium", label: "JobHuntly" },
                             ].map((item) => (
                                 <li key={item.key}>
                                     <div

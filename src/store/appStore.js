@@ -4,6 +4,7 @@ import authReducer from "@/features/auth/authSlice";
 import { jobApi } from "@/services/jobService";
 import { authApi } from "@/features/auth/authApi";
 import toastSlice from "../store/slices/toastSlices";
+import { profileApi } from "@/services/profileService";
 
 export const appStore = configureStore({
     reducer: {
@@ -12,9 +13,14 @@ export const appStore = configureStore({
         toast: toastSlice,
         [authApi.reducerPath]: authApi.reducer,
         [jobApi.reducerPath]: jobApi.reducer,
+        [profileApi.reducerPath]: profileApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(authApi.middleware, jobApi.middleware),
+        getDefaultMiddleware().concat(
+            authApi.middleware,
+            jobApi.middleware,
+            profileApi.middleware,
+        ),
 });
 
 export default appStore;

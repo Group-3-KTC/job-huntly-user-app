@@ -4,7 +4,7 @@ const nextConfig = {
     JWT_SECRET: process.env.JWT_SECRET,
   },
   images: {
-    domains: ['cdn-new.topcv.vn'],
+    domains: ["cdn-new.topcv.vn"],
   },
 };
 
