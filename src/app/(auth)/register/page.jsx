@@ -7,6 +7,9 @@ import Link from "next/link";
 import Image from "next/image";
 import CandidateRegisterForm from "@/components/auth/CandidateRegisterForm";
 import RecruiterRegisterForm from "@/components/auth/RecruiterRegisterForm";
+import logoTitle from "@/assets/images/logo-title.png";
+import banner from "@/assets/images/login-banner.png";
+import recruiterBanner from "@/assets/images/recruiter-banner.jpg";
 
 export default function RegisterPage() {
     const [activeTab, setActiveTab] = useState("candidate");
@@ -90,7 +93,7 @@ export default function RegisterPage() {
                                         </h3>
                                         <div className="flex items-center mb-6">
                                             <Image
-                                                src="/placeholder.svg?height=32&width=120&text=Job+Huntly"
+                                                src={logoTitle}
                                                 alt="Job Huntly"
                                                 width={120}
                                                 height={32}
@@ -102,10 +105,10 @@ export default function RegisterPage() {
                                         </div>
                                         <div className="flex justify-center mb-8">
                                             <Image
-                                                src="/placeholder.svg?height=160&width=160&text=Join+Us"
+                                                src={banner}
                                                 alt="Join Us"
-                                                width={160}
-                                                height={160}
+                                                width={400}
+                                                height={300}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -145,12 +148,24 @@ export default function RegisterPage() {
                                             Lập Trình Viên Hàng Đầu trên Job
                                             Huntly
                                         </p>
+                                        <div className="flex items-center mb-6">
+                                            <Image
+                                                src={logoTitle}
+                                                alt="Job Huntly"
+                                                width={120}
+                                                height={32}
+                                                className="mr-2"
+                                            />
+                                            <span className="text-gray-600">
+                                                | Nền tảng tìm việc hàng đầu
+                                            </span>
+                                        </div>
                                         <div className="flex justify-center mb-8">
                                             <Image
-                                                src="/placeholder.svg?height=160&width=160&text=Recruit"
+                                                src={recruiterBanner}
                                                 alt="Recruit"
-                                                width={160}
-                                                height={160}
+                                                width={400}
+                                                height={300}
                                             />
                                         </div>
                                         <div className="mb-6">

@@ -1,10 +1,13 @@
+export const dynamic = "force-dynamic";
 import React from "react";
 import DetailJob from "./detailJob";
 import { getJobDetail } from "@/services/jobDetailService";
 
 export default async function JobDetailPage({ params }) {
+    const { id } = params;
+
     try {
-        const job = await getJobDetail(params.id);
+        const job = await getJobDetail(id);
 
         return (
             <div className="w-[90%] mx-auto mt-0">
