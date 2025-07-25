@@ -38,8 +38,6 @@ const CandidateRegisterForm = ({ role }) => {
     const onSubmit = async (data) => {
         try {
             const res = await registerApi({ ...data, role }).unwrap();
-            // localStorage.setItem("token", res.token);
-            // localStorage.setItem("role", res.user.role);
 
             console.log("Register data:", { ...data, role });
             console.log("Register data:", res);
@@ -56,7 +54,7 @@ const CandidateRegisterForm = ({ role }) => {
         return (
             <div className="min-h-[290px] flex items-center justify-center ">
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-10 text-center">
-                    <div className="mx-auto loader border-2 border-blue-500 rounded-full  animate-spin"></div>
+                    <div className="mx-auto loader border-2 border-blue-500 rounded-full"></div>
                     <p className="mt-2 text-gray-500">Đang đăng nhập...</p>
                 </div>
             </div>

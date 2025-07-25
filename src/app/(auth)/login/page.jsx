@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import Image from "next/image";
 import CandidateLoginForm from "@/components/auth/CandidateLoginForm";
 import RecruiterLoginForm from "@/components/auth/RecruiterLoginForm";
+import logoTitle from "@/assets/images/logo-title.png";
+import banner from "@/assets/images/login-banner.png";
+import recruiterBanner from "@/assets/images/recruiter-banner.jpg";
 
 const LoginPage = () => {
     const [activeTab, setActiveTab] = useState("candidate");
@@ -86,7 +89,7 @@ const LoginPage = () => {
                                         </h3>
                                         <div className="flex items-center mb-6">
                                             <Image
-                                                src="/placeholder.svg?height=32&width=120&text=Job+Huntly"
+                                                src={logoTitle}
                                                 alt="Job Huntly"
                                                 width={120}
                                                 height={32}
@@ -98,10 +101,10 @@ const LoginPage = () => {
                                         </div>
                                         <div className="flex justify-center mb-8">
                                             <Image
-                                                src="/placeholder.svg?height=160&width=160&text=Developer"
+                                                src={banner}
                                                 alt="Developer"
-                                                width={160}
-                                                height={160}
+                                                width={400}
+                                                height={300}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -147,12 +150,24 @@ const LoginPage = () => {
                                                 Job Huntly
                                             </strong>
                                         </h3>
+                                        <div className="flex items-center mb-6">
+                                            <Image
+                                                src={logoTitle}
+                                                alt="Job Huntly"
+                                                width={120}
+                                                height={32}
+                                                className="mr-2"
+                                            />
+                                            <span className="text-gray-600">
+                                                | Nền tảng tìm việc hàng đầu
+                                            </span>
+                                        </div>
                                         <div className="flex justify-center mb-8">
                                             <Image
-                                                src="/placeholder.svg?height=160&width=160&text=Recruiter"
+                                                src={recruiterBanner}
                                                 alt="Recruiter"
-                                                width={160}
-                                                height={160}
+                                                width={400}
+                                                height={300}
                                             />
                                         </div>
                                         <div className="mb-6">

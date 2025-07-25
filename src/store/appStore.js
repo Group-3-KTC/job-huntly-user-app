@@ -1,23 +1,20 @@
 import { configureStore } from "@reduxjs/toolkit";
+import profileReducer from "@/features/profile/profileSlice";
+import authReducer from "@/features/auth/authSlice";
 import { jobApi } from "@/services/jobService";
 import { authApi } from "@/features/auth/authApi";
 import toastSlice from "../store/slices/toastSlices";
-import { profileApi } from "@/services/profileService";
 
 export const appStore = configureStore({
     reducer: {
-        [profileApi.reducerPath]: profileApi.reducer,
+        profile: profileReducer,
+        auth: authReducer,
+        toast: toastSlice,
         [authApi.reducerPath]: authApi.reducer,
         [jobApi.reducerPath]: jobApi.reducer,
-        toast: toastSlice,
     },
-
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(
-            authApi.middleware,
-            jobApi.middleware,
-            profileApi.middleware
-        ),
+        getDefaultMiddleware().concat(authApi.middleware, jobApi.middleware),
 });
 
 export default appStore;

@@ -1,4 +1,3 @@
-import { users } from "@/mock/users";
 import { signToken } from "@/lib/jwt";
 
 const API_BASE_URL = "https://6870769d7ca4d06b34b6dc65.mockapi.io/api/v1/users";

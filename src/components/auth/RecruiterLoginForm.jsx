@@ -9,12 +9,15 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "@/validation/loginSchema";
 import { useRouter } from "next/navigation";
 import { useLoginMutation } from "@/features/auth/authApi";
+import { useSelector } from "react-redux";
+import { selectAuthLoading } from "@/features/auth/authSlice";
 
 const RecruiterLoginForm = ({ role }) => {
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-    const [login, { isLoading }] = useLoginMutation();
+    const [login] = useLoginMutation();
     const [errorMessage, setErrorMessage] = useState(null);
+    const isAuthLoading = useSelector(selectAuthLoading);
     const {
         register,
         handleSubmit,
@@ -26,8 +29,6 @@ const RecruiterLoginForm = ({ role }) => {
     const onSubmit = async (data) => {
         try {
             const res = await login({ ...data, role }).unwrap();
-            localStorage.setItem("token", res.token);
-            localStorage.setItem("role", res.user.role);
 
             alert("Recruiter đăng nhập thành công!");
             router.push("/recruiters");
@@ -37,11 +38,11 @@ const RecruiterLoginForm = ({ role }) => {
             alert(msg); // sẽ thay bằng toast sau
         }
     };
-    if (isLoading) {
+    if (isAuthLoading) {
         return (
             <div className="min-h-[290px] flex items-center justify-center ">
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-10 text-center">
-                    <div className="mx-auto loader border-2 border-blue-500 rounded-full  animate-spin"></div>
+                    <div className="mx-auto loader border-2 border-blue-500 rounded-full"></div>
                     <p className="mt-2 text-gray-500">Đang đăng nhập...</p>
                 </div>
             </div>

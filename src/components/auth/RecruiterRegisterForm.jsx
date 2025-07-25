@@ -35,8 +35,6 @@ const RecruiterRegisterForm = ({ role }) => {
     const onSubmit = async (data) => {
         try {
             const res = await registerApi({ ...data, role }).unwrap();
-            // localStorage.setItem("token", res.token);
-            // localStorage.setItem("role", res.user.role);
 
             console.log("Register data:", { ...data, role });
             alert("Recruiter đăng ký thành công! Vui lòng đăng nhập");
@@ -52,7 +50,7 @@ const RecruiterRegisterForm = ({ role }) => {
         return (
             <div className="min-h-[500px] flex items-center justify-center">
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-10 text-center">
-                    <div className="mx-auto w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="mx-auto w-8 h-8 border-2 border-orange-500 rounded-full"></div>
                     <p className="mt-2 text-gray-500">Đang đăng ký...</p>
                 </div>
             </div>
