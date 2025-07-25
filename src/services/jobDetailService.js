@@ -5,6 +5,7 @@ export const getJobDetail = async (id) => {
     });
 
     if (!res.ok) {
+        console.error("status: ",res.status)
       throw new Error("Failed to fetch job detail");
     }
 
