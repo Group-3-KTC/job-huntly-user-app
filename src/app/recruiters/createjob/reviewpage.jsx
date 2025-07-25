@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
 import { useAppDispatch } from "../../../store/hooks.js";
 import { addToast } from "../../../store/slices/toastSlices.js";
 import {
@@ -67,6 +66,7 @@ export default function JobReviewPage({
         ? formData.salaryRange
         : [0, 0];
     const safeRequirments = formData?.requirments || "";
+
     const dispatch = useAppDispatch();
 
     const getBenefitIcon = (iconType) => {
@@ -116,7 +116,6 @@ export default function JobReviewPage({
     const submitJob = async () => {
         setIsLoading(true);
         setParentIsLoading(true);
-
         let datePostISO = null;
         let expiredDateISO = null;
 
@@ -248,14 +247,6 @@ export default function JobReviewPage({
         setExpiredDateError(newExpiredDateError);
 
         if (!isValid) {
-            dispatch(
-                addToast({
-                    title: "Validation Error",
-                    description:
-                        "Please correct the date errors before publishing.",
-                    variant: "destructive",
-                })
-            );
             return;
         }
 
@@ -343,32 +334,25 @@ export default function JobReviewPage({
                                             <div className="flex items-center gap-4 text-gray-600">
                                                 <div className="flex items-center gap-1">
                                                     <MapPin className="w-4 h-4" />
-                                                    <span>
-                                                        {formData.city.join(
-                                                            ", "
-                                                        )}
-                                                    </span>
+                                                    <span>{formData.city}</span>
                                                 </div>
                                                 <div className="flex items-center gap-1">
                                                     <Clock className="w-4 h-4" />
                                                     <span>
-                                                        {safeWorkType.join(
+                                                        {formData.workType.join(
                                                             ", "
                                                         )}
                                                     </span>
                                                 </div>
-                                                {formData.level &&
-                                                    formData.level.length >
-                                                        0 && (
-                                                        <div className="flex items-center gap-1">
-                                                            <Users className="w-4 h-4" />
-                                                            <span className="capitalize">
-                                                                {formData.level.join(
-                                                                    ", "
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                    )}
+                                                {formData.level && (
+                                                    <div className="flex items-center gap-1">
+                                                        <Users className="w-4 h-4" />
+                                                        <span className="capitalize">
+                                                            {formData.level}{" "}
+                                                            Level
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
                                             {formData.address && (
                                                 <div className="mt-2 text-sm text-gray-500">
@@ -427,7 +411,7 @@ export default function JobReviewPage({
                                                     key={index}
                                                     className="flex items-start gap-3"
                                                 >
-                                                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                                                    <CheckCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
                                                     <span className="text-gray-700">
                                                         {requirement}
                                                     </span>
@@ -455,7 +439,7 @@ export default function JobReviewPage({
                                                     key={index}
                                                     className="flex items-start gap-3"
                                                 >
-                                                    <CheckCircle className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                                                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                                                     <span className="text-gray-700">
                                                         {niceToHave}
                                                     </span>
@@ -529,13 +513,13 @@ export default function JobReviewPage({
                                         Location
                                     </span>
                                     <span className="font-medium">
-                                        {formData.city.join(", ")}
+                                        {formData.city}
                                     </span>
                                 </div>
                                 {formData.address && (
                                     <div className="flex justify-between items-start">
                                         <span className="text-gray-600">
-                                            Address
+                                            Location
                                         </span>
                                         <span className="font-medium text-right text-sm">
                                             {formData.address}
@@ -727,8 +711,7 @@ export default function JobReviewPage({
                             Job Posted Successfully!
                         </DialogTitle>
                         <DialogDescription>
-                            Your job listing has been successfully published to
-                            the API.
+                            Your job listing has been successfully published
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>

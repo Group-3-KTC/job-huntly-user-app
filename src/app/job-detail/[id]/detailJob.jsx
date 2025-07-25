@@ -17,11 +17,30 @@ import { Button } from "@/components/ui/button";
 import RelatedJobs from "./relatedJobs";
 import ApplicationModal from "./applicationJob";
 import { useRouter } from "next/navigation";
+import ReportModal from "./report";
 
 export default function DetailJob({ job }) {
     const [liked, setLiked] = useState(false);
     const router = useRouter();
     const [showModal, setShowModal] = useState(false);
+    const [openReportModal, setOpenReportModal] = useState(false);
+
+    const handleFlagClick = () => {
+        const token = localStorage.getItem("token");
+        if (!token) return router.push("/login");
+
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            if (payload.exp * 1000 < Date.now()) {
+                localStorage.clear();
+                return router.push("/login");
+            }
+            setOpenReportModal(true);
+        } catch (err) {
+            console.error("Invalid token", err);
+            return router.push("/login");
+        }
+    };
 
     const handleApply = () => {
         const token = localStorage.getItem("token");
@@ -99,8 +118,16 @@ export default function DetailJob({ job }) {
                                 />
                             </div>
                             <div className="col-span-1 flex justify-center">
-                                <Flag className="text-gray-600 cursor-pointer hover:scale-110 transition" />
+                                <Flag
+                                    className="text-gray-600 cursor-pointer hover:scale-110 transition"
+                                    onClick={handleFlagClick}
+                                />
                             </div>
+
+                            <ReportModal
+                                open={openReportModal}
+                                onClose={() => setOpenReportModal(false)}
+                            />
                         </div>
                     </div>
 
