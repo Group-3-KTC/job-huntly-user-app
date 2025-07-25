@@ -1,394 +1,552 @@
 "use client";
-import { useState } from "react";
+
+import { useEffect } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup"; // Đảm bảo sử dụng "yup" thay vì "Yup"
+import { X, Save } from "lucide-react";
 
 const sectionConfigs = {
-  aboutMe: {
-    fields: [
-      {
-        key: "text",
-        label: "Description",
-        type: "textarea",
-        placeholder: "Introduce your strengths and years of experience",
-      },
-    ],
-  },
-  personalDetail: {
-    fields: [
-      {
-        key: "name",
-        label: "Name",
-        type: "text",
-        placeholder: "Your full name",
-      },
-      {
-        key: "title",
-        label: "Title",
-        type: "text",
-        placeholder: "Your job title",
-      },
-      {
-        key: "email",
-        label: "Email",
-        type: "email",
-        placeholder: "Your email address",
-      },
-      { key: "dateOfBirth", label: "Date of Birth", type: "date" },
-      {
-        key: "address",
-        label: "Address",
-        type: "text",
-        placeholder: "Your current address",
-      },
-      {
-        key: "phone",
-        label: "Phone",
-        type: "tel",
-        placeholder: "Your phone number",
-      },
-      {
-        key: "gender",
-        label: "Gender",
-        type: "text",
-        placeholder: "Your gender",
-      },
-      {
-        key: "personalLink",
-        label: "Personal Link",
-        type: "url",
-        placeholder: "Your portfolio/website",
-      },
-    ],
-  },
-  language: {
-    fields: [
-      {
-        key: "name",
-        label: "Language",
-        type: "text",
-        placeholder: "e.g., English",
-      },
-      {
-        key: "level",
-        label: "Level",
-        type: "select",
-        options: ["Beginner", "Intermediate", "Advanced", "Native"],
-      },
-    ],
-  },
-  skills: {
-    fields: [
-      {
-        key: "name",
-        label: "Skill Name",
-        type: "text",
-        placeholder: "e.g., React",
-      },
-      {
-        key: "level",
-        label: "Level",
-        type: "select",
-        options: ["Beginner", "Intermediate", "Advanced", "Expert"],
-      },
-    ],
-  },
-  education: {
-    fields: [
-      {
-        key: "school",
-        label: "School",
-        type: "text",
-        placeholder: "University/School name",
-      },
-      {
-        key: "degree",
-        label: "Degree",
-        type: "text",
-        placeholder: "e.g., Bachelor - Computer Science",
-      },
-      {
-        key: "major",
-        label: "Major",
-        type: "text",
-        placeholder: "Your major/field of study",
-      },
-      {
-        key: "date",
-        label: "Date",
-        type: "text",
-        placeholder: "e.g., 08/2021 - NOW",
-      },
-      {
-        key: "note",
-        label: "Note",
-        type: "textarea",
-        placeholder: "Additional information",
-      },
-    ],
-  },
-  workExperience: {
-    fields: [
-      {
-        key: "position",
-        label: "Position",
-        type: "text",
-        placeholder: "Job title",
-      },
-      {
-        key: "company",
-        label: "Company",
-        type: "text",
-        placeholder: "Company name",
-      },
-      {
-        key: "time",
-        label: "Duration",
-        type: "text",
-        placeholder: "e.g., 02/2020 - NOW",
-      },
-      {
-        key: "description",
-        label: "Description",
-        type: "textarea",
-        placeholder: "Job description",
-      },
-      {
-        key: "project",
-        label: "Project",
-        type: "textarea",
-        placeholder: "Projects worked on",
-      },
-    ],
-  },
-  certificates: {
-    fields: [
-      {
-        key: "name",
-        label: "Certificate Name",
-        type: "text",
-        placeholder: "Certificate title",
-      },
-      {
-        key: "issuer",
-        label: "Issuer",
-        type: "text",
-        placeholder: "Issuing organization",
-      },
-      {
-        key: "date",
-        label: "Issue Date",
-        type: "text",
-        placeholder: "e.g., 06/2023",
-      },
-      {
-        key: "description",
-        label: "Description",
-        type: "textarea",
-        placeholder: "Certificate description",
-      },
-    ],
-  },
-  awards: {
-    fields: [
-      {
-        key: "name",
-        label: "Award Name",
-        type: "text",
-        placeholder: "e.g., Dean's List",
-      },
-      {
-        key: "organization",
-        label: "Organization",
-        type: "text",
-        placeholder: "Awarding organization",
-      },
-      {
-        key: "issueDate.month",
-        label: "Month",
-        type: "select",
-        options: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
+    aboutMe: {
+        fields: [
+            {
+                key: "text",
+                label: "Description",
+                type: "textarea",
+                placeholder: "Introduce your strengths and years of experience",
+            },
         ],
-      },
-      {
-        key: "issueDate.year",
-        label: "Year",
-        type: "number",
-        placeholder: "e.g., 2023",
-      },
-      {
-        key: "description",
-        label: "Description",
-        type: "textarea",
-        placeholder: "Award description",
-      },
-    ],
-  },
-  highlightProject: {
-    fields: [
-      {
-        key: "title",
-        label: "Project Title",
-        type: "text",
-        placeholder: "Project name",
-      },
-      {
-        key: "description",
-        label: "Description",
-        type: "textarea",
-        placeholder: "Project description",
-      },
-      {
-        key: "date",
-        label: "Duration",
-        type: "text",
-        placeholder: "e.g., 03/2022 - 06/2022",
-      },
-      {
-        key: "link",
-        label: "Project Link",
-        type: "url",
-        placeholder: "https://example.com",
-      },
-    ],
-  },
+    },
+    personalDetail: {
+        fields: [
+            {
+                key: "name",
+                label: "Name",
+                type: "text",
+                placeholder: "Your full name",
+            },
+            {
+                key: "title",
+                label: "Title",
+                type: "text",
+                placeholder: "Your job title",
+            },
+            {
+                key: "email",
+                label: "Email",
+                type: "email",
+                placeholder: "Your email address",
+            },
+            { key: "dateOfBirth", label: "Date of Birth", type: "date" },
+            {
+                key: "address",
+                label: "Address",
+                type: "text",
+                placeholder: "Your current address",
+            },
+            {
+                key: "phone",
+                label: "Phone",
+                type: "tel",
+                placeholder: "Your phone number",
+            },
+            {
+                key: "gender",
+                label: "Gender",
+                type: "text",
+                placeholder: "Your gender",
+            },
+            {
+                key: "personalLink",
+                label: "Personal Link",
+                type: "url",
+                placeholder: "Your portfolio/website",
+            },
+        ],
+    },
+    language: {
+        fields: [
+            {
+                key: "name",
+                label: "Language",
+                type: "text",
+                placeholder: "e.g., English",
+            },
+            {
+                key: "level",
+                label: "Level",
+                type: "select",
+                options: ["beginner", "intermediate", "advanced", "native"],
+            },
+        ],
+    },
+    skills: {
+        fields: [
+            {
+                key: "name",
+                label: "Skill Name",
+                type: "text",
+                placeholder: "e.g., React",
+            },
+            {
+                key: "level",
+                label: "Level",
+                type: "select",
+                options: ["beginner", "intermediate", "advanced", "expert"],
+            },
+        ],
+    },
+    education: {
+        fields: [
+            {
+                key: "school",
+                label: "School",
+                type: "text",
+                placeholder: "University/school name",
+            },
+            {
+                key: "degree",
+                label: "Degree",
+                type: "text",
+                placeholder: "e.g., Bachelor - Computer Science",
+            },
+            {
+                key: "major",
+                label: "Major",
+                type: "text",
+                placeholder: "Your major/field of study",
+            },
+            {
+                key: "date",
+                label: "Time",
+                type: "text",
+                placeholder: "e.g., 08/2021 - now",
+            },
+            {
+                key: "note",
+                label: "Note",
+                type: "textarea",
+                placeholder: "Additional information",
+            },
+        ],
+    },
+    workExperience: {
+        fields: [
+            {
+                key: "position",
+                label: "Position",
+                type: "text",
+                placeholder: "Job title",
+            },
+            {
+                key: "company",
+                label: "Company",
+                type: "text",
+                placeholder: "Company name",
+            },
+            {
+                key: "time",
+                label: "Duration",
+                type: "text",
+                placeholder: "e.g., 02/2020 - now",
+            },
+            {
+                key: "description",
+                label: "Description",
+                type: "textarea",
+                placeholder: "Job description",
+            },
+            {
+                key: "project",
+                label: "Project",
+                type: "textarea",
+                placeholder: "Projects worked on",
+            },
+        ],
+    },
+    certificates: {
+        fields: [
+            {
+                key: "name",
+                label: "Certificate Name",
+                type: "text",
+                placeholder: "Certificate title",
+            },
+            {
+                key: "issuer",
+                label: "Issuer",
+                type: "text",
+                placeholder: "Issuing organization",
+            },
+            {
+                key: "date",
+                label: "Issue Date",
+                type: "text",
+                placeholder: "e.g., 06/2023",
+            },
+            {
+                key: "description",
+                label: "Description",
+                type: "textarea",
+                placeholder: "Certificate description",
+            },
+        ],
+    },
+    awards: {
+        fields: [
+            {
+                key: "name",
+                label: "Award Name",
+                type: "text",
+                placeholder: "e.g., Dean's List",
+            },
+            {
+                key: "organization",
+                label: "Organization",
+                type: "text",
+                placeholder: "Awarding organization",
+            },
+            {
+                key: "issueDate",
+                label: "Issue Date",
+                type: "text",
+                placeholder: "e.g., June 2023 or 06/2023",
+            },
+            {
+                key: "description",
+                label: "Description",
+                type: "textarea",
+                placeholder: "Award description",
+            },
+        ],
+    },
+    highlightProject: {
+        fields: [
+            {
+                key: "title",
+                label: "Project Title",
+                type: "text",
+                placeholder: "Project name",
+            },
+            {
+                key: "description",
+                label: "Description",
+                type: "textarea",
+                placeholder: "Project description",
+            },
+            {
+                key: "date",
+                label: "Duration",
+                type: "text",
+                placeholder: "e.g., 03/2022 - 06/2022",
+            },
+            {
+                key: "link",
+                label: "Project Link",
+                type: "url",
+                placeholder: "https://example.com",
+            },
+        ],
+    },
 };
 
 export default function SectionModal({
-  sectionId,
-  sectionTitle,
-  initialData = {},
-  onClose,
-  onSave,
+    sectionId,
+    sectionTitle,
+    initialData = {},
+    onClose,
+    onSave,
+    onDelete,
+    onEdit,
 }) {
-  const config = sectionConfigs[sectionId];
+    const config = sectionConfigs[sectionId];
 
-  // Initialize form data
-  const initializeFormData = () => {
-    const defaultData = {};
-    config.fields.forEach((field) => {
-      if (field.key.includes(".")) {
-        // Handle nested objects like issueDate.month
-        const [parent, child] = field.key.split(".");
-        if (!defaultData[parent]) defaultData[parent] = {};
-        defaultData[parent][child] = initialData[parent]?.[child] || "";
-      } else {
-        defaultData[field.key] = initialData[field.key] || "";
-      }
+    const getValidationSchema = () => {
+        const baseSchema = {};
+        config.fields.forEach((field) => {
+            if (field.key.includes(".")) {
+                const [parent, child] = field.key.split(".");
+                baseSchema[parent] = baseSchema[parent] || {};
+                if (child.includes("Month")) {
+                    baseSchema[parent][child] = yup
+                        .string()
+                        .matches(/^(0[1-9]|1[0-2])$/, "Month must be 01-12")
+                        .nullable();
+                } else if (child.includes("Year")) {
+                    baseSchema[parent][child] = yup
+                        .string()
+                        .matches(
+                            /^\d{4}$|now$/,
+                            "Year must be 4 digits or 'now'"
+                        )
+                        .nullable();
+                }
+            } else {
+                let fieldSchema = yup.string().nullable();
+                switch (field.key) {
+                    case "email":
+                        fieldSchema = fieldSchema.email("Invalid email format");
+                        break;
+                    case "phone":
+                        fieldSchema = fieldSchema
+                            .matches(
+                                /^\d{10,11}$/,
+                                "Phone must contain only numbers and be 10-11 digits"
+                            )
+                            .required("Phone is required");
+                        break;
+                    case "personalLink":
+                    case "link":
+                        fieldSchema = fieldSchema.url("Invalid URL");
+                        break;
+                    case "dateOfBirth":
+                        fieldSchema = yup
+                            .date()
+                            .typeError("Invalid date format")
+                            .min(
+                                new Date(1900, 0, 1),
+                                "Date must be after 1900"
+                            )
+                            .max(new Date(), "Date cannot be in the future")
+                            .nullable();
+                        break;
+                    case "issueDate":
+                        fieldSchema = fieldSchema
+                            .matches(
+                                /^(0[1-9]|1[0-2])\/\d{4}$|^[a-zA-Z]+ \d{4}$/,
+                                "Invalid date format (e.g., MM/YYYY or Month YYYY)"
+                            )
+                            .max(500, "Maximum 500 characters");
+                        break;
+                    case "level":
+                        if (
+                            sectionId === "language" ||
+                            sectionId === "skills"
+                        ) {
+                            fieldSchema = yup
+                                .string()
+                                .oneOf(
+                                    [
+                                        "beginner",
+                                        "intermediate",
+                                        "advanced",
+                                        "native",
+                                        "expert",
+                                    ],
+                                    "Invalid level"
+                                );
+                        }
+                        break;
+                    default:
+                        fieldSchema = fieldSchema.max(
+                            500,
+                            "Maximum 500 characters"
+                        );
+                        break;
+                }
+                baseSchema[field.key] = fieldSchema;
+            }
+        });
+        return yup.object().shape(baseSchema);
+    };
+
+    const methods = useForm({
+        resolver: yupResolver(getValidationSchema()),
+        defaultValues: initialData,
+        mode: "onBlur",
     });
-    return defaultData;
-  };
 
-  const [formData, setFormData] = useState(initializeFormData());
+    const {
+        register,
+        handleSubmit,
+        formState: { isDirty, errors },
+        reset,
+        watch,
+    } = methods;
 
-  const handleChange = (key, value) => {
-    if (key.includes(".")) {
-      // Handle nested objects
-      const [parent, child] = key.split(".");
-      setFormData((prev) => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value,
-        },
-      }));
-    } else {
-      setFormData((prev) => ({ ...prev, [key]: value }));
+    const formValues = watch();
+
+    const hasChanges = () => {
+        return (
+            isDirty ||
+            JSON.stringify(formValues) !== JSON.stringify(initialData)
+        );
+    };
+
+    const onSubmit = (data) => {
+        console.log("Form submitted:", data); // Debug dữ liệu gửi đi
+
+        onSave(data);
+
+        onClose();
+    };
+
+    const handleDeleteItem = () => {
+        if (onDelete) {
+            onDelete();
+            onClose();
+        }
+    };
+
+    const handleEditItem = () => {
+        if (onEdit) {
+            onEdit();
+        }
+    };
+
+    useEffect(() => {
+        reset(initialData);
+    }, [initialData, reset]);
+
+    if (!config) {
+        return null;
     }
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(formData);
-  };
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm">
+            <div className="w-full max-w-2xl p-4 bg-white rounded-lg shadow-lg">
+                <div className="flex items-center justify-between pb-3 mb-4 border-b">
+                    <h2 className="text-xl font-semibold text-gray-800">
+                        {Object.keys(initialData).length > 0 ? "Edit" : "Add"}{" "}
+                        {sectionTitle}
+                    </h2>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
 
-  if (!config) {
-    return null;
-  }
+                <div className="max-h-[60vh] overflow-y-auto space-y-4">
+                    <FormProvider {...methods}>
+                        <form
+                            onSubmit={handleSubmit(onSubmit)}
+                            className="space-y-4"
+                        >
+                            {config.fields.map((field) => (
+                                <div
+                                    key={field.key}
+                                    className="flex flex-col gap-1 p-2"
+                                >
+                                    <label className="text-sm font-medium text-gray-700 capitalize">
+                                        {field.label}
+                                    </label>
+                                    {field.type === "textarea" ? (
+                                        <textarea
+                                            {...register(field.key)}
+                                            placeholder={field.placeholder}
+                                            className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                                errors[field.key]
+                                                    ? "border-red-500"
+                                                    : "border-gray-300"
+                                            }`}
+                                        />
+                                    ) : field.type === "select" ? (
+                                        <select
+                                            {...register(field.key)}
+                                            className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                                errors[field.key]
+                                                    ? "border-red-500"
+                                                    : "border-gray-300"
+                                            }`}
+                                        >
+                                            <option value="" disabled>
+                                                Select {field.label}
+                                            </option>
+                                            {field.options?.map((option) => (
+                                                <option
+                                                    key={option}
+                                                    value={option}
+                                                >
+                                                    {option}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <input
+                                            type={field.type || "text"}
+                                            {...register(field.key)}
+                                            placeholder={field.placeholder}
+                                            className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                                errors[field.key]
+                                                    ? "border-red-500"
+                                                    : "border-gray-300"
+                                            }`}
+                                        />
+                                    )}
+                                    {errors[field.key] && (
+                                        <p className="text-xs text-red-500">
+                                            {errors[field.key].message}
+                                        </p>
+                                    )}
+                                    {field.key === "time.startMonth" &&
+                                        errors.time?.startMonth && (
+                                            <p className="text-xs text-red-500">
+                                                {errors.time.startMonth.message}
+                                            </p>
+                                        )}
+                                    {field.key === "time.startYear" &&
+                                        errors.time?.startYear && (
+                                            <p className="text-xs text-red-500">
+                                                {errors.time.startYear.message}
+                                            </p>
+                                        )}
+                                    {field.key === "time.endMonth" &&
+                                        errors.time?.endMonth && (
+                                            <p className="text-xs text-red-500">
+                                                {errors.time.endMonth.message}
+                                            </p>
+                                        )}
+                                    {field.key === "time.endYear" &&
+                                        errors.time?.endYear && (
+                                            <p className="text-xs text-red-500">
+                                                {errors.time.endYear.message}
+                                            </p>
+                                        )}
+                                </div>
+                            ))}
+                        </form>
+                    </FormProvider>
+                </div>
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 bg-white rounded-xl">
-        <h2 className="mb-4 text-xl font-semibold">
-          {initialData && Object.keys(initialData).length > 0 ? "Edit" : "Add"}{" "}
-          {sectionTitle}
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {config.fields.map((field) => {
-            const value = field.key.includes(".")
-              ? formData[field.key.split(".")[0]]?.[field.key.split(".")[1]] ||
-                ""
-              : formData[field.key] || "";
-
-            return (
-              <div key={field.key}>
-                <label className="block mb-1 font-medium text-gray-700">
-                  {field.label}
-                </label>
-
-                {field.type === "textarea" ? (
-                  <textarea
-                    className="w-full p-2 border rounded focus:ring-blue-500 focus:border-blue-500"
-                    value={value}
-                    placeholder={field.placeholder}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
-                    rows={3}
-                  />
-                ) : field.type === "select" ? (
-                  <select
-                    className="w-full p-2 border rounded focus:ring-blue-500 focus:border-blue-500"
-                    value={value}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
-                  >
-                    <option value="">Select {field.label}</option>
-                    {field.options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type={field.type || "text"}
-                    className="w-full p-2 border rounded focus:ring-blue-500 focus:border-blue-500"
-                    value={value}
-                    placeholder={field.placeholder}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
-                    min={field.type === "number" ? "1950" : undefined}
-                    max={field.type === "number" ? "2030" : undefined}
-                  />
-                )}
-              </div>
-            );
-          })}
-        </form>
-
-        <div className="flex justify-end gap-2 mt-6">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-500 rounded hover:bg-gray-100"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-          >
-            Save
-          </button>
+                <div className="flex justify-end gap-3 pt-3 mt-5 border-t">
+                    {onDelete && (
+                        <button
+                            type="button"
+                            onClick={handleDeleteItem}
+                            className="px-3 py-1.5 text-sm text-white bg-red-500 rounded-md hover:bg-red-600"
+                        >
+                            Delete
+                        </button>
+                    )}
+                    {onEdit && (
+                        <button
+                            type="button"
+                            onClick={handleEditItem}
+                            className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-100"
+                        >
+                            Edit
+                        </button>
+                    )}
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-100"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        onClick={handleSubmit(onSubmit)}
+                        disabled={!hasChanges()}
+                        className="px-3 py-1.5 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600 disabled:bg-gray-300"
+                    >
+                        <Save className="inline w-4 h-4 mr-1" />
+                        Save
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

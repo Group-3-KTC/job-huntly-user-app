@@ -21,7 +21,7 @@ export default function AwardsSection({ data, onEdit, onDelete }) {
             <h4 className="text-xl font-medium text-gray-900">{award.name}</h4>
             <p className="text-sm text-gray-600">{award.organization}</p>
             <p className="text-xs text-gray-500">
-              {award.issueDate?.month} {award.issueDate?.year}
+              {award.issueDate}
             </p>
             {award.description && (
               <p className="mt-1 text-sm text-gray-700">{award.description}</p>

@@ -210,7 +210,9 @@ export default function ProfilePage() {
                                         : undefined
                                 }
                                 onAdd={
-                                    !hasContent // Kích hoạt "Thêm" khi không có nội dung ý nghĩa
+                                    isArraySection(section.id)
+                                        ? () => handleAdd(section)
+                                        : !hasContent
                                         ? () => handleAdd(section)
                                         : undefined
                                 }
