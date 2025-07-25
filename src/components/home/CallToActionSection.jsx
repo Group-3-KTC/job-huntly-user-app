@@ -53,7 +53,7 @@ const CallToActionSection = () => {
                         </div>
                         <div className="flex-shrink-0 ml-8">
                             <img
-                                src=""
+                                src="/placeholder.svg?height=200&width=200&text=Candidate"
                                 alt="Become an Recruiter"
                                 className="object-cover w-48 h-48"
                             />
