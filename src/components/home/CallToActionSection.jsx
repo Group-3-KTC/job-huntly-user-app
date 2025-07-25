@@ -2,6 +2,9 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import recruiterImg from "@/assets/images/cta-recruiter.jpg";
+import candidateImg from "@/assets/images/cta-candidate.jpg";
+import Image from "next/image";
 
 const CallToActionSection = () => {
     return (
@@ -26,10 +29,10 @@ const CallToActionSection = () => {
                             </Link>
                         </div>
                         <div className="flex-shrink-0 ml-8">
-                            <img
-                                src="/placeholder.svg?height=200&width=200&text=Candidate"
+                            <Image
+                                src={candidateImg}
                                 alt="Become a Candidate"
-                                className="object-cover w-48 h-48"
+                                className="object-cover w-48 h-48 rounded-lg"
                             />
                         </div>
                     </div>
@@ -52,10 +55,10 @@ const CallToActionSection = () => {
                             </Link>
                         </div>
                         <div className="flex-shrink-0 ml-8">
-                            <img
-                                src="/placeholder.svg?height=200&width=200&text=Candidate"
+                            <Image
+                                src={recruiterImg}
                                 alt="Become an Recruiter"
-                                className="object-cover w-48 h-48"
+                                className="object-cover w-48 h-48 rounded-lg"
                             />
                         </div>
                     </div>

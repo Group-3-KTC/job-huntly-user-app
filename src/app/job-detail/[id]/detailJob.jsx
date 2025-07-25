@@ -17,14 +17,33 @@ import { Button } from "@/components/ui/button";
 import RelatedJobs from "./relatedJobs";
 import ApplicationModal from "./applicationJob";
 import { useRouter } from "next/navigation";
+import ReportModal from "./report";
 
 export default function DetailJob({ job }) {
     const [liked, setLiked] = useState(false);
     const router = useRouter();
     const [showModal, setShowModal] = useState(false);
+    const [openReportModal, setOpenReportModal] = useState(false);
+
+    const handleFlagClick = () => {
+        const token = localStorage.getItem("authToken");
+        if (!token) return router.push("/login");
+
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            if (payload.exp * 1000 < Date.now()) {
+                localStorage.clear();
+                return router.push("/login");
+            }
+            setOpenReportModal(true);
+        } catch (err) {
+            console.error("Invalid token", err);
+            return router.push("/login");
+        }
+    };
 
     const handleApply = () => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("authToken");
         if (!token) {
             return router.push("/login");
         }
@@ -78,7 +97,7 @@ export default function DetailJob({ job }) {
                                     className="w-full bg-blue-600 text-white hover:bg-blue-700"
                                     onClick={handleApply}
                                 >
-                                    Ứng tuyển
+                                    Apply
                                 </Button>
 
                                 {showModal && (
@@ -99,15 +118,23 @@ export default function DetailJob({ job }) {
                                 />
                             </div>
                             <div className="col-span-1 flex justify-center">
-                                <Flag className="text-gray-600 cursor-pointer hover:scale-110 transition" />
+                                <Flag
+                                    className="text-gray-600 cursor-pointer hover:scale-110 transition"
+                                    onClick={handleFlagClick}
+                                />
                             </div>
+
+                            <ReportModal
+                                open={openReportModal}
+                                onClose={() => setOpenReportModal(false)}
+                            />
                         </div>
                     </div>
 
                     <div className="bg-white p-6 rounded-xl shadow-lg space-y-2">
                         <div className="flex items-center gap-2 text-gray-800 font-semibold text-lg">
                             <FileText className="w-5 h-5 text-blue-500" />
-                            Mô tả công việc
+                            Job Description
                         </div>
                         <p className="text-gray-700 whitespace-pre-line">
                             {job.description || "Chưa có mô tả"}
@@ -117,7 +144,7 @@ export default function DetailJob({ job }) {
                     <div className="bg-white p-6 rounded-xl shadow-lg space-y-2">
                         <div className="flex items-center gap-2 text-gray-800 font-semibold text-lg">
                             <ListChecks className="w-5 h-5 text-blue-500" />
-                            Yêu cầu
+                            Requirements
                         </div>
                         <div className="text-gray-700 whitespace-pre-line space-y-1">
                             {Array.isArray(job.requirments) &&
@@ -134,7 +161,7 @@ export default function DetailJob({ job }) {
                     <div className="bg-white p-6 rounded-xl shadow-lg space-y-2">
                         <div className="flex items-center gap-2 text-gray-800 font-semibold text-lg">
                             <Gift className="w-5 h-5 text-blue-500" />
-                            Phúc lợi
+                            Benefits
                         </div>
                         <div className="text-gray-700 whitespace-pre-line space-y-1">
                             {Array.isArray(job.benefits) &&
@@ -151,7 +178,7 @@ export default function DetailJob({ job }) {
                     <div className="bg-white p-6 rounded-xl shadow-lg space-y-2">
                         <div className="flex items-center gap-2 text-gray-800 font-semibold text-lg">
                             <MapPin className="w-5 h-5 text-blue-500" />
-                            Địa điểm làm việc
+                            Work Location
                         </div>
                         <div className="text-gray-700 whitespace-pre-line space-y-1">
                             {Array.isArray(job.location) &&
@@ -183,7 +210,7 @@ export default function DetailJob({ job }) {
 
                     <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
                         <h2 className="text-xl font-semibold text-gray-800">
-                            Thông tin chung
+                            General
                         </h2>
                         <div className="space-y-3 text-gray-700">
                             <p>
@@ -191,7 +218,7 @@ export default function DetailJob({ job }) {
                                     className="inline mr-2 text-green-600"
                                     size={18}
                                 />
-                                <strong>Lương tối thiểu:</strong>{" "}
+                                <strong>Min Salary:</strong>{" "}
                                 {job.salaryMin || "N/A"}
                             </p>
                             <p>
@@ -199,7 +226,7 @@ export default function DetailJob({ job }) {
                                     className="inline mr-2 text-green-600"
                                     size={18}
                                 />
-                                <strong>Lương tối đa:</strong>{" "}
+                                <strong>Max Salary:</strong>{" "}
                                 {job.salaryMax || "N/A"}
                             </p>
                             <p>
@@ -207,10 +234,10 @@ export default function DetailJob({ job }) {
                                     className="inline mr-2 text-blue-500"
                                     size={18}
                                 />
-                                <strong>Ngày đăng:</strong>{" "}
+                                <strong>Post Date:</strong>{" "}
                                 {job.datePost
                                     ? new Date(job.datePost).toLocaleDateString(
-                                          "vi-VN"
+                                          "vi-VN",
                                       )
                                     : "N/A"}
                             </p>
@@ -219,10 +246,10 @@ export default function DetailJob({ job }) {
                                     className="inline mr-2 text-red-500"
                                     size={18}
                                 />
-                                <strong>Hạn ứng tuyển:</strong>{" "}
+                                <strong>Expired Date:</strong>{" "}
                                 {job.expiredDate
                                     ? new Date(
-                                          job.expiredDate
+                                          job.expiredDate,
                                       ).toLocaleDateString("vi-VN")
                                     : "N/A"}
                             </p>
@@ -231,7 +258,7 @@ export default function DetailJob({ job }) {
                     {Array.isArray(job.skill) && job.skill.length > 0 && (
                         <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
                             <h2 className="text-xl font-semibold text-gray-800">
-                                Kỹ năng yêu cầu
+                                Skills Requirements
                             </h2>
                             <div className="flex flex-wrap gap-2">
                                 {job.skill.map((skill, index) => (
