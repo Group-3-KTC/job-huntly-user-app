@@ -14,7 +14,7 @@ const ApplicationModal = ({ onClose, jobTitle = "" }) => {
                     <div className="flex justify-between items-start">
                         <div>
                             <Dialog.Title className="text-lg font-semibold text-blue-600 mb-1">
-                                Ứng tuyển {jobTitle} - Đi Làm Ngay
+                                Ứng tuyển {jobTitle}
                             </Dialog.Title>
                             <p className="text-gray-500 text-sm">
                                 Chọn CV để ứng tuyển
