@@ -67,7 +67,6 @@ export default function DetailJob({ job }) {
 
     return (
         <div className="w-full bg-gray-100 py-10 px-0">
-            {/* LOGIN PROMPT MODAL */}
             {showLoginPrompt && (
                 <div className="fixed inset-0 bg-opacity-40 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-sm">
@@ -155,7 +154,6 @@ export default function DetailJob({ job }) {
                         </div>
                     </div>
 
-                    {/* Description */}
                     <div className="bg-white p-6 rounded-xl shadow-lg space-y-2">
                         <div className="flex items-center gap-2 text-gray-800 font-semibold text-lg">
                             <FileText className="w-5 h-5 text-blue-500" />
@@ -166,7 +164,6 @@ export default function DetailJob({ job }) {
                         </p>
                     </div>
 
-                    {/* Requirements */}
                     <div className="bg-white p-6 rounded-xl shadow-lg space-y-2">
                         <div className="flex items-center gap-2 text-gray-800 font-semibold text-lg">
                             <ListChecks className="w-5 h-5 text-blue-500" />
@@ -184,7 +181,6 @@ export default function DetailJob({ job }) {
                         </div>
                     </div>
 
-                    {/* Benefits */}
                     <div className="bg-white p-6 rounded-xl shadow-lg space-y-2">
                         <div className="flex items-center gap-2 text-gray-800 font-semibold text-lg">
                             <Gift className="w-5 h-5 text-blue-500" />
@@ -202,7 +198,6 @@ export default function DetailJob({ job }) {
                         </div>
                     </div>
 
-                    {/* Location */}
                     <div className="bg-white p-6 rounded-xl shadow-lg space-y-2">
                         <div className="flex items-center gap-2 text-gray-800 font-semibold text-lg">
                             <MapPin className="w-5 h-5 text-blue-500" />
@@ -219,8 +214,6 @@ export default function DetailJob({ job }) {
                             )}
                         </div>
                     </div>
-
-                    {/* Related Jobs */}
                     <RelatedJobs category={job.category} />
                 </div>
 
