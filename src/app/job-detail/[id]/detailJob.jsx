@@ -21,32 +21,34 @@ import ReportModal from "./report";
 
 export default function DetailJob({ job }) {
     const [liked, setLiked] = useState(false);
-    const router = useRouter();
     const [showModal, setShowModal] = useState(false);
     const [openReportModal, setOpenReportModal] = useState(false);
+    const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+    const router = useRouter();
+
+    const formatList = (field) =>
+        Array.isArray(field) ? field.join(", ") : field || "Không xác định";
 
     const handleFlagClick = () => {
         const token = localStorage.getItem("authToken");
-        if (!token) return router.push("/login");
+        if (!token) return setShowLoginPrompt(true);
 
         try {
             const payload = JSON.parse(atob(token.split(".")[1]));
             if (payload.exp * 1000 < Date.now()) {
                 localStorage.clear();
-                return router.push("/login");
+                return setShowLoginPrompt(true);
             }
             setOpenReportModal(true);
         } catch (err) {
             console.error("Invalid token", err);
-            return router.push("/login");
+            setShowLoginPrompt(true);
         }
     };
 
     const handleApply = () => {
         const token = localStorage.getItem("authToken");
-        if (!token) {
-            return router.push("/login");
-        }
+        if (!token) return setShowLoginPrompt(true);
 
         try {
             const payload = JSON.parse(atob(token.split(".")[1]));
@@ -54,23 +56,44 @@ export default function DetailJob({ job }) {
 
             if (isExpired) {
                 localStorage.clear();
-                return router.push("/login");
+                return setShowLoginPrompt(true);
             }
             setShowModal(true);
         } catch (err) {
             console.error("Invalid token", err);
-            return router.push("/login");
+            setShowLoginPrompt(true);
         }
     };
 
-    const formatList = (field) =>
-        Array.isArray(field) ? field.join(", ") : field || "Không xác định";
-
     return (
         <div className="w-full bg-gray-100 py-10 px-0">
-            <div className="w-full flex gap-6">
+            {showLoginPrompt && (
+                <div className="fixed inset-0 bg-opacity-40 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-sm">
+                        <h2 className="text-lg font-semibold mb-4 text-gray-800">
+                            Bạn cần đăng nhập
+                        </h2>
+                        <p className="text-sm text-gray-600 mb-6">
+                            Vui lòng đăng nhập để tiếp tục ứng tuyển.
+                        </p>
+                        <div className="flex justify-end space-x-2">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowLoginPrompt(false)}
+                            >
+                                Đóng
+                            </Button>
+                            <Button onClick={() => router.push("/login")}>
+                                Đăng nhập
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="w-full flex flex-col-reverse md:flex-row gap-6 px-4 md:px-10">
                 {/* LEFT SIDE */}
-                <div className="w-[78%] flex flex-col gap-6 mr-4 ml-10">
+                <div className="w-full md:w-[78%] flex flex-col gap-6">
                     <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
                         <h1 className="text-3xl font-bold text-gray-800">
                             {job.title}
@@ -191,12 +214,11 @@ export default function DetailJob({ job }) {
                             )}
                         </div>
                     </div>
-
                     <RelatedJobs category={job.category} />
                 </div>
 
                 {/* RIGHT SIDE */}
-                <div className="w-[22%] flex flex-col gap-4 mr-4">
+                <div className="w-full md:w-[22%] flex flex-col gap-4">
                     <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center justify-center text-center space-y-3">
                         <img
                             src={job.avatar}
@@ -237,7 +259,7 @@ export default function DetailJob({ job }) {
                                 <strong>Post Date:</strong>{" "}
                                 {job.datePost
                                     ? new Date(job.datePost).toLocaleDateString(
-                                          "vi-VN",
+                                          "vi-VN"
                                       )
                                     : "N/A"}
                             </p>
@@ -249,12 +271,13 @@ export default function DetailJob({ job }) {
                                 <strong>Expired Date:</strong>{" "}
                                 {job.expiredDate
                                     ? new Date(
-                                          job.expiredDate,
+                                          job.expiredDate
                                       ).toLocaleDateString("vi-VN")
                                     : "N/A"}
                             </p>
                         </div>
                     </div>
+
                     {Array.isArray(job.skill) && job.skill.length > 0 && (
                         <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
                             <h2 className="text-xl font-semibold text-gray-800">
