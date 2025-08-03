@@ -18,7 +18,7 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-const ProvinceCombobox = ({ value, onChange, error }) => {
+const ProvinceCombobox = ({ value, onChange, error, multiple = false }) => {
   const [open, setOpen] = useState(false);
   const [provinces, setProvinces] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,12 +40,26 @@ const ProvinceCombobox = ({ value, onChange, error }) => {
 
   const filteredProvinces = useMemo(() => {
     if (!searchTerm) {
-      return provinces.filter((p) => featuredCities.includes(p.name));
+      // Hiển thị tất cả thành phố, với thành phố nổi bật lên đầu
+      const featured = provinces.filter(p => featuredCities.includes(p.name));
+      const others = provinces.filter(p => !featuredCities.includes(p.name));
+      return [...featured, ...others];
     }
+    
+    // Khi có tìm kiếm, lọc theo tên
     return provinces.filter((p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm, provinces]);
+
+  const handleSelect = (selectedProvince) => {
+    if (multiple) {
+      onChange(selectedProvince);
+    } else {
+      onChange(selectedProvince);
+      setOpen(false);
+    }
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -60,33 +74,43 @@ const ProvinceCombobox = ({ value, onChange, error }) => {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" avoidCollisions={false}>
+      <PopoverContent className="w-full p-0">
         <Command>
           <CommandInput
             onValueChange={setSearchTerm}
             placeholder="Tìm tỉnh/thành..."
+            className="border-none focus:ring-0"
           />
-          <CommandList>
-            <CommandEmpty>Không tìm thấy.</CommandEmpty>
+          <CommandList className="max-h-80 overflow-auto">
+            <CommandEmpty>Không tìm thấy kết quả.</CommandEmpty>
             <CommandGroup>
-              {filteredProvinces.map((province) => (
-                <CommandItem
-                  key={province.code}
-                  value={province.name}
-                  onSelect={() => {
-                    onChange(province.name);
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === province.name ? "opacity-100" : "opacity-0"
+              {filteredProvinces.map((province) => {
+                const isSelected = multiple 
+                  ? Array.isArray(value) && value.includes(province.name)
+                  : value === province.name;
+                
+                return (
+                  <CommandItem
+                    key={province.code}
+                    value={province.name}
+                    onSelect={() => handleSelect(province.name)}
+                    className="flex items-center"
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        isSelected ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <span className={isSelected ? "font-medium" : ""}>
+                      {province.name}
+                    </span>
+                    {featuredCities.includes(province.name) && (
+                      <span className="ml-auto text-xs text-blue-500">Phổ biến</span>
                     )}
-                  />
-                  {province.name}
-                </CommandItem>
-              ))}
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           </CommandList>
         </Command>
