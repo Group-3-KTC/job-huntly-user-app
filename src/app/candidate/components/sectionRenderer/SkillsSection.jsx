@@ -15,7 +15,7 @@ export default function SkillsSection({ data, onEdit, onDelete }) {
             {data.map((skill, index) => (
                 <div
                     key={index}
-                    className="flex items-start justify-between py-3 my-2 border-t-4 border-blue-600"
+                    className="flex items-start justify-between py-3 my-2 border-t-3 border-blue-600"
                 >
                     <div className="flex-1">
                         <h4 className="text-lg font-medium text-gray-900 ">
@@ -33,7 +33,7 @@ export default function SkillsSection({ data, onEdit, onDelete }) {
                             }}
                             className="text-blue-500 hover:text-blue-700"
                         >
-                            <Edit size={16} />
+                            <Edit size={20} />
                         </button>
                         <button
                             onClick={(e) => {
@@ -42,7 +42,7 @@ export default function SkillsSection({ data, onEdit, onDelete }) {
                             }}
                             className="text-red-500 hover:text-red-700"
                         >
-                            <Trash2 size={16} />
+                            <Trash2 size={20} />
                         </button>
                     </div>
                 </div>

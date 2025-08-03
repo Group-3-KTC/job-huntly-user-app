@@ -408,9 +408,9 @@ export const Header = () => {
                                         size="icon"
                                         className="relative text-white hover:bg-white/20"
                                     >
-                                        <Bell className="h-5 w-5" />
+                                        <Bell className="w-5 h-5" />
                                         {notificationCount > 0 && (
-                                            <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center p-0">
+                                            <Badge className="absolute flex items-center justify-center w-5 h-5 p-0 text-xs text-white bg-red-500 rounded-full -top-1 -right-1">
                                                 {notificationCount}
                                             </Badge>
                                         )}
@@ -423,23 +423,20 @@ export const Header = () => {
                                         <DropdownMenuTrigger asChild>
                                             <Button
                                                 variant="ghost"
-                                                className="flex items-center space-x-2 text-white hover:bg-white/20 p-2"
+                                                className="flex items-center py-6 text-white hover:bg-white/20"
                                             >
-                                                <Avatar className="h-8 w-8">
+                                                <Avatar>   
                                                     <AvatarImage
                                                         src="/placeholder.svg?height=32&width=32"
                                                         alt="User Avatar"
                                                     />
                                                     <AvatarFallback className="bg-white text-[#0a66c2] text-sm font-semibold">
                                                         {getUserInitials(
-                                                            user?.fullname,
+                                                            user?.fullname
                                                         )}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <span className="hidden md:block text-sm font-medium">
-                                                    {user?.fullname || "User"}
-                                                </span>
-                                                <ChevronDown className="h-4 w-4" />
+                                                <ChevronDown className="w-2 h-2" />
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent
@@ -447,8 +444,8 @@ export const Header = () => {
                                             align="end"
                                         >
                                             <DropdownMenuLabel>
-                                                <div className="flex flex-col space-y-1">
-                                                    <p className="text-sm font-medium">
+                                                <div className="flex flex-col space-y-4">
+                                                    <p className="text-lg font-medium ">
                                                         {user?.name ||
                                                             user?.fullname ||
                                                             "User"}
@@ -464,36 +461,36 @@ export const Header = () => {
                                                 className="cursor-pointer"
                                                 onClick={handleProfileClick}
                                             >
-                                                <User className="mr-2 h-4 w-4" />
+                                                <User className="w-4 h-4 mr-2" />
 
                                                 <span>Profile</span>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem className="cursor-pointer">
-                                                <FileText className="mr-2 h-4 w-4" />
+                                                <FileText className="w-4 h-4 mr-2" />
                                                 <span>Manage CV</span>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem className="cursor-pointer">
-                                                <Briefcase className="mr-2 h-4 w-4" />
+                                                <Briefcase className="w-4 h-4 mr-2" />
                                                 <span>My Jobs</span>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem className="cursor-pointer">
-                                                <Heart className="mr-2 h-4 w-4" />
+                                                <Heart className="w-4 h-4 mr-2" />
                                                 <span>Saved Jobs</span>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem className="cursor-pointer">
-                                                <Bell className="mr-2 h-4 w-4" />
+                                                <Bell className="w-4 h-4 mr-2" />
                                                 <span>Notifications</span>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem className="cursor-pointer">
-                                                <Settings className="mr-2 h-4 w-4" />
+                                                <Settings className="w-4 h-4 mr-2" />
                                                 <span>Settings</span>
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem
-                                                className="cursor-pointer text-red-600 focus:text-red-600"
+                                                className="text-red-600 cursor-pointer focus:text-red-600"
                                                 onClick={handleLogout}
                                             >
-                                                <LogOut className="mr-2 h-4 w-4" />
+                                                <LogOut className="w-4 h-4 mr-2" />
                                                 <span>Logout</span>
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>

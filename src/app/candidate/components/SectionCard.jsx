@@ -34,19 +34,22 @@ export default function SectionCard({
 
     const renderContent = () => {
         if (!hasContent) {
-            return <p className="text-sm text-gray-400">{description}</p>;
+            return (
+                <p className="p-3 mt-2 text-sm text-gray-400">{description}</p>
+            );
         }
         return <div className="p-3 mt-2 rounded-md ">{content}</div>;
     };
 
     return (
         <div className="relative p-4 transition-shadow bg-white shadow-sm rounded-xl hover:shadow-md">
-            <div
-                className="flex items-start justify-between cursor-pointer"
-                onClick={handleMainClick}
-            >
+            <div className="flex items-start justify-between">
                 <div className="flex-1">
-                    <h3 className="text-lg font-bold text-black">{title}</h3>
+                    {title !== "Personal Detail" && (
+                        <h3 className="text-lg font-bold text-black">
+                            {title}
+                        </h3>
+                    )}
                     {renderContent()}
                 </div>
 
@@ -56,14 +59,15 @@ export default function SectionCard({
                             <>
                                 {!Array.isArray(data) && (
                                     <Edit
-                                        size={20}
-                                        className="text-blue-600 transition-transform hover:scale-105"
+                                        size={24}
+                                        className="text-blue-800 transition-transform hover:scale-105"
+                                        onClick={handleMainClick}
                                     />
                                 )}
                                 {Array.isArray(data) && onAdd && (
                                     <PlusCircle
                                         size={24}
-                                        className="text-green-600 transition-transform hover:scale-105"
+                                        className="text-blue-800 transition-transform hover:scale-105"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             onAdd();
@@ -84,7 +88,7 @@ export default function SectionCard({
 
                         {onDelete && (
                             <Trash2
-                                size={18}
+                                size={24}
                                 className="text-red-500 transition-transform hover:scale-105"
                                 onClick={(e) => {
                                     e.stopPropagation();
