@@ -1,56 +1,19 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
+import { ArrowLeft, ArrowRight, Briefcase, FileText, Gift } from "lucide-react";
 import { useAppDispatch } from "../../../store/hooks.js";
 import { addToast } from "../../../store/slices/toastSlices.js";
-import {
-    Briefcase,
-    FileText,
-    Gift,
-    Plus,
-    X,
-    ArrowLeft,
-    ArrowRight,
-    Heart,
-    Plane,
-    GraduationCap,
-    Coffee,
-    Car,
-    Home,
-    Shield,
-    Zap,
-    Users,
-    Trophy,
-    Clock,
-    Bold,
-    Italic,
-    List,
-    Link,
-} from "lucide-react";
 import JobReviewPage from "./reviewpage.jsx";
-import ProvinceCombobox from "./province-combobox.jsx";
+
+// Import custom components
+import StepIndicator from "./components/StepIndicator";
+import JobInformationForm from "./components/JobInformationForm";
+import JobDescriptionForm from "./components/JobDescriptionForm";
+import BenefitsForm from "./components/BenefitsForm";
+import RecentJobsList from "./components/RecentJobsList";
 
 export default function JobPostingForm() {
     const [currentStep, setCurrentStep] = useState(1);
@@ -111,21 +74,7 @@ export default function JobPostingForm() {
         "Photoshop",
     ]);
 
-    const [newSkillInput, setNewSkillInput] = useState("");
-    const [showSkillInput, setShowSkillInput] = useState(false);
-    const [showBenefitDialog, setShowBenefitDialog] = useState(false);
-    const [newBenefit, setNewBenefit] = useState({
-        title: "",
-        description: "",
-        icon: "heart",
-    });
-
     const dispatch = useAppDispatch();
-
-    // Refs for text editors
-    const jobDescriptionRef = useRef(null);
-    const niceToHavesRef = useRef(null);
-    const requirementsRef = useRef(null);
 
     const [formData, setFormData] = useState({
         jobTitle: "",
@@ -193,102 +142,6 @@ export default function JobPostingForm() {
         "Customer Service",
         "Operations",
     ];
-
-    const benefitIcons = [
-        { value: "heart", label: "Healthcare", icon: Heart },
-        { value: "plane", label: "Travel", icon: Plane },
-        { value: "graduation", label: "Education", icon: GraduationCap },
-        { value: "coffee", label: "Perks", icon: Coffee },
-        { value: "car", label: "Transportation", icon: Car },
-        { value: "home", label: "Remote Work", icon: Home },
-        { value: "shield", label: "Insurance", icon: Shield },
-        { value: "zap", label: "Energy", icon: Zap },
-        { value: "users", label: "Team", icon: Users },
-        { value: "trophy", label: "Achievement", icon: Trophy },
-        { value: "clock", label: "Flexible Hours", icon: Clock },
-    ];
-
-    const renderTextEditor = (
-        placeholder,
-        value,
-        fieldName,
-        maxLength = 500
-    ) => {
-        const currentValue = value ?? "";
-        const getRef = () => {
-            switch (fieldName) {
-                case "jobDescription":
-                    return jobDescriptionRef;
-                case "niceToHaves":
-                    return niceToHavesRef;
-                case "requirments":
-                    return requirementsRef;
-                default:
-                    return null;
-            }
-        };
-
-        return (
-            <div className="space-y-2">
-                <Textarea
-                    ref={getRef()}
-                    placeholder={placeholder}
-                    value={currentValue}
-                    onChange={(e) =>
-                        setFormData((prev) => ({
-                            ...prev,
-                            [fieldName]: e.target.value,
-                        }))
-                    }
-                    className="min-h-[120px] resize-none"
-                    maxLength={maxLength}
-                />
-                <div className="flex justify-between items-center">
-                    <div className="flex gap-2">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 hover:bg-blue-100"
-                            type="button"
-                            title="Bold"
-                        >
-                            <Bold className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 hover:bg-blue-100"
-                            type="button"
-                            title="Italic"
-                        >
-                            <Italic className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 hover:bg-blue-100"
-                            type="button"
-                            title="Bullet List"
-                        >
-                            <List className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 hover:bg-blue-100"
-                            type="button"
-                            title="Link"
-                        >
-                            <Link className="w-4 h-4" />
-                        </Button>
-                    </div>
-                    <span className="text-sm text-gray-500">
-                        {currentValue.length} / {maxLength}
-                    </span>
-                </div>
-            </div>
-        );
-    };
 
     // Auto-sync job levels every 30 seconds
     useEffect(() => {
@@ -463,10 +316,6 @@ export default function JobPostingForm() {
         }
     };
 
-    const handleManualSync = () => {
-        fetchJobsAndSyncData();
-    };
-
     const validateStep1 = () => {
         let isValid = true;
         const newErrors = {
@@ -560,12 +409,15 @@ export default function JobPostingForm() {
         }
     };
 
-    const handleSkillAdd = (skill) => {
+    const handleSkillAdd = (skill, isNew = false) => {
         if (skill && !formData.skill.includes(skill)) {
             setFormData((prev) => ({
                 ...prev,
                 skill: [...prev.skill, skill],
             }));
+            if (isNew) {
+                setAvailableSkills((prev) => [...prev, skill]);
+            }
         }
     };
 
@@ -576,16 +428,18 @@ export default function JobPostingForm() {
         }));
     };
 
-    const addNewSkill = () => {
-        if (
-            newSkillInput.trim() &&
-            !availableSkills.includes(newSkillInput.trim())
-        ) {
-            setAvailableSkills((prev) => [...prev, newSkillInput.trim()]);
-            handleSkillAdd(newSkillInput.trim());
-            setNewSkillInput("");
-            setShowSkillInput(false);
-        }
+    const handleBenefitAdd = (benefit) => {
+        setFormData((prev) => ({
+            ...prev,
+            benefits: [...prev.benefits, benefit],
+        }));
+        dispatch(
+            addToast({
+                title: "Benefit Added",
+                description: "New benefit has been added successfully!",
+                variant: "success",
+            })
+        );
     };
 
     const handleBenefitRemove = (benefitId) => {
@@ -597,46 +451,16 @@ export default function JobPostingForm() {
         }));
     };
 
-    const addCustomBenefit = () => {
-        if (newBenefit.title.trim() && newBenefit.description.trim()) {
-            const benefit = {
-                id: Date.now().toString(),
-                title: newBenefit.title.trim(),
-                description: newBenefit.description.trim(),
-                icon: newBenefit.icon,
-            };
-            setFormData((prev) => ({
-                ...prev,
-                benefits: [...prev.benefits, benefit],
-            }));
-            setNewBenefit({ title: "", description: "", icon: "heart" });
-            setShowBenefitDialog(false);
-            dispatch(
-                addToast({
-                    title: "Benefit Added",
-                    description: "New benefit has been added successfully!",
-                    variant: "success",
-                })
-            );
-        }
+    const handleDescriptionChange = (value) => {
+        setFormData((prev) => ({ ...prev, jobDescription: value }));
     };
 
-    const getBenefitIcon = (iconType) => {
-        const iconMap = {
-            heart: Heart,
-            plane: Plane,
-            graduation: GraduationCap,
-            coffee: Coffee,
-            car: Car,
-            home: Home,
-            shield: Shield,
-            zap: Zap,
-            users: Users,
-            trophy: Trophy,
-            clock: Clock,
-        };
-        const IconComponent = iconMap[iconType] || Heart;
-        return <IconComponent className="w-8 h-8 text-blue-500" />;
+    const handleRequirementsChange = (value) => {
+        setFormData((prev) => ({ ...prev, requirments: value }));
+    };
+
+    const handleNiceToHavesChange = (value) => {
+        setFormData((prev) => ({ ...prev, niceToHaves: value }));
     };
 
     const nextStep = () => {
@@ -673,835 +497,51 @@ export default function JobPostingForm() {
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-4xl mx-auto px-4">
                 {/* Step Indicator */}
-                <div className="flex justify-center mb-8">
-                    <div className="flex items-center space-x-8">
-                        {steps.map((step, index) => (
-                            <div
-                                key={step.number}
-                                className="flex items-center"
-                            >
-                                <div
-                                    className={`flex items-center space-x-3 ${
-                                        currentStep === step.number
-                                            ? "text-blue-600"
-                                            : currentStep > step.number
-                                            ? "text-blue-600"
-                                            : "text-gray-400"
-                                    }`}
-                                >
-                                    <div
-                                        className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                                            currentStep === step.number
-                                                ? "bg-blue-600 text-white"
-                                                : currentStep > step.number
-                                                ? "bg-blue-600 text-white"
-                                                : "bg-gray-200"
-                                        }`}
-                                    >
-                                        <step.icon className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <div className="text-sm font-medium">
-                                            Step {step.number}/3
-                                        </div>
-                                        <div className="text-sm">
-                                            {step.title}
-                                        </div>
-                                    </div>
-                                </div>
-                                {index < steps.length - 1 && (
-                                    <div className="w-16 h-px bg-gray-300 mx-4" />
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                <StepIndicator steps={steps} currentStep={currentStep} />
 
                 {/* Form Content */}
                 <Card className="w-full">
                     <CardContent className="p-8">
                         {/* Step 1: Job Information */}
                         {currentStep === 1 && (
-                            <div className="space-y-8">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                                        Basic Information
-                                    </h2>
-                                    <p className="text-gray-600">
-                                        This information will be displayed
-                                        publicly
-                                    </p>
-                                </div>
-
-                                {/* Job Title */}
-                                <div className="space-y-2">
-                                    <Label
-                                        htmlFor="jobTitle"
-                                        className="text-base font-medium"
-                                    >
-                                        Job Title
-                                    </Label>
-                                    <p className="text-sm text-gray-600">
-                                        Job titles must describe one position
-                                    </p>
-                                    <Input
-                                        id="jobTitle"
-                                        placeholder="e.g. Software Engineer"
-                                        value={formData.jobTitle}
-                                        onChange={handleJobTitleChange}
-                                        className={`mt-2 ${
-                                            errors.jobTitle
-                                                ? "border-red-500"
-                                                : ""
-                                        }`}
-                                    />
-                                    {errors.jobTitle && (
-                                        <p className="text-red-500 text-sm mt-1">
-                                            {errors.jobTitle}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Job Category */}
-                                <div className="space-y-2">
-                                    <Label
-                                        htmlFor="category"
-                                        className="text-base font-medium"
-                                    >
-                                        Job Category
-                                    </Label>
-                                    <p className="text-sm text-gray-600">
-                                        Select the primary category for this job
-                                    </p>
-                                    <Select
-                                        onValueChange={handleCategoryChange}
-                                        value={formData.category}
-                                    >
-                                        <SelectTrigger
-                                            className={`w-full ${
-                                                errors.category
-                                                    ? "border-red-500"
-                                                    : ""
-                                            }`}
-                                        >
-                                            <SelectValue placeholder="Select a category" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {jobCategories.map((category) => (
-                                                <SelectItem
-                                                    key={category}
-                                                    value={category}
-                                                >
-                                                    {category}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.category && (
-                                        <p className="text-red-500 text-sm mt-1">
-                                            {errors.category}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* City and Address */}
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    {/* City Selection */}
-                                    <div className="space-y-2">
-                                        <Label className="text-base font-medium">
-                                            Cities
-                                        </Label>
-                                        <p className="text-sm text-gray-600">
-                                            Select job locations (multiple
-                                            allowed)
-                                        </p>
-                                        <div
-                                            className={`border rounded-md p-3 ${
-                                                errors.city
-                                                    ? "border-red-500"
-                                                    : "border-gray-200"
-                                            }`}
-                                        >
-                                            <ProvinceCombobox
-                                                value={
-                                                    formData.city.length > 0
-                                                        ? formData.city[0]
-                                                        : ""
-                                                }
-                                                onChange={handleCityChange}
-                                                error={errors.city}
-                                                multiple={true}
-                                            />
-                                            {formData.city.length > 0 && (
-                                                <div className="flex flex-wrap gap-2 mt-2">
-                                                    {formData.city.map(
-                                                        (city) => (
-                                                            <Badge
-                                                                key={city}
-                                                                variant="secondary"
-                                                                className="px-3 py-1"
-                                                            >
-                                                                {city}
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    className="h-4 w-4 p-0 ml-2 hover:bg-transparent"
-                                                                    onClick={() =>
-                                                                        handleCityChange(
-                                                                            city
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <X className="w-3 h-3" />
-                                                                </Button>
-                                                            </Badge>
-                                                        )
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                        {errors.city && (
-                                            <p className="text-red-500 text-sm mt-1">
-                                                {errors.city}
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    {/* Address */}
-                                    <div className="space-y-2">
-                                        <Label
-                                            htmlFor="address"
-                                            className="text-base font-medium"
-                                        >
-                                            Address
-                                        </Label>
-                                        <p className="text-sm text-gray-600">
-                                            Enter the specific address
-                                        </p>
-                                        <Input
-                                            id="address"
-                                            placeholder="e.g. 123 Main Street, District 1"
-                                            value={formData.address}
-                                            onChange={handleAddressChange}
-                                            className={`mt-2 ${
-                                                errors.address
-                                                    ? "border-red-500"
-                                                    : ""
-                                            }`}
-                                        />
-                                        {errors.address && (
-                                            <p className="text-red-500 text-sm mt-1">
-                                                {errors.address}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Work Type */}
-                                <div className="space-y-4">
-                                    <Label className="text-base font-medium">
-                                        Type of Employment
-                                    </Label>
-                                    <p className="text-sm text-gray-600">
-                                        You can select multiple types of
-                                        employment
-                                    </p>
-                                    {isLoadingWorkTypes ? (
-                                        <div className="flex items-center justify-center py-4">
-                                            <div className="text-sm text-gray-500">
-                                                Synchronizing work types from
-                                                API...
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div
-                                            className={`space-y-3 ${
-                                                errors.workType
-                                                    ? "border border-red-500 rounded-md p-3"
-                                                    : ""
-                                            }`}
-                                        >
-                                            {workTypes.map((type) => (
-                                                <div
-                                                    key={type}
-                                                    className="flex items-center space-x-2"
-                                                >
-                                                    <Checkbox
-                                                        id={type}
-                                                        checked={formData.workType.includes(
-                                                            type
-                                                        )}
-                                                        onCheckedChange={(
-                                                            checked
-                                                        ) =>
-                                                            handleWorkTypeChange(
-                                                                type,
-                                                                checked
-                                                            )
-                                                        }
-                                                    />
-                                                    <Label
-                                                        htmlFor={type}
-                                                        className="text-sm font-normal"
-                                                    >
-                                                        {type}
-                                                    </Label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                    {errors.workType && (
-                                        <p className="text-red-500 text-sm">
-                                            {errors.workType}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Salary Slider */}
-                                <div className="space-y-4">
-                                    <Label className="text-base font-medium">
-                                        Salary
-                                    </Label>
-                                    <p className="text-sm text-gray-600">
-                                        Please specify the estimated salary
-                                        range for the role. *You can leave this
-                                        blank
-                                    </p>
-                                    <div className="space-y-4">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-sm">
-                                                    $
-                                                </span>
-                                                <Input
-                                                    type="number"
-                                                    value={
-                                                        formData.salaryRange[0]
-                                                    }
-                                                    onChange={(e) =>
-                                                        setFormData((prev) => ({
-                                                            ...prev,
-                                                            salaryRange: [
-                                                                Number.parseInt(
-                                                                    e.target
-                                                                        .value
-                                                                ) || 0,
-                                                                prev
-                                                                    .salaryRange[1],
-                                                            ],
-                                                        }))
-                                                    }
-                                                    className="w-24"
-                                                />
-                                            </div>
-                                            <span className="text-sm text-gray-500">
-                                                to
-                                            </span>
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-sm">
-                                                    $
-                                                </span>
-                                                <Input
-                                                    type="number"
-                                                    value={
-                                                        formData.salaryRange[1]
-                                                    }
-                                                    onChange={(e) =>
-                                                        setFormData((prev) => ({
-                                                            ...prev,
-                                                            salaryRange: [
-                                                                prev
-                                                                    .salaryRange[0],
-                                                                Number.parseInt(
-                                                                    e.target
-                                                                        .value
-                                                                ) || 0,
-                                                            ],
-                                                        }))
-                                                    }
-                                                    className="w-24"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="px-2">
-                                            <Slider
-                                                value={formData.salaryRange}
-                                                onValueChange={(value) =>
-                                                    setFormData((prev) => ({
-                                                        ...prev,
-                                                        salaryRange: value,
-                                                    }))
-                                                }
-                                                max={100000}
-                                                min={1000}
-                                                step={1000}
-                                                className="w-full"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Job Levels */}
-                                <div className="space-y-4">
-                                    <Label className="text-base font-medium">
-                                        Job Levels
-                                    </Label>
-                                    <p className="text-sm text-gray-600">
-                                        Select appropriate job levels (multiple
-                                        allowed)
-                                    </p>
-                                    {isLoadingLevels ? (
-                                        <div className="flex items-center justify-center py-4">
-                                            <div className="text-sm text-gray-500">
-                                                Synchronizing job levels from
-                                                API...
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-3">
-                                            {jobLevels.length > 0 ? (
-                                                jobLevels.map((level) => (
-                                                    <div
-                                                        key={level}
-                                                        className="flex items-center space-x-2"
-                                                    >
-                                                        <Checkbox
-                                                            id={level}
-                                                            checked={formData.level.includes(
-                                                                level
-                                                            )}
-                                                            onCheckedChange={(
-                                                                checked
-                                                            ) =>
-                                                                handleLevelChange(
-                                                                    level,
-                                                                    checked
-                                                                )
-                                                            }
-                                                        />
-                                                        <Label
-                                                            htmlFor={level}
-                                                            className="text-sm font-normal"
-                                                        >
-                                                            {level}
-                                                        </Label>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className="text-sm text-gray-500 py-4">
-                                                    No job levels found in API.
-                                                    Please add some jobs first.
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Required Skills */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <Label className="text-base font-medium">
-                                            Required Skills
-                                        </Label>
-                                        <div className="flex gap-2">
-                                            {!showSkillInput ? (
-                                                <>
-                                                    <Select
-                                                        onValueChange={
-                                                            handleSkillAdd
-                                                        }
-                                                    >
-                                                        <SelectTrigger className="w-48">
-                                                            <SelectValue placeholder="Select a skill" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {availableSkills
-                                                                .filter(
-                                                                    (skill) =>
-                                                                        !formData.skill.includes(
-                                                                            skill
-                                                                        )
-                                                                )
-                                                                .map(
-                                                                    (skill) => (
-                                                                        <SelectItem
-                                                                            key={
-                                                                                skill
-                                                                            }
-                                                                            value={
-                                                                                skill
-                                                                            }
-                                                                        >
-                                                                            {
-                                                                                skill
-                                                                            }
-                                                                        </SelectItem>
-                                                                    )
-                                                                )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className="text-blue-600 border-blue-600 bg-transparent"
-                                                        onClick={() =>
-                                                            setShowSkillInput(
-                                                                true
-                                                            )
-                                                        }
-                                                    >
-                                                        <Plus className="w-4 h-4 mr-2" />
-                                                        Add New
-                                                    </Button>
-                                                </>
-                                            ) : (
-                                                <div className="flex gap-2">
-                                                    <Input
-                                                        placeholder="Enter new skill"
-                                                        value={newSkillInput}
-                                                        onChange={(e) =>
-                                                            setNewSkillInput(
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                        className="w-48"
-                                                        onKeyPress={(e) =>
-                                                            e.key === "Enter" &&
-                                                            addNewSkill()
-                                                        }
-                                                    />
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={addNewSkill}
-                                                        disabled={
-                                                            !newSkillInput.trim()
-                                                        }
-                                                    >
-                                                        Add
-                                                    </Button>
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={() => {
-                                                            setShowSkillInput(
-                                                                false
-                                                            );
-                                                            setNewSkillInput(
-                                                                ""
-                                                            );
-                                                        }}
-                                                    >
-                                                        <X className="w-4 h-4" />
-                                                    </Button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <p className="text-sm text-gray-600">
-                                        Add required skills for the job
-                                    </p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {formData.skill.map((skill) => (
-                                            <Badge
-                                                key={skill}
-                                                variant="secondary"
-                                                className="px-3 py-1"
-                                            >
-                                                {skill}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="h-4 w-4 p-0 ml-2 hover:bg-transparent"
-                                                    onClick={() =>
-                                                        handleSkillRemove(skill)
-                                                    }
-                                                >
-                                                    <X className="w-3 h-3" />
-                                                </Button>
-                                            </Badge>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
+                            <JobInformationForm
+                                formData={formData}
+                                errors={errors}
+                                jobCategories={jobCategories}
+                                workTypes={workTypes}
+                                isLoadingWorkTypes={isLoadingWorkTypes}
+                                jobLevels={jobLevels}
+                                isLoadingLevels={isLoadingLevels}
+                                availableSkills={availableSkills}
+                                onFormChange={setFormData}
+                                onJobTitleChange={handleJobTitleChange}
+                                onCategoryChange={handleCategoryChange}
+                                onAddressChange={handleAddressChange}
+                                onCityChange={handleCityChange}
+                                onWorkTypeChange={handleWorkTypeChange}
+                                onLevelChange={handleLevelChange}
+                                onSkillAdd={handleSkillAdd}
+                                onSkillRemove={handleSkillRemove}
+                            />
                         )}
 
                         {/* Step 2: Job Description */}
                         {currentStep === 2 && (
-                            <div className="space-y-8">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                                        Details
-                                    </h2>
-                                    <p className="text-gray-600">
-                                        Add the description of the job,
-                                        responsibilities, who you are, and
-                                        nice-to-haves.
-                                    </p>
-                                </div>
-
-                                {/* Job Description */}
-                                <div className="space-y-2">
-                                    <Label className="text-base font-medium">
-                                        Job Description
-                                    </Label>
-                                    <p className="text-sm text-gray-600">
-                                        Describe the job position and what it
-                                        entails
-                                    </p>
-                                    {renderTextEditor(
-                                        "Enter job description",
-                                        formData.jobDescription,
-                                        "jobDescription"
-                                    )}
-                                </div>
-
-                                {/* Requirements */}
-                                <div className="space-y-2">
-                                    <Label className="text-base font-medium">
-                                        Requirements
-                                    </Label>
-                                    <p className="text-sm text-gray-600">
-                                        List the main requirements for this
-                                        position (one per line)
-                                    </p>
-                                    {renderTextEditor(
-                                        "Enter job requirements (one per line)",
-                                        formData.requirments,
-                                        "requirments"
-                                    )}
-                                </div>
-
-                                {/* Nice-To-Haves */}
-                                <div className="space-y-2">
-                                    <Label className="text-base font-medium">
-                                        Nice-To-Haves
-                                    </Label>
-                                    <p className="text-sm text-gray-600">
-                                        Add nice-to-have skills and
-                                        qualifications for the role to encourage
-                                        a more diverse set of candidates to
-                                        apply
-                                    </p>
-                                    {renderTextEditor(
-                                        "Enter nice-to-haves",
-                                        formData.niceToHaves,
-                                        "niceToHaves"
-                                    )}
-                                </div>
-                            </div>
+                            <JobDescriptionForm
+                                formData={formData}
+                                onDescriptionChange={handleDescriptionChange}
+                                onRequirementsChange={handleRequirementsChange}
+                                onNiceToHavesChange={handleNiceToHavesChange}
+                            />
                         )}
 
                         {/* Step 3: Perks & Benefits */}
                         {currentStep === 3 && (
-                            <div className="space-y-8">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                                        Perks & Benefits
-                                    </h2>
-                                    <p className="text-gray-600">
-                                        List out your top perks and benefits.
-                                    </p>
-                                </div>
-
-                                <div className="space-y-6">
-                                    <div className="flex items-center justify-between">
-                                        <Label className="text-base font-medium">
-                                            Perks and Benefits
-                                        </Label>
-                                        <Dialog
-                                            open={showBenefitDialog}
-                                            onOpenChange={setShowBenefitDialog}
-                                        >
-                                            <DialogTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="text-blue-600 border-blue-600 bg-transparent"
-                                                >
-                                                    <Plus className="w-4 h-4 mr-2" />
-                                                    Add Benefit
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[425px]">
-                                                <DialogHeader>
-                                                    <DialogTitle>
-                                                        Add New Benefit
-                                                    </DialogTitle>
-                                                </DialogHeader>
-                                                <div className="space-y-4 py-4">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="benefit-title">
-                                                            Title
-                                                        </Label>
-                                                        <Input
-                                                            id="benefit-title"
-                                                            placeholder="e.g. Health Insurance"
-                                                            value={
-                                                                newBenefit.title
-                                                            }
-                                                            onChange={(e) =>
-                                                                setNewBenefit(
-                                                                    (prev) => ({
-                                                                        ...prev,
-                                                                        title: e
-                                                                            .target
-                                                                            .value,
-                                                                    })
-                                                                )
-                                                            }
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="benefit-description">
-                                                            Description
-                                                        </Label>
-                                                        <Textarea
-                                                            id="benefit-description"
-                                                            placeholder="Describe this benefit..."
-                                                            className="min-h-[80px]"
-                                                            value={
-                                                                newBenefit.description
-                                                            }
-                                                            onChange={(e) =>
-                                                                setNewBenefit(
-                                                                    (prev) => ({
-                                                                        ...prev,
-                                                                        description:
-                                                                            e
-                                                                                .target
-                                                                                .value,
-                                                                    })
-                                                                )
-                                                            }
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label>Icon</Label>
-                                                        <Select
-                                                            value={
-                                                                newBenefit.icon
-                                                            }
-                                                            onValueChange={(
-                                                                value
-                                                            ) =>
-                                                                setNewBenefit(
-                                                                    (prev) => ({
-                                                                        ...prev,
-                                                                        icon: value,
-                                                                    })
-                                                                )
-                                                            }
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {benefitIcons.map(
-                                                                    (icon) => (
-                                                                        <SelectItem
-                                                                            key={
-                                                                                icon.value
-                                                                            }
-                                                                            value={
-                                                                                icon.value
-                                                                            }
-                                                                        >
-                                                                            <div className="flex items-center gap-2">
-                                                                                <icon.icon className="w-4 h-4" />
-                                                                                {
-                                                                                    icon.label
-                                                                                }
-                                                                            </div>
-                                                                        </SelectItem>
-                                                                    )
-                                                                )}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                    <div className="flex justify-end gap-2 pt-4">
-                                                        <Button
-                                                            variant="outline"
-                                                            onClick={() => {
-                                                                setShowBenefitDialog(
-                                                                    false
-                                                                );
-                                                                setNewBenefit({
-                                                                    title: "",
-                                                                    description:
-                                                                        "",
-                                                                    icon: "heart",
-                                                                });
-                                                            }}
-                                                        >
-                                                            Cancel
-                                                        </Button>
-                                                        <Button
-                                                            onClick={
-                                                                addCustomBenefit
-                                                            }
-                                                            disabled={
-                                                                !newBenefit.title.trim() ||
-                                                                !newBenefit.description.trim()
-                                                            }
-                                                            className="bg-blue-600 hover:bg-blue-700"
-                                                        >
-                                                            Add Benefit
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </DialogContent>
-                                        </Dialog>
-                                    </div>
-
-                                    <p className="text-sm text-gray-600">
-                                        Encourage more people to apply by
-                                        sharing the attractive rewards and
-                                        benefits you offer your employees
-                                    </p>
-
-                                    <div className="grid gap-6">
-                                        {formData.benefits.map((benefit) => (
-                                            <Card
-                                                key={benefit.id}
-                                                className="relative"
-                                            >
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="absolute top-4 right-4 h-8 w-8 p-0"
-                                                    onClick={() =>
-                                                        handleBenefitRemove(
-                                                            benefit.id
-                                                        )
-                                                    }
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </Button>
-                                                <CardContent className="p-6">
-                                                    <div className="flex items-start space-x-4">
-                                                        <div className="flex-shrink-0">
-                                                            {getBenefitIcon(
-                                                                benefit.icon
-                                                            )}
-                                                        </div>
-                                                        <div className="flex-1">
-                                                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                                                {benefit.title}
-                                                            </h3>
-                                                            <p className="text-gray-600 text-sm leading-relaxed">
-                                                                {
-                                                                    benefit.description
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
+                            <BenefitsForm
+                                formData={formData}
+                                onBenefitAdd={handleBenefitAdd}
+                                onBenefitRemove={handleBenefitRemove}
+                            />
                         )}
 
                         {/* Navigation Buttons */}
@@ -1541,38 +581,7 @@ export default function JobPostingForm() {
                 </Card>
 
                 {/* Recent Jobs Display */}
-                {jobs.length > 0 && (
-                    <Card className="mt-8">
-                        <CardContent className="p-6">
-                            <h3 className="text-lg font-semibold mb-4">
-                                Recent Jobs ({jobs.length})
-                            </h3>
-                            <div className="space-y-2 max-h-40 overflow-y-auto">
-                                {jobs.slice(-5).map((job) => (
-                                    <div
-                                        key={job.id}
-                                        className="text-sm p-2 bg-gray-50 rounded"
-                                    >
-                                        <strong>{job.title}</strong> -{" "}
-                                        {job.category} (
-                                        {Array.isArray(job.workType)
-                                            ? job.workType.join(", ")
-                                            : job.workType}
-                                        )
-                                        <br />
-                                        <span className="text-gray-600">
-                                            ${job.salaryMin} - ${job.salaryMax}{" "}
-                                            | Location: {job.location} | Skills:{" "}
-                                            {Array.isArray(job.skill)
-                                                ? job.skill.join(", ")
-                                                : job.skill}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
+                <RecentJobsList jobs={jobs} />
             </div>
         </div>
     );
