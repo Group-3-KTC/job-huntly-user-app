@@ -34,7 +34,7 @@ export default function LanguageSection({ data, onEdit, onDelete }) {
                                 }}
                                 className="text-blue-500 hover:text-blue-700"
                             >
-                                <Edit size={16} />
+                                <Edit size={20} />
                             </button>
                         )}
                         {onDelete && (
@@ -45,7 +45,7 @@ export default function LanguageSection({ data, onEdit, onDelete }) {
                                 }}
                                 className="text-red-500 hover:text-red-700"
                             >
-                                <Trash2 size={16} />
+                                <Trash2 size={20} />
                             </button>
                         )}
                     </div>

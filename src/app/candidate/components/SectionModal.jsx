@@ -1,9 +1,8 @@
 "use client";
-
 import { useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup"; // Đảm bảo sử dụng "yup" thay vì "Yup"
+import * as yup from "yup";
 import { X, Save } from "lucide-react";
 
 const sectionConfigs = {
@@ -61,6 +60,12 @@ const sectionConfigs = {
                 label: "Personal Link",
                 type: "url",
                 placeholder: "Your portfolio/website",
+            },
+            {
+                key: "avatar",
+                label: "Avatar URL",
+                type: "url",
+                placeholder: "URL to your avatar image",
             },
         ],
     },
@@ -192,62 +197,6 @@ const sectionConfigs = {
             },
         ],
     },
-    awards: {
-        fields: [
-            {
-                key: "name",
-                label: "Award Name",
-                type: "text",
-                placeholder: "e.g., Dean's List",
-            },
-            {
-                key: "organization",
-                label: "Organization",
-                type: "text",
-                placeholder: "Awarding organization",
-            },
-            {
-                key: "issueDate",
-                label: "Issue Date",
-                type: "text",
-                placeholder: "e.g., June 2023 or 06/2023",
-            },
-            {
-                key: "description",
-                label: "Description",
-                type: "textarea",
-                placeholder: "Award description",
-            },
-        ],
-    },
-    highlightProject: {
-        fields: [
-            {
-                key: "title",
-                label: "Project Title",
-                type: "text",
-                placeholder: "Project name",
-            },
-            {
-                key: "description",
-                label: "Description",
-                type: "textarea",
-                placeholder: "Project description",
-            },
-            {
-                key: "date",
-                label: "Duration",
-                type: "text",
-                placeholder: "e.g., 03/2022 - 06/2022",
-            },
-            {
-                key: "link",
-                label: "Project Link",
-                type: "url",
-                placeholder: "https://example.com",
-            },
-        ],
-    },
 };
 
 export default function SectionModal({
@@ -256,96 +205,74 @@ export default function SectionModal({
     initialData = {},
     onClose,
     onSave,
-    onDelete,
-    onEdit,
 }) {
     const config = sectionConfigs[sectionId];
-
     const getValidationSchema = () => {
         const baseSchema = {};
         config.fields.forEach((field) => {
-            if (field.key.includes(".")) {
-                const [parent, child] = field.key.split(".");
-                baseSchema[parent] = baseSchema[parent] || {};
-                if (child.includes("Month")) {
-                    baseSchema[parent][child] = yup
-                        .string()
-                        .matches(/^(0[1-9]|1[0-2])$/, "Month must be 01-12")
-                        .nullable();
-                } else if (child.includes("Year")) {
-                    baseSchema[parent][child] = yup
-                        .string()
+            let fieldSchema = yup.string().nullable();
+            switch (field.key) {
+                case "email":
+                    fieldSchema = fieldSchema.email("Invalid email format");
+                    break;
+                case "phone":
+                    fieldSchema = fieldSchema
                         .matches(
-                            /^\d{4}$|now$/,
-                            "Year must be 4 digits or 'now'"
+                            /^\d{10,11}$/,
+                            "Phone must contain only numbers and be 10-11 digits"
                         )
+                        .required("Phone is required");
+                    break;
+                case "personalLink":
+                case "avatar":
+                    fieldSchema = fieldSchema.url("Invalid URL");
+                    break;
+                case "dateOfBirth":
+                    fieldSchema = yup
+                        .date()
+                        .typeError("Invalid date format")
+                        .min(new Date(1900, 0, 1), "Date must be after 1900")
+                        .max(new Date(), "Date cannot be in the future")
                         .nullable();
-                }
-            } else {
-                let fieldSchema = yup.string().nullable();
-                switch (field.key) {
-                    case "email":
-                        fieldSchema = fieldSchema.email("Invalid email format");
-                        break;
-                    case "phone":
-                        fieldSchema = fieldSchema
-                            .matches(
-                                /^\d{10,11}$/,
-                                "Phone must contain only numbers and be 10-11 digits"
-                            )
-                            .required("Phone is required");
-                        break;
-                    case "personalLink":
-                    case "link":
-                        fieldSchema = fieldSchema.url("Invalid URL");
-                        break;
-                    case "dateOfBirth":
+                    break;
+                case "date":
+                    fieldSchema = fieldSchema
+                        .matches(
+                            /^(0[1-9]|1[0-2])\/\d{4}$|^[a-zA-Z]+ \d{4}$|^(0[1-9]|1[0-2])\/\d{4} - (0[1-9]|1[0-2])\/\d{4}$|^(0[1-9]|1[0-2])\/\d{4} - now$/,
+                            "Invalid date format (e.g., MM/YYYY or Month YYYY or MM/YYYY - now)"
+                        )
+                        .max(500, "Maximum 500 characters");
+                    break;
+                case "level":
+                    if (sectionId === "language" || sectionId === "skills") {
                         fieldSchema = yup
-                            .date()
-                            .typeError("Invalid date format")
-                            .min(
-                                new Date(1900, 0, 1),
-                                "Date must be after 1900"
-                            )
-                            .max(new Date(), "Date cannot be in the future")
-                            .nullable();
-                        break;
-                    case "issueDate":
-                        fieldSchema = fieldSchema
-                            .matches(
-                                /^(0[1-9]|1[0-2])\/\d{4}$|^[a-zA-Z]+ \d{4}$/,
-                                "Invalid date format (e.g., MM/YYYY or Month YYYY)"
-                            )
-                            .max(500, "Maximum 500 characters");
-                        break;
-                    case "level":
-                        if (
-                            sectionId === "language" ||
-                            sectionId === "skills"
-                        ) {
-                            fieldSchema = yup
-                                .string()
-                                .oneOf(
-                                    [
-                                        "beginner",
-                                        "intermediate",
-                                        "advanced",
-                                        "native",
-                                        "expert",
-                                    ],
-                                    "Invalid level"
-                                );
-                        }
-                        break;
-                    default:
-                        fieldSchema = fieldSchema.max(
-                            500,
-                            "Maximum 500 characters"
-                        );
-                        break;
-                }
-                baseSchema[field.key] = fieldSchema;
+                            .string()
+                            .oneOf(
+                                sectionId === "language"
+                                    ? [
+                                          "beginner",
+                                          "intermediate",
+                                          "advanced",
+                                          "native",
+                                      ]
+                                    : [
+                                          "beginner",
+                                          "intermediate",
+                                          "advanced",
+                                          "expert",
+                                      ],
+                                "Invalid level"
+                            );
+                    }
+                    break;
+                default:
+                    fieldSchema = fieldSchema.max(
+                        500,
+                        "Maximum 500 characters"
+                    );
+                    break;
             }
+            baseSchema[field.key] = fieldSchema;
         });
         return yup.object().shape(baseSchema);
     };
@@ -365,7 +292,6 @@ export default function SectionModal({
     } = methods;
 
     const formValues = watch();
-
     const hasChanges = () => {
         return (
             isDirty ||
@@ -374,24 +300,9 @@ export default function SectionModal({
     };
 
     const onSubmit = (data) => {
-        console.log("Form submitted:", data); // Debug dữ liệu gửi đi
-
+        console.log("Form submitted:", data);
         onSave(data);
-
         onClose();
-    };
-
-    const handleDeleteItem = () => {
-        if (onDelete) {
-            onDelete();
-            onClose();
-        }
-    };
-
-    const handleEditItem = () => {
-        if (onEdit) {
-            onEdit();
-        }
     };
 
     useEffect(() => {
@@ -417,7 +328,6 @@ export default function SectionModal({
                         <X className="w-5 h-5" />
                     </button>
                 </div>
-
                 <div className="max-h-[60vh] overflow-y-auto space-y-4">
                     <FormProvider {...methods}>
                         <form
@@ -480,55 +390,12 @@ export default function SectionModal({
                                             {errors[field.key].message}
                                         </p>
                                     )}
-                                    {field.key === "time.startMonth" &&
-                                        errors.time?.startMonth && (
-                                            <p className="text-xs text-red-500">
-                                                {errors.time.startMonth.message}
-                                            </p>
-                                        )}
-                                    {field.key === "time.startYear" &&
-                                        errors.time?.startYear && (
-                                            <p className="text-xs text-red-500">
-                                                {errors.time.startYear.message}
-                                            </p>
-                                        )}
-                                    {field.key === "time.endMonth" &&
-                                        errors.time?.endMonth && (
-                                            <p className="text-xs text-red-500">
-                                                {errors.time.endMonth.message}
-                                            </p>
-                                        )}
-                                    {field.key === "time.endYear" &&
-                                        errors.time?.endYear && (
-                                            <p className="text-xs text-red-500">
-                                                {errors.time.endYear.message}
-                                            </p>
-                                        )}
                                 </div>
                             ))}
                         </form>
                     </FormProvider>
                 </div>
-
                 <div className="flex justify-end gap-3 pt-3 mt-5 border-t">
-                    {onDelete && (
-                        <button
-                            type="button"
-                            onClick={handleDeleteItem}
-                            className="px-3 py-1.5 text-sm text-white bg-red-500 rounded-md hover:bg-red-600"
-                        >
-                            Delete
-                        </button>
-                    )}
-                    {onEdit && (
-                        <button
-                            type="button"
-                            onClick={handleEditItem}
-                            className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-100"
-                        >
-                            Edit
-                        </button>
-                    )}
                     <button
                         type="button"
                         onClick={onClose}

@@ -1,55 +1,107 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
-    useGetProfileQuery,
-    useUpdateProfileMutation,
+    useGetUserProfileQuery,
+    useUpdateCandidateProfileMutation,
+    useAddSectionItemMutation,
+    useUpdateSectionItemMutation,
+    useDeleteSectionItemMutation,
 } from "@/services/profileService";
 import { getProfileSectionData } from "@/app/candidate/profile/components/profileData";
 import ProfileSidebarRight from "@/app/candidate/components/ProfileSidebarRight";
 import SectionCard from "@/app/candidate/components/SectionCard";
 import SectionModal from "@/app/candidate/components/SectionModal";
+import {
+    setNormalizedProfile,
+    selectNormalizedProfile,
+} from "@/features/profile/profileSlice";
 
 export default function ProfilePage() {
-    const { data: profileData, isLoading, error } = useGetProfileQuery("1");
-    const [updateProfile] = useUpdateProfileMutation();
+    const dispatch = useDispatch();
+    const normalizedProfileData = useSelector(selectNormalizedProfile);
+    const {
+        data: profileData,
+        isLoading,
+        error,
+        isSuccess,
+    } = useGetUserProfileQuery();
+    console.log("useGetUserProfileQuery result:", {
+        profileData,
+        isLoading,
+        error,
+        isSuccess,
+    });
+
+    const [updateCandidateProfile] = useUpdateCandidateProfileMutation();
+    const [addSectionItem] = useAddSectionItemMutation();
+    const [updateSectionItem] = useUpdateSectionItemMutation();
+    const [deleteSectionItem] = useDeleteSectionItemMutation();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentSection, setCurrentSection] = useState(null);
     const [editingItemIndex, setEditingItemIndex] = useState(null);
 
-    // Chuẩn hóa dữ liệu aboutMe
-    const normalizedProfileData = {
-        ...profileData,
-        aboutMe: profileData?.aboutMe || { text: "" }, // Đảm bảo aboutMe luôn là object
-        id: profileData?.id || "1",
-    };
+    useEffect(() => {
+        console.log("useEffect triggered:", {
+            profileData,
+            isLoading,
+            error,
+            isSuccess,
+        });
 
+        if (isSuccess && profileData) {
+            console.log("Profile data from API:", profileData);
+            const normalizedData = {
+                personalDetail: {
+                    name: profileData?.name,
+                    title: profileData?.title,
+                    email: profileData?.email,
+                    dateOfBirth: profileData?.dateOfBirth,
+                    address: profileData?.address,
+                    phone: profileData?.phone,
+                    gender: profileData?.gender,
+                    personalLink: profileData?.personalLink,
+                    avatar: profileData?.avatar,
+                },
+                aboutMe: { text: profileData?.aboutMe || "" },
+                skills: profileData?.skills || [],
+                education: profileData?.education || [],
+                workExperience: profileData?.workExperience || [],
+                language: profileData?.language || [],
+                certificates: profileData?.certificates || [],
+                id: profileData?.id || "1",
+            };
+            console.log("Normalized data:", normalizedData);
+            dispatch(setNormalizedProfile(normalizedData));
+        }
+    }, [profileData, isSuccess, dispatch]);
+    
     const profileSectionData = getProfileSectionData(
         normalizedProfileData || {}
     );
+    console.log("Profile section data:", profileSectionData);
 
     const isArraySection = (sectionId) => {
-        const arrayTypes = [
+        return [
+            "skills",
             "education",
             "workExperience",
-            "skills",
-            "certificates",
-            "awards",
-            "highlightProject",
             "language",
-        ];
-        return arrayTypes.includes(sectionId);
+            "certificates",
+        ].includes(sectionId);
     };
 
-    // Hàm kiểm tra nội dung có ý nghĩa
     const hasMeaningfulContent = (sectionId, sectionData) => {
         if (sectionId === "aboutMe") {
-            return sectionData?.text?.trim().length > 0; // Chỉ có nội dung khi text không rỗng
+            return sectionData?.text?.trim().length > 0;
+        }
+        if (sectionId === "personalDetail") {
+            return Object.keys(sectionData || {}).length > 0;
         }
         return Array.isArray(sectionData)
             ? sectionData.length > 0
-            : Object.keys(sectionData).length > 0;
+            : Object.keys(sectionData || {}).length > 0;
     };
 
     const handleEdit = (section) => {
@@ -65,13 +117,7 @@ export default function ProfilePage() {
     };
 
     const handleDelete = (section) => {
-        if (section.isCustom) {
-            const updatedProfile = structuredClone({
-                ...normalizedProfileData,
-            });
-            delete updatedProfile[section.id];
-            updateProfile(updatedProfile);
-        }
+        // Không hỗ trợ xóa section
     };
 
     const handleEditItem = (section, itemIndex) => {
@@ -80,32 +126,53 @@ export default function ProfilePage() {
         setIsModalOpen(true);
     };
 
-    const handleDeleteItem = (section, itemIndex) => {
-        const updatedProfile = structuredClone({ ...normalizedProfileData });
-        if (updatedProfile[section.id]) {
-            updatedProfile[section.id].splice(itemIndex, 1);
-            updateProfile(updatedProfile);
+    const handleDeleteItem = async (section, itemIndex) => {
+        const itemId = normalizedProfileData[section.id]?.[itemIndex]?.id;
+        if (itemId) {
+            console.log(`Deleting item ${itemId} from ${section.id}`);
+            await deleteSectionItem({
+                section: section.id,
+                profileId: "1",
+                itemId,
+            });
+        } else {
+            console.log("No itemId found for deletion");
         }
     };
 
-    const handleSave = (newData) => {
-        const updatedProfile = structuredClone({ ...normalizedProfileData });
-        if (isArraySection(currentSection.id)) {
+    const handleSave = async (newData) => {
+        if (
+            currentSection.id === "personalDetail" ||
+            currentSection.id === "aboutMe"
+        ) {
+            const updatedData = {
+                ...profileData,
+                ...(currentSection.id === "aboutMe"
+                    ? { aboutMe: newData.text }
+                    : newData),
+            };
+            await updateCandidateProfile({ id: "1", ...updatedData });
+        } else if (isArraySection(currentSection.id)) {
             if (editingItemIndex !== null) {
-                if (updatedProfile[currentSection.id]) {
-                    updatedProfile[currentSection.id][editingItemIndex] =
-                        newData;
+                const itemId =
+                    normalizedProfileData[currentSection.id]?.[editingItemIndex]
+                        ?.id;
+                if (itemId) {
+                    await updateSectionItem({
+                        section: currentSection.id,
+                        profileId: "1",
+                        itemId,
+                        data: newData,
+                    });
                 }
             } else {
-                if (!updatedProfile[currentSection.id]) {
-                    updatedProfile[currentSection.id] = [];
-                }
-                updatedProfile[currentSection.id].push(newData);
+                await addSectionItem({
+                    section: currentSection.id,
+                    profileId: "1",
+                    data: newData,
+                });
             }
-        } else {
-            updatedProfile[currentSection.id] = newData;
         }
-        updateProfile(updatedProfile);
         setIsModalOpen(false);
         setCurrentSection(null);
         setEditingItemIndex(null);
@@ -117,8 +184,27 @@ export default function ProfilePage() {
         setEditingItemIndex(null);
     };
 
-    if (isLoading) return <div>Đang tải...</div>;
-    if (error) return <div>Lỗi: {error.message}</div>;
+    if (isLoading) {
+        return <div>Đang tải...</div>;
+    }
+
+    if (error) {
+        console.error("API error details:", JSON.stringify(error, null, 2));
+        return (
+            <div>
+                Lỗi:{" "}
+                {error?.data?.message ||
+                    error?.error ||
+                    error?.message ||
+                    "Không thể tải dữ liệu"}
+            </div>
+        );
+    }
+
+    // Chỉ check normalizedProfileData sau khi đã load xong và không có error
+    if (!isLoading && !error && !normalizedProfileData) {
+        return <div>Không có dữ liệu profile</div>;
+    }
 
     return (
         <div className="flex flex-col w-full gap-6 lg:flex-row lg:items-start">
@@ -132,11 +218,10 @@ export default function ProfilePage() {
                             section.id,
                             sectionData
                         );
-
                         console.log(
                             `Section: ${section.id}, hasContent: ${hasContent}, data:`,
                             sectionData
-                        ); // Debug
+                        );
 
                         let content = null;
                         if (hasContent && section.renderComponent) {
@@ -175,8 +260,10 @@ export default function ProfilePage() {
                                             key={index}
                                             className="text-sm text-gray-700"
                                         >
-                                            <strong>{item.name}</strong> (
-                                            {item.level})
+                                            <strong>
+                                                {item.name || "Unnamed"}
+                                            </strong>{" "}
+                                            ({item.level || "N/A"})
                                             <button
                                                 onClick={() =>
                                                     handleDeleteItem(
@@ -210,9 +297,7 @@ export default function ProfilePage() {
                                         : undefined
                                 }
                                 onAdd={
-                                    isArraySection(section.id)
-                                        ? () => handleAdd(section)
-                                        : !hasContent
+                                    isArraySection(section.id) || !hasContent
                                         ? () => handleAdd(section)
                                         : undefined
                                 }
@@ -226,11 +311,9 @@ export default function ProfilePage() {
                     })}
                 </div>
             </div>
-
             <div className="w-full lg:max-w-[25%] shrink-0 sticky top-24 h-fit max-h-[calc(100vh-2rem)]">
                 <ProfileSidebarRight />
             </div>
-
             {isModalOpen && currentSection && (
                 <SectionModal
                     sectionId={currentSection.id}
