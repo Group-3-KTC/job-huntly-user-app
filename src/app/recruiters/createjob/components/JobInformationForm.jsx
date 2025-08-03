@@ -103,11 +103,7 @@ const JobInformationForm = ({
           <p className="text-sm text-gray-600">
             Select job locations (multiple allowed)
           </p>
-          <div
-            className={`border rounded-md p-3 ${
-              errors.city ? "border-red-500" : "border-gray-200"
-            }`}
-          >
+          <div>
             <ProvinceCombobox
               value={formData.city.length > 0 ? formData.city[0] : ""}
               onChange={onCityChange}
