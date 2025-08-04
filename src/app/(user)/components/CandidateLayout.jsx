@@ -1,4 +1,4 @@
-import CandidateSidebar from "@/app/candidate/components/CandidateSidebar";
+import CandidateSidebar from "@/app/(user)/components/CandidateSidebar";
 
 export default function CandidateLayout({ children }) {
   return (

@@ -12,7 +12,7 @@ const fakeBaseQuery = async (args, api, extraOptions) => {
         const body = typeof args === "string" ? null : args.body;
 
         // Tạo full URL (thêm base URL nếu cần)
-        const fullUrl = `http://localhost:3000/candidate/${url}`;
+        const fullUrl = `http://localhost:3000/${url}`;
 
         console.log("Calling fakeFetchApi with:", { fullUrl, method, body });
 

@@ -112,10 +112,7 @@ export const fakeFetchApi = async (url, method = "GET", body = null) => {
     const defaultProfileId = "1";
 
     // Xử lý endpoint tĩnh, không phụ thuộc vào URL chi tiết
-    if (
-        fullUrl.startsWith("http://localhost:3000/candidate/") &&
-        method === "GET"
-    ) {
+    if (fullUrl.startsWith("http://localhost:3000/") && method === "GET") {
         if (fullUrl.endsWith("/profile")) {
             console.log(
                 "Returning userProfile data for profile endpoint:",
@@ -157,7 +154,7 @@ export const fakeFetchApi = async (url, method = "GET", body = null) => {
             }
         }
     } else if (
-        fullUrl.startsWith("http://localhost:3000/candidate/") &&
+        fullUrl.startsWith("http://localhost:3000/") &&
         method === "PUT" &&
         fullUrl.endsWith("/candidateProfile")
     ) {
@@ -174,7 +171,7 @@ export const fakeFetchApi = async (url, method = "GET", body = null) => {
             }
         );
     } else if (
-        fullUrl.startsWith("http://localhost:3000/candidate/") &&
+        fullUrl.startsWith("http://localhost:3000/") &&
         method === "POST"
     ) {
         const section = fullUrl.split("/").pop();
@@ -199,7 +196,7 @@ export const fakeFetchApi = async (url, method = "GET", body = null) => {
             });
         }
     } else if (
-        fullUrl.startsWith("http://localhost:3000/candidate/") &&
+        fullUrl.startsWith("http://localhost:3000/") &&
         method === "PUT"
     ) {
         const [section, itemId] = fullUrl.split("/").slice(-2);
@@ -229,7 +226,7 @@ export const fakeFetchApi = async (url, method = "GET", body = null) => {
             );
         }
     } else if (
-        fullUrl.startsWith("http://localhost:3000/candidate/") &&
+        fullUrl.startsWith("http://localhost:3000/") &&
         method === "DELETE"
     ) {
         const [section, itemId] = fullUrl.split("/").slice(-2);

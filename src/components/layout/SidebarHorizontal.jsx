@@ -10,8 +10,8 @@ export default function SidebarHorizontal({ tabs }) {
   const getActiveTab = () => {
     // Nếu ở route cha (không có subpath), chọn tab đầu tiên làm mặc định
     if (
-      pathname === "/candidate/jobInvitation" ||
-      pathname === "/candidate/jobs"
+      pathname === "/jobInvitation" ||
+      pathname === "/jobs"
     ) {
       return tabs.find((tab) => tab.href === pathname) || tabs[0]; // Chọn tab khớp hoặc tab đầu
     }

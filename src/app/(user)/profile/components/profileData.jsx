@@ -4,13 +4,13 @@ import workExperienceImage from "@/assets/images/work-experience.png";
 import skillsImage from "@/assets/images/skill.png";
 import languageImage from "@/assets/images/languages.png";
 import certificatesImage from "@/assets/images/certificates.png";
-import PersonalDetailSection from "@/app/candidate/components/sectionRenderer/PersonalDetailSection";
-import AboutMeSection from "@/app/candidate/components/sectionRenderer/AboutMeSection";
-import EducationSection from "@/app/candidate/components/sectionRenderer/EducationSection";
-import WorkExperienceSection from "@/app/candidate/components/sectionRenderer/WorkExperienceSection";
-import LanguageSection from "@/app/candidate/components/sectionRenderer/LanguageSection";
-import CertificatesSection from "@/app/candidate/components/sectionRenderer/CertificatesSection";
-import SkillsSection from "@/app/candidate/components/sectionRenderer/SkillsSection";
+import PersonalDetailSection from "@/app/(user)/components/sectionRenderer/PersonalDetailSection";
+import AboutMeSection from "@/app/(user)/components/sectionRenderer/AboutMeSection";
+import EducationSection from "@/app/(user)/components/sectionRenderer/EducationSection";
+import WorkExperienceSection from "@/app/(user)/components/sectionRenderer/WorkExperienceSection";
+import LanguageSection from "@/app/(user)/components/sectionRenderer/LanguageSection";
+import CertificatesSection from "@/app/(user)/components/sectionRenderer/CertificatesSection";
+import SkillsSection from "@/app/(user)/components/sectionRenderer/SkillsSection";
 
 export const getProfileSectionData = (profileData) => [
     {
