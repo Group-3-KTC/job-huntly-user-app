@@ -2,5 +2,5 @@ import { redirect } from "next/navigation";
 
 
 export default function CandidatePage() {
-  return redirect("/candidate/dashboard");
+  return redirect("/dashboard");
 }

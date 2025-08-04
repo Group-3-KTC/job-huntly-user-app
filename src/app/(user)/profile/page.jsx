@@ -8,10 +8,10 @@ import {
     useUpdateSectionItemMutation,
     useDeleteSectionItemMutation,
 } from "@/services/profileService";
-import { getProfileSectionData } from "@/app/candidate/profile/components/profileData";
-import ProfileSidebarRight from "@/app/candidate/components/ProfileSidebarRight";
-import SectionCard from "@/app/candidate/components/SectionCard";
-import SectionModal from "@/app/candidate/components/SectionModal";
+import { getProfileSectionData } from "@/app/(user)/profile/components/profileData";
+import ProfileSidebarRight from "@/app/(user)/components/ProfileSidebarRight";
+import SectionCard from "@/app/(user)/components/SectionCard";
+import SectionModal from "@/app/(user)/components/SectionModal";
 import {
     setNormalizedProfile,
     selectNormalizedProfile,
@@ -76,7 +76,7 @@ export default function ProfilePage() {
             dispatch(setNormalizedProfile(normalizedData));
         }
     }, [profileData, isSuccess, dispatch]);
-    
+
     const profileSectionData = getProfileSectionData(
         normalizedProfileData || {}
     );

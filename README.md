@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# JobHuntly User Site
 
-## Getting Started
+User site của nền tảng tuyển dụng **JobHuntly**, dành cho ứng viên và nhà tuyển dụng. Ứng dụng được xây dựng với **Next.js App Router**, tích hợp **Redux Toolkit**, **Zustand**, cấu trúc theo domain-driven feature, sử dụng **TailwindCSS** và thư viện UI **ShadCN/UI**.
 
-First, run the development server:
+---
+
+## 🧱 Tech Stack
+
+- **Framework**: Next.js (App Router, JavaScript)
+- **UI**: Tailwind CSS, shadcn/ui
+- **State Management**: Redux Toolkit, RTK Query, Zustand
+- **Validation**: Yup, React hook form
+- **API Communication**: Axios
+- **Icon Library**: Lucide react
+
+---
+
+## 🚀 Scripts
+
+| Command         | Mục đích                   |
+| --------------- | -------------------------- |
+| `npm run dev`   | Chạy ứng dụng local        |
+| `npm run build` | Build production           |
+| `npm start`     | Start server sau khi build |
+| `npm run lint`  | Kiểm tra lint              |
+
+---
+
+## 📁 Folder Structure
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+src/
+├── app/                # App Router entry (route-based folders)
+│   ├── (auth)/         # Đăng nhập/đăng ký chung
+│   ├── (user)/         # Toàn bộ tính năng cho user (candidate + recruiter)
+│   ├── job-detail/     # Chi tiết job (route động [id])
+│   └── recruiters/     # Tính năng riêng cho recruiter
+│
+├── components/         # Reusable UI + layout components
+│   ├── auth/           # Form login/register cho ứng viên và recruiter
+│   ├── home/           # Các section trên homepage
+│   ├── layout/         # Header, Footer, Sidebar layout
+│   └── ui/             # Button, Input, Modal, Card, Toast...
+│
+├── features/           # State management (Redux slices, RTK Query)
+│   ├── auth/           # authSlice, authApi
+│   └── profile/        # profileSlice
+│
+├── hooks/              # Custom hooks (ex: useAuth, useScroll)
+├── lib/                # Cấu hình store, API base, utils
+├── services/           # API service functions
+├── store/              # Zustand stores + slices dùng chung
+├── styles/             # Tailwind CSS (globals.css)
+├── constants/          # appConstant, enums, role định danh
+├── validation/         # Zod schema validation
+└── assets/             # Hình ảnh static
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🌍 App Routing theo domain
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **(auth)**: Login/Register cho cả ứng viên và recruiter
+- **(user)**: Domain chính của user – bao gồm `candidate`, `profile`, `dashboard`, `jobInvitation`, `jobs`, `settings`, `notifications`, ...
+- **recruiters**: Đăng job, pricing, quản lý job của nhà tuyển dụng
+- **job-detail/\[id]**: Route chi tiết một công việc
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🔐 Authentication
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Sử dụng `authSlice` (Redux Toolkit) và `zustand/authStore`
+- Token được lưu bằng cookies (JWT)
+- Có middleware ở `app/middleware.js` để redirect nếu chưa login
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📦 Feature Modules (Domain)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Ví dụ `app/(user)/candidate/`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+app/(user)/candidate/
+├── dashboard/page.jsx              # Trang chính dashboard
+├── profile/manage-cv/page.jsx     # Quản lý CV
+├── jobInvitation/                 # Thư mời, phỏng vấn
+│   ├── archived/page.jsx
+│   ├── received/page.jsx
+│   └── interview/page.jsx
+└── components/                    # Component layout, section riêng
+```
+
+---
+
+## 📌 Ghi chú phát triển
+
+- Component UI nên nằm trong `components/ui/` hoặc `components/layout/` nếu dùng lại nhiều nơi.
+- Tránh import chéo giữa các domain `candidate`, `recruiters`, `company`, v.v. để dễ maintain.
+- Tối ưu hiệu năng với `memo`, `useMemo`, `useCallback`, lazy loading route/component.
+
+---
+
+## 👥 Đóng góp
+
+- Mỗi domain/tính năng nên đi kèm:
+
+  - `components/`
+  - `page.jsx`
+  - `layout.jsx` nếu cần nested layout
+  - Zustand store hoặc Redux slice (nếu cần global state)
+
+---
+
+## 🧪 Testing (sắp tới)
+
+- Kế hoạch tích hợp `Playwright` hoặc `Jest` cho unit test UI và end-to-end test
+
+---
+
+## 📎 Ghi chú khác
+
+- Cập nhật cấu trúc trong README.md nếu thêm domain mới
+- Code phải lint & format trước khi push lên `main`

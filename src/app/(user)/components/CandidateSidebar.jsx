@@ -15,37 +15,37 @@ import {
 
 const navItems = [
   {
-    href: "/candidate/dashboard",
+    href: "/dashboard",
     label: "Dashboard",
     icon: <LayoutDashboard className="w-5 h-5 mr-2" />,
   },
   {
-    href: "/candidate/profile",
+    href: "/profile",
     label: "Profile",
     icon: <User className="w-5 h-5 mr-2" />,
   },
   {
-    href: "/candidate/profile/manage-cv",
+    href: "/profile/manage-cv",
     label: "Manage CV",
     icon: <FileText className="w-5 h-5 mr-2" />,
   },
   {
-    href: "/candidate/jobInvitation",
+    href: "/jobInvitation",
     label: "Job Invitations",
     icon: <Mail className="w-5 h-5 mr-2" />,
   },
   {
-    href: "/candidate/jobs",
+    href: "/jobs",
     label: "My Jobs",
     icon: <Briefcase className="w-5 h-5 mr-2" />,
   },
   {
-    href: "/candidate/notifications",
+    href: "/notifications",
     label: "Notifications",
     icon: <Bell className="w-5 h-5 mr-2" />,
   },
   {
-    href: "/candidate/settings",
+    href: "/settings",
     label: "Settings",
     icon: <Settings className="w-5 h-5 mr-2" />,
   },

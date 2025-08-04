@@ -2,9 +2,9 @@ import SidebarHorizontal from "@/components/layout/SidebarHorizontal";
 
 export default function JobsLayout({ children }) {
   const tabs = [
-    { label: "Đã ứng tuyển", href: "/candidate/jobs/applied" },
-    { label: "Đã lưu", href: "/candidate/jobs/saved" },
-    { label: "Danh sách", href: "/candidate/jobs/list" },
+    { label: "Đã ứng tuyển", href: "/jobs/applied" },
+    { label: "Đã lưu", href: "/jobs/saved" },
+    { label: "Danh sách", href: "/jobs/list" },
   ];
 
   return (

@@ -77,7 +77,7 @@ export const Header = () => {
     };
 
     const handleProfileClick = () => {
-        router.push("/candidate");
+        router.push("/profile");
     };
     const handleLogout = async () => {
         try {

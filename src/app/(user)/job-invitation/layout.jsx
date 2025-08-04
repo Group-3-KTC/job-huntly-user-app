@@ -2,9 +2,9 @@ import SidebarHorizontal from "@/components/layout/SidebarHorizontal";
 
 export default function JobInvitationLayout({ children }) {
   const tabs = [
-    { label: "Đã nhận", href: "/candidate/jobInvitation/received" },
-    { label: "Phỏng vấn", href: "/candidate/jobInvitation/interview" },
-    { label: "Đã lưu trữ", href: "/candidate/jobInvitation/archived" },
+    { label: "Đã nhận", href: "/jobInvitation/received" },
+    { label: "Phỏng vấn", href: "/jobInvitation/interview" },
+    { label: "Đã lưu trữ", href: "/jobInvitation/archived" },
   ];
 
   return (

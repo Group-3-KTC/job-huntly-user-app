@@ -25,7 +25,7 @@ export default function CandidateDashboard() {
                         phuc111239@gmail.com
                     </p>
                     <Link
-                        href="/candidate/profile"
+                        href="/profile"
                         className="inline-block mt-1 text-sm text-color-primary-main"
                     >
                         Update your profile &gt;
@@ -109,7 +109,7 @@ export default function CandidateDashboard() {
                             professional CV.
                         </p>
                         <Link
-                            href="/candidate/profile"
+                            href="/profile"
                             className="text-sm text-color-primary-main"
                         >
                             Complete your profile &gt;

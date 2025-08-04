@@ -35,7 +35,7 @@ export default function SettingsPage() {
                 </div>
 
                 <a
-                    href="/candidate/profile"
+                    href="/profile"
                     className="inline-flex items-center text-sm font-medium text-blue-500 hover:underline"
                 >
                     Update profile information
