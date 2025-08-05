@@ -1,18 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
 
-const saveToLocalStorage = (key, value) => {
+const saveToCookie = (key, value) => {
     try {
-        localStorage.setItem(key, JSON.stringify(value));
+        const cookieValue =
+            typeof value === "object" ? JSON.stringify(value) : value;
+        Cookies.set(key, cookieValue, {
+            expires: 7,
+            path: "/",
+        });
     } catch (error) {
-        console.error("Error saving to localStorage:", error);
+        console.error("Error saving to cookie:", error);
     }
 };
 
-const removeFromLocalStorage = (key) => {
+const removeFromCookie = (key) => {
     try {
-        localStorage.removeItem(key);
+        Cookies.remove(key, { path: "/" });
     } catch (error) {
-        console.error("Error removing from localStorage:", error);
+        console.error("Error removing cookie:", error);
     }
 };
 
@@ -43,8 +49,8 @@ export const authSlice = createSlice({
             state.token = token;
             state.error = null;
 
-            saveToLocalStorage("authUser", user);
-            saveToLocalStorage("authToken", token);
+            saveToCookie("authUser", user);
+            saveToCookie("authToken", token);
         },
 
         loginFailure: (state, action) => {
@@ -60,8 +66,8 @@ export const authSlice = createSlice({
             state.isLoading = false;
             state.isAuthHydrated = true;
 
-            removeFromLocalStorage("authUser");
-            removeFromLocalStorage("authToken");
+            removeFromCookie("authUser");
+            removeFromCookie("authToken");
         },
         setCredentials: (state, action) => {
             state.token = action.payload.token;
