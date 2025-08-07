@@ -36,9 +36,19 @@ export default function SearchBar() {
     }, []);
 
     const filteredProvinces = useMemo(() => {
+        const topProvinces = [
+            "Thành phố Hồ Chí Minh",
+            "Thành phố Hà Nội",
+            "Thành phố Hải Phòng",
+            "Thành phố Đà Nẵng",
+            "Thành phố Huế",
+            "Thành phố Cần Thơ",
+        ];
+
         if (!searchProvinceTerm) {
-            return provinces.slice(0, 5);
+            return provinces.filter((name) => topProvinces.includes(name));
         }
+
         return provinces.filter((name) =>
             name.toLowerCase().includes(searchProvinceTerm.toLowerCase())
         );
@@ -86,7 +96,7 @@ export default function SearchBar() {
                     <PopoverContent className="w-[220px] p-0">
                         <Command>
                             <CommandInput
-                                placeholder="Search ..."
+                                placeholder="Search for more ..."
                                 className="h-9"
                                 onValueChange={setSearchProvinceTerm}
                             />

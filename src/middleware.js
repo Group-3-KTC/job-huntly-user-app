@@ -20,14 +20,15 @@ const routeConfig = {
 
 // public routes không cần đăng nhập
 const publicRoutes = [
-    "/",
-    "/login",
-    "/register",
-    "/about",
-    "/contact",
-    "/forgot-password",
-    "/search",
-    "/company/company-search",
+    /^\/$/,
+    /^\/login$/,
+    /^\/register$/,
+    /^\/about$/,
+    /^\/contact$/,
+    /^\/forgot-password$/,
+    /^\/search$/,
+    /^\/company\/company-search$/,
+    /^\/job-detail\/[^\/]+$/,
 ];
 
 export async function middleware(req) {
@@ -43,7 +44,7 @@ export async function middleware(req) {
         return NextResponse.next();
     }
 
-    if (publicRoutes.includes(pathname)) {
+    if (publicRoutes.some((regex) => regex.test(pathname))) {
         return NextResponse.next();
     }
 
