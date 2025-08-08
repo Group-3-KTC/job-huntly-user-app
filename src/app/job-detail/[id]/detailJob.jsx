@@ -18,6 +18,7 @@ import RelatedJobs from "./relatedJobs";
 import ApplicationModal from "./applicationJob";
 import { useRouter } from "next/navigation";
 import ReportModal from "./report";
+import Cookies from "js-cookie";
 
 export default function DetailJob({ job }) {
     const [liked, setLiked] = useState(false);
@@ -30,13 +31,14 @@ export default function DetailJob({ job }) {
         Array.isArray(field) ? field.join(", ") : field || "Không xác định";
 
     const handleFlagClick = () => {
-        const token = localStorage.getItem("authToken");
+        const token = Cookies.get("authToken");
         if (!token) return setShowLoginPrompt(true);
 
         try {
             const payload = JSON.parse(atob(token.split(".")[1]));
             if (payload.exp * 1000 < Date.now()) {
-                localStorage.clear();
+                Cookies.remove("authToken");
+                Cookies.remove("authUser");
                 return setShowLoginPrompt(true);
             }
             setOpenReportModal(true);
@@ -47,7 +49,7 @@ export default function DetailJob({ job }) {
     };
 
     const handleApply = () => {
-        const token = localStorage.getItem("authToken");
+        const token = Cookies.get("authToken");
         if (!token) return setShowLoginPrompt(true);
 
         try {
@@ -55,7 +57,8 @@ export default function DetailJob({ job }) {
             const isExpired = payload.exp * 1000 < Date.now();
 
             if (isExpired) {
-                localStorage.clear();
+                Cookies.remove("authToken");
+                Cookies.remove("authUser");
                 return setShowLoginPrompt(true);
             }
             setShowModal(true);
@@ -259,7 +262,7 @@ export default function DetailJob({ job }) {
                                 <strong>Post Date:</strong>{" "}
                                 {job.datePost
                                     ? new Date(job.datePost).toLocaleDateString(
-                                          "vi-VN"
+                                          "vi-VN",
                                       )
                                     : "N/A"}
                             </p>
@@ -271,7 +274,7 @@ export default function DetailJob({ job }) {
                                 <strong>Expired Date:</strong>{" "}
                                 {job.expiredDate
                                     ? new Date(
-                                          job.expiredDate
+                                          job.expiredDate,
                                       ).toLocaleDateString("vi-VN")
                                     : "N/A"}
                             </p>
