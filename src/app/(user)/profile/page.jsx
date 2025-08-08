@@ -11,7 +11,8 @@ import {
 import { getProfileSectionData } from "@/app/(user)/profile/components/profileData";
 import ProfileSidebarRight from "@/app/(user)/components/ProfileSidebarRight";
 import SectionCard from "@/app/(user)/components/SectionCard";
-import SectionModal from "@/app/(user)/components/SectionModal";
+import GenericModal from "@/app/(user)/components/GenericModal";
+import { profileSectionConfigs } from "@/app/(user)/profile/components/profileSectionConfigs";
 import {
     setNormalizedProfile,
     selectNormalizedProfile,
@@ -37,6 +38,7 @@ export default function ProfilePage() {
     const [addSectionItem] = useAddSectionItemMutation();
     const [updateSectionItem] = useUpdateSectionItemMutation();
     const [deleteSectionItem] = useDeleteSectionItemMutation();
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentSection, setCurrentSection] = useState(null);
@@ -80,7 +82,6 @@ export default function ProfilePage() {
     const profileSectionData = getProfileSectionData(
         normalizedProfileData || {}
     );
-    console.log("Profile section data:", profileSectionData);
 
     const isArraySection = (sectionId) => {
         return [
@@ -127,55 +128,76 @@ export default function ProfilePage() {
     };
 
     const handleDeleteItem = async (section, itemIndex) => {
-        const itemId = normalizedProfileData[section.id]?.[itemIndex]?.id;
-        if (itemId) {
-            console.log(`Deleting item ${itemId} from ${section.id}`);
-            await deleteSectionItem({
-                section: section.id,
-                profileId: "1",
-                itemId,
-            });
-        } else {
-            console.log("No itemId found for deletion");
+        if (
+            window.confirm(
+                `Are you sure you want to delete this ${section.title} item?`
+            )
+        ) {
+            setIsDeleting(true);
+            try {
+                const itemId =
+                    normalizedProfileData[section.id]?.[itemIndex]?.id;
+                if (itemId) {
+                    console.log(`Deleting item ${itemId} from ${section.id}`);
+                    await deleteSectionItem({
+                        section: section.id,
+                        profileId: "1",
+                        itemId,
+                    });
+                } else {
+                    console.log("No itemId found for deletion");
+                }
+            } catch (error) {
+                console.error("Delete error:", error);
+                alert("Failed to delete item");
+            } finally {
+                setIsDeleting(false);
+            }
         }
     };
 
     const handleSave = async (newData) => {
-        if (
-            currentSection.id === "personalDetail" ||
-            currentSection.id === "aboutMe"
-        ) {
-            const updatedData = {
-                ...profileData,
-                ...(currentSection.id === "aboutMe"
-                    ? { aboutMe: newData.text }
-                    : newData),
-            };
-            await updateCandidateProfile({ id: "1", ...updatedData });
-        } else if (isArraySection(currentSection.id)) {
-            if (editingItemIndex !== null) {
-                const itemId =
-                    normalizedProfileData[currentSection.id]?.[editingItemIndex]
-                        ?.id;
-                if (itemId) {
-                    await updateSectionItem({
+        try {
+            if (
+                currentSection.id === "personalDetail" ||
+                currentSection.id === "aboutMe"
+            ) {
+                const updatedData = {
+                    ...profileData,
+                    ...(currentSection.id === "aboutMe"
+                        ? { aboutMe: newData.text }
+                        : newData),
+                };
+                await updateCandidateProfile({ id: "1", ...updatedData });
+            } else if (isArraySection(currentSection.id)) {
+                if (editingItemIndex !== null) {
+                    const itemId =
+                        normalizedProfileData[currentSection.id]?.[
+                            editingItemIndex
+                        ]?.id;
+                    if (itemId) {
+                        await updateSectionItem({
+                            section: currentSection.id,
+                            profileId: "1",
+                            itemId,
+                            data: newData,
+                        });
+                    }
+                } else {
+                    await addSectionItem({
                         section: currentSection.id,
                         profileId: "1",
-                        itemId,
                         data: newData,
                     });
                 }
-            } else {
-                await addSectionItem({
-                    section: currentSection.id,
-                    profileId: "1",
-                    data: newData,
-                });
             }
+            setIsModalOpen(false);
+            setCurrentSection(null);
+            setEditingItemIndex(null);
+        } catch (error) {
+            console.error("Save error:", error);
+            alert("Failed to save data");
         }
-        setIsModalOpen(false);
-        setCurrentSection(null);
-        setEditingItemIndex(null);
     };
 
     const handleCloseModal = () => {
@@ -185,25 +207,24 @@ export default function ProfilePage() {
     };
 
     if (isLoading) {
-        return <div>Đang tải...</div>;
+        return <div>Loading...</div>;
     }
 
     if (error) {
         console.error("API error details:", JSON.stringify(error, null, 2));
         return (
             <div>
-                Lỗi:{" "}
+                Error:{" "}
                 {error?.data?.message ||
                     error?.error ||
                     error?.message ||
-                    "Không thể tải dữ liệu"}
+                    "Unable to load data"}
             </div>
         );
     }
 
-    // Chỉ check normalizedProfileData sau khi đã load xong và không có error
     if (!isLoading && !error && !normalizedProfileData) {
-        return <div>Không có dữ liệu profile</div>;
+        return <div>No profile data available</div>;
     }
 
     return (
@@ -272,8 +293,11 @@ export default function ProfilePage() {
                                                     )
                                                 }
                                                 className="ml-2 text-red-500"
+                                                disabled={isDeleting}
                                             >
-                                                Xóa
+                                                {isDeleting
+                                                    ? "Deleting..."
+                                                    : "Delete"}
                                             </button>
                                         </li>
                                     ))}
@@ -315,9 +339,14 @@ export default function ProfilePage() {
                 <ProfileSidebarRight />
             </div>
             {isModalOpen && currentSection && (
-                <SectionModal
+                <GenericModal
                     sectionId={currentSection.id}
                     sectionTitle={currentSection.title}
+                    config={profileSectionConfigs[currentSection.id]}
+                    validationSchema={
+                        profileSectionConfigs[currentSection.id]
+                            .validationSchema
+                    }
                     initialData={
                         editingItemIndex !== null
                             ? normalizedProfileData?.[currentSection.id]?.[

@@ -54,7 +54,7 @@ export default function CandidateDashboard() {
                         </p>
                     </div>
                     <Link
-                        href="profile/manage-cv"
+                        href="profile/applications"
                         className="text-sm text-color-primary-main whitespace-nowrap"
                     >
                         Manage CV attachment &gt;
@@ -65,7 +65,7 @@ export default function CandidateDashboard() {
             {/* ITviec Profile Completion */}
             <div className="p-6 bg-white rounded-lg shadow-sm">
                 <h3 className="mb-4 text-base font-semibold text-gray-800">
-                    ITviec Profile
+                    Complete your profile
                 </h3>
                 <div className="flex flex-col items-center gap-6 sm:flex-row">
                     {/* Circle Progress */}
@@ -114,28 +114,6 @@ export default function CandidateDashboard() {
                         >
                             Complete your profile &gt;
                         </Link>
-                    </div>
-
-                    {/* Template Preview */}
-                    <div className="flex gap-2">
-                        <Image
-                            src="/images/cv-template-1.jpg"
-                            alt="Template 1"
-                            width={64}
-                            height={96}
-                            className="object-cover border rounded"
-                        />
-                        <Image
-                            src="/images/cv-template-2.jpg"
-                            alt="Template 2"
-                            width={64}
-                            height={96}
-                            className="object-cover border rounded"
-                        />
-                        <div className="flex items-center justify-center w-16 h-24 px-1 text-xs text-center bg-white border border-dashed rounded border-color-primary-accent text-color-primary-accent">
-                            <LayoutTemplate size={18} />
-                            <span className="ml-1">More</span>
-                        </div>
                     </div>
                 </div>
             </div>

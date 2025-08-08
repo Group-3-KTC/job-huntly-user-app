@@ -25,7 +25,7 @@ const navItems = [
     icon: <User className="w-5 h-5 mr-2" />,
   },
   {
-    href: "/profile/manage-cv",
+    href: "/profile/applications",
     label: "Manage CV",
     icon: <FileText className="w-5 h-5 mr-2" />,
   },
