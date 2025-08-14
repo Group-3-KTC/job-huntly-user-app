@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Briefcase, FileText, Gift } from "lucide-react";
-import { useAppDispatch } from "../../../store/hooks.js";
-import { addToast } from "../../../store/slices/toastSlices.js";
 import JobReviewPage from "./reviewpage.jsx";
 
 // Import custom components
@@ -14,6 +12,7 @@ import JobInformationForm from "./components/JobInformationForm";
 import JobDescriptionForm from "./components/JobDescriptionForm";
 import BenefitsForm from "./components/BenefitsForm";
 import RecentJobsList from "./components/RecentJobsList";
+import { toast } from "react-toastify";
 
 export default function JobPostingForm() {
     const [currentStep, setCurrentStep] = useState(1);
@@ -73,8 +72,6 @@ export default function JobPostingForm() {
         "Illustrator",
         "Photoshop",
     ]);
-
-    const dispatch = useAppDispatch();
 
     const [formData, setFormData] = useState({
         jobTitle: "",
@@ -433,13 +430,7 @@ export default function JobPostingForm() {
             ...prev,
             benefits: [...prev.benefits, benefit],
         }));
-        dispatch(
-            addToast({
-                title: "Benefit Added",
-                description: "New benefit has been added successfully!",
-                variant: "success",
-            })
-        );
+        toast.success("New benefit has been added successfully!");
     };
 
     const handleBenefitRemove = (benefitId) => {
@@ -494,7 +485,7 @@ export default function JobPostingForm() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen py-8">
             <div className="max-w-4xl mx-auto px-4">
                 {/* Step Indicator */}
                 <StepIndicator steps={steps} currentStep={currentStep} />

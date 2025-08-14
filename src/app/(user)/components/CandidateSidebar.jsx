@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import {
     User,
     FileText,
-    Mail,
+    Building2,
     Bell,
     Settings,
     LayoutDashboard,
@@ -23,15 +23,15 @@ const navItems = [
         label: "Profile",
         icon: <User className="w-5 h-5 mr-2" />,
     },
+    // {
+    //     href: "/profile/manage-cv",
+    //     label: "Manage CV",
+    //     icon: <FileText className="w-5 h-5 mr-2" />,
+    // },
     {
-        href: "/profile/manage-cv",
-        label: "Manage CV",
-        icon: <FileText className="w-5 h-5 mr-2" />,
-    },
-    {
-        href: "/job-invitation",
-        label: "Job Invitations",
-        icon: <Mail className="w-5 h-5 mr-2" />,
+        href: "/companyFollows",
+        label: "Company Follows",
+        icon: <Building2 className="w-5 h-5 mr-2" />,
     },
     {
         href: "/jobs",
@@ -55,8 +55,8 @@ export default function CandidateSidebar() {
 
     return (
         <aside className="hidden w-full mr-6 lg:block ">
-            <div className="p-4 bg-white shadow-md rounded-xl">
-                <div className="">
+            <div className="bg-white shadow-md rounded-xl ">
+                <div className="p-4 bg-gradient-to-t overflow-hidden from-blue-200 to-indigo-50">
                     <div className="flex flex-row items-center my-2">
                         <div className="flex flex-col ml-2">
                             <p className="text-sm font-medium text-blue-800">
@@ -68,7 +68,7 @@ export default function CandidateSidebar() {
                         </div>
                     </div>
                 </div>
-                <ul className="space-y-2 text-base font-medium">
+                <ul className="p-4 space-y-2 text-base font-medium">
                     {navItems.map((item) => {
                         const isActive = pathname === item.href;
                         return (

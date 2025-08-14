@@ -270,7 +270,7 @@ const RecruiterRegisterForm = ({ role }) => {
                             setValue("terms", checked)
                         }
                     />
-                    <Label htmlFor="recruiter-terms" className="text-sm">
+                    <div htmlFor="recruiter-terms" className="text-sm">
                         Tôi đã đọc và chấp nhận{" "}
                         <Link
                             href="#"
@@ -286,7 +286,7 @@ const RecruiterRegisterForm = ({ role }) => {
                             Chính Sách Bảo Mật
                         </Link>{" "}
                         của Job Huntly
-                    </Label>
+                    </div>
                     {errors.terms && (
                         <p className="text-sm text-red-500">
                             {errors.terms.message}

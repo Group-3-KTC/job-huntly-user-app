@@ -17,7 +17,7 @@ export default function ClientLayout({ children }) {
             <div className="fixed top-0 left-0 right-0 z-50">
                 {renderHeader()}
             </div>
-            <main className="flex-grow min-w-full mt-18 py-6 mx-auto">
+            <main className="flex-grow min-w-full py-6 mx-auto mt-18">
                 {children}
             </main>
             <Footer />

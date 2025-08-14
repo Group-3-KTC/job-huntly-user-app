@@ -11,7 +11,7 @@ const CallToActionSection = () => {
         <section className="py-16">
             <div className="container px-4 mx-auto">
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                    <div className="flex items-center p-8 bg-gray-100 rounded-lg">
+                    <div className="flex items-center p-8 bg-gray-100 rounded-lg bg-gradient-to-bl from-blue-400 to-indigo-50">
                         <div className="flex-1">
                             <h3 className="mb-4 text-2xl font-bold text-gray-900">
                                 Become a Candidate

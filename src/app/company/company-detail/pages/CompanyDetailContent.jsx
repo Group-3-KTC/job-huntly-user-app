@@ -33,7 +33,7 @@ const CompanyDetailContent = () => {
     if (error) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <div className="p-8 text-center text-red-500 bg-red-50 rounded-lg">
+                <div className="p-8 text-center text-red-500 rounded-lg bg-red-50">
                     <h2 className="mb-2 text-xl font-bold">Đã xảy ra lỗi</h2>
                     <p>{error}</p>
                 </div>
@@ -44,7 +44,7 @@ const CompanyDetailContent = () => {
     if (!company) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <div className="p-8 text-center text-gray-500 bg-gray-50 rounded-lg">
+                <div className="p-8 text-center text-gray-500 rounded-lg bg-gray-50">
                     <h2 className="mb-2 text-xl font-bold">
                         Không tìm thấy công ty
                     </h2>
@@ -55,7 +55,7 @@ const CompanyDetailContent = () => {
     }
 
     return (
-        <div className="min-w-full p-4 space-y-6 font-sans bg-[var(--color-background)]">
+        <div className="min-w-full px-4 space-y-6 font-sans">
             <CompanyBanner />
 
             <div className="flex justify-center mt-10">

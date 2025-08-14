@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useAppDispatch } from "@/store/hooks";
-import { addToast } from "@/store/slices/toastSlices";
 import { ArrowLeft } from "lucide-react";
 
 // Import custom components
@@ -13,6 +11,7 @@ import JobDetailCard from "./components/JobDetailCard";
 import JobSidebar from "./components/JobSidebar";
 import PublishingSettings from "./components/PublishingSettings";
 import SuccessDialog from "./components/SuccessDialog";
+import { toast } from "react-toastify";
 
 const API_BASE_URL = "https://687076977ca4d06b34b6dc20.mockapi.io/api/v1/jobs";
 
@@ -32,8 +31,6 @@ export default function JobReviewPage({
     const [expiredDateError, setExpiredDateError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-
-    const dispatch = useAppDispatch();
 
     const formatDate = (dateString) => {
         if (!dateString) return "";
@@ -62,7 +59,7 @@ export default function JobReviewPage({
 
     const getBenefitsArray = () => {
         return formData.benefits.map(
-            (benefit) => `${benefit.title}:${benefit.description}`,
+            (benefit) => `${benefit.title}:${benefit.description}`
         );
     };
 
@@ -88,26 +85,15 @@ export default function JobReviewPage({
             }
         } catch (error) {
             console.error("Date validation error:", error);
-            dispatch(
-                addToast({
-                    title: "Invalid Dates",
-                    description: "Please check your date selections.",
-                    variant: "destructive",
-                }),
-            );
+            toast.error("Invalid dates. Please check your date selections.");
             setIsLoading(false);
             setParentIsLoading(false);
             return;
         }
 
         if (!datePostISO || !expiredDateISO) {
-            dispatch(
-                addToast({
-                    title: "Missing Dates",
-                    description:
-                        "Please select both post date and expiration date.",
-                    variant: "destructive",
-                }),
+            toast.error(
+                "Missing dates. Please select both post and expiration dates."
             );
             setIsLoading(false);
             setParentIsLoading(false);
@@ -143,13 +129,7 @@ export default function JobReviewPage({
             if (response.ok) {
                 const newJob = await response.json();
                 setParentJobs((prev) => [...prev, newJob]);
-                dispatch(
-                    addToast({
-                        title: "Success!",
-                        description: "Job posted successfully!",
-                        variant: "success",
-                    }),
-                );
+                toast.success("Job posted successfully!");
                 setShowSuccessDialog(true);
                 console.log("Job posted successfully:", newJob);
             } else {
@@ -157,13 +137,7 @@ export default function JobReviewPage({
             }
         } catch (error) {
             console.error("Error posting job:", error);
-            dispatch(
-                addToast({
-                    title: "Error",
-                    description: "Failed to post job. Please try again.",
-                    variant: "destructive",
-                }),
-            );
+            toast.error("Failed to post job. Please try again.");
         } finally {
             setIsLoading(false);
             setParentIsLoading(false);
@@ -237,7 +211,7 @@ export default function JobReviewPage({
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen py-8">
             <div className="max-w-6xl mx-auto px-4">
                 {/* Header */}
                 <div className="mb-8">

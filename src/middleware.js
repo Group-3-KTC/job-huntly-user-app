@@ -5,6 +5,11 @@ const routeConfig = {
     candidate: [
         /^\/profile/,
         /^\/dashboard/,
+        /^\/job-invitation/,
+        /^\/notifications/,
+        /^\/saved-jobs/,
+        /^\/companyFollows/,
+        /^\/jobs(\/|$)/,
         /^\/applications/,
         /^\/settings/,
         /^\/jobs/,
@@ -27,6 +32,7 @@ const publicRoutes = [
     /^\/contact$/,
     /^\/forgot-password$/,
     /^\/search$/,
+    /^\/company\/company-detail\/[^/]+/,
     /^\/company\/company-search$/,
     /^\/job-detail\/[^\/]+$/,
 ];

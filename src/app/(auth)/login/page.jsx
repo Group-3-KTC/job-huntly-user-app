@@ -16,7 +16,7 @@ const LoginPage = () => {
 
     return (
         <div className="min-h-screen ">
-            <main className="container py-8 mx-auto">
+            <main className="container px-8 py-8 mx-auto">
                 <div className="flex flex-col gap-8 lg:flex-row">
                     {/* Login Form */}
                     <div className="w-full lg:w-1/2">

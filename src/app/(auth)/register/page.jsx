@@ -16,7 +16,7 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen">
-            <main className="container mx-auto py-8">
+            <main className="container mx-auto px-8 py-8">
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Register Form */}
                     <div className="w-full lg:w-1/2">
