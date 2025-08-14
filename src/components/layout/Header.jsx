@@ -25,14 +25,14 @@ import Image from "next/image";
 import logo from "@/assets/images/logo-title-white.png";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
+    logoutUser,
     selectAuthHydrated,
     selectAuthLoading,
     selectIsLoggedIn,
     selectUser,
 } from "@/features/auth/authSlice";
-import { useLogoutMutation } from "@/features/auth/authApi";
 import { Badge } from "@/components/ui/badge";
 import {
     DropdownMenu,
@@ -52,8 +52,7 @@ export const Header = () => {
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const user = useSelector(selectUser);
     const isAuthLoading = useSelector(selectAuthLoading);
-
-    const [logoutMutation] = useLogoutMutation();
+    const dispatch = useDispatch();
 
     const isAuthHydrated = useSelector(selectAuthHydrated);
 
@@ -81,7 +80,7 @@ export const Header = () => {
     };
     const handleLogout = async () => {
         try {
-            await logoutMutation().unwrap();
+            await dispatch(logoutUser());
             router.push("/");
         } catch (error) {
             console.error("Lỗi đăng xuất:", error);
@@ -425,14 +424,14 @@ export const Header = () => {
                                                 variant="ghost"
                                                 className="flex items-center py-6 text-white hover:bg-white/20"
                                             >
-                                                <Avatar>   
+                                                <Avatar>
                                                     <AvatarImage
                                                         src="/placeholder.svg?height=32&width=32"
                                                         alt="User Avatar"
                                                     />
                                                     <AvatarFallback className="bg-white text-[#0a66c2] text-sm font-semibold">
                                                         {getUserInitials(
-                                                            user?.fullname
+                                                            user?.fullname,
                                                         )}
                                                     </AvatarFallback>
                                                 </Avatar>

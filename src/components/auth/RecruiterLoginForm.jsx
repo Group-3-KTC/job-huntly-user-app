@@ -8,14 +8,12 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "@/validation/loginSchema";
 import { useRouter } from "next/navigation";
-import { useLoginMutation } from "@/features/auth/authApi";
 import { useSelector } from "react-redux";
 import { selectAuthLoading } from "@/features/auth/authSlice";
 
 const RecruiterLoginForm = ({ role }) => {
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-    const [login] = useLoginMutation();
     const [errorMessage, setErrorMessage] = useState(null);
     const isAuthLoading = useSelector(selectAuthLoading);
     const {

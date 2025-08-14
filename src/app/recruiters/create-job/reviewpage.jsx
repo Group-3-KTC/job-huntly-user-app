@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useAppDispatch } from "../../../store/hooks.js";
-import { addToast } from "../../../store/slices/toastSlices.js";
+import { useAppDispatch } from "@/store/hooks";
+import { addToast } from "@/store/slices/toastSlices";
 import { ArrowLeft } from "lucide-react";
 
 // Import custom components
@@ -62,7 +62,7 @@ export default function JobReviewPage({
 
     const getBenefitsArray = () => {
         return formData.benefits.map(
-            (benefit) => `${benefit.title}:${benefit.description}`
+            (benefit) => `${benefit.title}:${benefit.description}`,
         );
     };
 
@@ -93,7 +93,7 @@ export default function JobReviewPage({
                     title: "Invalid Dates",
                     description: "Please check your date selections.",
                     variant: "destructive",
-                })
+                }),
             );
             setIsLoading(false);
             setParentIsLoading(false);
@@ -107,7 +107,7 @@ export default function JobReviewPage({
                     description:
                         "Please select both post date and expiration date.",
                     variant: "destructive",
-                })
+                }),
             );
             setIsLoading(false);
             setParentIsLoading(false);
@@ -148,7 +148,7 @@ export default function JobReviewPage({
                         title: "Success!",
                         description: "Job posted successfully!",
                         variant: "success",
-                    })
+                    }),
                 );
                 setShowSuccessDialog(true);
                 console.log("Job posted successfully:", newJob);
@@ -162,7 +162,7 @@ export default function JobReviewPage({
                     title: "Error",
                     description: "Failed to post job. Please try again.",
                     variant: "destructive",
-                })
+                }),
             );
         } finally {
             setIsLoading(false);
@@ -264,7 +264,10 @@ export default function JobReviewPage({
                         {/* Job Header */}
                         <Card>
                             <div className="p-8">
-                                <JobReviewHeader formData={formData} onReturn={onReturn} />
+                                <JobReviewHeader
+                                    formData={formData}
+                                    onReturn={onReturn}
+                                />
                             </div>
                         </Card>
 
@@ -275,23 +278,27 @@ export default function JobReviewPage({
                     {/* Sidebar */}
                     <div className="space-y-6">
                         {/* Job Info and Skills */}
-                        <JobSidebar 
-                            formData={formData} 
-                            reviewData={reviewData} 
-                            formatDate={formatDate} 
+                        <JobSidebar
+                            formData={formData}
+                            reviewData={reviewData}
+                            formatDate={formatDate}
                         />
 
                         {/* Publishing Settings */}
                         <Card>
                             <div className="p-6">
-                                <h3 className="text-lg font-semibold mb-4">Publishing Settings</h3>
+                                <h3 className="text-lg font-semibold mb-4">
+                                    Publishing Settings
+                                </h3>
                                 <PublishingSettings
                                     reviewData={reviewData}
                                     datePostError={datePostError}
                                     expiredDateError={expiredDateError}
                                     isLoading={isLoading}
                                     handleDatePostChange={handleDatePostChange}
-                                    handleExpiredDateChange={handleExpiredDateChange}
+                                    handleExpiredDateChange={
+                                        handleExpiredDateChange
+                                    }
                                     handleSubmit={handleSubmit}
                                     onReturn={onReturn}
                                 />
@@ -302,9 +309,9 @@ export default function JobReviewPage({
             </div>
 
             {/* Success Dialog */}
-            <SuccessDialog 
-                open={showSuccessDialog} 
-                onOpenChange={setShowSuccessDialog} 
+            <SuccessDialog
+                open={showSuccessDialog}
+                onOpenChange={setShowSuccessDialog}
             />
         </div>
     );

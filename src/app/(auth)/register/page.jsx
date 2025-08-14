@@ -12,7 +12,7 @@ import banner from "@/assets/images/login-banner.png";
 import recruiterBanner from "@/assets/images/recruiter-banner.jpg";
 
 export default function RegisterPage() {
-    const [activeTab, setActiveTab] = useState("candidate");
+    const [activeTab, setActiveTab] = useState("CANDIDATE");
 
     return (
         <div className="min-h-screen">
@@ -38,26 +38,26 @@ export default function RegisterPage() {
                                 >
                                     <TabsList className="grid w-full grid-cols-2">
                                         <TabsTrigger
-                                            value="candidate"
+                                            value="CANDIDATE"
                                             className="data-[state=active]:border-blue-500 data-[state=active]:text-blue-500"
                                         >
                                             Ứng viên
                                         </TabsTrigger>
                                         <TabsTrigger
-                                            value="recruiter"
+                                            value="RECRUITER"
                                             className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
                                         >
                                             Nhà tuyển dụng
                                         </TabsTrigger>
                                     </TabsList>
 
-                                    <TabsContent value="candidate">
+                                    <TabsContent value="CANDIDATE">
                                         <CandidateRegisterForm
                                             role={activeTab}
                                         />
                                     </TabsContent>
 
-                                    <TabsContent value="recruiter">
+                                    <TabsContent value="RECRUITER">
                                         <RecruiterRegisterForm
                                             role={activeTab}
                                         />
@@ -82,7 +82,7 @@ export default function RegisterPage() {
                     <div className="w-full lg:w-1/2">
                         <Card className="shadow-md">
                             <CardContent className="p-6">
-                                {activeTab === "candidate" ? (
+                                {activeTab === "CANDIDATE" ? (
                                     <div>
                                         <h3 className="text-lg font-semibold mb-4">
                                             Tham gia{" "}

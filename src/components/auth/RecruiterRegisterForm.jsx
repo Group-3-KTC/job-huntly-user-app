@@ -12,11 +12,15 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { recruiterRegisterSchema } from "@/validation/registerSchema";
 import { useRouter } from "next/navigation";
-import { useRegisterMutation } from "@/features/auth/authApi";
+import { registerUser, selectAuthLoading } from "@/features/auth/authSlice";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
 
 const RecruiterRegisterForm = ({ role }) => {
     const router = useRouter();
-    const [registerApi, { isLoading }] = useRegisterMutation();
+    const dispatch = useDispatch();
+    const isLoading = useSelector(selectAuthLoading);
+    
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -33,16 +37,25 @@ const RecruiterRegisterForm = ({ role }) => {
         },
     });
     const onSubmit = async (data) => {
-        try {
-            const res = await registerApi({ ...data, role }).unwrap();
+        setErrorMessage(null);
 
-            console.log("Register data:", { ...data, role });
-            alert("Recruiter đăng ký thành công! Vui lòng đăng nhập");
+        try {
+            const result = await dispatch(registerUser(data)).unwrap();
+            const okMsg =
+                result?.message ||
+                "Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.";
+            toast.success(okMsg);
             router.push("/login");
         } catch (err) {
-            const msg = err?.data?.message || "Đăng ký thất bại";
+            const msg =
+                err?.message ||
+                err?.detail ||
+                err?.title ||
+                (typeof err === "string"
+                    ? err
+                    : "Đăng ký thất bại. Vui lòng thử lại.");
             setErrorMessage(msg);
-            alert(msg);
+            toast.error(msg);
         }
     };
 

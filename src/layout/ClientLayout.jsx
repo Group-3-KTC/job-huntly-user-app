@@ -9,7 +9,7 @@ export default function ClientLayout({ children }) {
     const role = user?.role;
 
     const renderHeader = () => {
-        if (role === "recruiter") return <HeaderRecruiter />;
+        if (role === "RECRUITER") return <HeaderRecruiter />;
         return <Header />;
     };
     return (

@@ -15,7 +15,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import {
+    Sheet,
+    SheetContent,
+    SheetTrigger,
+    SheetHeader,
+    SheetTitle,
+    SheetClose,
+} from "@/components/ui/sheet";
 import {
     Bell,
     User,
@@ -40,7 +47,6 @@ import {
     selectUser,
     selectIsLoggedIn,
 } from "@/features/auth/authSlice";
-import { useLogoutMutation } from "@/features/auth/authApi";
 
 export const HeaderRecruiter = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -52,7 +58,6 @@ export const HeaderRecruiter = () => {
     const user = useSelector(selectUser);
     const loading = useSelector(selectAuthLoading);
     const hydrated = useSelector(selectAuthHydrated);
-    const [logoutMutation] = useLogoutMutation();
 
     const navigationItems = [
         {
@@ -363,33 +368,55 @@ export const HeaderRecruiter = () => {
                                                     <button
                                                         type="button"
                                                         onClick={() =>
-                                                            setActiveDropdown(activeDropdown === idx ? null : idx)
+                                                            setActiveDropdown(
+                                                                activeDropdown ===
+                                                                    idx
+                                                                    ? null
+                                                                    : idx,
+                                                            )
                                                         }
                                                         className="w-full flex items-center justify-between p-3"
                                                     >
                                                         <div className="flex items-center gap-2">
                                                             <item.icon className="h-4 w-4" />
-                                                            <span className="text-sm font-medium">{item.label}</span>
+                                                            <span className="text-sm font-medium">
+                                                                {item.label}
+                                                            </span>
                                                         </div>
                                                         <ChevronDown
                                                             className={`h-4 w-4 transition-transform ${
-                                                                activeDropdown === idx ? "rotate-180" : ""
+                                                                activeDropdown ===
+                                                                idx
+                                                                    ? "rotate-180"
+                                                                    : ""
                                                             }`}
                                                         />
                                                     </button>
                                                     {activeDropdown === idx && (
                                                         <div className="border-t">
-                                                            {item.dropdownItems.map((dropdown, i) => (
-                                                                <SheetClose asChild key={i}>
-                                                                    <Link
-                                                                        href={dropdown.href}
-                                                                        className="flex items-center gap-2 p-3 text-sm hover:bg-muted"
+                                                            {item.dropdownItems.map(
+                                                                (
+                                                                    dropdown,
+                                                                    i,
+                                                                ) => (
+                                                                    <SheetClose
+                                                                        asChild
+                                                                        key={i}
                                                                     >
-                                                                        <dropdown.icon className="h-4 w-4" />
-                                                                        {dropdown.label}
-                                                                    </Link>
-                                                                </SheetClose>
-                                                            ))}
+                                                                        <Link
+                                                                            href={
+                                                                                dropdown.href
+                                                                            }
+                                                                            className="flex items-center gap-2 p-3 text-sm hover:bg-muted"
+                                                                        >
+                                                                            <dropdown.icon className="h-4 w-4" />
+                                                                            {
+                                                                                dropdown.label
+                                                                            }
+                                                                        </Link>
+                                                                    </SheetClose>
+                                                                ),
+                                                            )}
                                                         </div>
                                                     )}
                                                 </div>
@@ -400,7 +427,9 @@ export const HeaderRecruiter = () => {
                                                         className="flex items-center gap-2 p-3 rounded-md hover:bg-muted"
                                                     >
                                                         <item.icon className="h-4 w-4" />
-                                                        <span className="text-sm font-medium">{item.label}</span>
+                                                        <span className="text-sm font-medium">
+                                                            {item.label}
+                                                        </span>
                                                     </Link>
                                                 </SheetClose>
                                             )}
@@ -415,7 +444,9 @@ export const HeaderRecruiter = () => {
                                             className="flex items-center gap-2 p-3 rounded-md hover:bg-muted"
                                         >
                                             <Bell className="h-4 w-4" />
-                                            <span className="text-sm font-medium">Notifications</span>
+                                            <span className="text-sm font-medium">
+                                                Notifications
+                                            </span>
                                         </Link>
                                     </SheetClose>
 
@@ -425,7 +456,9 @@ export const HeaderRecruiter = () => {
                                             className="flex items-center gap-2 p-3 rounded-md hover:bg-muted"
                                         >
                                             <User className="h-4 w-4" />
-                                            <span className="text-sm font-medium">Profile</span>
+                                            <span className="text-sm font-medium">
+                                                Profile
+                                            </span>
                                         </Link>
                                     </SheetClose>
                                     <SheetClose asChild>
@@ -434,7 +467,9 @@ export const HeaderRecruiter = () => {
                                             className="flex items-center gap-2 p-3 rounded-md hover:bg-muted"
                                         >
                                             <Building className="h-4 w-4" />
-                                            <span className="text-sm font-medium">Company</span>
+                                            <span className="text-sm font-medium">
+                                                Company
+                                            </span>
                                         </Link>
                                     </SheetClose>
                                     <SheetClose asChild>
@@ -443,7 +478,9 @@ export const HeaderRecruiter = () => {
                                             className="flex items-center gap-2 p-3 rounded-md hover:bg-muted"
                                         >
                                             <Settings className="h-4 w-4" />
-                                            <span className="text-sm font-medium">Settings</span>
+                                            <span className="text-sm font-medium">
+                                                Settings
+                                            </span>
                                         </Link>
                                     </SheetClose>
 
@@ -455,7 +492,9 @@ export const HeaderRecruiter = () => {
                                         className="flex items-center gap-2 p-3 rounded-md text-red-600 hover:bg-red-50"
                                     >
                                         <LogOut className="h-4 w-4" />
-                                        <span className="text-sm font-medium">Logout</span>
+                                        <span className="text-sm font-medium">
+                                            Logout
+                                        </span>
                                     </button>
                                 </div>
                             </SheetContent>

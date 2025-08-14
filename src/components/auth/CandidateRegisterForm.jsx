@@ -12,12 +12,17 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { candidateRegisterSchema } from "@/validation/registerSchema";
-import { useRegisterMutation } from "@/features/auth/authApi";
+import { useDispatch, useSelector } from "react-redux";
+
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { registerUser, selectAuthLoading } from "@/features/auth/authSlice";
 
 const CandidateRegisterForm = ({ role }) => {
     const router = useRouter();
-    const [registerApi, { isLoading }] = useRegisterMutation();
+    const dispatch = useDispatch();
+    const isLoading = useSelector(selectAuthLoading);
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -36,17 +41,32 @@ const CandidateRegisterForm = ({ role }) => {
         },
     });
     const onSubmit = async (data) => {
-        try {
-            const res = await registerApi({ ...data, role }).unwrap();
+        setErrorMessage(null);
 
-            console.log("Register data:", { ...data, role });
-            console.log("Register data:", res);
-            alert("Candidate đăng ký thành công! Vui lòng đăng nhập");
+        const payload = {
+            email: data.email,
+            password: data.password,
+            fullName: data.fullName,
+            role,
+        };
+
+        try {
+            const result = await dispatch(registerUser(payload)).unwrap();
+            const okMsg =
+                result?.message ||
+                "Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.";
+            toast.success(okMsg);
             router.push("/login");
         } catch (err) {
-            const msg = err?.data?.message || "Đăng ký thất bại";
+            const msg =
+                err?.message ||
+                err?.detail ||
+                err?.title ||
+                (typeof err === "string"
+                    ? err
+                    : "Đăng ký thất bại. Vui lòng thử lại.");
             setErrorMessage(msg);
-            alert(msg);
+            toast.error(msg);
         }
     };
 
@@ -55,7 +75,7 @@ const CandidateRegisterForm = ({ role }) => {
             <div className="min-h-[290px] flex items-center justify-center ">
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-10 text-center">
                     <div className="mx-auto loader border-2 border-blue-500 rounded-full"></div>
-                    <p className="mt-2 text-gray-500">Đang đăng nhập...</p>
+                    <p className="mt-2 text-gray-500">Registering...</p>
                 </div>
             </div>
         );
@@ -245,7 +265,7 @@ const CandidateRegisterForm = ({ role }) => {
                     type="submit"
                     className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    Đăng Ký
+                    Register
                 </Button>
             </form>
         </div>

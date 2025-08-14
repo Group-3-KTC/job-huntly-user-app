@@ -12,7 +12,7 @@ import banner from "@/assets/images/login-banner.png";
 import recruiterBanner from "@/assets/images/recruiter-banner.jpg";
 
 const LoginPage = () => {
-    const [activeTab, setActiveTab] = useState("candidate");
+    const [activeTab, setActiveTab] = useState("CANDIDATE");
 
     return (
         <div className="min-h-screen ">
@@ -38,24 +38,24 @@ const LoginPage = () => {
                                 >
                                     <TabsList className="grid w-full grid-cols-2">
                                         <TabsTrigger
-                                            value="candidate"
+                                            value="CANDIDATE"
                                             className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
                                         >
                                             Ứng viên
                                         </TabsTrigger>
                                         <TabsTrigger
-                                            value="recruiter"
+                                            value="RECRUITER"
                                             className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
                                         >
                                             Nhà tuyển dụng
                                         </TabsTrigger>
                                     </TabsList>
 
-                                    <TabsContent value="candidate">
+                                    <TabsContent value="CANDIDATE">
                                         <CandidateLoginForm role={activeTab} />
                                     </TabsContent>
 
-                                    <TabsContent value="recruiter">
+                                    <TabsContent value="RECRUITER">
                                         <RecruiterLoginForm role={activeTab} />
                                     </TabsContent>
                                 </Tabs>
@@ -79,7 +79,7 @@ const LoginPage = () => {
                     <div className="w-full lg:w-1/2">
                         <Card className="shadow-md">
                             <CardContent className="p-6">
-                                {activeTab === "candidate" ? (
+                                {activeTab === "CANDIDATE" ? (
                                     <div>
                                         <h3 className="mb-4 text-lg font-semibold">
                                             Chào mừng bạn đến với{" "}

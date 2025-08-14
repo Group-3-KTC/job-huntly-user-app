@@ -1,9 +1,9 @@
 "use client";
-import ClientLayout from "@/layout/ClientLayout";
 import "@/styles/globals.css";
-import { appStore } from "@/store/appStore";
 import { Provider } from "react-redux";
 import PageWrapper from "@/components/PageWrapper";
+import { ToastContainer } from "react-toastify";
+import store from "@/lib/store";
 
 export default function RootLayout({ children }) {
     return (
@@ -15,8 +15,12 @@ export default function RootLayout({ children }) {
             </head>
             <body data-scrolling-animations="true">
                 <div className="sp-body ">
-                    <Provider store={appStore}>
+                    <Provider store={store}>
                         <PageWrapper>{children}</PageWrapper>
+                        <ToastContainer
+                            position="top-center"
+                            autoClose={4000}
+                        />
                     </Provider>
                 </div>
             </body>

@@ -12,13 +12,11 @@ import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Image from "next/image";
 import googleLogo from "@/assets/images/logo-gg.png";
 import { useRouter } from "next/navigation";
-import { useLoginMutation } from "@/features/auth/authApi";
 import { useSelector } from "react-redux";
 import { selectAuthLoading } from "@/features/auth/authSlice";
 
 const CandidateLoginForm = ({ role }) => {
     const router = useRouter();
-    const [login] = useLoginMutation();
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
     const isAuthLoading = useSelector(selectAuthLoading);
