@@ -34,7 +34,7 @@ const CompanyBanner = () => {
                         <h1 className="text-xl font-bold text-gray-900">
                             {company.name}
                         </h1>
-                        <div className="mt-2 text-sm text-gray-600">
+                        <div className="mt-2 text-sm text-white-600">
                             <span className="px-2 py-0.5 mr-2 text-yellow-800 bg-yellow-100 rounded">
                                 Pro Company
                             </span>

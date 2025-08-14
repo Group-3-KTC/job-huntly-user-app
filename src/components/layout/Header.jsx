@@ -315,7 +315,7 @@ export const Header = () => {
     };
 
     return (
-        <header className="h-18 bg-[#0a66c2] relative">
+        <header className="h-18 bg-[#0a66c2] relative ">
             <div className="flex items-center h-full px-4">
                 {/* Logo */}
                 <Link href="/">
@@ -391,11 +391,6 @@ export const Header = () => {
                                         {isAuthLoading
                                             ? "Đang xử lý..."
                                             : "Đăng nhập"}
-                                    </Button>
-                                </li>
-                                <li>
-                                    <Button className="bg-[#ff8a00] hover:bg-[#e67600] text-white">
-                                        Đăng tuyển & tìm hồ sơ
                                     </Button>
                                 </li>
                             </>

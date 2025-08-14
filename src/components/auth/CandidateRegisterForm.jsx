@@ -209,7 +209,7 @@ const CandidateRegisterForm = ({ role }) => {
                     )}
                 </div>
 
-                <div className="flex flex-wrap">
+                <div className="flex flex-wrap items-center">
                     <Checkbox
                         id="candidate-terms"
                         checked={watch("terms")}
@@ -217,7 +217,7 @@ const CandidateRegisterForm = ({ role }) => {
                             setValue("terms", checked)
                         }
                     />
-                    <Label htmlFor="candidate-terms" className="text-sm">
+                    <div htmlFor="candidate-terms" className="text-sm">
                         Tôi đã đọc và chấp nhận{" "}
                         <Link
                             href="#"
@@ -233,7 +233,7 @@ const CandidateRegisterForm = ({ role }) => {
                             Chính Sách Bảo Mật
                         </Link>{" "}
                         của Job Huntly
-                    </Label>
+                    </div>
                     {errors.terms && (
                         <p className="text-sm text-red-500">
                             {errors.terms.message}
