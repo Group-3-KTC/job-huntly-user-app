@@ -9,7 +9,7 @@ import {
     useDeleteSectionItemMutation,
 } from "@/services/profileService";
 import { getProfileSectionData } from "@/app/(user)/profile/components/profileData";
-import ProfileSidebarRight from "@/app/(user)/components/ProfileSidebarRight";
+import ProfileSidebarRight from "@/app/(user)/profile/components/ProfileSidebarRight";
 import SectionCard from "@/app/(user)/components/SectionCard";
 import GenericModal from "@/app/(user)/components/GenericModal";
 import { profileSectionConfigs } from "@/app/(user)/profile/components/profileSectionConfigs";
@@ -335,7 +335,7 @@ export default function ProfilePage() {
                     })}
                 </div>
             </div>
-            <div className="w-full lg:max-w-[25%] shrink-0 sticky top-24 h-fit max-h-[calc(100vh-2rem)]">
+            <div className="w-full lg:max-w-[25%] shrink-0 sticky top-24 h-fit max-h-[calc(100vh-2rem)] z-2">
                 <ProfileSidebarRight />
             </div>
             {isModalOpen && currentSection && (

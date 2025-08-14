@@ -123,7 +123,7 @@ export default function CandidateDashboard() {
                 <h3 className="mb-4 text-base font-semibold text-gray-800">
                     Your Activities
                 </h3>
-                <div className="grid grid-cols-1 gap-4 text-center sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 text-center sm:grid-cols-2">
                     <div className="flex flex-col items-center p-4 text-blue-600 bg-blue-100 rounded">
                         <Send className="w-6 h-6 mb-1" />
                         <p className="text-sm">Applied Jobs</p>
@@ -134,11 +134,11 @@ export default function CandidateDashboard() {
                         <p className="text-sm">Saved Jobs</p>
                         <p className="text-2xl font-bold">0</p>
                     </div>
-                    <div className="flex flex-col items-center p-4 text-green-600 bg-green-100 rounded">
+                    {/* <div className="flex flex-col items-center p-4 text-green-600 bg-green-100 rounded">
                         <Paperclip className="w-6 h-6 mb-1" />
                         <p className="text-sm">Job Invitations</p>
                         <p className="text-2xl font-bold">0</p>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

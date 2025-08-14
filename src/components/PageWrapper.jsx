@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { useSelector } from "react-redux";
 import AppInitializer from "@/components/AppInitializer";
@@ -5,7 +7,7 @@ import ToastProvider from "@/components/ui/toast";
 import ClientLayout from "@/layout/ClientLayout";
 import { selectAuthHydrated } from "@/features/auth/authSlice";
 
-const PageWrapper = ({ children }) => {
+export default function PageWrapper({ children }) {
     const isAuthHydrated = useSelector(selectAuthHydrated);
 
     return (
@@ -26,6 +28,4 @@ const PageWrapper = ({ children }) => {
             )}
         </>
     );
-};
-
-export default PageWrapper;
+}
