@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import useCompanyDetailStore from "../store/companyDetailStore";
+import { getImageUrl } from "@/lib/utils";
 
 const RelatedCompanies = () => {
     const { relatedCompanies } = useCompanyDetailStore();
@@ -27,19 +28,17 @@ const RelatedCompanies = () => {
                 </p>
             </div>
 
-            <div className="grid grid-cols-2 grid-rows-5 gap-4">
+            <div className="grid grid-cols-2 gap-4 mt-3">
                 {relatedCompanies.slice(0, 10).map((company, index) => (
                     <Link
-                        href={`/company/company-detail/${company.company_id}`}
-                        key={company.company_id}
-                        className={`flex items-center gap-3 p-3 border rounded hover:shadow border-[#FF8A00]/30 ${
-                            index === 0 ? "mt-3" : ""
-                        }`}
+                        href={`/company/company-detail/${company.id}`}
+                        key={company.id}
+                        className="flex items-center gap-3 p-3 border rounded hover:shadow border-[#FF8A00]/30"
                     >
                         <div className="w-10 h-10">
                             <Image
-                                src={company.logo || "/logo_example.png"}
-                                alt={company.name}
+                                src={getImageUrl(company.avatar)}
+                                alt={company.companyName || "Company"}
                                 width={40}
                                 height={40}
                                 className="object-contain w-full h-full"
@@ -47,10 +46,10 @@ const RelatedCompanies = () => {
                         </div>
                         <div className="w-full overflow-hidden text-sm">
                             <h3 className="text-sm font-semibold truncate text-[#1F2937]">
-                                {company.name}
+                                {company.companyName}
                             </h3>
                             <p className="text-xs text-gray-500">
-                                {company.industry}
+                                {company.parentCategories?.join(", ")}
                             </p>
                         </div>
                     </Link>

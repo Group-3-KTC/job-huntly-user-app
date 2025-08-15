@@ -5,6 +5,16 @@ const nextConfig = {
   },
   images: {
     domains: ["cdn-new.topcv.vn"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "**",
+      },
+    ],
   },
 };
 

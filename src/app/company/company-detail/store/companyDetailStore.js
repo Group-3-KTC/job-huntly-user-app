@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { COMPANY_API, JOB_API } from "@/constants/apiConstants";
 
 const useCompanyDetailStore = create((set, get) => ({
     company: null,
@@ -13,9 +14,7 @@ const useCompanyDetailStore = create((set, get) => ({
     fetchCompanyDetail: async (companyId) => {
         set({ isLoading: true });
         try {
-            const response = await fetch(
-                `https://68808ec2f1dcae717b627e5b.mockapi.io/companies/${companyId}`
-            );
+            const response = await fetch(COMPANY_API.GET_COMPANY_DETAIL(companyId));
 
             if (!response.ok) {
                 throw new Error("Không thể tải thông tin công ty");
@@ -36,26 +35,19 @@ const useCompanyDetailStore = create((set, get) => ({
     // Lấy danh sách công việc của công ty
     fetchCompanyJobs: async (companyId) => {
         try {
-            const mockJobs = [
-                {
-                    id: "1",
-                    title: "Chuyên Viên Pháp Lý",
-                    company_id: companyId,
-                    location: "Hà Nội",
-                    salary: "Thỏa thuận",
-                    remaining_days: 25,
-                },
-                {
-                    id: "2",
-                    title: "Kỹ Sư Quản Trị Dữ Liệu",
-                    company_id: companyId,
-                    location: "Hà Nội",
-                    salary: "800 - 3,500 USD",
-                    remaining_days: 13,
-                },
-            ];
+            const response = await fetch(JOB_API.GET_JOBS_BY_COMPANY(companyId));
 
-            set({ jobs: mockJobs });
+            if (!response.ok) {
+                throw new Error("Không thể tải danh sách công việc");
+                return;
+            }
+
+            const data = await response.json();
+            
+            // Trích xuất dữ liệu công việc từ response
+            const jobs = data.content || [];
+            
+            set({ jobs });
         } catch (error) {
             console.error("Error fetching company jobs:", error);
         }
@@ -64,9 +56,7 @@ const useCompanyDetailStore = create((set, get) => ({
     // Lấy danh sách công ty cùng lĩnh vực
     fetchRelatedCompanies: async () => {
         try {
-            const response = await fetch(
-                "https://68808ec2f1dcae717b627e5b.mockapi.io/companies"
-            );
+            const response = await fetch(COMPANY_API.GET_ALL_COMPANIES);
 
             if (!response.ok) {
                 throw new Error("Không thể tải danh sách công ty liên quan");
@@ -80,8 +70,12 @@ const useCompanyDetailStore = create((set, get) => ({
                 const related = data
                     .filter(
                         (item) =>
-                            item.industry === company.industry &&
-                            item.company_id !== company.company_id
+                            item.parentCategories && 
+                            company.parentCategories &&
+                            item.parentCategories.some(category => 
+                                company.parentCategories.includes(category)
+                            ) &&
+                            item.id !== company.id
                     )
                     .slice(0, 10);
 
@@ -107,7 +101,7 @@ const useCompanyDetailStore = create((set, get) => ({
                     updatedCompany.isFollowing
                         ? "Đã theo dõi"
                         : "Đã hủy theo dõi"
-                } công ty: ${company.name}`
+                } công ty: ${company.companyName}`
             );
         }
     },

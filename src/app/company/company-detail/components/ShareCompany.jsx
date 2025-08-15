@@ -11,7 +11,7 @@ const ShareCompany = () => {
   if (!company) return null;
 
   const companyUrl = typeof window !== 'undefined' ? 
-    `${window.location.origin}/company/company-detail/${company.company_id}` : 
+    `${window.location.origin}/company/company-detail/${company.id}` : 
     '';
 
   const handleCopyLink = () => {
