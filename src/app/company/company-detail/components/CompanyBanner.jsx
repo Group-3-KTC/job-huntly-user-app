@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import useCompanyDetailStore from "../store/companyDetailStore";
+import { getImageUrl } from "@/lib/utils";
 
 const CompanyBanner = () => {
     const { company, toggleFollowCompany } = useCompanyDetailStore();
@@ -14,7 +15,7 @@ const CompanyBanner = () => {
             className="relative h-64 mx-auto overflow-hidden bg-center bg-cover rounded-lg shadow max-w-7xl"
             style={{
                 backgroundImage: `url(${
-                    company.cover_photo ||
+                    getImageUrl(company.avatarCover) ||
                     "https://static.topcv.vn/company_covers/tap-doan-cong-nghiep-vien-thong-quan-doi-e3c6e7727df189e29507b150c6a7d893-64c328ef424bd.jpg"
                 })`,
             }}
@@ -23,8 +24,8 @@ const CompanyBanner = () => {
                 <div className="flex items-center space-x-4">
                     <div className="w-16 h-16 p-1 bg-white border border-gray-300 rounded">
                         <Image
-                            src={company.logo || "/logo_example.png"}
-                            alt={company.name}
+                            src={getImageUrl(company.avatar)}
+                            alt={company.companyName}
                             width={64}
                             height={64}
                             className="object-contain w-full h-full"
@@ -32,20 +33,22 @@ const CompanyBanner = () => {
                     </div>
                     <div>
                         <h1 className="text-xl font-bold text-gray-900">
-                            {company.name}
+                            {company.companyName}
                         </h1>
                         <div className="mt-2 text-sm text-white-600">
-                            <span className="px-2 py-0.5 mr-2 text-yellow-800 bg-yellow-100 rounded">
-                                Pro Company
-                            </span>
+                            {company.isProCompany && (
+                                <span className="px-2 py-0.5 mr-2 text-yellow-800 bg-yellow-100 rounded">
+                                    Pro Company
+                                </span>
+                            )}
                             <a
                                 href={company.website}
                                 className="hover:text-blue-600 underline"
                             >
                                 {company.website?.replace("https://", "")}
                             </a>
-                            · {company.quantity_employee}+ nhân viên ·{" "}
-                            {Math.floor(Math.random() * 500)} người theo dõi
+                            · {company.quantityEmployee}+ nhân viên ·{" "}
+                            {company.followersCount} người theo dõi
                         </div>
                     </div>
                 </div>
