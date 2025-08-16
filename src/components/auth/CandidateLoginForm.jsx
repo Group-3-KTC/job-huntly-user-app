@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useLoginMutation } from "@/features/auth/authApi";
 import { useSelector } from "react-redux";
 import { selectAuthLoading } from "@/features/auth/authSlice";
+import LoadingScreen from "../ui/loadingScreen";
 
 const CandidateLoginForm = ({ role }) => {
     const router = useRouter();
@@ -45,14 +46,7 @@ const CandidateLoginForm = ({ role }) => {
     };
 
     if (isAuthLoading) {
-        return (
-            <div className="min-h-[290px] flex items-center justify-center ">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-10 text-center">
-                    <div className="mx-auto loader border-2 border-blue-500 rounded-full"></div>
-                    <p className="mt-2 text-gray-500">Đang đăng nhập...</p>
-                </div>
-            </div>
-        );
+        return <LoadingScreen message="Đang đăng nhập..." />;
     }
 
     return (
@@ -60,7 +54,7 @@ const CandidateLoginForm = ({ role }) => {
             <div className="space-y-3">
                 <Button
                     variant="outline"
-                    className="w-full flex items-center justify-center gap-2 bg-transparent"
+                    className="flex items-center justify-center w-full gap-2 bg-transparent"
                 >
                     <Image
                         src={googleLogo}
@@ -77,7 +71,7 @@ const CandidateLoginForm = ({ role }) => {
                     <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-gray-500 mt-3 mb-3">
+                    <span className="px-2 mt-3 mb-3 text-gray-500 bg-white">
                         Hoặc
                     </span>
                 </div>
@@ -86,7 +80,7 @@ const CandidateLoginForm = ({ role }) => {
                 <div>
                     <Label htmlFor="email">ID tài khoản</Label>
                     <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="email"
                             type="email"
@@ -96,7 +90,7 @@ const CandidateLoginForm = ({ role }) => {
                         />
                     </div>
                     {errors.email && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.email.message}
                         </p>
                     )}
@@ -105,7 +99,7 @@ const CandidateLoginForm = ({ role }) => {
                 <div>
                     <Label htmlFor="password">Mật khẩu</Label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="password"
                             type={showPassword ? "text" : "password"}
@@ -116,17 +110,17 @@ const CandidateLoginForm = ({ role }) => {
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                            className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
                         >
                             {showPassword ? (
-                                <EyeOff className="h-4 w-4" />
+                                <EyeOff className="w-4 h-4" />
                             ) : (
-                                <Eye className="h-4 w-4" />
+                                <Eye className="w-4 h-4" />
                             )}
                         </button>
                     </div>
                     {errors.password && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.password.message}
                         </p>
                     )}

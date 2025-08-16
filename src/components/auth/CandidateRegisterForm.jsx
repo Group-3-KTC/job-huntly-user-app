@@ -14,6 +14,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { candidateRegisterSchema } from "@/validation/registerSchema";
 import { useRegisterMutation } from "@/features/auth/authApi";
 import { useRouter } from "next/navigation";
+import LoadingScreen from "../ui/loadingScreen";
 
 const CandidateRegisterForm = ({ role }) => {
     const router = useRouter();
@@ -51,14 +52,7 @@ const CandidateRegisterForm = ({ role }) => {
     };
 
     if (isLoading) {
-        return (
-            <div className="min-h-[290px] flex items-center justify-center ">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-10 text-center">
-                    <div className="mx-auto loader border-2 border-blue-500 rounded-full"></div>
-                    <p className="mt-2 text-gray-500">Đang đăng nhập...</p>
-                </div>
-            </div>
-        );
+       return <LoadingScreen message="Đang đăng ký..." />;
     }
 
     return (
@@ -67,7 +61,7 @@ const CandidateRegisterForm = ({ role }) => {
             <div className="space-y-3">
                 <Button
                     variant="outline"
-                    className="w-full flex items-center justify-center gap-2 bg-transparent"
+                    className="flex items-center justify-center w-full gap-2 bg-transparent"
                 >
                     <Image
                         src={googleLogo}
@@ -84,7 +78,7 @@ const CandidateRegisterForm = ({ role }) => {
                     <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-gray-500">Hoặc</span>
+                    <span className="px-2 text-gray-500 bg-white">Hoặc</span>
                 </div>
             </div>
 
@@ -92,7 +86,7 @@ const CandidateRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="fullname">Họ và tên</Label>
                     <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="fullname"
                             type="text"
@@ -103,7 +97,7 @@ const CandidateRegisterForm = ({ role }) => {
                     </div>
 
                     {errors.fullname && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.fullname.message}
                         </p>
                     )}
@@ -112,7 +106,7 @@ const CandidateRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="email"
                             type="email"
@@ -122,7 +116,7 @@ const CandidateRegisterForm = ({ role }) => {
                         />
                     </div>
                     {errors.email && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.email.message}
                         </p>
                     )}
@@ -131,7 +125,7 @@ const CandidateRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="phone">Số điện thoại</Label>
                     <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Phone className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="phone"
                             type="tel"
@@ -141,7 +135,7 @@ const CandidateRegisterForm = ({ role }) => {
                         />
                     </div>
                     {errors.phone && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.phone.message}
                         </p>
                     )}
@@ -150,28 +144,28 @@ const CandidateRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="password">Mật khẩu</Label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="password"
                             type={showPassword ? "text" : "password"}
                             placeholder="Nhập mật khẩu"
-                            className="pr-10 pl-10"
+                            className="pl-10 pr-10"
                             {...register("password")}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                            className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
                         >
                             {showPassword ? (
-                                <EyeOff className="h-4 w-4" />
+                                <EyeOff className="w-4 h-4" />
                             ) : (
-                                <Eye className="h-4 w-4" />
+                                <Eye className="w-4 h-4" />
                             )}
                         </button>
                     </div>
                     {errors.password && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.password.message}
                         </p>
                     )}
@@ -180,12 +174,12 @@ const CandidateRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="confirmPassword"
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder="Vui lòng xác nhận mật khẩu"
-                            className="pr-10 pl-10"
+                            className="pl-10 pr-10"
                             {...register("confirmPassword")}
                         />
                         <button
@@ -193,17 +187,17 @@ const CandidateRegisterForm = ({ role }) => {
                             onClick={() =>
                                 setShowConfirmPassword(!showConfirmPassword)
                             }
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                            className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
                         >
                             {showConfirmPassword ? (
-                                <EyeOff className="h-4 w-4" />
+                                <EyeOff className="w-4 h-4" />
                             ) : (
-                                <Eye className="h-4 w-4" />
+                                <Eye className="w-4 h-4" />
                             )}
                         </button>
                     </div>
                     {errors.confirmPassword && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.confirmPassword.message}
                         </p>
                     )}

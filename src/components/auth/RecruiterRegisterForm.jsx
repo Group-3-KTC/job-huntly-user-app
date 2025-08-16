@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { recruiterRegisterSchema } from "@/validation/registerSchema";
 import { useRouter } from "next/navigation";
 import { useRegisterMutation } from "@/features/auth/authApi";
+import LoadingScreen from "../ui/loadingScreen";
 
 const RecruiterRegisterForm = ({ role }) => {
     const router = useRouter();
@@ -47,14 +48,7 @@ const RecruiterRegisterForm = ({ role }) => {
     };
 
     if (isLoading) {
-        return (
-            <div className="min-h-[500px] flex items-center justify-center">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-10 text-center">
-                    <div className="mx-auto w-8 h-8 border-2 border-orange-500 rounded-full"></div>
-                    <p className="mt-2 text-gray-500">Đang đăng ký...</p>
-                </div>
-            </div>
-        );
+        return <LoadingScreen message="Đang đăng ký..." />;
     }
     return (
         <div className="space-y-4">
@@ -62,7 +56,7 @@ const RecruiterRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="fullname">Họ và tên</Label>
                     <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="fullname"
                             type="text"
@@ -73,7 +67,7 @@ const RecruiterRegisterForm = ({ role }) => {
                     </div>
 
                     {errors.fullname && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.fullname.message}
                         </p>
                     )}
@@ -82,7 +76,7 @@ const RecruiterRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="email"
                             type="email"
@@ -92,7 +86,7 @@ const RecruiterRegisterForm = ({ role }) => {
                         />
                     </div>
                     {errors.email && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.email.message}
                         </p>
                     )}
@@ -101,7 +95,7 @@ const RecruiterRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="phone">Số điện thoại</Label>
                     <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Phone className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="phone"
                             type="tel"
@@ -111,7 +105,7 @@ const RecruiterRegisterForm = ({ role }) => {
                         />
                     </div>
                     {errors.phone && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.phone.message}
                         </p>
                     )}
@@ -120,28 +114,28 @@ const RecruiterRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="password">Mật khẩu</Label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="password"
                             type={showPassword ? "text" : "password"}
                             placeholder="Nhập mật khẩu"
-                            className="pr-10 pl-10"
+                            className="pl-10 pr-10"
                             {...register("password")}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                            className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
                         >
                             {showPassword ? (
-                                <EyeOff className="h-4 w-4" />
+                                <EyeOff className="w-4 h-4" />
                             ) : (
-                                <Eye className="h-4 w-4" />
+                                <Eye className="w-4 h-4" />
                             )}
                         </button>
                     </div>
                     {errors.password && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.password.message}
                         </p>
                     )}
@@ -150,12 +144,12 @@ const RecruiterRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="confirmPassword"
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder="Vui lòng xác nhận mật khẩu"
-                            className="pr-10 pl-10"
+                            className="pl-10 pr-10"
                             {...register("confirmPassword")}
                         />
                         <button
@@ -163,24 +157,24 @@ const RecruiterRegisterForm = ({ role }) => {
                             onClick={() =>
                                 setShowConfirmPassword(!showConfirmPassword)
                             }
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                            className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
                         >
                             {showConfirmPassword ? (
-                                <EyeOff className="h-4 w-4" />
+                                <EyeOff className="w-4 h-4" />
                             ) : (
-                                <Eye className="h-4 w-4" />
+                                <Eye className="w-4 h-4" />
                             )}
                         </button>
                     </div>
                     {errors.confirmPassword && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.confirmPassword.message}
                         </p>
                     )}
                 </div>
 
-                {/*<div className="border-t pt-4">*/}
-                {/*    <h4 className="text-orange-500 font-medium mb-4">*/}
+                {/*<div className="pt-4 border-t">*/}
+                {/*    <h4 className="mb-4 font-medium text-orange-500">*/}
                 {/*        Thông Tin Công Ty*/}
                 {/*    </h4>*/}
 
@@ -188,7 +182,7 @@ const RecruiterRegisterForm = ({ role }) => {
                 {/*        <div>*/}
                 {/*            <Label htmlFor="taxCode">Mã số thuế</Label>*/}
                 {/*            <div className="relative">*/}
-                {/*                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />*/}
+                {/*                <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />*/}
                 {/*                <Input*/}
                 {/*                    id="taxCode"*/}
                 {/*                    type="text"*/}
@@ -198,7 +192,7 @@ const RecruiterRegisterForm = ({ role }) => {
                 {/*                />*/}
                 {/*            </div>*/}
                 {/*            {errors.taxCode && (*/}
-                {/*                <p className="text-sm text-red-500 mt-1">*/}
+                {/*                <p className="mt-1 text-sm text-red-500">*/}
                 {/*                    {errors.taxCode.message}*/}
                 {/*                </p>*/}
                 {/*            )}*/}
@@ -209,7 +203,7 @@ const RecruiterRegisterForm = ({ role }) => {
                 {/*                Tên công ty đăng ký kinh doanh*/}
                 {/*            </Label>*/}
                 {/*            <div className="relative">*/}
-                {/*                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />*/}
+                {/*                <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />*/}
                 {/*                <Input*/}
                 {/*                    id="companyName"*/}
                 {/*                    type="text"*/}
@@ -219,7 +213,7 @@ const RecruiterRegisterForm = ({ role }) => {
                 {/*                />*/}
                 {/*            </div>*/}
                 {/*            {errors.companyName && (*/}
-                {/*                <p className="text-sm text-red-500 mt-1">*/}
+                {/*                <p className="mt-1 text-sm text-red-500">*/}
                 {/*                    {errors.companyName.message}*/}
                 {/*                </p>*/}
                 {/*            )}*/}
@@ -231,7 +225,7 @@ const RecruiterRegisterForm = ({ role }) => {
                 {/*            </Label>*/}
                 {/*            <RadioGroup*/}
                 {/*                defaultValue="yes"*/}
-                {/*                className="flex space-x-4 mt-2"*/}
+                {/*                className="flex mt-2 space-x-4"*/}
                 {/*            >*/}
                 {/*                <div className="flex items-center space-x-2">*/}
                 {/*                    <RadioGroupItem*/}

@@ -62,7 +62,7 @@ export default function ListCompanySaved() {
     return (
         <div className="container">
             {/* Header Section */}
-            <div className="px-6 py-4 bg-gradient-to-r from-blue-200 mb-2 to-indigo-50 border-b border-gray-100 rounded-xl">
+            <div className="px-6 py-4 bg-gradient-to-r from-blue-200 mb-4 to-indigo-50 border-b border-gray-100 rounded-xl">
                 <div className="max-w-6xl mx-auto">
                     <h1 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-800 pl-4">
                         Follow and companies you care about

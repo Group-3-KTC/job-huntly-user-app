@@ -8,7 +8,6 @@ export const metadata = {
     icons: {
         icon: "/logo.svg",
     },
-    viewport: "width=device-width, initial-scale=1",
     robots: { index: true, follow: true },
     openGraph: {
         title: "Job Huntly",
@@ -22,6 +21,11 @@ export const metadata = {
     alternates: {
         canonical: "https://your-website.com", // thay thế sau khi deploy
     },
+};
+
+export const viewport = {
+    width: "device-width",
+    initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
