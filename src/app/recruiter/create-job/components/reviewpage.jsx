@@ -3,16 +3,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useAppDispatch } from "../../../store/hooks.js";
-import { addToast } from "../../../store/slices/toastSlices.js";
+import { useAppDispatch } from "@/store/hooks.js";
+import { addToast } from "@/store/slices/toastSlices.js";
 import { ArrowLeft } from "lucide-react";
 
 // Import custom components
-import JobReviewHeader from "./components/JobReviewHeader";
-import JobDetailCard from "./components/JobDetailCard";
-import JobSidebar from "./components/JobSidebar";
-import PublishingSettings from "./components/PublishingSettings";
-import SuccessDialog from "./components/SuccessDialog";
+import JobReviewHeader from "@/app/recruiter/create-job/components/JobReviewHeader";
+import JobDetailCard from "@/app/recruiter/create-job/components/JobDetailCard";
+import JobSidebar from "@/app/recruiter/create-job/components/JobSidebar";
+import PublishingSettings from "@/app/recruiter/create-job/components/PublishingSettings";
+import SuccessDialog from "@/app/recruiter/create-job/components/SuccessDialog";
 
 const API_BASE_URL = "https://687076977ca4d06b34b6dc20.mockapi.io/api/v1/jobs";
 

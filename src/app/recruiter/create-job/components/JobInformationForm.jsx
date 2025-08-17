@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
-import ProvinceCombobox from "../province-combobox";
+import ProvinceCombobox from "./province-combobox";
 import SkillSelector from "./SkillSelector";
 
 const JobInformationForm = ({

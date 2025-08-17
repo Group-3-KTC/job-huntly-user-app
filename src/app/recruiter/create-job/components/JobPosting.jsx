@@ -4,16 +4,15 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Briefcase, FileText, Gift } from "lucide-react";
-import { useAppDispatch } from "../../../store/hooks.js";
-import { addToast } from "../../../store/slices/toastSlices.js";
 import JobReviewPage from "./reviewpage.jsx";
-
 // Import custom components
-import StepIndicator from "./components/StepIndicator";
-import JobInformationForm from "./components/JobInformationForm";
-import JobDescriptionForm from "./components/JobDescriptionForm";
-import BenefitsForm from "./components/BenefitsForm";
-import RecentJobsList from "./components/RecentJobsList";
+import StepIndicator from "@/app/recruiter/create-job/components/StepIndicator";
+import JobInformationForm from "@/app/recruiter/create-job/components/JobInformationForm";
+import JobDescriptionForm from "@/app/recruiter/create-job/components/JobDescriptionForm";
+import BenefitsForm from "@/app/recruiter/create-job/components/BenefitsForm";
+import RecentJobsList from "@/app/recruiter/create-job/components/RecentJobsList";
+import { useAppDispatch } from "@/store/hooks.js";
+import { addToast } from "@/store/slices/toastSlices.js";
 
 export default function JobPostingForm() {
     const [currentStep, setCurrentStep] = useState(1);

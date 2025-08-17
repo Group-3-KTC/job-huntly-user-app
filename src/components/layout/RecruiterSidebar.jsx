@@ -1,0 +1,232 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import logo from "@/assets/images/logo-title.png";
+import {
+    BarChart3,
+    Briefcase,
+    Users,
+    Bell,
+    User,
+    Settings,
+    LogOut,
+    Plus,
+    FileText,
+    Calendar,
+    MessageSquare,
+    Search,
+    Building,
+    ChevronDown,
+} from "lucide-react";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/features/auth/authSlice";
+import { useLogoutMutation } from "@/features/auth/authApi";
+
+export default function RecruiterSidebar() {
+    const pathname = usePathname();
+    const router = useRouter();
+    const user = useSelector(selectUser);
+    const [logoutMutation] = useLogoutMutation();
+    const [notificationCount] = useState(7000000000); // Replace with actual count if available
+    const [expandedSections, setExpandedSections] = useState({});
+
+    const navItems = [
+        { href: "/recruiter/dashboard", label: "Dashboard", icon: BarChart3 },
+        {
+            label: "Manage Jobs",
+            icon: Briefcase,
+            children: [
+                {
+                    href: "/recruiter/post-job",
+                    label: "All Job Posts",
+                    icon: FileText,
+                },
+                {
+                    href: "/recruiter/jobs/active",
+                    label: "Active Jobs",
+                    icon: Briefcase,
+                },
+                {
+                    href: "/recruiter/jobs/drafts",
+                    label: "Draft Jobs",
+                    icon: FileText,
+                },
+                {
+                    href: "/recruiter/jobs/expired",
+                    label: "Expired Jobs",
+                    icon: Calendar,
+                },
+            ],
+        },
+        {
+            label: "Candidates",
+            icon: Users,
+            children: [
+                {
+                    href: "/recruiter/applicants",
+                    label: "All Applicants",
+                    icon: Users,
+                },
+                {
+                    href: "/recruiter/applicants/shortlisted",
+                    label: "Shortlisted",
+                    icon: User,
+                },
+                {
+                    href: "/recruiter/applicants/interviewed",
+                    label: "Interviewed",
+                    icon: MessageSquare,
+                },
+                {
+                    href: "/recruiter/talent-pool",
+                    label: "Talent Pool",
+                    icon: Search,
+                },
+            ],
+        },
+        { href: "/recruiter/analytics", label: "Analytics", icon: BarChart3 },
+        {
+            href: "/recruiter/notifications",
+            label: "Notifications",
+            icon: Bell,
+        },
+        { href: "/recruiter/profile", label: "Profile", icon: User },
+        { href: "/recruiter/company", label: "Company", icon: Building },
+        { href: "/recruiter/settings", label: "Settings", icon: Settings },
+    ];
+
+    const handleLogout = async () => {
+        try {
+            await logoutMutation().unwrap();
+            router.push("/");
+        } catch (error) {
+            console.error("Logout failed:", error);
+            router.push("/");
+        }
+    };
+
+    const toggleSection = (label) => {
+        setExpandedSections((prev) => ({
+            ...prev,
+            [label]: !prev[label],
+        }));
+    };
+
+    return (
+        <div className="flex flex-col h-full bg-white border-r">
+            {/* Logo */}
+            <div className="flex items-center justify-center py-6 border-b">
+                <Link href="/recruiter" className="flex items-center">
+                    <Image
+                        src={logo}
+                        alt="JobHuntly Logo"
+                        width={120}
+                        height={48}
+                        className="max-w-[120px] h-auto object-contain"
+                        priority
+                    />
+                </Link>
+            </div>
+
+            {/* Post Job Button */}
+            <div className="p-4">
+                <Link href="/recruiter/create-job">
+                    <Button className="flex items-center w-full gap-2 bg-primary hover:bg-primary/90 rounded-lg">
+                        <Plus className="w-4 h-4" />
+                        <span>Post a Job</span>
+                    </Button>
+                </Link>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 px-2 py-4 space-y-3 overflow-y-auto scrollbar-thin">
+                {navItems.map((item, index) => {
+                    if (item.children) {
+                        const isExpanded = expandedSections[item.label];
+                        return (
+                            <div key={index}>
+                                <button
+                                    onClick={() => toggleSection(item.label)}
+                                    className="flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-muted"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <item.icon className="w-5 h-5" />
+                                        {item.label}
+                                    </div>
+                                    <ChevronDown
+                                        className={`h-4 w-4 transition-transform ${
+                                            isExpanded ? "rotate-180" : ""
+                                        }`}
+                                    />
+                                </button>
+                                {isExpanded && (
+                                    <div className="mt-1 ml-6 space-y-1">
+                                        {item.children.map((sub, subIndex) => {
+                                            const isSubActive =
+                                                pathname === sub.href;
+                                            return (
+                                                <Link
+                                                    key={subIndex}
+                                                    href={sub.href}
+                                                    className={`flex items-center gap-2 py-2 px-4 rounded-md hover:bg-muted text-sm ${
+                                                        isSubActive
+                                                            ? "bg-muted"
+                                                            : ""
+                                                    }`}
+                                                >
+                                                    {sub.icon && (
+                                                        <sub.icon className="w-4 h-4" />
+                                                    )}
+                                                    {sub.label}
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    } else {
+                        const isActive = pathname === item.href;
+                        return (
+                            <Link
+                                key={index}
+                                href={item.href}
+                                className={`flex items-center gap-2 py-2 px-4 rounded-md hover:bg-muted ${
+                                    isActive ? "bg-muted" : ""
+                                }`}
+                            >
+                                <item.icon className="w-5 h-5" />
+                                {item.label}
+                                {item.label === "Notifications" &&
+                                    notificationCount > 0 && (
+                                        <Badge className="ml-auto bg-red-500">
+                                            {notificationCount > 9
+                                                ? "9+"
+                                                : notificationCount}
+                                        </Badge>
+                                    )}
+                            </Link>
+                        );
+                    }
+                })}
+            </nav>
+
+            {/* Logout */}
+            <div className="p-4 mt-auto border-t">
+                <Button
+                    variant="ghost"
+                    className="justify-start w-full text-red-600 hover:text-red-600 hover:bg-red-50"
+                    onClick={handleLogout}
+                >
+                    <LogOut className="w-5 h-5 mr-2" />
+                    Logout
+                </Button>
+            </div>
+        </div>
+    );
+}

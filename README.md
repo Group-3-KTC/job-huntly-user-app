@@ -34,7 +34,7 @@ src/
 │   ├── (auth)/         # Đăng nhập/đăng ký chung
 │   ├── (user)/         # Toàn bộ tính năng cho user (candidate + recruiter)
 │   ├── job-detail/     # Chi tiết job (route động [id])
-│   └── recruiters/     # Tính năng riêng cho recruiter
+│   └── recruiter/     # Tính năng riêng cho recruiter
 │
 ├── components/         # Reusable UI + layout components
 │   ├── auth/           # Form login/register cho ứng viên và recruiter
@@ -62,7 +62,7 @@ src/
 
 - **(auth)**: Login/Register cho cả ứng viên và recruiter
 - **(user)**: Domain chính của user – bao gồm `candidate`, `profile`, `dashboard`, `jobInvitation`, `jobs`, `settings`, `notifications`, ...
-- **recruiters**: Đăng job, pricing, quản lý job của nhà tuyển dụng
+- **recruiter**: Đăng job, pricing, quản lý job của nhà tuyển dụng
 - **job-detail/\[id]**: Route chi tiết một công việc
 
 ---
@@ -95,7 +95,7 @@ app/(user)/candidate/
 ## 📌 Ghi chú phát triển
 
 - Component UI nên nằm trong `components/ui/` hoặc `components/layout/` nếu dùng lại nhiều nơi.
-- Tránh import chéo giữa các domain `candidate`, `recruiters`, `company`, v.v. để dễ maintain.
+- Tránh import chéo giữa các domain `candidate`, `recruiter`, `company`, v.v. để dễ maintain.
 - Tối ưu hiệu năng với `memo`, `useMemo`, `useCallback`, lazy loading route/component.
 
 ---

@@ -20,7 +20,7 @@ export const login = async ({ email, password, role }) => {
             `Tài khoản này là ${user.role === "candidate" ? "Ứng viên" : "Nhà tuyển dụng"}, không thể đăng nhập ở vai trò ${role === "candidate" ? "Ứng viên" : "Nhà tuyển dụng"}.`,
         );
     }
-    const token = await signToken({ email: user.email, role: user.role });
+    const token = await signToken({ email: user.email, role: user.role, isProfileComplete: user.isProfileComplete });
     console.log(new Date());
     return new Promise((resolve) =>
         setTimeout(() => resolve({ user, token }), 3000),
