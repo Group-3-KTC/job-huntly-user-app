@@ -3,6 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { MapPin, Building, Users, Briefcase, Star, Calendar } from 'lucide-react';
+import { getImageUrl } from '@/lib/utils';
 
 const ResultItem = ({ company }) => {
   // Hàm định dạng quy mô công ty
@@ -23,8 +25,8 @@ const ResultItem = ({ company }) => {
         <div className="w-16 h-16 flex-shrink-0 mr-4 overflow-hidden rounded-md bg-gray-50 p-1">
           <Link href={`/company/company-detail/${company.id}`}>
             <Image
-              src={company.logo || '/logo_example.png'}
-              alt={company.name}
+              src={getImageUrl(company.avatar)}
+              alt={company.companyName || 'Company logo'}
               width={64}
               height={64}
               className="object-contain"
@@ -35,45 +37,49 @@ const ResultItem = ({ company }) => {
         {/* Thông tin công ty */}
         <div className="flex-1">
           <div className="flex flex-wrap justify-between mb-2">
-            <h3 className="text-lg font-semibold text-[#0A66C2] hover:underline">
+            <h3 className="text-lg font-semibold text-[#0A66C2] hover:underline flex items-center">
               <Link href={`/company/company-detail/${company.id}`}>
-                {company.name}
+                {company.companyName}
               </Link>
+              {company.isProCompany && (
+                <Star className="ml-2 h-4 w-4 text-yellow-500 fill-yellow-500" />
+              )}
             </h3>
             
             <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                {company.jobCount} việc làm
+              <span className="text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full flex items-center">
+                <Briefcase className="mr-1 h-3.5 w-3.5" />
+                {company.jobsCount || 0} việc làm
               </span>
             </div>
           </div>
           
           <div className="flex flex-wrap gap-3 text-sm text-gray-600 mb-3">
-            {company.location && (
+            {company.locationCity && (
               <div className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                {company.location}
+                <MapPin className="h-4 w-4 mr-1 text-gray-400" />
+                {company.locationCity}, {company.locationCountry}
               </div>
             )}
             
-            {company.industry && (
+            {company.categories && company.categories.length > 0 && (
               <div className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                {company.industry}
+                <Building className="h-4 w-4 mr-1 text-gray-400" />
+                {company.categories[0]}{company.categories.length > 1 ? ` +${company.categories.length - 1}` : ''}
               </div>
             )}
             
-            {company.size && (
+            {company.quantityEmployee && (
               <div className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                {formatCompanySize(company.size)}
+                <Users className="h-4 w-4 mr-1 text-gray-400" />
+                {formatCompanySize(company.quantityEmployee)}
+              </div>
+            )}
+
+            {company.foundedYear && (
+              <div className="flex items-center">
+                <Calendar className="h-4 w-4 mr-1 text-gray-400" />
+                Thành lập năm {company.foundedYear}
               </div>
             )}
           </div>
@@ -81,6 +87,33 @@ const ResultItem = ({ company }) => {
           <p className="text-sm text-gray-600 line-clamp-2">
             {company.description}
           </p>
+
+          {company.parentCategories && company.parentCategories.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {company.parentCategories.map((category, index) => (
+                <span 
+                  key={`parent-${index}`}
+                  className="px-2 py-1 text-xs bg-blue-50 text-blue-600 rounded-full"
+                >
+                  {category}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Hiển thị danh mục con */}
+          {company.categories && company.categories.length > 0 && (
+            <div className="mt-1 flex flex-wrap gap-2">
+              {company.categories.map((sub, idx) => (
+                <span
+                  key={`sub-${idx}`}
+                  className="px-2 py-1 text-xs bg-purple-50 text-purple-600 rounded-full"
+                >
+                  {sub}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
