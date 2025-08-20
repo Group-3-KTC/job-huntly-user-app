@@ -1,230 +1,478 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { Building, MapPin, Search, Filter, CheckCircle } from "lucide-react";
+import { BASE_API_URL } from "@/constants/apiConstants";
 
-import SearchBar from '../components/SearchBar';
-import FilterSidebar from '../components/FilterSidebar';
-import ResultItem from '../components/ResultItem';
-import useCompanySearchStore from '../store/companySearchStore';
+import SearchBar from "../components/SearchBar";
+import FilterSidebar from "../components/FilterSidebar";
+import ResultItem from "../components/ResultItem";
+import useCompanySearchStore from "../store/companySearchStore";
 
 // Danh sách quy mô công ty
 const companySizes = [
-  { id: '1-10', label: '1-10 nhân viên' },
-  { id: '11-50', label: '11-50 nhân viên' },
-  { id: '51-200', label: '51-200 nhân viên' },
-  { id: '201-500', label: '201-500 nhân viên' },
-  { id: '501+', label: '501+ nhân viên' },
+    { id: "1-10", label: "1-10 nhân viên" },
+    { id: "11-50", label: "11-50 nhân viên" },
+    { id: "51-200", label: "51-200 nhân viên" },
+    { id: "201-500", label: "201-500 nhân viên" },
+    { id: "501+", label: "501+ nhân viên" },
 ];
 
 const ITEMS_PER_PAGE = 8;
 
+// Chỉ sửa phần xử lý tìm kiếm và lọc kết quả
 const ResultPageContent = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  
-  // Lấy state và actions từ Zustand store
-  const { 
-    companies, 
-    industries,
-    filters, 
-    searchTerm,
-    isLoading, 
-    error,
-    fetchCompanies, 
-    fetchIndustries,
-    setFilters, 
-    setSearchTerm,
-    getFilteredCompanies,
-    getFilterCounts
-  } = useCompanySearchStore();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [showFilterOnMobile, setShowFilterOnMobile] = useState(false);
+    const [useDirectAPIResults, setUseDirectAPIResults] = useState(false);
+    const [apiResults, setApiResults] = useState([]);
 
-  const [currentPage, setCurrentPage] = useState(1);
+    // Lấy state và actions từ Zustand store
+    const {
+        companies,
+        industries,
+        filters,
+        searchTerm,
+        isLoading,
+        error,
+        fetchCompanies,
+        searchCompanies,
+        fetchCompaniesByCategories,
+        fetchCompaniesByLocation,
+        fetchIndustries,
+        fetchLocations,
+        setFilters,
+        setSearchTerm,
+        getFilteredCompanies,
+        getFilterCounts,
+    } = useCompanySearchStore();
 
-  // Khởi tạo từ khóa tìm kiếm từ query parameters
-  useEffect(() => {
-    const company = searchParams.get('company') || '';
-    const location = searchParams.get('location') || '';
-    
-    setSearchTerm({ company, location });
-    
-    // Lấy dữ liệu công ty và ngành nghề khi component được mount
-    fetchCompanies();
-    fetchIndustries();
-  }, [searchParams]);
+    // Chỉ cập nhật phần useEffect chính để xử lý tham số mới
+    useEffect(() => {
+        const company = searchParams.get("company") || "";
+        const location = searchParams.get("location") || "";
+        const categoryId = searchParams.get("categoryId");
+        const categoryName = searchParams.get("categoryName") || "";
 
-  // Lọc kết quả dựa trên từ khóa tìm kiếm và bộ lọc
-  const filteredResults = getFilteredCompanies();
-  const filterCounts = getFilterCounts();
-  
-  // Xử lý tìm kiếm
-  const handleSearch = (searchParams) => {
-    setSearchTerm(searchParams);
-    
-    const queryParams = new URLSearchParams();
-    
-    if (searchParams.company) {
-      queryParams.append('company', searchParams.company);
-    }
-    
-    if (searchParams.location) {
-      queryParams.append('location', searchParams.location);
-    }
-    
-    router.push(`/company/company-search/results?${queryParams.toString()}`);
-  };
-
-  // Logic phân trang
-  const totalPages = Math.ceil(filteredResults.length / ITEMS_PER_PAGE);
-  const paginatedResults = filteredResults.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    window.scrollTo(0, 0);
-  };
-
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="mb-8">
-        <SearchBar onSearch={handleSearch} initialValues={searchTerm} />
-      </div>
-      
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="lg:w-1/4">
-          <FilterSidebar 
-            filters={filters} 
-            setFilters={setFilters} 
-            industries={industries} 
-            companySizes={companySizes}
-            filterCounts={filterCounts}
-          />
-        </div>
+        setSearchTerm({ company: categoryName || company, location });
         
-        <div className="lg:w-3/4">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              Tất cả công ty
-            </h2>
-            <p className="text-gray-600">
-              {isLoading ? 'Đang tải...' : `Hiển thị ${filteredResults.length} kết quả`}
-              {searchTerm.company && ` cho "${searchTerm.company}"`}
-              {searchTerm.location && searchTerm.company && ' tại '}
-              {searchTerm.location && `${searchTerm.location}`}
-            </p>
-          </div>
-          
-          {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#0A66C2]"></div>
-            </div>
-          ) : error ? (
-            <div className="text-center py-12">
-              <p className="text-red-500 mb-4">Có lỗi xảy ra: {error}</p>
-              <button 
-                onClick={fetchCompanies} 
-                className="px-4 py-2 bg-[#0A66C2] text-white rounded-md hover:bg-[#085aab]"
-              >
-                Thử lại
-              </button>
-            </div>
-          ) : filteredResults.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500 mb-4">Không tìm thấy công ty phù hợp với tiêu chí của bạn.</p>
-              <p className="text-gray-600">Hãy điều chỉnh tìm kiếm hoặc bộ lọc của bạn.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {paginatedResults.map(company => (
-                <ResultItem key={company.id} company={company} />
-              ))}
-              
-              {/* Phân trang */}
-              {totalPages > 1 && (
-                <div className="flex justify-center items-center gap-2 mt-8">
-                  <button 
-                    onClick={() => handlePageChange(currentPage - 1)} 
-                    disabled={currentPage === 1}
-                    className={`w-8 h-8 flex items-center justify-center rounded-md ${
-                      currentPage === 1 
-                        ? 'text-gray-400 cursor-not-allowed' 
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                    aria-label="Trang trước"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  
-                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                    // Hiển thị trang hiện tại và các trang xung quanh
-                    let pageNum = currentPage;
-                    if (pageNum <= 3) {
-                      pageNum = i + 1;
-                    } else if (pageNum >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = pageNum - 2 + i;
-                    }
-                    
-                    // Nếu trang nằm ngoài phạm vi, không hiển thị
-                    if (pageNum <= 0 || pageNum > totalPages) {
-                      return null;
-                    }
-                    
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => handlePageChange(pageNum)}
-                        className={`w-8 h-8 flex items-center justify-center rounded-md ${
-                          currentPage === pageNum
-                            ? 'bg-[#0A66C2] text-white'
-                            : 'text-gray-700 hover:bg-gray-100'
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
+        // Reset các trạng thái khi thay đổi tham số
+        setUseDirectAPIResults(false);
+        setApiResults([]);
+
+        // Lấy dữ liệu cơ bản
+        fetchIndustries();
+        fetchLocations();
+
+        // Quyết định cách tìm kiếm dựa trên tham số query
+        const performSearch = async () => {
+            try {
+                // Nếu có categoryId, tìm theo danh mục
+                if (categoryId) {
+                    const response = await fetch(
+                        `${BASE_API_URL}/companies/by-categories?categoryIds=${categoryId}`
                     );
-                  })}
-                  
-                  {totalPages > 5 && currentPage < totalPages - 2 && (
-                    <>
-                      {currentPage < totalPages - 3 && <span className="px-2">...</span>}
-                      <button
-                        onClick={() => handlePageChange(totalPages)}
-                        className="w-8 h-8 flex items-center justify-center rounded-md text-gray-700 hover:bg-gray-100"
-                      >
-                        {totalPages}
-                      </button>
-                    </>
-                  )}
-                  
-                  <button 
-                    onClick={() => handlePageChange(currentPage + 1)} 
-                    disabled={currentPage === totalPages}
-                    className={`w-8 h-8 flex items-center justify-center rounded-md ${
-                      currentPage === totalPages 
-                        ? 'text-gray-400 cursor-not-allowed' 
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                    aria-label="Trang sau"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
-              )}
+                    
+                    // Xử lý trường hợp 204 No Content
+                    if (response.status === 204) {
+                        setApiResults([]);
+                        setUseDirectAPIResults(true);
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Không thể tải danh sách công ty theo danh mục");
+                    }
+
+                    // Kiểm tra content-type và xử lý dữ liệu
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        try {
+                            const data = await response.json();
+                            // Đảm bảo data luôn là mảng
+                            const companies = Array.isArray(data) ? data : [];
+                            setApiResults(companies);
+                            setUseDirectAPIResults(true);
+                        } catch (jsonError) {
+                            console.error("Error parsing JSON:", jsonError);
+                            setApiResults([]);
+                            setUseDirectAPIResults(true);
+                        }
+                    } else {
+                        setApiResults([]);
+                        setUseDirectAPIResults(true);
+                    }
+
+                    // Cập nhật bộ lọc danh mục (chỉ để hiển thị UI)
+                    setFilters((prev) => ({
+                        ...prev,
+                        categoryIds: [parseInt(categoryId, 10)],
+                    }));
+                }
+                // Nếu có location, tìm theo vị trí
+                else if (location) {
+                    await fetchCompaniesByLocation(location);
+                }
+                // Nếu có tên công ty, tìm theo tên
+                else if (company) {
+                    await searchCompanies({ name: company });
+                }
+                // Nếu không có tham số nào, lấy tất cả công ty
+                else {
+                    await fetchCompanies();
+                }
+            } catch (error) {
+                console.error("Error in search:", error);
+            }
+        };
+
+        performSearch();
+    }, [
+        searchParams,
+        fetchCompanies,
+        fetchCompaniesByCategories,
+        fetchCompaniesByLocation,
+        searchCompanies,
+        fetchIndustries,
+        fetchLocations,
+        setSearchTerm,
+        setFilters,
+    ]);
+
+    // Lọc kết quả dựa trên bộ lọc hoặc sử dụng kết quả API trực tiếp
+    const filteredResults = useDirectAPIResults && apiResults && apiResults.length > 0
+        ? apiResults
+        : getFilteredCompanies();
+    const filterCounts = getFilterCounts();
+
+    // Xử lý tìm kiếm
+    const handleSearch = (searchParams) => {
+        setSearchTerm(searchParams);
+
+        const queryParams = new URLSearchParams();
+
+        if (searchParams.company) {
+            queryParams.append("company", searchParams.company);
+        }
+
+        if (searchParams.location) {
+            queryParams.append("location", searchParams.location);
+        }
+
+        router.push(
+            `/company/company-search/results?${queryParams.toString()}`
+        );
+    };
+
+    // Tạo hàm xử lý thay đổi bộ lọc
+    const handleFilterChange = async (newFilters) => {
+        // Trước khi thực hiện bất kỳ thao tác nào, reset các giá trị để tránh hiển thị dữ liệu cũ
+        setApiResults([]);
+        
+        const updatedFilters = { ...filters, ...newFilters };
+        setFilters(updatedFilters);
+        
+        try {
+            // Nếu đang chọn danh mục, gọi API để lấy công ty theo danh mục
+            if (updatedFilters.categoryIds && updatedFilters.categoryIds.length > 0) {
+                // Sử dụng hàm từ store để lấy công ty theo danh mục
+                const categoryIds = updatedFilters.categoryIds.join(',');
+                await fetchCompaniesByCategories(categoryIds);
+                
+                // Sau khi gọi API, cập nhật kết quả từ store
+                setUseDirectAPIResults(false);  // Sử dụng kết quả từ store trực tiếp
+            } else {
+                // Nếu không có danh mục nào được chọn, lấy tất cả công ty
+                setUseDirectAPIResults(false);
+                await fetchCompanies();
+            }
+        } catch (error) {
+            console.error("Error updating filters:", error);
+        }
+    };
+
+    // Logic phân trang
+    const totalPages = Math.ceil(filteredResults.length / ITEMS_PER_PAGE);
+    const paginatedResults = filteredResults.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo(0, 0);
+    };
+
+    const toggleFilterOnMobile = () => {
+        setShowFilterOnMobile(!showFilterOnMobile);
+    };
+
+    return (
+        <div className="max-w-7xl mx-auto px-4 py-8">
+            <div className="mb-8">
+                <SearchBar onSearch={handleSearch} initialValues={searchTerm} />
             </div>
-          )}
+
+            <div className="lg:hidden mb-4">
+                <button
+                    onClick={toggleFilterOnMobile}
+                    className="w-full py-2 px-4 flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                    <Filter className="w-4 h-4" />
+                    {showFilterOnMobile ? "Ẩn bộ lọc" : "Hiển thị bộ lọc"}
+                </button>
+            </div>
+
+            <div className="flex flex-col lg:flex-row gap-8">
+                <div
+                    className={`${
+                        showFilterOnMobile ? "block" : "hidden"
+                    } lg:block lg:w-1/4`}
+                >
+                    <FilterSidebar
+                        filters={filters}
+                        setFilters={handleFilterChange}
+                        industries={industries}
+                        companySizes={companySizes}
+                        filterCounts={filterCounts}
+                    />
+                </div>
+
+                <div className="lg:w-3/4">
+                    <div className="mb-6">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                            <Building className="mr-2 h-6 w-6 text-[#0A66C2]" />
+                            Tất cả công ty
+                        </h2>
+                        <div className="flex flex-wrap items-center text-gray-600 gap-2">
+                            {isLoading ? (
+                                <div className="flex items-center">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-[#0A66C2] mr-2"></div>
+                                    Đang tải...
+                                </div>
+                            ) : (
+                                <>
+                                    <p>
+                                        Hiển thị {filteredResults.length} kết
+                                        quả
+                                    </p>
+                                    {searchTerm.company && (
+                                        <div className="flex items-center bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm">
+                                            <Search className="w-4 h-4 mr-1" />
+                                            {searchTerm.company}
+                                        </div>
+                                    )}
+                                    {searchTerm.location && (
+                                        <div className="flex items-center bg-green-50 text-green-600 px-3 py-1 rounded-full text-sm">
+                                            <MapPin className="w-4 h-4 mr-1" />
+                                            {searchTerm.location}
+                                        </div>
+                                    )}
+                                    {filters.categoryIds.length > 0 && (
+                                        <div className="flex items-center bg-yellow-50 text-yellow-600 px-3 py-1 rounded-full text-sm">
+                                            <Filter className="w-4 h-4 mr-1" />
+                                            {filters.categoryIds.length} danh
+                                            mục đã lọc
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    {isLoading ? (
+                        <div className="flex justify-center items-center py-20">
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0A66C2]"></div>
+                        </div>
+                    ) : error ? (
+                        <div className="text-center py-12 bg-red-50 rounded-lg border border-red-100">
+                            <p className="text-red-500 mb-4">
+                                Có lỗi xảy ra: {error}
+                            </p>
+                            <button
+                                onClick={fetchCompanies}
+                                className="px-4 py-2 bg-[#0A66C2] text-white rounded-md hover:bg-[#085aab]"
+                            >
+                                Thử lại
+                            </button>
+                        </div>
+                    ) : filteredResults.length === 0 ? (
+                        <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-100">
+                            <div className="flex justify-center mb-4">
+                                <Building className="h-16 w-16 text-gray-300" />
+                            </div>
+                            <p className="text-gray-500 mb-4 text-lg font-medium">
+                                Không tìm thấy công ty phù hợp với tiêu chí của
+                                bạn.
+                            </p>
+                            <p className="text-gray-600">
+                                Hãy điều chỉnh tìm kiếm hoặc bộ lọc của bạn.
+                            </p>
+                            <button
+                                onClick={() => {
+                                    setSearchTerm({
+                                        company: "",
+                                        location: "",
+                                    });
+                                    setFilters({
+                                        companySize: [],
+                                        categoryIds: [],
+                                        foundingYear: "any",
+                                    });
+                                    router.push(
+                                        "/company/company-search/results"
+                                    );
+                                }}
+                                className="mt-4 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100"
+                            >
+                                Xóa bộ lọc và tìm kiếm lại
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {paginatedResults.map((company) => (
+                                <ResultItem
+                                    key={company.id}
+                                    company={company}
+                                />
+                            ))}
+
+                            {/* Phân trang */}
+                            {totalPages > 1 && (
+                                <div className="flex justify-center items-center gap-2 mt-8">
+                                    <button
+                                        onClick={() =>
+                                            handlePageChange(currentPage - 1)
+                                        }
+                                        disabled={currentPage === 1}
+                                        className={`w-8 h-8 flex items-center justify-center rounded-md ${
+                                            currentPage === 1
+                                                ? "text-gray-400 cursor-not-allowed"
+                                                : "text-gray-700 hover:bg-gray-100"
+                                        }`}
+                                        aria-label="Trang trước"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-5 w-5"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M15 19l-7-7 7-7"
+                                            />
+                                        </svg>
+                                    </button>
+
+                                    {Array.from(
+                                        { length: Math.min(totalPages, 5) },
+                                        (_, i) => {
+                                            // Hiển thị trang hiện tại và các trang xung quanh
+                                            let pageNum = currentPage;
+                                            if (pageNum <= 3) {
+                                                pageNum = i + 1;
+                                            } else if (
+                                                pageNum >=
+                                                totalPages - 2
+                                            ) {
+                                                pageNum = totalPages - 4 + i;
+                                            } else {
+                                                pageNum = pageNum - 2 + i;
+                                            }
+
+                                            // Nếu trang nằm ngoài phạm vi, không hiển thị
+                                            if (
+                                                pageNum <= 0 ||
+                                                pageNum > totalPages
+                                            ) {
+                                                return null;
+                                            }
+
+                                            return (
+                                                <button
+                                                    key={pageNum}
+                                                    onClick={() =>
+                                                        handlePageChange(
+                                                            pageNum
+                                                        )
+                                                    }
+                                                    className={`w-8 h-8 flex items-center justify-center rounded-md ${
+                                                        currentPage === pageNum
+                                                            ? "bg-[#0A66C2] text-white"
+                                                            : "text-gray-700 hover:bg-gray-100"
+                                                    }`}
+                                                >
+                                                    {pageNum}
+                                                </button>
+                                            );
+                                        }
+                                    )}
+
+                                    {totalPages > 5 &&
+                                        currentPage < totalPages - 2 && (
+                                            <>
+                                                {currentPage <
+                                                    totalPages - 3 && (
+                                                    <span className="px-2">
+                                                        ...
+                                                    </span>
+                                                )}
+                                                <button
+                                                    onClick={() =>
+                                                        handlePageChange(
+                                                            totalPages
+                                                        )
+                                                    }
+                                                    className="w-8 h-8 flex items-center justify-center rounded-md text-gray-700 hover:bg-gray-100"
+                                                >
+                                                    {totalPages}
+                                                </button>
+                                            </>
+                                        )}
+
+                                    <button
+                                        onClick={() =>
+                                            handlePageChange(currentPage + 1)
+                                        }
+                                        disabled={currentPage === totalPages}
+                                        className={`w-8 h-8 flex items-center justify-center rounded-md ${
+                                            currentPage === totalPages
+                                                ? "text-gray-400 cursor-not-allowed"
+                                                : "text-gray-700 hover:bg-gray-100"
+                                        }`}
+                                        aria-label="Trang sau"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-5 w-5"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M9 5l7 7-7 7"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
-export default ResultPageContent; 
+export default ResultPageContent;
