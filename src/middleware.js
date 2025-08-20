@@ -31,6 +31,7 @@ const publicRoutes = [
     /^\/search$/,
     /^\/company\/company-detail\/[^/]+/,
     /^\/company\/company-search$/,
+    /^\/company\/company-search\/results/, // Thêm route kết quả tìm kiếm công ty
     /^\/job-detail\/[^\/]+$/,
 ];
 
