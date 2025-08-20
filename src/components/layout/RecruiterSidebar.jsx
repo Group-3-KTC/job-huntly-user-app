@@ -23,15 +23,13 @@ import {
     Building,
     ChevronDown,
 } from "lucide-react";
-import { useSelector } from "react-redux";
-import { selectUser } from "@/features/auth/authSlice";
-import { useLogoutMutation } from "@/features/auth/authApi";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutThunk } from "@/features/auth/authSlice";
 
 export default function RecruiterSidebar() {
+    const dispatch = useDispatch();
     const pathname = usePathname();
     const router = useRouter();
-    const user = useSelector(selectUser);
-    const [logoutMutation] = useLogoutMutation();
     const [notificationCount] = useState(7000000000); // Replace with actual count if available
     const [expandedSections, setExpandedSections] = useState({});
 
@@ -102,10 +100,10 @@ export default function RecruiterSidebar() {
 
     const handleLogout = async () => {
         try {
-            await logoutMutation().unwrap();
+            await dispatch(logoutThunk()).unwrap();
             router.push("/");
         } catch (error) {
-            console.error("Logout failed:", error);
+            console.error("Lỗi đăng xuất:", error);
             router.push("/");
         }
     };

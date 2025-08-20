@@ -43,7 +43,7 @@ src/
 │   └── ui/             # Button, Input, Modal, Card, Toast...
 │
 ├── features/           # State management (Redux slices, RTK Query)
-│   ├── auth/           # authSlice, authApi
+│   ├── auth/           # fakeAuthSlice, fakeAuthApi
 │   └── profile/        # profileSlice
 │
 ├── hooks/              # Custom hooks (ex: useAuth, useScroll)
@@ -69,7 +69,7 @@ src/
 
 ## 🔐 Authentication
 
-- Sử dụng `authSlice` (Redux Toolkit) và `zustand/authStore`
+- Sử dụng `fakeAuthSlice` (Redux Toolkit) và `zustand/authStore`
 - Token được lưu bằng cookies (JWT)
 - Có middleware ở `app/middleware.js` để redirect nếu chưa login
 

@@ -1,57 +1,38 @@
-import { signToken } from "@/lib/jwt";
+import api from "@/lib/api";
 
-const API_BASE_URL = "https://6870769d7ca4d06b34b6dc65.mockapi.io/api/v1/users";
+const authService = {
+    async login(credentials) {
+        const { data } = await api.post("/auth/login", credentials);
+        return {
+            accessToken: data.access_token,
+            refreshToken: null,
+            user: {
+                id: data.user_id,
+                email: data.email,
+                fullname: data.fullName,
+                role: data.role,
+                tokenType: data.token_type,
+                expiresIn: data.expires_in,
+            },
+            message: "Đăng nhập thành công",
+        };
+    },
 
-export const login = async ({ email, password, role }) => {
-    const res = await fetch(API_BASE_URL);
-    if (!res.ok) {
-        throw new Error("Không thể kết nối tới máy chủ.");
-    }
-    const users = await res.json();
+    async register(payload) {
+        const { data } = await api.post("/auth/register", payload);
+        return data;
+    },
 
-    const user = users.find(
-        (u) => u.email === email && u.password === password,
-    );
-    if (!user) {
-        throw new Error("Invalid email or password");
-    }
-    if (user.role !== role) {
-        throw new Error(
-            `Tài khoản này là ${user.role === "candidate" ? "Ứng viên" : "Nhà tuyển dụng"}, không thể đăng nhập ở vai trò ${role === "candidate" ? "Ứng viên" : "Nhà tuyển dụng"}.`,
-        );
-    }
-    const token = await signToken({ email: user.email, role: user.role, isProfileComplete: user.isProfileComplete });
-    console.log(new Date());
-    return new Promise((resolve) =>
-        setTimeout(() => resolve({ user, token }), 3000),
-    );
+    async me() {
+        const { data } = await api.get("/auth/me"); // lấy từ cookie httpOnly
+        return { user: data };
+    },
+
+    async logout() {
+        try {
+            await api.post("/auth/logout");
+        } catch {}
+    },
 };
 
-export const register = async ({ email, password, fullname, role }) => {
-    if (!["candidate", "recruiter"].includes(role)) {
-        throw new Error("Vai trò không hợp lệ");
-    }
-    const checkRes = await fetch(API_BASE_URL);
-    const allUsers = await checkRes.json();
-    const exists = allUsers.some((u) => u.email === email);
-    if (exists) throw new Error("Email đã được đăng ký");
-
-    const newUser = {
-        email,
-        password,
-        fullname,
-        role,
-    };
-
-    const res = await fetch(API_BASE_URL, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUser),
-    });
-
-    return new Promise((resolve) =>
-        setTimeout(() => resolve({ user: newUser }), 500),
-    );
-};
+export default authService;

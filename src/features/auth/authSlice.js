@@ -1,98 +1,135 @@
-import { createSlice } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import authService from "@/services/authService";
 
-const saveToCookie = (key, value) => {
-    try {
-        const cookieValue =
-            typeof value === "object" ? JSON.stringify(value) : value;
-        Cookies.set(key, cookieValue, {
-            expires: 7,
-            path: "/",
-        });
-    } catch (error) {
-        console.error("Error saving to cookie:", error);
-    }
-};
+export const loginThunk = createAsyncThunk(
+    "auth/login",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const res = await authService.login(credentials);
+            return res;
+        } catch (err) {
+            return rejectWithValue(err?.response?.data || err.message);
+        }
+    },
+);
 
-const removeFromCookie = (key) => {
-    try {
-        Cookies.remove(key, { path: "/" });
-    } catch (error) {
-        console.error("Error removing cookie:", error);
-    }
-};
+export const registerThunk = createAsyncThunk(
+    "auth/register",
+    async (payload, { rejectWithValue }) => {
+        try {
+            const res = await authService.register(payload);
+            return res;
+        } catch (err) {
+            return rejectWithValue(err?.response?.data || err.message);
+        }
+    },
+);
+
+export const meThunk = createAsyncThunk(
+    "auth/me",
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await authService.me();
+            return res.user;
+        } catch (e) {
+            return rejectWithValue({ message: "Not authenticated" });
+        }
+    },
+);
+
+export const logoutThunk = createAsyncThunk(
+    "auth/logout",
+    async (_, { rejectWithValue }) => {
+        try {
+            // BE sẽ xóa httpOnly cookie
+            await authService.logout();
+            return true;
+        } catch (err) {
+            const data = err?.response?.data;
+            const message =
+                data?.detail ||
+                data?.title ||
+                data?.message ||
+                err?.message ||
+                "Logout failed";
+            return rejectWithValue({ message, raw: data });
+        } finally {
+            try {
+                localStorage.removeItem("authState");
+            } catch {}
+        }
+    },
+);
 
 const initialState = {
-    isLoggedIn: false,
+    accessToken: null,
+    refreshToken: null,
     user: null,
-    token: null,
-    isLoading: false,
+    loading: false,
     error: null,
-    isAuthHydrated: false,
+    hydrated: false,
 };
 
-export const authSlice = createSlice({
+const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        loginStart: (state) => {
-            state.isLoading = true;
-            state.error = null;
+        authTokenReceived: (state, action) => {
+            const { accessToken, refreshToken } = action.payload || {};
+            if (accessToken) state.accessToken = accessToken;
+            if (refreshToken) state.refreshToken = refreshToken;
         },
-
-        loginSuccess: (state, action) => {
-            const { user, token } = action.payload;
-
-            state.isLoading = false;
-            state.isLoggedIn = true;
-            state.user = user;
-            state.token = token;
-            state.error = null;
-
-            saveToCookie("authUser", user);
-            saveToCookie("authToken", token);
+        authLoggedOut: () => ({ ...initialState, hydrated: true }), // hydrated: true để tránh flicker
+        authHydrated: (state, action) => {
+            const { accessToken, refreshToken, user } = action.payload || {};
+            if (accessToken !== undefined) state.accessToken = accessToken;
+            if (refreshToken !== undefined) state.refreshToken = refreshToken;
+            if (user !== undefined) state.user = user;
+            state.hydrated = true;
         },
-
-        loginFailure: (state, action) => {
-            state.isLoading = false;
-            state.error = action.payload;
-        },
-
-        logout: (state) => {
-            state.isLoggedIn = false;
-            state.user = null;
-            state.token = null;
-            state.error = null;
-            state.isLoading = false;
-            state.isAuthHydrated = true;
-
-            removeFromCookie("authUser");
-            removeFromCookie("authToken");
-        },
-        setCredentials: (state, action) => {
-            state.token = action.payload.token;
-            state.user = action.payload.user;
-            state.isLoggedIn = true;
-            state.isAuthHydrated = true;
-        },
-        setAuthHydrated: (state) => {
-            state.isAuthHydrated = true;
-        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(loginThunk.pending, (s) => {
+                s.loading = true;
+                s.error = null;
+            })
+            .addCase(loginThunk.fulfilled, (s, a) => {
+                s.loading = false;
+                s.accessToken = a.payload.accessToken;
+                s.refreshToken = a.payload.refreshToken;
+                s.user = a.payload.user || null;
+            })
+            .addCase(loginThunk.rejected, (s, a) => {
+                s.loading = false;
+                s.error = a.payload || "Login failed";
+            })
+            .addCase(registerThunk.pending, (s) => {
+                s.loading = true;
+                s.error = null;
+            })
+            .addCase(registerThunk.fulfilled, (s) => {
+                s.loading = false;
+            })
+            .addCase(registerThunk.rejected, (s, a) => {
+                s.loading = false;
+                s.error = a.payload || "Register failed";
+            })
+            .addCase(meThunk.fulfilled, (s, a) => {
+                s.user = a.payload;
+                s.hydrated = true;
+            })
+            .addCase(meThunk.rejected, (s) => {
+                s.hydrated = true;
+            })
+            .addCase(logoutThunk.fulfilled, (s) => {
+                s.accessToken = null;
+                s.refreshToken = null;
+                s.user = null;
+            });
     },
 });
 
-export const {
-    loginStart,
-    loginSuccess,
-    loginFailure,
-    logout,
-    setCredentials,
-    setAuthHydrated,
-} = authSlice.actions;
-
-export const selectIsLoggedIn = (state) => state.auth.isLoggedIn;
-export const selectUser = (state) => state.auth.user;
-export const selectAuthLoading = (state) => state.auth.isLoading;
-export const selectAuthHydrated = (state) => state.auth.isAuthHydrated;
-
+export const { authTokenReceived, authLoggedOut, authHydrated } =
+    authSlice.actions;
 export default authSlice.reducer;

@@ -24,15 +24,8 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 import logo from "@/assets/images/logo-title-white.png";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
-import {
-    selectAuthHydrated,
-    selectAuthLoading,
-    selectIsLoggedIn,
-    selectUser,
-} from "@/features/auth/authSlice";
-import { useLogoutMutation } from "@/features/auth/authApi";
+import { usePathname, useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
 import { Badge } from "@/components/ui/badge";
 import {
     DropdownMenu,
@@ -43,23 +36,32 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+    selectAuthHydrated,
+    selectAuthLoading,
+    selectAuthUser,
+    selectIsLoggedIn,
+} from "@/features/auth/authSelectors";
+import { logoutThunk } from "@/features/auth/authSlice";
 
 export const Header = () => {
+    const dispatch = useDispatch();
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [notificationCount, setNotificationCount] = useState(3);
     const router = useRouter();
+    const pathname = usePathname();
 
     const isLoggedIn = useSelector(selectIsLoggedIn);
-    const user = useSelector(selectUser);
+    const user = useSelector(selectAuthUser);
     const isAuthLoading = useSelector(selectAuthLoading);
-
-    const [logoutMutation] = useLogoutMutation();
 
     const isAuthHydrated = useSelector(selectAuthHydrated);
 
-    if (!isAuthHydrated) {
-        return null;
-    }
+    if (pathname?.startsWith("/recruiter")) return null;
+
+    if (!isAuthHydrated) return null;
+
+    const role = (user?.role || "").toUpperCase();
 
     const handleMouseEnter = (menu) => {
         setActiveDropdown(menu);
@@ -81,7 +83,7 @@ export const Header = () => {
     };
     const handleLogout = async () => {
         try {
-            await logoutMutation().unwrap();
+            await dispatch(logoutThunk()).unwrap();
             router.push("/");
         } catch (error) {
             console.error("Lỗi đăng xuất:", error);
@@ -367,7 +369,7 @@ export const Header = () => {
 
                     {/* Right Navigation */}
                     <ul className="flex items-center space-x-2">
-                        {!isLoggedIn ? (
+                        {!isLoggedIn || role === "RECRUITER" ? (
                             <>
                                 {/* Khi chưa đăng nhập */}
 
@@ -420,14 +422,14 @@ export const Header = () => {
                                                 variant="ghost"
                                                 className="flex items-center py-6 text-white hover:bg-white/20"
                                             >
-                                                <Avatar>   
+                                                <Avatar>
                                                     <AvatarImage
                                                         src="/placeholder.svg?height=32&width=32"
                                                         alt="User Avatar"
                                                     />
                                                     <AvatarFallback className="bg-white text-[#0a66c2] text-sm font-semibold">
                                                         {getUserInitials(
-                                                            user?.fullname
+                                                            user?.fullname,
                                                         )}
                                                     </AvatarFallback>
                                                 </Avatar>

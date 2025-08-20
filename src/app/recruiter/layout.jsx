@@ -8,14 +8,13 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
 import Link from "next/link";
 import { useSelector } from "react-redux";
-import { selectAuthLoading } from "@/features/auth/authSlice";
 import LoadingScreen from "@/components/ui/loadingScreen";
+import { selectAuthLoading } from "@/features/auth/authSelectors";
 
 export default function RecruiterLayout({ children }) {
     const isAuthLoading = useSelector(selectAuthLoading);
 
     if (isAuthLoading) {
-        // Bọc toàn bộ layout = show loading luôn
         return <LoadingScreen message="Đang xử lý..." />;
     }
 
