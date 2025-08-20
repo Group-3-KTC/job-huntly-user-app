@@ -8,16 +8,16 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "@/validation/loginSchema";
 import { useRouter } from "next/navigation";
-import { useLoginMutation } from "@/features/auth/authApi";
-import { useSelector } from "react-redux";
-import { selectAuthLoading } from "@/features/auth/authSlice";
+import { useLoginMutation } from "@/features/auth/fakeAuthApi";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAuthLoading } from "@/features/auth/fakeAuthSlice";
 import LoadingScreen from "../ui/loadingScreen";
+import { loginThunk } from "@/features/auth/authSlice";
+import { toast } from "react-toastify";
 
 const RecruiterLoginForm = ({ role }) => {
-    const [showPassword, setShowPassword] = useState(false);
+    const dispatch = useDispatch();
     const router = useRouter();
-    const [login] = useLoginMutation();
-    const [errorMessage, setErrorMessage] = useState(null);
     const isAuthLoading = useSelector(selectAuthLoading);
     const {
         register,
@@ -27,16 +27,35 @@ const RecruiterLoginForm = ({ role }) => {
         resolver: yupResolver(loginSchema),
     });
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (form) => {
+        const payload = {
+            email: form.email,
+            password: form.password,
+            role: role ?? "RECRUITER",
+        };
+
         try {
-            const res = await login({ ...data, role }).unwrap();
-            router.push("recruiter/dashboard");
+            const result = await dispatch(loginThunk(payload)).unwrap();
+            const roleRes = result?.user?.role;
+
+            const okMsg = result?.message || "Đăng nhập thành công!";
+
+            router.replace("/recruiter/dashboard");
+
+            toast.success(okMsg, {
+                autoClose: 3000,
+            });
         } catch (err) {
-            const msg = err?.data?.message || "Đăng nhập thất bại";
-            setErrorMessage(msg);
-            alert(msg); // sẽ thay bằng toast sau
+            const msg =
+                err?.detail ||
+                err?.title ||
+                err?.message ||
+                err?.data?.message ||
+                "Đăng nhập thất bại";
+            toast.error(msg);
         }
     };
+
     if (isAuthLoading) {
         return <LoadingScreen message="Đang đăng nhập..." />;
     }
@@ -68,23 +87,12 @@ const RecruiterLoginForm = ({ role }) => {
                     <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                     <Input
                         id="recruiter-password"
-                        type={showPassword ? "text" : "password"}
+                        type="password"
                         placeholder="Enter password"
                         className="pl-10 pr-10"
                         {...register("password")}
                         autoComplete="current-password"
                     />
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
-                    >
-                        {showPassword ? (
-                            <EyeOff className="w-4 h-4" />
-                        ) : (
-                            <Eye className="w-4 h-4" />
-                        )}
-                    </button>
                 </div>
                 {errors.password && (
                     <p className="mt-1 text-sm text-red-500">
@@ -93,8 +101,11 @@ const RecruiterLoginForm = ({ role }) => {
                 )}
             </div>
 
-            <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                Đăng Nhập
+            <Button
+                type="submit"
+                className="w-full bg-orange-500 hover:bg-orange-600"
+            >
+                Login
             </Button>
 
             <div className="text-center">

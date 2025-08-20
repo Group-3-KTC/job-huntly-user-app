@@ -1,23 +1,34 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import AppInitializer from "@/components/AppInitializer";
-import ToastProvider from "@/components/ui/toast";
-import { selectAuthHydrated } from "@/features/auth/authSlice";
 import { Suspense } from "react";
-import { usePathname } from "next/navigation"; // Thêm để check route
+import { usePathname, useRouter } from "next/navigation"; // Thêm để check route
 import ClientLayout from "@/layout/ClientLayout";
-
+import {
+    selectAuthHydrated,
+    selectAuthRole,
+} from "@/features/auth/authSelectors";
 
 export default function PageWrapper({ children }) {
     const isAuthHydrated = useSelector(selectAuthHydrated);
-    const pathname = usePathname(); 
+    const role = useSelector(selectAuthRole);
+    const pathname = usePathname();
+    const router = useRouter();
 
-    console.log("PageWrapper state at", new Date().toISOString(), { isAuthHydrated });
+    const isRecruiterRoute = pathname?.startsWith("/recruiter");
 
-    
-    const isRecruiterRoute = pathname.startsWith("/recruiter");
+    // tạm thời ko render để tránh nháy header candidate khi log = recruiter
+    useEffect(() => {
+        if (isAuthHydrated && role === "RECRUITER" && pathname === "/") {
+            router.replace("/recruiter/dashboard");
+        }
+    }, [isAuthHydrated, role, pathname, router]);
+
+    if (isAuthHydrated && role === "RECRUITER" && pathname === "/") {
+        return null;
+    }
 
     return (
         <Suspense fallback={<div>Loading...</div>}>
@@ -31,11 +42,10 @@ export default function PageWrapper({ children }) {
                 </div>
             ) : (
                 <>
-                    <ToastProvider />
                     {isRecruiterRoute ? (
-                        children 
+                        children
                     ) : (
-                        <ClientLayout>{children}</ClientLayout> 
+                        <ClientLayout>{children}</ClientLayout>
                     )}
                 </>
             )}

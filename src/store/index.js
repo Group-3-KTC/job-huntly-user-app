@@ -3,21 +3,22 @@ import profileReducer from "@/features/profile/profileSlice";
 import authReducer from "@/features/auth/authSlice";
 import applicationReducer from "@/features/application/applicationSlice";
 import { jobApi } from "@/services/jobService";
-import { authApi } from "@/features/auth/authApi";
+import { fakeAuthApi } from "@/features/auth/fakeAuthApi";
 import toastSlice from "../store/slices/toastSlices";
 import { profileApi } from "@/services/profileService";
 import { applicationApi } from "@/services/applicationService";
 import { savedCompaniesApi } from "@/services/savedCompaniesService";
 import savedCompaniesReducer from "@/features/savedCompanies/savedCompaniesSlice";
+import { attachStore } from "@/lib/api";
 
-export const appStore = configureStore({
+export const store = configureStore({
     reducer: {
         profile: profileReducer,
         auth: authReducer,
         application: applicationReducer,
         toast: toastSlice,
         savedCompanies: savedCompaniesReducer,
-        [authApi.reducerPath]: authApi.reducer,
+        [fakeAuthApi.reducerPath]: fakeAuthApi.reducer,
         [jobApi.reducerPath]: jobApi.reducer,
         [profileApi.reducerPath]: profileApi.reducer,
         [applicationApi.reducerPath]: applicationApi.reducer,
@@ -25,12 +26,12 @@ export const appStore = configureStore({
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
-            authApi.middleware,
+            fakeAuthApi.middleware,
             jobApi.middleware,
             profileApi.middleware,
             applicationApi.middleware,
-            savedCompaniesApi.middleware
+            savedCompaniesApi.middleware,
         ),
 });
 
-export default appStore;
+attachStore(store);

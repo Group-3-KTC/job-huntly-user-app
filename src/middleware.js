@@ -1,147 +1,92 @@
 import { NextResponse } from "next/server";
-import { verifyToken } from "@/lib/jwt";
 
-const routeConfig = {
-    candidate: [
-        /^\/profile/,
-        /^\/dashboard/,
-        /^\/job-invitation/,
-        /^\/notifications/,
-        /^\/saved-jobs/, // Loại duplicate
-        /^\/companyFollows/,
-        /^\/jobs(\/|$)/,
-        /^\/applications/,
-        /^\/settings/,
-    ],
-    recruiter: [
-        /^\/recruiter(\/.*)?$/, // Mở rộng để bao quát tất cả sub-routes recruiter
-        /^\/recruiter-dashboard/, // Giữ nếu cần specific
-        /^\/recruiter\/create-job/,
-        /^\/company-profile/,
-        /^\/manage-jobs/,
-    ],
-};
+const SESSION_COOKIE_NAME = "session"; // cookie httpOnly server set khi login
 
+// public
 const publicRoutes = [
+    /^\/$/, // Home để public, tránh loop lúc hydrate
     /^\/login$/,
     /^\/register$/,
     /^\/about$/,
     /^\/contact$/,
     /^\/forgot-password$/,
     /^\/search$/,
-    /^\/company\/company-detail\/[^/]+/,
     /^\/company\/company-search$/,
-    /^\/job-detail\/[^\/]+$/,
+    /^\/company\/company-detail\/[^/]+$/,
+    /^\/job-detail\/[^/]+$/,
 ];
 
-const redirectPublicRoutes = [
-    /^\/$/, // Home xử lý riêng để phân biệt role
+// need login
+const protectedPrefixes = [
+    /^\/profile/,
+    /^\/dashboard/,
+    /^\/job-invitation/,
+    /^\/notifications/,
+    /^\/saved-jobs/,
+    /^\/companyFollows/,
+    /^\/jobs(\/|$)/,
+    /^\/applications/,
+    /^\/settings/,
+    /^\/recruiter(\/.*)?$/, // toàn bộ khu recruiter
 ];
 
-export async function middleware(req) {
-    const pathname = req.nextUrl.pathname;
-    console.log(
-        "Middleware checking path:",
-        pathname,
-        "at",
-        new Date().toISOString()
-    );
+// recruiter only
+const recruiterOnly = [
+    /^\/recruiter(\/.*)?$/,
+    /^\/recruiter-dashboard/,
+    /^\/recruiter\/create-job/,
+    /^\/company-profile/,
+    /^\/manage-jobs/,
+];
 
+export function middleware(req) {
+    const { pathname } = req.nextUrl;
+
+    if (pathname === "/") {
+        const hasSession = !!req.cookies.get(SESSION_COOKIE_NAME)?.value;
+        const role = req.cookies.get("role")?.value; // cookie non-httpOnly set lúc login
+        if (hasSession && role === "RECRUITER") {
+            return NextResponse.redirect(
+                new URL("/recruiter/dashboard", req.url),
+            );
+        }
+        return NextResponse.next();
+    }
+
+    // Bỏ qua tài nguyên tĩnh & api
     if (
         pathname.startsWith("/api") ||
         pathname.startsWith("/_next") ||
         pathname.startsWith("/favicon") ||
         pathname.includes(".")
     ) {
-        console.log("Skipping static or API route");
         return NextResponse.next();
     }
 
-    const authToken = req.cookies.get("authToken")?.value;
-    const authUser = req.cookies.get("authUser")?.value;
-
-    console.log("Token and user:", {
-        authToken: !!authToken,
-        authUser: !!authUser,
-    });
-
-    if (publicRoutes.some((regex) => regex.test(pathname))) {
-        console.log("Public route detected, allowing access");
+    if (publicRoutes.some((r) => r.test(pathname))) {
         return NextResponse.next();
     }
 
-    if (redirectPublicRoutes.some((regex) => regex.test(pathname))) {
-        if (authToken && authUser) {
-            try {
-                const decoded = await verifyToken(authToken);
-                const role = decoded.role;
-                console.log("Authenticated user on home, role:", role);
-                if (role === "recruiter") {
-                    return NextResponse.redirect(
-                        new URL("/recruiter/dashboard", req.url)
-                    );
-                }
-                // Cho candidate: Allow access to home khi auth
-                console.log("Candidate on home, allowing access");
-                return NextResponse.next();
-            } catch (error) {
-                return clearAuthAndRedirect(req);
-            }
-        }
-        console.log("Unauthenticated on home, allowing access");
-        return NextResponse.next();
+    const needAuth = protectedPrefixes.some((r) => r.test(pathname));
+    if (!needAuth) return NextResponse.next();
+
+    // Kiểm tra cookie phiên httpOnly (được set ở BE)
+    const hasSession = !!req.cookies.get(SESSION_COOKIE_NAME)?.value;
+    if (!hasSession) {
+        const url = new URL("/login", req.url);
+        url.searchParams.set("redirect", pathname);
+        return NextResponse.redirect(url);
     }
 
-    if (!authToken || !authUser) {
-        console.log("No token or user, redirecting to login");
-        return redirectToLogin(req);
+    const role = req.cookies.get("role")?.value;
+    const isRecruiterPath = recruiterOnly.some((r) => r.test(pathname));
+    if (isRecruiterPath && role && role !== "RECRUITER") {
+        return NextResponse.redirect(new URL("/profile", req.url));
     }
 
-    try {
-        const decoded = await verifyToken(authToken);
-        const role = decoded.role;
-        console.log("Decoded role from token:", role);
-
-        const allowedRoutes = routeConfig[role] || [];
-        const hasAccess = allowedRoutes.some((routeRegex) =>
-            routeRegex.test(pathname)
-        );
-
-        if (!hasAccess) {
-            console.log(
-                "Access denied to",
-                pathname,
-                "- redirecting to fallback"
-            );
-            const fallback = role === "recruiter" ? "/recruiter/dashboard" : "/profile";
-            return NextResponse.redirect(new URL(fallback, req.url));
-        }
-
-        return NextResponse.next();
-    } catch (error) {
-        console.log("Invalid or expired token error:", error.message);
-        return clearAuthAndRedirect(req);
-    }
-}
-
-function redirectToLogin(req) {
-    console.log("Redirecting to login");
-    return NextResponse.redirect(new URL("/login", req.url));
-}
-
-function clearAuthAndRedirect(req) {
-    console.log("Clearing auth and redirecting to login");
-    const response = redirectToLogin(req);
-    response.cookies.delete("authToken");
-    response.cookies.delete("authUser");
-    return response;
+    return NextResponse.next();
 }
 
 export const config = {
-    matcher: [
-        "/((?!api|_next/static|_next/image|favicon.ico|public).*)",
-        "/applicationJob",
-        "/(user)/:path*",
-        "/recruiter/:path*",
-    ],
+    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

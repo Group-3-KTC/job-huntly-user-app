@@ -1,4 +1,4 @@
-import * as authService from "@/services/authService";
+import * as authService from "@/services/fakeAuthService";
 import {
     createApi,
     fakeBaseQuery,
@@ -9,10 +9,10 @@ import {
     loginStart,
     loginSuccess,
     logout,
-} from "@/features/auth/authSlice";
+} from "@/features/auth/fakeAuthSlice";
 
-export const authApi = createApi({
-    reducerPath: "authApi",
+export const fakeAuthApi = createApi({
+    reducerPath: "fakeAuthApi",
     baseQuery: fakeBaseQuery(),
     endpoints: (builder) => ({
         login: builder.mutation({
@@ -76,4 +76,4 @@ export const authApi = createApi({
 });
 
 export const { useLoginMutation, useRegisterMutation, useLogoutMutation } =
-    authApi;
+    fakeAuthApi;

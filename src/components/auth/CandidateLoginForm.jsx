@@ -8,21 +8,22 @@ import { Input } from "@/components/ui/input";
 import { loginSchema } from "@/validation/loginSchema";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import Image from "next/image";
 import googleLogo from "@/assets/images/logo-gg.png";
 import { useRouter } from "next/navigation";
-import { useLoginMutation } from "@/features/auth/authApi";
-import { useSelector } from "react-redux";
-import { selectAuthLoading } from "@/features/auth/authSlice";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
 import LoadingScreen from "../ui/loadingScreen";
+import { loginThunk } from "@/features/auth/authSlice";
+import { selectAuthLoading } from "@/features/auth/authSelectors";
 
 const CandidateLoginForm = ({ role }) => {
-    const router = useRouter();
-    const [login] = useLoginMutation();
-    const [showPassword, setShowPassword] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(null);
+    const dispatch = useDispatch();
+
     const isAuthLoading = useSelector(selectAuthLoading);
+
+    const router = useRouter();
 
     const {
         register,
@@ -32,16 +33,32 @@ const CandidateLoginForm = ({ role }) => {
         resolver: yupResolver(loginSchema),
     });
 
-    const onSubmit = async (data) => {
-        try {
-            const res = await login({ ...data, role }).unwrap();
+    const onSubmit = async (form) => {
+        const payload = {
+            email: form.email,
+            password: form.password,
+            role: role ?? "CANDIDATE",
+        };
 
-            alert("Candidate đăng nhập thành công!");
-            router.push("/");
+        try {
+            const result = await dispatch(loginThunk(payload)).unwrap();
+            const roleRes = result?.user?.role;
+
+            const okMsg = result?.message || "Đăng nhập thành công!";
+
+            router.replace("/");
+
+            toast.success(okMsg, {
+                autoClose: 3000,
+            });
         } catch (err) {
-            const msg = err?.data?.message || "Đăng nhập thất bại";
-            setErrorMessage(msg);
-            alert(msg); // sẽ thay bằng toast sau
+            const msg =
+                err?.detail ||
+                err?.title ||
+                err?.message ||
+                err?.data?.message ||
+                "Đăng nhập thất bại";
+            toast.error(msg);
         }
     };
 
@@ -55,6 +72,7 @@ const CandidateLoginForm = ({ role }) => {
                 <Button
                     variant="outline"
                     className="flex items-center justify-center w-full gap-2 bg-transparent"
+                    // onClick={handleGoogleLogin}
                 >
                     <Image
                         src={googleLogo}
@@ -102,22 +120,11 @@ const CandidateLoginForm = ({ role }) => {
                         <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
                             id="password"
-                            type={showPassword ? "text" : "password"}
+                            type={"password"}
                             placeholder="Enter password"
                             className="pl-10 pr-10"
                             {...register("password")}
                         />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
-                        >
-                            {showPassword ? (
-                                <EyeOff className="w-4 h-4" />
-                            ) : (
-                                <Eye className="w-4 h-4" />
-                            )}
-                        </button>
                     </div>
                     {errors.password && (
                         <p className="mt-1 text-sm text-red-500">
@@ -126,8 +133,11 @@ const CandidateLoginForm = ({ role }) => {
                     )}
                 </div>
 
-                <Button className="w-full bg-blue-500 hover:bg-blue-600">
-                    Đăng Nhập
+                <Button
+                    type="submit"
+                    className="w-full bg-blue-500 hover:bg-blue-600"
+                >
+                    Login
                 </Button>
 
                 <div className="text-center">

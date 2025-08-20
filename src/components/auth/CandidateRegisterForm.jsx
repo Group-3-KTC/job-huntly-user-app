@@ -12,16 +12,19 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { candidateRegisterSchema } from "@/validation/registerSchema";
-import { useRegisterMutation } from "@/features/auth/authApi";
+import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import LoadingScreen from "../ui/loadingScreen";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAuthLoading } from "@/features/auth/authSelectors";
+import { registerThunk } from "@/features/auth/authSlice";
 
 const CandidateRegisterForm = ({ role }) => {
+    const dispatch = useDispatch();
     const router = useRouter();
-    const [registerApi, { isLoading }] = useRegisterMutation();
+    const isAuthLoading = useSelector(selectAuthLoading);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(null);
 
     const {
         register,
@@ -36,23 +39,39 @@ const CandidateRegisterForm = ({ role }) => {
             terms: false,
         },
     });
-    const onSubmit = async (data) => {
-        try {
-            const res = await registerApi({ ...data, role }).unwrap();
 
-            console.log("Register data:", { ...data, role });
-            console.log("Register data:", res);
-            alert("Candidate đăng ký thành công! Vui lòng đăng nhập");
-            router.push("/login");
+    const onSubmit = async (data) => {
+        const payload = {
+            fullName: data.fullName,
+            email: data.email,
+            phone: data.phone,
+            password: data.password,
+            role: role || "CANDIDATE",
+        };
+
+        try {
+            const result = await dispatch(registerThunk(payload)).unwrap();
+            const okMsg =
+                result?.message ||
+                "Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.";
+            toast.success(okMsg, {
+                autoClose: 1000,
+                onClose: () => router.push("/login"),
+            });
         } catch (err) {
-            const msg = err?.data?.message || "Đăng ký thất bại";
-            setErrorMessage(msg);
-            alert(msg);
+            const msg =
+                err?.message ||
+                err?.detail ||
+                err?.title ||
+                (typeof err === "string"
+                    ? err
+                    : "Đăng ký thất bại. Vui lòng thử lại.");
+            toast.error(msg);
         }
     };
 
-    if (isLoading) {
-       return <LoadingScreen message="Đang đăng ký..." />;
+    if (isAuthLoading) {
+        return <LoadingScreen message="Registering..." />;
     }
 
     return (
@@ -84,21 +103,21 @@ const CandidateRegisterForm = ({ role }) => {
 
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                 <div>
-                    <Label htmlFor="fullname">Họ và tên</Label>
+                    <Label htmlFor="fullName">Họ và tên</Label>
                     <div className="relative">
                         <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                         <Input
-                            id="fullname"
+                            id="fullName"
                             type="text"
                             placeholder="Nhập họ và tên"
                             className="pl-10"
-                            {...register("fullname")}
+                            {...register("fullName")}
                         />
                     </div>
 
-                    {errors.fullname && (
+                    {errors.fullName && (
                         <p className="mt-1 text-sm text-red-500">
-                            {errors.fullname.message}
+                            {errors.fullName.message}
                         </p>
                     )}
                 </div>
