@@ -11,6 +11,7 @@ concurrency:
 
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/jobhuntly-frontend
+  DOCKER_TAG: latest
 
 jobs:
   build:
