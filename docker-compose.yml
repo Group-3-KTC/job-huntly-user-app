@@ -1,0 +1,15 @@
+services:
+  web:
+    image: itrong0703/jobhuntly-frontend:latest
+    container_name: jobhuntly_fe
+    restart: always
+    ports:
+      - "80:3000"
+    env_file:
+      - .env.local
+    # build theo standalone
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/ >/dev/null 2>&1 || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
