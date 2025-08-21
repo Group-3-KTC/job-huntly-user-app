@@ -2,7 +2,9 @@ name: FE CI/CD (Next.js → Docker Hub → EC2)
 
 on:
   push:
-    branches: ["dev"]
+    branches: ["dev"]            # deploy khi có commit vào dev (merge/squash/rebase đều OK)
+  pull_request:
+    branches: ["dev"]            # build kiểm tra cho PR vào dev
   workflow_dispatch:
 
 concurrency:
@@ -13,29 +15,37 @@ env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/jobhuntly-frontend
 
 jobs:
-  build-and-push:
-    name: Build & Push Image
+  # CI cho PR: build thử, không dùng secrets, không push image
+  ci:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Install deps
+        run: npm ci
+      - name: Build Next.js
+        run: |
+          echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" >> .env.production
+          npm run build
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      # Nếu FE cần biến PUBLIC lúc build (client)
+  # Build & push image chỉ khi push vào dev
+  build-and-push:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
       - name: Create .env.production
         run: echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" >> .env.production
-
       - name: Docker login (Docker Hub)
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build & push (with cache)
+      - name: Build & push (cached)
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -46,21 +56,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  # Deploy chỉ khi push vào dev
   deploy:
-    name: Deploy to EC2
     needs: build-and-push
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     steps:
-      # (Tuỳ chọn) update docker-compose.yml trên server mỗi lần
-      # - name: Upload docker-compose.yml to EC2
-      #   uses: appleboy/scp-action@v0.1.7
-      #   with:
-      #     host: ${{ secrets.EC2_HOST }}
-      #     username: ${{ secrets.EC2_USER }}
-      #     key: ${{ secrets.EC2_SSH_KEY }}
-      #     source: "docker-compose.yml"
-      #     target: "/opt/jobhuntly"
-
       - name: SSH deploy
         uses: appleboy/ssh-action@v1.1.0
         with:
