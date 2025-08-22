@@ -3,6 +3,8 @@ name: Build and Deploy NextJS App to Server
 on:
   push:
     branches: [dev]
+  pull_request:
+    branches: [dev]
 
 # Tránh deploy chồng chéo
 concurrency:
@@ -39,6 +41,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and Push Docker Image
+        if: github.event_name == 'push'
         run: |
           docker build --no-cache -t $DOCKER_IMAGE:$DOCKER_TAG .
           docker push $DOCKER_IMAGE:$DOCKER_TAG
@@ -50,12 +53,13 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "docker-compose.yml"
-          target: "~/customer-app"
+          target: "~/jobhuntly-fe "
 
   deploy:
     name: Deploy NextJS App
     runs-on: ubuntu-latest
     needs: [build]
+    if: github.event_name == 'push'
     steps:
       - name: Deploying
         uses: appleboy/ssh-action@master
@@ -65,18 +69,18 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             echo "Navigating to project directory..."
-            cd ~/customer-app
+            cd ~/jobhuntly-fe
 
             echo "Creating network (if not exists)..."
-            echo "Currently, we re-use customer-network..."
-            docker network create customer-network || true
+            echo "Currently, we re-use jobhuntly-network..."
+            docker network create jobhuntly-network || true
 
             echo "Pulling latest image..."
             docker-compose -f docker-compose.yml pull
 
             echo "Stopping old container if exists..."
-            docker-compose -f docker-compose.yml stop customer-app || true
-            docker-compose -f docker-compose.yml rm -f customer-app || true
+            docker-compose -f docker-compose.yml stop jobhuntly-fe || true
+            docker-compose -f docker-compose.yml rm -f jobhuntly-fe || true
 
             echo "Starting new container with correct name..."
             docker-compose -f docker-compose.yml up -d --remove-orphans
