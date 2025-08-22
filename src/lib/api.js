@@ -4,8 +4,7 @@ import {
     selectAccessToken,
     selectRefreshToken,
 } from "@/features/auth/authSelectors";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { API_CONFIG } from "./config";
 
 let reduxStore = null;
 export function attachStore(store) {
@@ -13,13 +12,15 @@ export function attachStore(store) {
 }
 
 const api = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: API_CONFIG.BASE_URL,
+    timeout: API_CONFIG.TIMEOUT,
     withCredentials: true,
 });
 
 // tránh vòng lặp do interceptor bắt lỗi 401
 const refreshClient = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: API_CONFIG.BASE_URL,
+    timeout: API_CONFIG.TIMEOUT,
     withCredentials: true,
 });
 

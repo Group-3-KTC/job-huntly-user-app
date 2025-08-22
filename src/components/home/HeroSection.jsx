@@ -14,7 +14,7 @@ const HeroSection = () => {
                 <div className="flex flex-col items-center gap-12 lg:flex-row">
                     <div className="flex-1 max-w-2xl">
                         <h1 className="mb-6 text-4xl font-bold text-gray-900 lg:text-5xl">
-                            Find a job that suits your interest & skills. Hihi
+                            Find a job that suits your interest & skills.
                         </h1>
                         <p className="mb-8 text-lg text-gray-600">
                             Aliquam vitae turpis in diam convallis finibus in at
