@@ -70,6 +70,13 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            if docker compose version >/dev/null 2>&1; then
+            COMPOSE="docker compose"
+            else
+            COMPOSE="docker-compose"
+            fi
+            echo "Using: $COMPOSE"
+            
             echo "Navigating to project directory..."
             cd ${{ env.REMOTE_DIR }}
 
@@ -78,16 +85,16 @@ jobs:
             docker network create jobhuntly-network || true
 
             echo "Pulling latest image..."
-            docker-compose -f docker-compose.yml pull
+            $COMPOSE -f docker-compose.yml pull
 
             echo "Stopping old container if exists..."
-            docker-compose -f docker-compose.yml stop jobhuntly_fe || true
-            docker-compose -f docker-compose.yml rm -f jobhuntly_fe || true
+            $COMPOSE -f docker-compose.yml stop jobhuntly_fe || true
+            $COMPOSE -f docker-compose.yml rm -f jobhuntly_fe || true
 
             echo "Starting new container with correct name..."
-            docker-compose -f docker-compose.yml up -d --remove-orphans
+            $COMPOSE -f docker-compose.yml up -d --remove-orphans
             
             echo "Show status..."
-            docker-compose -f docker-compose.yml ps
+            $COMPOSE -f docker-compose.yml ps
 
             echo "Deployment completed!"
