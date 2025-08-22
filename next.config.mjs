@@ -2,15 +2,16 @@
 const nextConfig = {
   output: "standalone",
   images: {
-    domains: ["cdn-new.topcv.vn"],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "**",
+        pathname: "**",
       },
       {
         protocol: "http",
         hostname: "**",
+        pathname: "**",
       },
     ],
   },
