@@ -44,8 +44,16 @@ jobs:
       - name: Build and Push Docker Image
         if: github.event_name == 'push'
         run: |
-          docker build --no-cache -t $DOCKER_IMAGE:$DOCKER_TAG .
+          docker build \
+            --build-arg NEXT_PUBLIC_API_BASE_URL="${{ secrets.PRODUCTION_API_BASE_URL }}" \
+            --no-cache \
+            -t $DOCKER_IMAGE:$DOCKER_TAG .
           docker push $DOCKER_IMAGE:$DOCKER_TAG
+
+      - name: Create environment file
+        if: github.event_name == 'push'
+        run: |
+          echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.PRODUCTION_API_BASE_URL }}" > .env.production
 
       - name: Copy Next.js files to server
         uses: appleboy/scp-action@v0.1.7
@@ -53,7 +61,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "docker-compose.yml"
+          source: "docker-compose.yml,.env.production"
           target: "${{ env.REMOTE_DIR }}"
           overwrite: true
 
@@ -79,6 +87,10 @@ jobs:
             
             echo "Navigating to project directory..."
             cd ${{ env.REMOTE_DIR }}
+            
+            echo "Setting up environment variables..."
+            # Tạo .env file với API URL từ secrets
+            echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.PRODUCTION_API_BASE_URL }}" > .env
 
             echo "Creating network (if not exists)..."
             echo "Currently, we re-use jobhuntly-network..."
