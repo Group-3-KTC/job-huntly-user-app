@@ -19,6 +19,24 @@ import {
 import { cn } from "@/lib/utils";
 import { useJobSearchStore } from "@/store/jobSearchStore";
 
+const API_BASE = "http://18.142.226.139:8080/api/v1";
+
+async function fetchJSON(url, signal) {
+    try {
+        const res = await fetch(url, { signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+    } catch (e) {
+        if (
+            e.name === "AbortError" ||
+            e.message === "signal is aborted without reason"
+        ) {
+            return null;
+        }
+        throw e;
+    }
+}
+
 export default function SearchBar() {
     const [keyword, setKeyword] = useState("");
     const [selectedProvince, setSelectedProvince] = useState("");
@@ -29,10 +47,29 @@ export default function SearchBar() {
     const setSearchTerm = useJobSearchStore((state) => state.setSearchTerm);
 
     useEffect(() => {
-        fetch("https://provinces.open-api.vn/api/?depth=1")
-            .then((res) => res.json())
-            .then((data) => setProvinces(data.map((p) => p.name)))
-            .catch(console.error);
+        const controller = new AbortController();
+        (async () => {
+            try {
+                const data = await fetchJSON(
+                    `${API_BASE}/city`,
+                    controller.signal
+                );
+                if (!data) return;
+
+                const names = (Array.isArray(data) ? data : [])
+                    .map((c) => (typeof c === "string" ? c : c?.city_name))
+                    .filter(Boolean);
+                const uniqueSorted = Array.from(new Set(names)).sort((a, b) =>
+                    a.localeCompare(b, "vi")
+                );
+                setProvinces(uniqueSorted);
+            } catch (e) {
+                console.error("Failed to fetch cities:", e);
+            }
+        })();
+        return () => {
+            if (!controller.signal.aborted) controller.abort();
+        };
     }, []);
 
     const filteredProvinces = useMemo(() => {
@@ -49,9 +86,8 @@ export default function SearchBar() {
             return provinces.filter((name) => topProvinces.includes(name));
         }
 
-        return provinces.filter((name) =>
-            name.toLowerCase().includes(searchProvinceTerm.toLowerCase())
-        );
+        const term = searchProvinceTerm.toLowerCase();
+        return provinces.filter((name) => name.toLowerCase().includes(term));
     }, [searchProvinceTerm, provinces]);
 
     const handleSearch = () => {
@@ -80,6 +116,7 @@ export default function SearchBar() {
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
                 />
+
                 <Popover open={openProvince} onOpenChange={setOpenProvince}>
                     <PopoverTrigger asChild>
                         <Button
@@ -99,6 +136,7 @@ export default function SearchBar() {
                                 placeholder="Search for more ..."
                                 className="h-9"
                                 onValueChange={setSearchProvinceTerm}
+                                value={searchProvinceTerm}
                             />
                             <CommandEmpty>Không tìm thấy tỉnh</CommandEmpty>
                             <CommandGroup>

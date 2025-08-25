@@ -1,8 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useJobSearchStore } from "@/store/jobSearchStore";
 import clsx from "clsx";
+
+const API_BASE = "http://18.142.226.139:8080/api/v1";
+
+async function fetchJSON(url, signal) {
+    const res = await fetch(url, { signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+}
 
 export default function FilterBar() {
     const [allCategories, setAllCategories] = useState([]);
@@ -17,82 +26,168 @@ export default function FilterBar() {
 
     const { filters, setFilters } = useJobSearchStore();
 
-    const toggleValue = (listName, value) => {
-        setFilters({
-            ...filters,
-            [listName]: filters[listName].includes(value)
-                ? filters[listName].filter((v) => v !== value)
-                : [...filters[listName], value],
-        });
-    };
+    const toggleValue = useCallback(
+        (listName, value) => {
+            setFilters({
+                ...filters,
+                [listName]: filters[listName].includes(value)
+                    ? filters[listName].filter((v) => v !== value)
+                    : [...filters[listName], value],
+            });
+        },
+        [filters, setFilters]
+    );
 
     useEffect(() => {
-        const fetchJobs = async () => {
+        const controller = new AbortController();
+        (async () => {
             try {
-                const response = await fetch(
-                    "https://687076977ca4d06b34b6dc20.mockapi.io/api/v1/jobs"
+                const data = await fetchJSON(
+                    `${API_BASE}/category`,
+                    controller.signal
                 );
-                const data = await response.json();
-
-                const categorySet = new Set();
-                const levelSet = new Set();
-                const workTypeSet = new Set();
-                const skillSet = new Set();
-
-                data.forEach((job) => {
-                    const { category, level, workType, skill } = job;
-
-                    (Array.isArray(category) ? category : [category]).forEach(
-                        (c) => categorySet.add(c)
-                    );
-                    (Array.isArray(level) ? level : [level]).forEach((l) =>
-                        levelSet.add(l)
-                    );
-                    (Array.isArray(workType) ? workType : [workType]).forEach(
-                        (w) => workTypeSet.add(w)
-                    );
-                    (Array.isArray(skill) ? skill : [skill]).forEach((s) =>
-                        skillSet.add(s)
-                    );
-                });
-
-                setAllCategories([...categorySet]);
-                setAllLevels([...levelSet]);
-                setAllWorkTypes([...workTypeSet]);
-                setAllSkills([...skillSet]);
-            } catch (error) {
-                console.error("Failed to fetch jobs:", error);
+                const names = (Array.isArray(data) ? data : []).map(
+                    (c) => c?.name ?? c
+                );
+                setAllCategories(Array.from(new Set(names.filter(Boolean))));
+            } catch (e) {
+                if (
+                    e.name !== "AbortError" &&
+                    e.message !== "signal is aborted without reason"
+                ) {
+                    console.error("Failed to fetch categories:", e);
+                }
             }
+        })();
+        return () => {
+            if (!controller.signal.aborted) controller.abort();
         };
-
-        fetchJobs();
     }, []);
 
-    const renderTags = (items, listName, colorClass, selectedBg, textClass) => (
-        <div className="flex flex-wrap gap-2">
-            {items.map((item) => {
-                const isSelected = filters[listName].includes(item);
-                return (
-                    <div
-                        key={item}
-                        onClick={() => toggleValue(listName, item)}
-                        className={clsx(
-                            "px-3 py-1 text-sm rounded-full cursor-pointer border transition select-none",
-                            colorClass,
-                            isSelected
-                                ? `${selectedBg} ${textClass} font-medium`
-                                : "bg-white text-gray-600 hover:bg-gray-100"
-                        )}
-                    >
-                        {item}
-                    </div>
+    useEffect(() => {
+        const controller = new AbortController();
+        (async () => {
+            try {
+                const data = await fetchJSON(
+                    `${API_BASE}/levels`,
+                    controller.signal
                 );
-            })}
-        </div>
+                const names = (Array.isArray(data) ? data : []).map(
+                    (l) => l?.name ?? l
+                );
+                setAllLevels(Array.from(new Set(names.filter(Boolean))));
+            } catch (e) {
+                if (
+                    e.name !== "AbortError" &&
+                    e.message !== "signal is aborted without reason"
+                ) {
+                    console.error("Failed to fetch levels:", e);
+                }
+            }
+        })();
+        return () => {
+            if (!controller.signal.aborted) controller.abort();
+        };
+    }, []);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        (async () => {
+            try {
+                const data = await fetchJSON(
+                    `${API_BASE}/worktypes`,
+                    controller.signal
+                );
+                const names = (Array.isArray(data) ? data : []).map(
+                    (w) => w?.name ?? w
+                );
+                setAllWorkTypes(Array.from(new Set(names.filter(Boolean))));
+            } catch (e) {
+                if (
+                    e.name !== "AbortError" &&
+                    e.message !== "signal is aborted without reason"
+                ) {
+                    console.error("Failed to fetch work types:", e);
+                }
+            }
+        })();
+        return () => {
+            if (!controller.signal.aborted) controller.abort();
+        };
+    }, []);
+
+    // Load Skills theo category
+    useEffect(() => {
+        if (!filters.categories?.length) {
+            setAllSkills([]);
+            return;
+        }
+
+        const controller = new AbortController();
+        (async () => {
+            try {
+                // Có thể chọn nhiều category → gọi song song, union kết quả
+                const queries = filters.categories.map((cateName) =>
+                    fetchJSON(
+                        `${API_BASE}/skill/by-category?name=${encodeURIComponent(
+                            cateName
+                        )}`,
+                        controller.signal
+                    ).catch(() => [])
+                );
+                const lists = await Promise.all(queries);
+                const merged = lists.flat().map((s) => s?.name ?? s);
+                const unique = Array.from(new Set(merged.filter(Boolean)));
+                setAllSkills(unique);
+            } catch (e) {
+                if (e.name !== "AbortError") {
+                    console.error("Failed to fetch skills by category:", e);
+                }
+            }
+        })();
+
+        return () => controller.abort();
+    }, [filters.categories]);
+
+    const renderTags = useCallback(
+        (items, listName, colorClass, selectedBg, textClass) => (
+            <div className="flex flex-wrap gap-2">
+                {items.map((item) => {
+                    const label = typeof item === "string" ? item : item?.name;
+                    if (!label) return null;
+                    const isSelected = filters[listName].includes(label);
+                    return (
+                        <div
+                            key={label}
+                            onClick={() => toggleValue(listName, label)}
+                            className={clsx(
+                                "px-3 py-1 text-sm rounded-full cursor-pointer border transition select-none",
+                                colorClass,
+                                isSelected
+                                    ? `${selectedBg} ${textClass} font-medium`
+                                    : "bg-white text-gray-600 hover:bg-gray-100"
+                            )}
+                        >
+                            {label}
+                        </div>
+                    );
+                })}
+            </div>
+        ),
+        [filters, toggleValue]
+    );
+
+    // Nếu chưa chọn category và người dùng bật Skill section
+    const shouldShowPickCategoryHint = useMemo(
+        () =>
+            showSkills &&
+            (!filters.categories || filters.categories.length === 0),
+        [showSkills, filters.categories]
     );
 
     return (
         <div className="space-y-4 p-4 bg-white rounded-lg shadow">
+            {/* Work Types */}
             <div>
                 <div
                     onClick={() => setShowWorkTypes(!showWorkTypes)}
@@ -115,6 +210,7 @@ export default function FilterBar() {
                     )}
             </div>
 
+            {/* Levels */}
             <div>
                 <div
                     onClick={() => setShowLevels(!showLevels)}
@@ -137,6 +233,7 @@ export default function FilterBar() {
                     )}
             </div>
 
+            {/* Categories */}
             <div>
                 <div
                     onClick={() => setShowCategories(!showCategories)}
@@ -159,6 +256,7 @@ export default function FilterBar() {
                     )}
             </div>
 
+            {/* Skills (phụ thuộc Category) */}
             <div>
                 <div
                     onClick={() => setShowSkills(!showSkills)}
@@ -171,14 +269,22 @@ export default function FilterBar() {
                         <ChevronDown size={18} />
                     )}
                 </div>
-                {showSkills &&
+
+                {shouldShowPickCategoryHint ? (
+                    <p className="text-sm text-gray-500">
+                        Vui lòng chọn ít nhất 1 Category để hiển thị danh sách
+                        Skills.
+                    </p>
+                ) : (
+                    showSkills &&
                     renderTags(
                         allSkills,
                         "skills",
                         "border-blue-700",
                         "bg-blue-100",
                         "text-blue-700"
-                    )}
+                    )
+                )}
             </div>
         </div>
     );
