@@ -19,8 +19,6 @@ export default function CardJob() {
 
     const [searchJobs, { isLoading, error }] = useSearchJobsMutation();
     const debounceRef = useRef(null);
-
-    // Build payload cho BE đúng JobFilterRequest
     const payload = useMemo(() => {
         const {
             keyword = "",
@@ -43,8 +41,6 @@ export default function CardJob() {
                 ? filters.workTypes
                 : undefined,
             wardNames: undefined,
-
-            // mặc định matchAny (OR). Nếu bạn muốn AND thì set true tương ứng.
             matchAllCategories: false,
             matchAllSkills: false,
             matchAllLevels: false,
@@ -83,7 +79,6 @@ export default function CardJob() {
                 setList(normalized);
                 setCurrentPage(1);
             } catch (e) {
-                // lỗi sẽ được RTK quản lý trong 'error', tránh spam console
             }
         }, 300);
 
