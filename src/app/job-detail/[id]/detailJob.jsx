@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
     MapPin,
     Briefcase,
@@ -30,10 +30,58 @@ export default function DetailJob({ job }) {
     const formatList = (field) =>
         Array.isArray(field) ? field.join(", ") : field || "Không xác định";
 
+    const toList = (field) => {
+        if (!field) return [];
+        if (Array.isArray(field)) return field.filter(Boolean);
+        return String(field)
+            .split(/[\n,;]+/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+    };
+
+    const formatDateDMY = (dmy) => {
+        if (!dmy) return "N/A";
+        if (typeof dmy === "string") {
+            const m = dmy.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+            if (m) return `${m[1]}/${m[2]}/${m[3]}`;
+            const iso = Date.parse(dmy);
+            if (!Number.isNaN(iso))
+                return new Date(iso).toLocaleDateString("vi-VN");
+            return dmy;
+        }
+        if (dmy instanceof Date) {
+            return dmy.toLocaleDateString("vi-VN");
+        }
+        return "N/A";
+    };
+
+    const dj = useMemo(() => {
+        if (!job) return {};
+
+        return {
+            id: job.id,
+            title: job.title || "",
+            description: job.description,
+            requirements: job.requirements,
+            benefits: job.benefits,
+            location: job.location || undefined,
+            avatar: job.avatar ?? job.company?.avatar ?? "",
+            companyName: job.companyName ?? job.company?.company_name ?? "",
+            category: job.category ?? job.category_names ?? [],
+            level: job.level ?? job.level_names ?? [],
+            workType: job.workType ?? job.work_type_names ?? [],
+            skill: job.skill ?? job.skill_names ?? [],
+            city: job.city ?? job.wards ?? [],
+            salaryDisplay:
+                job.salaryDisplay ?? job.salary_display ?? "Thỏa thuận",
+            datePost: job.datePost ?? job.date_post ?? null,
+            expiredDate: job.expiredDate ?? job.expired_date ?? null,
+        };
+    }, [job]);
+
     const handleFlagClick = () => {
         const token = Cookies.get("authToken");
         if (!token) return setShowLoginPrompt(true);
-
         try {
             const payload = JSON.parse(atob(token.split(".")[1]));
             if (payload.exp * 1000 < Date.now()) {
@@ -49,21 +97,25 @@ export default function DetailJob({ job }) {
     };
 
     const handleApply = () => {
-        const token = Cookies.get("authToken");
-        if (!token) return setShowLoginPrompt(true);
+        const authState = localStorage.getItem("authState");
+        if (!authState) return setShowLoginPrompt(true);
 
         try {
-            const payload = JSON.parse(atob(token.split(".")[1]));
-            const isExpired = payload.exp * 1000 < Date.now();
+            const { accessToken } = JSON.parse(authState);
+            if (!accessToken) return setShowLoginPrompt(true);
+            const base64Url = accessToken.split(".")[1];
+            const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+            const payload = JSON.parse(atob(base64));
 
+            const isExpired = payload.exp * 1000 < Date.now();
             if (isExpired) {
-                Cookies.remove("authToken");
-                Cookies.remove("authUser");
+                localStorage.removeItem("authState");
                 return setShowLoginPrompt(true);
             }
             setShowModal(true);
         } catch (err) {
             console.error("Invalid token", err);
+            localStorage.removeItem("authState");
             setShowLoginPrompt(true);
         }
     };
@@ -99,21 +151,21 @@ export default function DetailJob({ job }) {
                 <div className="w-full md:w-[78%] flex flex-col gap-6">
                     <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
                         <h1 className="text-3xl font-bold text-gray-800">
-                            {job.title}
+                            {dj.title}
                         </h1>
 
                         <div className="flex flex-wrap gap-2 text-sm">
                             <span className="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
                                 <MapPin size={16} />
-                                {formatList(job.city)}
+                                {dj.location || formatList(dj.city)}
                             </span>
                             <span className="flex items-center gap-1 bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
                                 <Layers size={16} />
-                                {formatList(job.category)}
+                                {formatList(dj.category)}
                             </span>
                             <span className="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
                                 <Briefcase size={16} />
-                                {formatList(job.level)}
+                                {formatList(dj.level)}
                             </span>
                         </div>
 
@@ -129,7 +181,8 @@ export default function DetailJob({ job }) {
                                 {showModal && (
                                     <ApplicationModal
                                         onClose={() => setShowModal(false)}
-                                        jobTitle={job.title}
+                                        jobId={dj.id}
+                                        jobTitle={dj.title}
                                     />
                                 )}
                             </div>
@@ -163,7 +216,7 @@ export default function DetailJob({ job }) {
                             Job Description
                         </div>
                         <p className="text-gray-700 whitespace-pre-line">
-                            {job.description || "Chưa có mô tả"}
+                            {dj.description || "Chưa có mô tả"}
                         </p>
                     </div>
 
@@ -173,10 +226,9 @@ export default function DetailJob({ job }) {
                             Requirements
                         </div>
                         <div className="text-gray-700 whitespace-pre-line space-y-1">
-                            {Array.isArray(job.requirments) &&
-                            job.requirments.length > 0 ? (
-                                job.requirments.map((item, index) => (
-                                    <p key={index}>- {item}</p>
+                            {toList(dj.requirements).length > 0 ? (
+                                toList(dj.requirements).map((item, idx) => (
+                                    <p key={idx}>- {item}</p>
                                 ))
                             ) : (
                                 <p>Không có yêu cầu cụ thể</p>
@@ -190,10 +242,9 @@ export default function DetailJob({ job }) {
                             Benefits
                         </div>
                         <div className="text-gray-700 whitespace-pre-line space-y-1">
-                            {Array.isArray(job.benefits) &&
-                            job.benefits.length > 0 ? (
-                                job.benefits.map((item, index) => (
-                                    <p key={index}>- {item}</p>
+                            {toList(dj.benefits).length > 0 ? (
+                                toList(dj.benefits).map((item, idx) => (
+                                    <p key={idx}>- {item}</p>
                                 ))
                             ) : (
                                 <p>Không có phúc lợi cụ thể</p>
@@ -207,29 +258,27 @@ export default function DetailJob({ job }) {
                             Work Location
                         </div>
                         <div className="text-gray-700 whitespace-pre-line space-y-1">
-                            {Array.isArray(job.location) &&
-                            job.location.length > 0 ? (
-                                job.location.map((item, index) => (
-                                    <p key={index}>- {item}</p>
-                                ))
+                            {dj.location ? (
+                                <p>- {dj.location}</p>
                             ) : (
                                 <p>Không rõ địa điểm</p>
                             )}
                         </div>
                     </div>
-                    <RelatedJobs category={job.category} />
+
+                    <RelatedJobs category={dj.category} />
                 </div>
 
                 {/* RIGHT SIDE */}
                 <div className="w-full md:w-[22%] flex flex-col gap-4">
                     <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center justify-center text-center space-y-3">
                         <img
-                            src={job.avatar}
+                            src={dj.avatar}
                             alt="Company Logo"
                             className="w-20 h-20 rounded-full object-contain border"
                         />
                         <p className="text-xl font-semibold text-gray-700">
-                            {job.companyName}
+                            {dj.companyName}
                         </p>
                     </div>
 
@@ -243,16 +292,8 @@ export default function DetailJob({ job }) {
                                     className="inline mr-2 text-green-600"
                                     size={18}
                                 />
-                                <strong>Min Salary:</strong>{" "}
-                                {job.salaryMin || "N/A"}
-                            </p>
-                            <p>
-                                <DollarSign
-                                    className="inline mr-2 text-green-600"
-                                    size={18}
-                                />
-                                <strong>Max Salary:</strong>{" "}
-                                {job.salaryMax || "N/A"}
+                                <strong>Salary:</strong>{" "}
+                                {dj.salaryDisplay || "N/A"}
                             </p>
                             <p>
                                 <Calendar
@@ -260,11 +301,7 @@ export default function DetailJob({ job }) {
                                     size={18}
                                 />
                                 <strong>Post Date:</strong>{" "}
-                                {job.datePost
-                                    ? new Date(job.datePost).toLocaleDateString(
-                                          "vi-VN",
-                                      )
-                                    : "N/A"}
+                                {formatDateDMY(dj.datePost)}
                             </p>
                             <p>
                                 <Calendar
@@ -272,22 +309,18 @@ export default function DetailJob({ job }) {
                                     size={18}
                                 />
                                 <strong>Expired Date:</strong>{" "}
-                                {job.expiredDate
-                                    ? new Date(
-                                          job.expiredDate,
-                                      ).toLocaleDateString("vi-VN")
-                                    : "N/A"}
+                                {formatDateDMY(dj.expiredDate)}
                             </p>
                         </div>
                     </div>
 
-                    {Array.isArray(job.skill) && job.skill.length > 0 && (
+                    {Array.isArray(dj.skill) && dj.skill.length > 0 && (
                         <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
                             <h2 className="text-xl font-semibold text-gray-800">
                                 Skills Requirements
                             </h2>
                             <div className="flex flex-wrap gap-2">
-                                {job.skill.map((skill, index) => (
+                                {dj.skill.map((skill, index) => (
                                     <span
                                         key={index}
                                         className="border border-blue-500 text-blue-600 px-3 py-1 rounded-full text-sm"

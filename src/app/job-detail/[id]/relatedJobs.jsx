@@ -4,32 +4,52 @@ import { useGetJobsQuery } from "@/services/jobService";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 
-export default function RelatedJobs({ category }) {
-    const { data: jobs = [], isLoading } = useGetJobsQuery();
+export default function RelatedJobs({ category = [] }) {
+    const { data, isLoading, error } = useGetJobsQuery();
     const [visibleCount, setVisibleCount] = useState(10);
+    const jobsSource = useMemo(() => {
+        if (Array.isArray(data)) return data;
+        if (Array.isArray(data?.jobs)) return data.jobs;
+        if (Array.isArray(data?.content)) return data.content;
+        return [];
+    }, [data]);
+
+    const normalizedJobs = useMemo(() => {
+        return jobsSource.map((job) => ({
+            id: job.id,
+            title: job.title || "",
+            avatar: job.company?.avatar || "",
+            companyName: job.company?.company_name || "",
+            skill: job.skill_names || [],
+            category: job.category_names || [],
+            salaryDisplay: job.salaryDisplay || "",
+        }));
+    }, [jobsSource]);
+
+    const categorySet = useMemo(() => {
+        if (!Array.isArray(category)) return new Set();
+        return new Set(
+            category.filter(Boolean).map((c) => c.trim().toLowerCase())
+        );
+    }, [category]);
 
     const relatedJobs = useMemo(() => {
-        return jobs
-            .map((job) => ({
-                ...job,
-                categories: Array.isArray(job.category)
-                    ? job.category
-                    : job.category?.split(",").map((s) => s.trim()) || [],
-            }))
-            .filter((job) =>
-                job.categories?.some((cat) => category.includes(cat))
-            );
-    }, [jobs, category]);
+        if (categorySet.size === 0) return [];
+        return normalizedJobs.filter((job) =>
+            (job.category || []).some(
+                (cat) => cat && categorySet.has(cat.trim().toLowerCase())
+            )
+        );
+    }, [normalizedJobs, categorySet]);
 
-    const handleLoadMore = () => {
-        setVisibleCount((prev) => prev + 10);
-    };
-
-    const handleCollapse = () => {
-        setVisibleCount(10);
-    };
+    const handleLoadMore = () => setVisibleCount((prev) => prev + 10);
+    const handleCollapse = () => setVisibleCount(10);
 
     if (isLoading) return <p>Loading...</p>;
+    if (error)
+        return (
+            <p className="text-red-500">Không tải được danh sách liên quan.</p>
+        );
 
     const hasMore = visibleCount < relatedJobs.length;
 
@@ -39,29 +59,35 @@ export default function RelatedJobs({ category }) {
                 Similar Job
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {relatedJobs.slice(0, visibleCount).map((job) => (
-                    <JobCard key={job.id} job={job} />
-                ))}
-            </div>
+            {relatedJobs.length === 0 ? (
+                <p className="text-gray-500">Chưa có công việc tương tự.</p>
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {relatedJobs.slice(0, visibleCount).map((job) => (
+                            <JobCard key={job.id} job={job} />
+                        ))}
+                    </div>
 
-            <div className="mt-6 flex justify-center gap-4">
-                {hasMore ? (
-                    <button
-                        onClick={handleLoadMore}
-                        className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-primary/80 transition"
-                    >
-                        Xem thêm
-                    </button>
-                ) : relatedJobs.length > 10 ? (
-                    <button
-                        onClick={handleCollapse}
-                        className="px-4 py-2 bg-blue-200 text-gray-800 rounded hover:bg-gray-300 transition"
-                    >
-                        Ẩn bớt
-                    </button>
-                ) : null}
-            </div>
+                    <div className="mt-6 flex justify-center gap-4">
+                        {hasMore ? (
+                            <button
+                                onClick={handleLoadMore}
+                                className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-primary/80 transition"
+                            >
+                                Xem thêm
+                            </button>
+                        ) : relatedJobs.length > 10 ? (
+                            <button
+                                onClick={handleCollapse}
+                                className="px-4 py-2 bg-blue-200 text-gray-800 rounded hover:bg-gray-300 transition"
+                            >
+                                Ẩn bớt
+                            </button>
+                        ) : null}
+                    </div>
+                </>
+            )}
         </div>
     );
 }
@@ -101,6 +127,7 @@ function JobCard({ job }) {
                         />
                     </button>
                 </div>
+
                 <div className="mt-3 flex flex-wrap gap-2">
                     {job.skill?.map((skill, i) => (
                         <span
@@ -111,8 +138,11 @@ function JobCard({ job }) {
                         </span>
                     ))}
                 </div>
+
                 <div className="mt-4 flex justify-between items-center">
-                    <span className="text-sm text-gray-600">{job.salary}</span>
+                    <span className="text-sm text-gray-600">
+                        {job.salaryDisplay || ""}
+                    </span>
                     <span className="text-sm text-primary font-medium hover:underline">
                         Xem chi tiết
                     </span>

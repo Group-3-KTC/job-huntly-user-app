@@ -1,15 +1,40 @@
+const BASE_URL = "http://18.142.226.139:8080/api/v1";
+
 export const getJobDetail = async (id) => {
+  if (!id && id !== 0) throw new Error("Missing job id");
+
+  const url = `${BASE_URL}/job/${id}`;
+
   try {
-    const res = await fetch(`https://687076977ca4d06b34b6dc20.mockapi.io/api/v1/jobs/${id}`, {
-      cache: "no-store",
+    const res = await fetch(url, {
+      cache: "no-store", // tránh dính cache khi chuyển giữa các id
     });
 
     if (!res.ok) {
-        console.error("status: ",res.status)
-      throw new Error("Failed to fetch job detail");
+      console.error(`[getJobDetail] HTTP ${res.status} for ${url}`);
+      throw new Error(`Failed to fetch job detail (status ${res.status})`);
     }
 
-    return res.json();
+    const data = await res.json();
+
+    return {
+      id: data.id,
+      title: data.title || "",
+      description: data.description,
+      requirements: data.requirements,
+      benefits: data.benefits,
+      location: data.location,
+      avatar: data.company?.avatar || "",
+      companyName: data.company?.company_name || "",
+      category: data.category_names || [],
+      level: data.level_names || [],
+      workType: data.work_type_names || [],
+      skill: data.skill_names || [],
+      city: data.wards || [],
+      salaryDisplay: data.salaryDisplay || "Thỏa thuận",
+      datePost: data.date_post,
+      expiredDate: data.expired_date,
+    };
   } catch (err) {
     console.error("getJobDetail error:", err);
     throw err;
