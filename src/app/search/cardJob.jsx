@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart, HeartIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useJobSearchStore } from "@/store/jobSearchStore";
-import { useGetJobsQuery } from "@/services/jobService";
+import { useSearchJobsMutation } from "@/services/jobService";
 
 export default function CardJob() {
-    const [filteredJobs, setFilteredJobs] = useState([]);
+    const [list, setList] = useState([]);
     const [liked, setLiked] = useState({});
     const router = useRouter();
 
@@ -17,105 +17,96 @@ export default function CardJob() {
 
     const { searchTerm, filters } = useJobSearchStore();
 
-    const { data: jobs = [], isLoading, error } = useGetJobsQuery();
+    const [searchJobs, { isLoading, error }] = useSearchJobsMutation();
+    const debounceRef = useRef(null);
+    const payload = useMemo(() => {
+        const {
+            keyword = "",
+            province = "",
+            companyName = "",
+        } = searchTerm || {};
+
+        return {
+            keyword: keyword || undefined,
+            companyName: companyName || undefined,
+
+            cityName: province || undefined,
+
+            categoryNames: filters?.categories?.length
+                ? filters.categories
+                : undefined,
+            skillNames: filters?.skills?.length ? filters.skills : undefined,
+            levelNames: filters?.levels?.length ? filters.levels : undefined,
+            workTypeNames: filters?.workTypes?.length
+                ? filters.workTypes
+                : undefined,
+            wardNames: undefined,
+            matchAllCategories: false,
+            matchAllSkills: false,
+            matchAllLevels: false,
+            matchAllWorkTypes: false,
+            matchAllWards: false,
+
+            salaryMin: undefined,
+            salaryMax: undefined,
+
+            postedFrom: undefined, 
+            postedTo: undefined,
+        };
+    }, [searchTerm, filters]);
 
     useEffect(() => {
-        if (!jobs.length) return;
+        if (debounceRef.current) clearTimeout(debounceRef.current);
 
-        const normalized = jobs.map((job) => ({
-            ...job,
-            workType: Array.isArray(job.workType)
-                ? job.workType
-                : job.workType?.split(",").map((s) => s.trim()) || [],
-            level: Array.isArray(job.level)
-                ? job.level
-                : job.level?.split(",").map((s) => s.trim()) || [],
-            category: Array.isArray(job.category)
-                ? job.category
-                : job.category?.split(",").map((s) => s.trim()) || [],
-            skill: Array.isArray(job.skill)
-                ? job.skill
-                : job.skill?.split(",").map((s) => s.trim()) || [],
-        }));
+        debounceRef.current = setTimeout(async () => {
+            try {
+                const res = await searchJobs(payload).unwrap();
+                const jobs = res?.jobs || [];
+                const normalized = jobs.map((job) => ({
+                    ...job,
+                    id: job.id,
+                    title: job.title || "",
+                    avatar: job.company?.avatar || "",
+                    companyName: job.company?.company_name || "",
+                    workType: job.work_type_names || [],
+                    level: job.level_names || [],
+                    category: job.category_names || [],
+                    skill: job.skill_names || [],
+                    city: job.wards || [],
+                    salaryDisplay: job.salaryDisplay,
+                }));
 
-        let filtered = [...normalized];
+                setList(normalized);
+                setCurrentPage(1);
+            } catch (e) {
+            }
+        }, 300);
 
-        if (searchTerm?.keyword) {
-            const keyword = searchTerm.keyword.toLowerCase();
-            filtered = filtered.filter(
-                (job) =>
-                    job.title.toLowerCase().includes(keyword) ||
-                    job.companyName.toLowerCase().includes(keyword)
-            );
-        }
-
-        if (searchTerm?.province) {
-            const provinceLower = searchTerm.province.toLowerCase();
-            filtered = filtered.filter((job) => {
-                if (Array.isArray(job.city)) {
-                    return job.city.some(
-                        (c) =>
-                            typeof c === "string" &&
-                            c.toLowerCase().includes(provinceLower)
-                    );
-                } else if (typeof job.city === "string") {
-                    return job.city.toLowerCase().includes(provinceLower);
-                }
-                return false;
-            });
-        }
-
-        if (filters.workTypes.length) {
-            filtered = filtered.filter((job) =>
-                job.workType.some((type) => filters.workTypes.includes(type))
-            );
-        }
-
-        if (filters.levels.length) {
-            filtered = filtered.filter((job) =>
-                job.level.some((lvl) => filters.levels.includes(lvl))
-            );
-        }
-
-        if (filters.categories.length) {
-            filtered = filtered.filter((job) =>
-                job.category.some((cat) => filters.categories.includes(cat))
-            );
-        }
-
-        if (filters.skills.length) {
-            filtered = filtered.filter((job) =>
-                job.skill.some((sk) => filters.skills.includes(sk))
-            );
-        }
-
-        setFilteredJobs(filtered);
-        setCurrentPage(1);
-    }, [jobs, searchTerm, filters]);
+        return () => {
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+        };
+    }, [payload, searchJobs]);
 
     const toggleLike = (jobId) => {
         setLiked((prev) => ({ ...prev, [jobId]: !prev[jobId] }));
     };
-
-    const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+    const totalPages = Math.ceil(list.length / jobsPerPage) || 1;
     const startIndex = (currentPage - 1) * jobsPerPage;
-    const paginatedJobs = filteredJobs.slice(
-        startIndex,
-        startIndex + jobsPerPage
-    );
+    const paginatedJobs = list.slice(startIndex, startIndex + jobsPerPage);
 
     if (isLoading)
         return <p className="text-center text-gray-500">Đang tải dữ liệu...</p>;
     if (error)
         return (
             <p className="text-center text-red-500">
-                Lỗi khi tải công việc: {error.message}
+                Lỗi khi tải công việc:{" "}
+                {error?.data?.message || "Không thể tải danh sách công việc"}
             </p>
         );
 
     return (
         <div className="w-full max-w-[1000px] bg-white p-6 rounded-xl shadow-md space-y-6 mx-auto">
-            {filteredJobs.length === 0 ? (
+            {list.length === 0 ? (
                 <p className="text-center text-gray-500">
                     Không có công việc phù hợp.
                 </p>
@@ -134,7 +125,7 @@ export default function CardJob() {
                                 />
                                 <div className="space-y-1">
                                     <h3
-                                        className="font-semibold text-lg text-[#0a66c2] hover:underline"
+                                        className="font-semibold text-lg text-[#0a66c2] hover:underline cursor-pointer"
                                         onClick={() =>
                                             router.push(`/job-detail/${job.id}`)
                                         }
