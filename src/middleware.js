@@ -44,12 +44,9 @@ function getRoleFromJwt(token) {
         const parts = token.split(".");
         if (parts.length < 2) return null;
         const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-        const json = JSON.parse(atob(base64)); // atob có sẵn ở Edge runtime
-        return (
-            (json.role || json.rol || json.authorities)
-                ?.toString()
-                .toUpperCase() || null
-        );
+        const json = JSON.parse(atob(base64));
+
+        return json.role?.toString().toUpperCase() || null;
     } catch {
         return null;
     }
@@ -85,7 +82,7 @@ export function middleware(req) {
 
     const isRecruiterPath = recruiterOnly.some((r) => r.test(pathname));
     if (isRecruiterPath) {
-        const role = getRoleFromJwt(token); // ví dụ "RECRUITER"
+        const role = getRoleFromJwt(token);
         if (role !== "RECRUITER") {
             const url = req.nextUrl.clone();
             url.pathname = "/profile";

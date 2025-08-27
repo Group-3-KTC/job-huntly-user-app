@@ -18,10 +18,15 @@ const AppInitializer = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        const user = auth || {};
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-        } catch {}
+        if (auth.hydrated) {
+            try {
+                if (!auth.user) {
+                    localStorage.removeItem(STORAGE_KEY);
+                } else {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(auth));
+                }
+            } catch {}
+        }
     }, [auth]);
 
     // của mock api
