@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import LoadingScreen from "../ui/loadingScreen";
 import { loginThunk } from "@/features/auth/authSlice";
 import { selectAuthLoading } from "@/features/auth/authSelectors";
+import GoogleSignIn from "@/components/auth/GoogleSignIn";
 
 const CandidateLoginForm = ({ role }) => {
     const dispatch = useDispatch();
@@ -69,19 +70,20 @@ const CandidateLoginForm = ({ role }) => {
     return (
         <>
             <div className="space-y-3">
-                <Button
-                    variant="outline"
-                    className="flex items-center justify-center w-full gap-2 bg-transparent"
-                    // onClick={handleGoogleLogin}
-                >
-                    <Image
-                        src={googleLogo}
-                        alt="Google"
-                        width={24}
-                        height={24}
-                    />
-                    Đăng nhập với Google
-                </Button>
+                {/*<Button*/}
+                {/*    variant="outline"*/}
+                {/*    className="flex items-center justify-center w-full gap-2 bg-transparent"*/}
+                {/*    // onClick={handleGoogleLogin}*/}
+                {/*>*/}
+                {/*    <Image*/}
+                {/*        src={googleLogo}*/}
+                {/*        alt="Google"*/}
+                {/*        width={24}*/}
+                {/*        height={24}*/}
+                {/*    />*/}
+                {/*    Đăng nhập với Google*/}
+                {/*</Button>*/}
+                <GoogleSignIn role={role ?? "CANDIDATE"} />
             </div>
 
             <div className="relative">

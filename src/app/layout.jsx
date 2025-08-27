@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import ClientRootLayout from "./ClientRootLayout";
+import Script from "next/script";
 
 export const metadata = {
     title: "Job Huntly",
@@ -35,6 +36,10 @@ export default function RootLayout({ children }) {
                 <div className="sp-body">
                     <ClientRootLayout>{children}</ClientRootLayout>
                 </div>
+                <Script
+                    src="https://accounts.google.com/gsi/client"
+                    strategy="afterInteractive"
+                />
             </body>
         </html>
     );

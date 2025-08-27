@@ -4,16 +4,7 @@ const authService = {
     async login(credentials) {
         const { data } = await api.post("/auth/login", credentials);
         return {
-            accessToken: data.access_token,
-            refreshToken: null,
-            user: {
-                id: data.user_id,
-                email: data.email,
-                fullname: data.fullName,
-                role: data.role,
-                tokenType: data.token_type,
-                expiresIn: data.expires_in,
-            },
+            user: data,
             message: "Đăng nhập thành công",
         };
     },

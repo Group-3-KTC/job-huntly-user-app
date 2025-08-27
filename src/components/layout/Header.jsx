@@ -57,11 +57,11 @@ export const Header = () => {
 
     const isAuthHydrated = useSelector(selectAuthHydrated);
 
-    if (pathname?.startsWith("/recruiter")) return null;
+    const role = (user?.role || "").toUpperCase();
+
+    if (pathname?.startsWith("/recruiter") || role === "RECRUITER") return null;
 
     if (!isAuthHydrated) return null;
-
-    const role = (user?.role || "").toUpperCase();
 
     const handleMouseEnter = (menu) => {
         setActiveDropdown(menu);
@@ -369,7 +369,7 @@ export const Header = () => {
 
                     {/* Right Navigation */}
                     <ul className="flex items-center space-x-2">
-                        {!isLoggedIn || role === "RECRUITER" ? (
+                        {!isLoggedIn ? (
                             <>
                                 {/* Khi chưa đăng nhập */}
 
@@ -429,7 +429,7 @@ export const Header = () => {
                                                     />
                                                     <AvatarFallback className="bg-white text-[#0a66c2] text-sm font-semibold">
                                                         {getUserInitials(
-                                                            user?.fullname,
+                                                            user?.fullName,
                                                         )}
                                                     </AvatarFallback>
                                                 </Avatar>
@@ -444,7 +444,7 @@ export const Header = () => {
                                                 <div className="flex flex-col space-y-4">
                                                     <p className="text-lg font-medium ">
                                                         {user?.name ||
-                                                            user?.fullname ||
+                                                            user?.fullName ||
                                                             "User"}
                                                     </p>
                                                     <p className="text-xs text-gray-500">
