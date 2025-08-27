@@ -1,19 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "@/validation/loginSchema";
 import { useRouter } from "next/navigation";
-import { useLoginMutation } from "@/features/auth/fakeAuthApi";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAuthLoading } from "@/features/auth/fakeAuthSlice";
 import LoadingScreen from "../ui/loadingScreen";
 import { loginThunk } from "@/features/auth/authSlice";
 import { toast } from "react-toastify";
+import { selectAuthLoading } from "@/features/auth/authSelectors";
 
 const RecruiterLoginForm = ({ role }) => {
     const dispatch = useDispatch();

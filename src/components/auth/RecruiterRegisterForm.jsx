@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Lock, Mail, Phone, User } from "lucide-react";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";

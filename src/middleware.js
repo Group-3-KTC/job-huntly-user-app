@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const SESSION_COOKIE_NAME = "session"; // cookie httpOnly server set khi login
+const COOKIE_NAME = "access_token";
 
 // public
 const publicRoutes = [
@@ -39,19 +39,24 @@ const recruiterOnly = [
     /^\/manage-jobs/,
 ];
 
-export function middleware(req) {
-    const { pathname } = req.nextUrl;
-
-    if (pathname === "/") {
-        const hasSession = !!req.cookies.get(SESSION_COOKIE_NAME)?.value;
-        const role = req.cookies.get("role")?.value; // cookie non-httpOnly set lúc login
-        if (hasSession && role === "RECRUITER") {
-            return NextResponse.redirect(
-                new URL("/recruiter/dashboard", req.url),
-            );
-        }
-        return NextResponse.next();
+function getRoleFromJwt(token) {
+    try {
+        const parts = token.split(".");
+        if (parts.length < 2) return null;
+        const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const json = JSON.parse(atob(base64)); // atob có sẵn ở Edge runtime
+        return (
+            (json.role || json.rol || json.authorities)
+                ?.toString()
+                .toUpperCase() || null
+        );
+    } catch {
+        return null;
     }
+}
+
+export function middleware(req) {
+    const { pathname, search } = req.nextUrl;
 
     // Bỏ qua tài nguyên tĩnh & api
     if (
@@ -70,18 +75,31 @@ export function middleware(req) {
     const needAuth = protectedPrefixes.some((r) => r.test(pathname));
     if (!needAuth) return NextResponse.next();
 
-    // Kiểm tra cookie phiên httpOnly (được set ở BE)
-    const hasSession = !!req.cookies.get(SESSION_COOKIE_NAME)?.value;
-    if (!hasSession) {
-        const url = new URL("/login", req.url);
-        url.searchParams.set("redirect", pathname);
+    const token = req.cookies.get(COOKIE_NAME)?.value;
+    if (!token) {
+        const url = req.nextUrl.clone();
+        url.pathname = "/login";
+        url.searchParams.set("redirect", pathname + search);
         return NextResponse.redirect(url);
     }
 
-    const role = req.cookies.get("role")?.value;
     const isRecruiterPath = recruiterOnly.some((r) => r.test(pathname));
-    if (isRecruiterPath && role && role !== "RECRUITER") {
-        return NextResponse.redirect(new URL("/profile", req.url));
+    if (isRecruiterPath) {
+        const role = getRoleFromJwt(token); // ví dụ "RECRUITER"
+        if (role !== "RECRUITER") {
+            const url = req.nextUrl.clone();
+            url.pathname = "/profile";
+            return NextResponse.redirect(url);
+        }
+    }
+
+    if (pathname === "/") {
+        const role = getRoleFromJwt(token);
+        if (role === "RECRUITER") {
+            const url = req.nextUrl.clone();
+            url.pathname = "/recruiter/dashboard";
+            return NextResponse.redirect(url);
+        }
     }
 
     return NextResponse.next();
