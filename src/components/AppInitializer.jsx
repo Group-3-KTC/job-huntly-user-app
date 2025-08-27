@@ -18,12 +18,9 @@ const AppInitializer = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        const { accessToken, refreshToken, user } = auth || {};
+        const user = auth || {};
         try {
-            localStorage.setItem(
-                STORAGE_KEY,
-                JSON.stringify({ accessToken, refreshToken, user }),
-            );
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
         } catch {}
     }, [auth]);
 

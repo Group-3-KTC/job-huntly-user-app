@@ -62,8 +62,6 @@ export const logoutThunk = createAsyncThunk(
 );
 
 const initialState = {
-    accessToken: null,
-    refreshToken: null,
     user: null,
     loading: false,
     error: null,
@@ -96,9 +94,8 @@ const authSlice = createSlice({
             })
             .addCase(loginThunk.fulfilled, (s, a) => {
                 s.loading = false;
-                s.accessToken = a.payload.accessToken;
-                s.refreshToken = a.payload.refreshToken;
-                s.user = a.payload.user || null;
+                s.user = a.payload?.user ?? s.user ?? null;
+                s.hydrated = true;
             })
             .addCase(loginThunk.rejected, (s, a) => {
                 s.loading = false;
@@ -123,8 +120,6 @@ const authSlice = createSlice({
                 s.hydrated = true;
             })
             .addCase(logoutThunk.fulfilled, (s) => {
-                s.accessToken = null;
-                s.refreshToken = null;
                 s.user = null;
             });
     },
