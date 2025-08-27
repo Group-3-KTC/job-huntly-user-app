@@ -3,7 +3,6 @@ import profileReducer from "@/features/profile/profileSlice";
 import authReducer from "@/features/auth/authSlice";
 import applicationReducer from "@/features/application/applicationSlice";
 import { jobApi } from "@/services/jobService";
-import { fakeAuthApi } from "@/features/auth/fakeAuthApi";
 import toastSlice from "../store/slices/toastSlices";
 import { profileApi } from "@/services/profileService";
 import { applicationApi } from "@/services/applicationService";
@@ -18,7 +17,6 @@ export const store = configureStore({
         application: applicationReducer,
         toast: toastSlice,
         savedCompanies: savedCompaniesReducer,
-        [fakeAuthApi.reducerPath]: fakeAuthApi.reducer,
         [jobApi.reducerPath]: jobApi.reducer,
         [profileApi.reducerPath]: profileApi.reducer,
         [applicationApi.reducerPath]: applicationApi.reducer,
@@ -26,7 +24,6 @@ export const store = configureStore({
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
-            fakeAuthApi.middleware,
             jobApi.middleware,
             profileApi.middleware,
             applicationApi.middleware,
