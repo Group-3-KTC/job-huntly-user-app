@@ -5,8 +5,7 @@ export const loginThunk = createAsyncThunk(
     "auth/login",
     async (credentials, { rejectWithValue }) => {
         try {
-            const res = await authService.login(credentials);
-            return res;
+            return await authService.login(credentials);
         } catch (err) {
             return rejectWithValue(err?.response?.data || err.message);
         }
@@ -17,8 +16,7 @@ export const registerThunk = createAsyncThunk(
     "auth/register",
     async (payload, { rejectWithValue }) => {
         try {
-            const res = await authService.register(payload);
-            return res;
+            return await authService.register(payload);
         } catch (err) {
             return rejectWithValue(err?.response?.data || err.message);
         }
@@ -55,6 +53,7 @@ export const logoutThunk = createAsyncThunk(
             return rejectWithValue({ message, raw: data });
         } finally {
             try {
+                console.log("remove localStorage");
                 localStorage.removeItem("authState");
             } catch {}
         }
@@ -72,22 +71,22 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        authTokenReceived: (state, action) => {
-            const { accessToken, refreshToken } = action.payload || {};
-            if (accessToken) state.accessToken = accessToken;
-            if (refreshToken) state.refreshToken = refreshToken;
+        setUser(state, action) {
+            state.user = action.payload || null;
+            state.hydrated = true;
         },
-        authLoggedOut: () => ({ ...initialState, hydrated: true }), // hydrated: true để tránh flicker
+        clearError(state) {
+            state.error = null;
+        },
         authHydrated: (state, action) => {
-            const { accessToken, refreshToken, user } = action.payload || {};
-            if (accessToken !== undefined) state.accessToken = accessToken;
-            if (refreshToken !== undefined) state.refreshToken = refreshToken;
+            const user = action.payload || {};
             if (user !== undefined) state.user = user;
             state.hydrated = true;
         },
     },
     extraReducers: (builder) => {
         builder
+            // -- Login --
             .addCase(loginThunk.pending, (s) => {
                 s.loading = true;
                 s.error = null;
@@ -101,6 +100,7 @@ const authSlice = createSlice({
                 s.loading = false;
                 s.error = a.payload || "Login failed";
             })
+            // -- Register --
             .addCase(registerThunk.pending, (s) => {
                 s.loading = true;
                 s.error = null;
@@ -112,19 +112,27 @@ const authSlice = createSlice({
                 s.loading = false;
                 s.error = a.payload || "Register failed";
             })
+            // -- Me --
             .addCase(meThunk.fulfilled, (s, a) => {
-                s.user = a.payload;
+                s.user = a.payload || null;
                 s.hydrated = true;
             })
             .addCase(meThunk.rejected, (s) => {
+                s.user = null;
                 s.hydrated = true;
             })
+            // -- Logout --
             .addCase(logoutThunk.fulfilled, (s) => {
                 s.user = null;
+                s.error = null;
+                s.hydrated = true;
+            })
+            .addCase(logoutThunk.rejected, (s) => {
+                s.user = null;
+                s.hydrated = true;
             });
     },
 });
 
-export const { authTokenReceived, authLoggedOut, authHydrated } =
-    authSlice.actions;
+export const { authHydrated } = authSlice.actions;
 export default authSlice.reducer;

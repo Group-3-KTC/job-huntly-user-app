@@ -1,5 +1,3 @@
-export const selectAccessToken = (state) => state?.auth?.accessToken || null;
-export const selectRefreshToken = (state) => state?.auth?.refreshToken || null;
 export const selectAuthLoading = (state) => state.auth.loading;
 export const selectAuthError = (state) => state.auth.error;
 export const selectAuthUser = (state) => state.auth.user;
