@@ -6,6 +6,8 @@ export function attachStore(store) {
     reduxStore = store;
 }
 
+const isDev = process.env.NODE_ENV === "development";
+
 const api = axios.create({
     baseURL: API_CONFIG.BASE_URL,
     timeout: API_CONFIG.TIMEOUT,

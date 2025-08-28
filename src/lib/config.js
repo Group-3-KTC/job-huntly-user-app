@@ -1,6 +1,8 @@
+const isDev = process.env.NODE_ENV === "development";
+
 export const API_CONFIG = {
     BASE_URL:
-        process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api/v1",
+        process.env.NEXT_PUBLIC_API_BASE_URL || (isDev ? "/api/v1" : undefined),
     TIMEOUT: 10000, // 10 seconds
 };
 
