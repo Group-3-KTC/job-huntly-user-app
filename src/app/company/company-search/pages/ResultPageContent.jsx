@@ -11,7 +11,6 @@ import FilterSidebar from "../components/FilterSidebar";
 import ResultItem from "../components/ResultItem";
 import useCompanySearchStore from "../store/companySearchStore";
 
-// Danh sách quy mô công ty
 const companySizes = [
     { id: "1-10", label: "1-10 nhân viên" },
     { id: "11-50", label: "11-50 nhân viên" },
@@ -22,7 +21,6 @@ const companySizes = [
 
 const ITEMS_PER_PAGE = 8;
 
-// Chỉ sửa phần xử lý tìm kiếm và lọc kết quả
 const ResultPageContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -51,9 +49,7 @@ const ResultPageContent = () => {
         getFilterCounts,
     } = useCompanySearchStore();
 
-    // Chỉ cập nhật phần useEffect chính để xử lý tham số mới
     useEffect(() => {
-        // Đọc tham số từ URL
         const name =
             searchParams.get("name") || searchParams.get("company") || "";
         const location = searchParams.get("location") || "";
@@ -62,15 +58,12 @@ const ResultPageContent = () => {
             ? categoryIdsParam.split(",").map(Number)
             : [];
 
-        // Cập nhật state
         setSearchTerm({ company: name, location });
 
-        // Cập nhật bộ lọc
         if (categoryIds.length > 0) {
             setFilters((prev) => ({ ...prev, categoryIds }));
         }
 
-        // Gọi API dựa trên tham số
         const performSearch = async () => {
             if (name && categoryIds.length > 0) {
                 // Tìm kiếm kết hợp
@@ -79,16 +72,12 @@ const ResultPageContent = () => {
                     categoryIds,
                 });
             } else if (categoryIds.length > 0) {
-                // Chỉ tìm theo danh mục
                 await fetchCompaniesByCategories(categoryIds.join(","));
             } else if (name) {
-                // Chỉ tìm theo tên
                 await searchCompanies({ name });
             } else if (location) {
-                // Chỉ tìm theo địa điểm
                 await fetchCompaniesByLocation(location);
             } else {
-                // Không có tham số, lấy tất cả
                 await fetchCompanies();
             }
         };
@@ -105,10 +94,8 @@ const ResultPageContent = () => {
 
     // Xử lý tìm kiếm
     const handleSearch = (searchParams) => {
-        // Lưu từ khóa tìm kiếm vào state
         setSearchTerm(searchParams);
 
-        // Cập nhật URL mà không chuyển trang
         const queryParams = new URLSearchParams();
         if (searchParams.company)
             queryParams.append("company", searchParams.company);
@@ -126,36 +113,30 @@ const ResultPageContent = () => {
             `/company/company-search/results?${queryParams.toString()}`
         );
 
-        // Gọi API tìm kiếm với tham số đúng
         searchCompanies({
-            name: searchParams.company, // Chuyển company thành name cho API
+            name: searchParams.company, 
             location: searchParams.location,
             categoryIds: searchParams.categoryIds,
         });
     };
 
-    // Tạo hàm xử lý thay đổi bộ lọc
     const handleFilterChange = async (newFilters) => {
-        // Trước khi thực hiện bất kỳ thao tác nào, reset các giá trị để tránh hiển thị dữ liệu cũ
+
         setApiResults([]);
 
         const updatedFilters = { ...filters, ...newFilters };
         setFilters(updatedFilters);
 
         try {
-            // Nếu đang chọn danh mục, gọi API để lấy công ty theo danh mục
             if (
                 updatedFilters.categoryIds &&
                 updatedFilters.categoryIds.length > 0
             ) {
-                // Sử dụng hàm từ store để lấy công ty theo danh mục
                 const categoryIds = updatedFilters.categoryIds.join(",");
                 await fetchCompaniesByCategories(categoryIds);
 
-                // Sau khi gọi API, cập nhật kết quả từ store
-                setUseDirectAPIResults(false); // Sử dụng kết quả từ store trực tiếp
+                setUseDirectAPIResults(false); 
             } else {
-                // Nếu không có danh mục nào được chọn, lấy tất cả công ty
                 setUseDirectAPIResults(false);
                 await fetchCompanies();
             }

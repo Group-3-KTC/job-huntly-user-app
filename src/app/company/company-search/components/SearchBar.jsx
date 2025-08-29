@@ -11,7 +11,6 @@ const SearchBar = ({
     const { locations, industries, fetchLocations, fetchIndustries } =
         useCompanySearchStore();
 
-    // Sử dụng useState với giá trị ban đầu đúng
     const [searchParams, setSearchParams] = useState({
         company: initialValues.company || "",
         location: initialValues.location || "",

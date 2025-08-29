@@ -9,7 +9,6 @@ import FilterSidebar from "../components/FilterSidebar";
 import ResultItem from "../components/ResultItem";
 import useCompanyStore from "../store/companyStore";
 
-// Danh sách quy mô công ty
 const companySizes = [
     { id: "1-10", label: "1-10 nhân viên" },
     { id: "11-50", label: "11-50 nhân viên" },
@@ -17,8 +16,6 @@ const companySizes = [
     { id: "201-500", label: "201-500 nhân viên" },
     { id: "501+", label: "501+ nhân viên" },
 ];
-
-// Component Skeleton cho ResultItem
 const ResultItemSkeleton = () => (
     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 animate-pulse">
         <div className="flex items-start">
@@ -74,28 +71,27 @@ const ResultPage = () => {
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [resultsVisible, setResultsVisible] = useState(false);
 
-    // Khởi tạo từ khóa tìm kiếm từ query parameters
     useEffect(() => {
         const company = searchParams.get("company") || "";
         const location = searchParams.get("location") || "";
-        // Thêm xử lý cho categoryIds
+
         const categoryIdsParam = searchParams.get("categoryIds") || "";
         const categoryIds = categoryIdsParam
             ? categoryIdsParam.split(",").map(Number)
             : [];
 
         setSearchTerm({ company, location });
-        // Cập nhật filters
+
         if (categoryIds.length > 0) {
             setFilters((prev) => ({ ...prev, categoryIds }));
         }
 
-        // Lấy dữ liệu công ty và ngành nghề khi component được mount
+
         const fetchData = async () => {
             setIsLoadingPage(true);
             await Promise.all([fetchCompanies(), fetchIndustries()]);
 
-            // Tạo hiệu ứng loading mượt mà
+
             setTimeout(() => {
                 setIsLoadingPage(false);
 
@@ -109,11 +105,10 @@ const ResultPage = () => {
         fetchData();
     }, [searchParams]);
 
-    // Lọc kết quả dựa trên từ khóa tìm kiếm và bộ lọc
+    // Lọc kết quả
     const filteredResults = getFilteredCompanies();
     const filterCounts = getFilterCounts();
 
-    // Xử lý tìm kiếm
     const handleSearch = (searchParams) => {
         setResultsVisible(false);
         setIsTransitioning(true);
@@ -131,7 +126,6 @@ const ResultPage = () => {
                 queryParams.append("location", searchParams.location);
             }
 
-            // Thêm xử lý categoryIds
             if (
                 searchParams.categoryIds &&
                 searchParams.categoryIds.length > 0
@@ -146,7 +140,6 @@ const ResultPage = () => {
                 `/company/company-search/results?${queryParams.toString()}`
             );
 
-            // Reset lại trạng thái chuyển tiếp
             setTimeout(() => {
                 setIsTransitioning(false);
                 setResultsVisible(true);
@@ -179,13 +172,12 @@ const ResultPage = () => {
         }, 300);
     };
 
-    // Xử lý khi thay đổi bộ lọc
     const handleFilterChange = (newFilters) => {
         setResultsVisible(false);
 
         setTimeout(() => {
             setFilters(newFilters);
-            setCurrentPage(1); // Reset về trang đầu tiên khi thay đổi bộ lọc
+            setCurrentPage(1);
 
             setTimeout(() => {
                 setResultsVisible(true);

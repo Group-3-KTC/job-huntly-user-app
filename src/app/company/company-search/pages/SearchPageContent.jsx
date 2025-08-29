@@ -13,7 +13,6 @@ const SearchPageContent = () => {
   const { fetchCompanies, fetchIndustries } = useCompanySearchStore();
   
   useEffect(() => {
-    // Tải trước dữ liệu cho trang tìm kiếm
     fetchCompanies();
     fetchIndustries();
   }, [fetchCompanies, fetchIndustries]);
@@ -22,7 +21,7 @@ const SearchPageContent = () => {
     const queryParams = new URLSearchParams();
     
     if (searchParams.company) {
-      queryParams.append('name', searchParams.company); // ĐỔI company thành name để khớp với API
+      queryParams.append('name', searchParams.company);
     }
     
     if (searchParams.location) {
