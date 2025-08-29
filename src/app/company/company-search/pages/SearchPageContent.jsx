@@ -22,13 +22,18 @@ const SearchPageContent = () => {
     const queryParams = new URLSearchParams();
     
     if (searchParams.company) {
-      queryParams.append('company', searchParams.company);
+      queryParams.append('name', searchParams.company); // ĐỔI company thành name để khớp với API
     }
     
     if (searchParams.location) {
       queryParams.append('location', searchParams.location);
     }
     
+    if (searchParams.categoryIds && searchParams.categoryIds.length > 0) {
+      queryParams.append('categoryIds', searchParams.categoryIds.join(','));
+    }
+    
+    console.log('Searching with params:', queryParams.toString());
     router.push(`/company/company-search/results?${queryParams.toString()}`);
   };
 

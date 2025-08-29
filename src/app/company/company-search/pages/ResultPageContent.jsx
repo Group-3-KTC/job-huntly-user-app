@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Building, MapPin, Search, Filter, CheckCircle } from "lucide-react";
-import { BASE_API_URL } from "@/constants/apiConstants";
+import { BASE_API_URL } from "@/constants/apiCompanyConstants";
 
 import SearchBar from "../components/SearchBar";
 import FilterSidebar from "../components/FilterSidebar";
@@ -53,138 +53,107 @@ const ResultPageContent = () => {
 
     // Chỉ cập nhật phần useEffect chính để xử lý tham số mới
     useEffect(() => {
-        const company = searchParams.get("company") || "";
+        // Đọc tham số từ URL
+        const name =
+            searchParams.get("name") || searchParams.get("company") || "";
         const location = searchParams.get("location") || "";
-        const categoryId = searchParams.get("categoryId");
-        const categoryName = searchParams.get("categoryName") || "";
+        const categoryIdsParam = searchParams.get("categoryIds") || "";
+        const categoryIds = categoryIdsParam
+            ? categoryIdsParam.split(",").map(Number)
+            : [];
 
-        setSearchTerm({ company: categoryName || company, location });
-        
-        // Reset các trạng thái khi thay đổi tham số
-        setUseDirectAPIResults(false);
-        setApiResults([]);
+        // Cập nhật state
+        setSearchTerm({ company: name, location });
 
-        // Lấy dữ liệu cơ bản
-        fetchIndustries();
-        fetchLocations();
+        // Cập nhật bộ lọc
+        if (categoryIds.length > 0) {
+            setFilters((prev) => ({ ...prev, categoryIds }));
+        }
 
-        // Quyết định cách tìm kiếm dựa trên tham số query
+        // Gọi API dựa trên tham số
         const performSearch = async () => {
-            try {
-                // Nếu có categoryId, tìm theo danh mục
-                if (categoryId) {
-                    const response = await fetch(
-                        `${BASE_API_URL}/companies/by-categories?categoryIds=${categoryId}`
-                    );
-                    
-                    // Xử lý trường hợp 204 No Content
-                    if (response.status === 204) {
-                        setApiResults([]);
-                        setUseDirectAPIResults(true);
-                        return;
-                    }
-
-                    if (!response.ok) {
-                        throw new Error("Không thể tải danh sách công ty theo danh mục");
-                    }
-
-                    // Kiểm tra content-type và xử lý dữ liệu
-                    const contentType = response.headers.get("content-type");
-                    if (contentType && contentType.includes("application/json")) {
-                        try {
-                            const data = await response.json();
-                            // Đảm bảo data luôn là mảng
-                            const companies = Array.isArray(data) ? data : [];
-                            setApiResults(companies);
-                            setUseDirectAPIResults(true);
-                        } catch (jsonError) {
-                            console.error("Error parsing JSON:", jsonError);
-                            setApiResults([]);
-                            setUseDirectAPIResults(true);
-                        }
-                    } else {
-                        setApiResults([]);
-                        setUseDirectAPIResults(true);
-                    }
-
-                    // Cập nhật bộ lọc danh mục (chỉ để hiển thị UI)
-                    setFilters((prev) => ({
-                        ...prev,
-                        categoryIds: [parseInt(categoryId, 10)],
-                    }));
-                }
-                // Nếu có location, tìm theo vị trí
-                else if (location) {
-                    await fetchCompaniesByLocation(location);
-                }
-                // Nếu có tên công ty, tìm theo tên
-                else if (company) {
-                    await searchCompanies({ name: company });
-                }
-                // Nếu không có tham số nào, lấy tất cả công ty
-                else {
-                    await fetchCompanies();
-                }
-            } catch (error) {
-                console.error("Error in search:", error);
+            if (name && categoryIds.length > 0) {
+                // Tìm kiếm kết hợp
+                await searchCompanies({
+                    name,
+                    categoryIds,
+                });
+            } else if (categoryIds.length > 0) {
+                // Chỉ tìm theo danh mục
+                await fetchCompaniesByCategories(categoryIds.join(","));
+            } else if (name) {
+                // Chỉ tìm theo tên
+                await searchCompanies({ name });
+            } else if (location) {
+                // Chỉ tìm theo địa điểm
+                await fetchCompaniesByLocation(location);
+            } else {
+                // Không có tham số, lấy tất cả
+                await fetchCompanies();
             }
         };
 
         performSearch();
-    }, [
-        searchParams,
-        fetchCompanies,
-        fetchCompaniesByCategories,
-        fetchCompaniesByLocation,
-        searchCompanies,
-        fetchIndustries,
-        fetchLocations,
-        setSearchTerm,
-        setFilters,
-    ]);
+    }, [searchParams]);
 
     // Lọc kết quả dựa trên bộ lọc hoặc sử dụng kết quả API trực tiếp
-    const filteredResults = useDirectAPIResults && apiResults && apiResults.length > 0
-        ? apiResults
-        : getFilteredCompanies();
+    const filteredResults =
+        useDirectAPIResults && apiResults && apiResults.length > 0
+            ? apiResults
+            : getFilteredCompanies();
     const filterCounts = getFilterCounts();
 
     // Xử lý tìm kiếm
     const handleSearch = (searchParams) => {
+        // Lưu từ khóa tìm kiếm vào state
         setSearchTerm(searchParams);
 
+        // Cập nhật URL mà không chuyển trang
         const queryParams = new URLSearchParams();
-
-        if (searchParams.company) {
+        if (searchParams.company)
             queryParams.append("company", searchParams.company);
-        }
-
-        if (searchParams.location) {
+        if (searchParams.location)
             queryParams.append("location", searchParams.location);
-        }
+        if (searchParams.categoryIds?.length)
+            queryParams.append(
+                "categoryIds",
+                searchParams.categoryIds.join(",")
+            );
 
-        router.push(
+        window.history.pushState(
+            null,
+            "",
             `/company/company-search/results?${queryParams.toString()}`
         );
+
+        // Gọi API tìm kiếm với tham số đúng
+        searchCompanies({
+            name: searchParams.company, // Chuyển company thành name cho API
+            location: searchParams.location,
+            categoryIds: searchParams.categoryIds,
+        });
     };
 
     // Tạo hàm xử lý thay đổi bộ lọc
     const handleFilterChange = async (newFilters) => {
         // Trước khi thực hiện bất kỳ thao tác nào, reset các giá trị để tránh hiển thị dữ liệu cũ
         setApiResults([]);
-        
+
         const updatedFilters = { ...filters, ...newFilters };
         setFilters(updatedFilters);
-        
+
         try {
             // Nếu đang chọn danh mục, gọi API để lấy công ty theo danh mục
-            if (updatedFilters.categoryIds && updatedFilters.categoryIds.length > 0) {
+            if (
+                updatedFilters.categoryIds &&
+                updatedFilters.categoryIds.length > 0
+            ) {
                 // Sử dụng hàm từ store để lấy công ty theo danh mục
-                const categoryIds = updatedFilters.categoryIds.join(',');
+                const categoryIds = updatedFilters.categoryIds.join(",");
                 await fetchCompaniesByCategories(categoryIds);
-                
+
                 // Sau khi gọi API, cập nhật kết quả từ store
-                setUseDirectAPIResults(false);  // Sử dụng kết quả từ store trực tiếp
+                setUseDirectAPIResults(false); // Sử dụng kết quả từ store trực tiếp
             } else {
                 // Nếu không có danh mục nào được chọn, lấy tất cả công ty
                 setUseDirectAPIResults(false);
