@@ -3,8 +3,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Bookmark, MapPin } from "lucide-react";
+import { API_CONFIG } from "@/lib/config";
 
-const API_BASE = "http://18.142.226.139:8080/api/v1";
+const NEXT_PUBLIC_API_PROXY_TARGET = process.env.NEXT_PUBLIC_API_PROXY_TARGET;
+const NEXT_PUBLIC_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+const API_BASE = NEXT_PUBLIC_API_PROXY_TARGET + NEXT_PUBLIC_API_BASE_URL;
 
 function typeColorClass(type) {
     // Ghép màu badge theo work type (fallback nhã)
