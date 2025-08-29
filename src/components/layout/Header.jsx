@@ -424,7 +424,10 @@ export const Header = () => {
                                             >
                                                 <Avatar>
                                                     <AvatarImage
-                                                        src="/placeholder.svg?height=32&width=32"
+                                                        src={
+                                                            user?.avatar ||
+                                                            "/placeholder.svg?height=32&width=32"
+                                                        }
                                                         alt="User Avatar"
                                                     />
                                                     <AvatarFallback className="bg-white text-[#0a66c2] text-sm font-semibold">
