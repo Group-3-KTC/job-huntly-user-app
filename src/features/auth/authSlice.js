@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import authService from "@/services/authService";
+import { profileApi } from "@/services/profileService"; //  invalidate tags
+import { clearNormalizedProfile } from "@/features/profile/profileSlice";
 
 export const loginThunk = createAsyncThunk(
     "auth/login",
@@ -41,6 +43,24 @@ export const logoutThunk = createAsyncThunk(
         try {
             // BE sẽ xóa httpOnly cookie
             await authService.logout();
+
+            // Invalidate RTK Query caches để buộc refetch data mới sau login
+            dispatch(
+                profileApi.util.invalidateTags([
+                    "combinedProfile",
+                    "profile",
+                    "candidateSkills",
+                    "softSkills",
+                    "education",
+                    "workExperience",
+                    "certificates",
+                    "awards",
+                ])
+            );
+
+            // Clear normalizedProfile từ profileSlice
+            dispatch(clearNormalizedProfile());
+
             return true;
         } catch (err) {
             const data = err?.response?.data;

@@ -17,8 +17,8 @@ export const profileSectionConfigs = {
     personalDetail: {
         fields: [
             {
-                key: "name",
-                label: "Name",
+                key: "fullName",
+                label: "Full Name",
                 type: "text",
                 placeholder: "Your full name",
             },
@@ -34,12 +34,11 @@ export const profileSectionConfigs = {
                 type: "email",
                 placeholder: "Your email address",
             },
-            { key: "dateOfBirth", label: "Date of Birth", type: "date" },
             {
-                key: "address",
-                label: "Address",
-                type: "text",
-                placeholder: "Your current address",
+                key: "dateOfBirth",
+                label: "Date of Birth",
+                type: "date",
+                placeholder: "DD/MM/YYYY",
             },
             {
                 key: "phone",
@@ -50,8 +49,8 @@ export const profileSectionConfigs = {
             {
                 key: "gender",
                 label: "Gender",
-                type: "text",
-                placeholder: "Your gender",
+                type: "select",
+                options: ["Male", "Female", "Other"],
             },
             {
                 key: "personalLink",
@@ -61,13 +60,16 @@ export const profileSectionConfigs = {
             },
             {
                 key: "avatar",
-                label: "Avatar URL",
-                type: "url",
-                placeholder: "URL to your avatar image",
+                label: "Avatar",
+                type: "file",
+                accept: "image/*",
             },
         ],
         validationSchema: yup.object().shape({
-            name: yup.string().max(500, "Maximum 500 characters").nullable(),
+            fullName: yup
+                .string()
+                .max(500, "Maximum 500 characters")
+                .nullable(),
             title: yup.string().max(500, "Maximum 500 characters").nullable(),
             email: yup.string().email("Invalid email format").nullable(),
             dateOfBirth: yup
@@ -76,75 +78,124 @@ export const profileSectionConfigs = {
                 .min(new Date(1900, 0, 1), "Date must be after 1900")
                 .max(new Date(), "Date cannot be in the future")
                 .nullable(),
-            address: yup.string().max(500, "Maximum 500 characters").nullable(),
             phone: yup
                 .string()
                 .matches(
                     /^\d{10,11}$/,
                     "Phone must contain only numbers and be 10-11 digits"
                 )
-                .required("Phone is required"),
-            gender: yup.string().max(500, "Maximum 500 characters").nullable(),
-            personalLink: yup.string().url("Invalid URL").nullable(),
-            avatar: yup.string().url("Invalid URL").nullable(),
-        }),
-    },
-    language: {
-        fields: [
-            {
-                key: "name",
-                label: "Language",
-                type: "text",
-                placeholder: "e.g., English",
-            },
-            {
-                key: "level",
-                label: "Level",
-                type: "select",
-                options: ["beginner", "intermediate", "advanced", "native"],
-            },
-        ],
-        validationSchema: yup.object().shape({
-            name: yup.string().max(500, "Maximum 500 characters").nullable(),
-            level: yup
+                .nullable(),
+            gender: yup
                 .string()
-                .oneOf(
-                    ["beginner", "intermediate", "advanced", "native"],
-                    "Invalid level"
-                )
+                .oneOf(["Male", "Female", "Other"], "Invalid gender")
+                .nullable(),
+            personalLink: yup.string().url("Invalid URL").nullable(),
+            avatar: yup
+                .mixed()
+                .test("fileType", "Unsupported File Format", (value) => {
+                    if (
+                        !value ||
+                        (value.length !== undefined && value.length === 0)
+                    ) {
+                        return true;
+                    }
+                    if (typeof value === "string") {
+                        return true;
+                    }
+                    const file = value[0] || value;
+                    return ["image/jpeg", "image/png", "image/jpg"].includes(
+                        file.type
+                    );
+                })
                 .nullable(),
         }),
     },
-    skills: {
+    candidateSkills: {
         fields: [
             {
-                key: "name",
+                key: "skillName",
                 label: "Skill Name",
                 type: "text",
                 placeholder: "e.g., React",
             },
             {
-                key: "level",
+                key: "levelName",
                 label: "Level",
                 type: "select",
-                options: ["beginner", "intermediate", "advanced", "expert"],
+                options: [
+                    "Beginner",
+                    "Fresher",
+                    "Intermediate",
+                    "Advanced",
+                    "Expert",
+                ],
+            },
+            {
+                key: "categoryName",
+                label: "Category",
+                type: "text",
+                placeholder: "e.g., Software Development",
             },
         ],
         validationSchema: yup.object().shape({
-            name: yup.string().max(500, "Maximum 500 characters").nullable(),
-            level: yup
+            skillName: yup
+                .string()
+                .max(500, "Maximum 500 characters")
+                .nullable(),
+            levelName: yup
                 .string()
                 .oneOf(
-                    ["beginner", "intermediate", "advanced", "expert"],
+                    [
+                        "Beginner",
+                        "Fresher",
+                        "Intermediate",
+                        "Advanced",
+                        "Expert",
+                    ],
                     "Invalid level"
                 )
                 .nullable(),
+            categoryName: yup
+                .string()
+                .max(500, "Maximum 500 characters")
+                .nullable(),
+        }),
+    },
+    softSkills: {
+        fields: [
+            {
+                key: "name",
+                label: "Soft Skill",
+                type: "text",
+                placeholder: "Enter soft skill (e.g., Communication)",
+            },
+            {
+                key: "description",
+                label: "Description",
+                type: "textarea",
+                placeholder: "Describe your proficiency in this skill",
+            },
+            {
+                key: "level",
+                label: "Proficiency Level",
+                type: "select",
+                options: [
+                    { value: "High", label: "High" },
+                    { value: "Medium", label: "Medium" },
+                    { value: "Normal", label: "Normal" },
+                ],
+            },
+        ],
+        validationSchema: yup.object({
+            name: yup.string().required("Soft skill name is required"),
+            description: yup.string().required("Description is required"),
+            level: yup.string().required("Proficiency level is required"),
         }),
     },
     education: {
         fields: [
             {
-                key: "school",
+                key: "schoolName",
                 label: "School",
                 type: "text",
                 placeholder: "University/school name",
@@ -153,40 +204,47 @@ export const profileSectionConfigs = {
                 key: "degree",
                 label: "Degree",
                 type: "text",
-                placeholder: "e.g., Bachelor - Computer Science",
+                placeholder: "e.g., Bachelor",
             },
             {
-                key: "major",
+                key: "majors",
                 label: "Major",
                 type: "text",
                 placeholder: "Your major/field of study",
             },
             {
-                key: "date",
-                label: "Time",
-                type: "text",
-                placeholder: "e.g., 08/2021 - now",
+                key: "startDate",
+                label: "Start Date",
+                type: "date",
+                placeholder: "DD/MM/YYYY",
             },
             {
-                key: "note",
-                label: "Note",
-                type: "textarea",
-                placeholder: "Additional information",
+                key: "endDate",
+                label: "End Date",
+                type: "date",
+                placeholder: "DD/MM/YYYY or leave blank for ongoing",
+                required: false,
             },
         ],
         validationSchema: yup.object().shape({
-            school: yup.string().max(500, "Maximum 500 characters").nullable(),
-            degree: yup.string().max(500, "Maximum 500 characters").nullable(),
-            major: yup.string().max(500, "Maximum 500 characters").nullable(),
-            date: yup
+            schoolName: yup
                 .string()
-                .matches(
-                    /^(0[1-9]|1[0-2])\/\d{4}$|^[a-zA-Z]+ \d{4}$|^(0[1-9]|1[0-2])\/\d{4} - (0[1-9]|1[0-2])\/\d{4}$|^(0[1-9]|1[0-2])\/\d{4} - now$/,
-                    "Invalid date format (e.g., MM/YYYY or Month YYYY or MM/YYYY - now)"
-                )
                 .max(500, "Maximum 500 characters")
                 .nullable(),
-            note: yup.string().max(500, "Maximum 500 characters").nullable(),
+            degree: yup.string().max(500, "Maximum 500 characters").nullable(),
+            majors: yup.string().max(500, "Maximum 500 characters").nullable(),
+            startDate: yup
+                .date()
+                .typeError("Invalid start date format")
+                .min(new Date(1900, 0, 1), "Start date must be after 1900")
+                .max(new Date(), "Start date cannot be in the future")
+                .required("Start date is required"),
+            endDate: yup
+                .date()
+                .typeError("Invalid end date format")
+                .min(yup.ref("startDate"), "End date must be after start date")
+                .max(new Date(), "End date cannot be in the future")
+                .nullable(),
         }),
     },
     workExperience: {
@@ -198,16 +256,23 @@ export const profileSectionConfigs = {
                 placeholder: "Job title",
             },
             {
-                key: "company",
+                key: "companyName",
                 label: "Company",
                 type: "text",
                 placeholder: "Company name",
             },
             {
-                key: "time",
-                label: "Duration",
-                type: "text",
-                placeholder: "e.g., 02/2020 - now",
+                key: "startDate",
+                label: "Start Date",
+                type: "date",
+                placeholder: "DD/MM/YYYY",
+            },
+            {
+                key: "endDate",
+                label: "End Date",
+                type: "date",
+                placeholder: "DD/MM/YYYY or leave blank for ongoing",
+                required: false,
             },
             {
                 key: "description",
@@ -215,31 +280,38 @@ export const profileSectionConfigs = {
                 type: "textarea",
                 placeholder: "Job description",
             },
-            {
-                key: "project",
-                label: "Project",
-                type: "textarea",
-                placeholder: "Projects worked on",
-            },
         ],
         validationSchema: yup.object().shape({
             position: yup
                 .string()
                 .max(500, "Maximum 500 characters")
                 .nullable(),
-            company: yup.string().max(500, "Maximum 500 characters").nullable(),
-            time: yup.string().max(500, "Maximum 500 characters").nullable(),
+            companyName: yup
+                .string()
+                .max(500, "Maximum 500 characters")
+                .nullable(),
+            startDate: yup
+                .date()
+                .typeError("Invalid start date format")
+                .min(new Date(1900, 0, 1), "Start date must be after 1900")
+                .max(new Date(), "Start date cannot be in the future")
+                .required("Start date is required"),
+            endDate: yup
+                .date()
+                .typeError("Invalid end date format")
+                .min(yup.ref("startDate"), "End date must be after start date")
+                .max(new Date(), "End date cannot be in the future")
+                .nullable(),
             description: yup
                 .string()
                 .max(500, "Maximum 500 characters")
                 .nullable(),
-            project: yup.string().max(500, "Maximum 500 characters").nullable(),
         }),
     },
     certificates: {
         fields: [
             {
-                key: "name",
+                key: "cerName",
                 label: "Certificate Name",
                 type: "text",
                 placeholder: "Certificate title",
@@ -253,8 +325,8 @@ export const profileSectionConfigs = {
             {
                 key: "date",
                 label: "Issue Date",
-                type: "text",
-                placeholder: "e.g., 06/2023",
+                type: "date",
+                placeholder: "DD/MM/YYYY",
             },
             {
                 key: "description",
@@ -264,13 +336,57 @@ export const profileSectionConfigs = {
             },
         ],
         validationSchema: yup.object().shape({
-            name: yup.string().max(500, "Maximum 500 characters").nullable(),
+            cerName: yup.string().max(500, "Maximum 500 characters").nullable(),
             issuer: yup.string().max(500, "Maximum 500 characters").nullable(),
-            date: yup.string().max(500, "Maximum 500 characters").nullable(),
+            date: yup
+                .date()
+                .typeError("Invalid date format")
+                .min(new Date(1900, 0, 1), "Date must be after 1900")
+                .max(new Date(), "Date cannot be in the future")
+                .nullable(),
             description: yup
                 .string()
                 .max(500, "Maximum 500 characters")
                 .nullable(),
+        }),
+    },
+    awards: {
+        fields: [
+            {
+                key: "name",
+                label: "Award Name",
+                type: "text",
+                placeholder: "Enter award name (e.g., Best Developer Award)",
+            },
+            {
+                key: "issuer",
+                label: "Issuer",
+                type: "text",
+                placeholder: "Enter the organization that issued the award",
+            },
+            {
+                key: "date",
+                label: "Issue Date",
+                type: "date",
+                placeholder: "DD/MM/YYYY",
+            },
+            {
+                key: "description",
+                label: "Description",
+                type: "textarea",
+                placeholder: "Describe the award or achievement",
+            },
+        ],
+        validationSchema: yup.object({
+            name: yup.string().required("Award name is required"),
+            issuer: yup.string().max(500, "Maximum 500 characters").nullable(),
+            date: yup
+                .date()
+                .typeError("Invalid date format")
+                .min(new Date(1900, 0, 1), "Date must be after 1900")
+                .max(new Date(), "Date cannot be in the future")
+                .required("Date received is required"),
+            description: yup.string().required("Description is required"),
         }),
     },
 };

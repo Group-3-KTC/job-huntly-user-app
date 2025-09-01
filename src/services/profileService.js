@@ -1,113 +1,142 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { fakeFetchApi } from "./fakeApiProfile";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import api from "@/lib/api";
 
-// Tạo custom baseQuery function
-const fakeBaseQuery = async (args, api, extraOptions) => {
-    try {
-        console.log("fakeBaseQuery called with args:", args);
+const axiosBaseQuery =
+    () =>
+    async ({ url, method = "GET", body, headers }, { signal }) => {
+        try {
+            const config = {
+                url: `/candidate/profile${url}`,
+                method,
+                data: body,
+                signal,
+                headers: { ...headers },
+            };
 
-        // Xử lý args - có thể là string hoặc object
-        const url = typeof args === "string" ? args : args.url;
-        const method = typeof args === "string" ? "GET" : args.method || "GET";
-        const body = typeof args === "string" ? null : args.body;
+            // Nếu body là FormData → xoá Content-Type, để axios tự thêm boundary
+            if (body instanceof FormData) {
+                delete config.headers?.["Content-Type"];
+            } else {
+                // Nếu là object thường → gửi JSON
+                config.headers = {
+                    "Content-Type": "application/json",
+                    ...headers,
+                };
+            }
 
-        // Tạo full URL (thêm base URL nếu cần)
-        const fullUrl = `http://localhost:3000/${url}`;
-
-        console.log("Calling fakeFetchApi with:", { fullUrl, method, body });
-
-        const result = await fakeFetchApi(fullUrl, method, body);
-        const text = await result.text();
-        const responseData = text ? JSON.parse(text) : {};
-
-        console.log("fakeFetchApi response:", responseData);
-
-        // RTK Query expects { data } format
-        return { data: responseData.data };
-    } catch (error) {
-        console.error("fakeBaseQuery error:", error);
-        return {
-            error: {
-                status: "FETCH_ERROR",
-                error: error.message,
-            },
-        };
-    }
-};
+            const result = await api(config);
+            return { data: result.data };
+        } catch (axiosError) {
+            return {
+                error: {
+                    status: axiosError.response?.status,
+                    data: axiosError.response?.data || axiosError.message,
+                },
+            };
+        }
+    };
 
 export const profileApi = createApi({
     reducerPath: "profileApi",
-    baseQuery: fakeBaseQuery, // Sử dụng custom baseQuery
+    baseQuery: axiosBaseQuery(),
     tagTypes: [
-        "UserProfile",
-        "CandidateProfile",
-        "Skills",
-        "Education",
-        "WorkExperience",
-        "Language",
-        "Certificates",
+        "combinedProfile",
+        "personalDetail",
+        "profile",
+        "education",
+        "workExperience",
+        "awards",
+        "certificates",
+        "candidateSkills",
+        "softSkills",
     ],
     endpoints: (builder) => ({
-        getUserProfile: builder.query({
-            query: () => "profile", // Chỉ cần return endpoint path
-            providesTags: ["UserProfile"],
+        // ==========================
+        // 1. COMBINED (nguồn chính)
+        // ==========================
+        getCombinedProfile: builder.query({
+            query: () => ({ url: "/combined" }),
+            providesTags: ["combinedProfile"],
+            keepUnusedDataFor: 60,
         }),
-        getCandidateProfile: builder.query({
-            query: () => "candidateProfile",
-            providesTags: ["CandidateProfile"],
+
+        // ==========================
+        // 2. PROFILE (basic info)
+        // ==========================
+        getProfile: builder.query({
+            query: () => ({ url: "" }),
+            providesTags: ["Profile"],
         }),
-        updateCandidateProfile: builder.mutation({
-            query: (data) => ({
-                url: "candidateProfile",
-                method: "PUT",
-                body: data,
-            }),
-            invalidatesTags: ["UserProfile", "CandidateProfile"],
+        updateProfile: builder.mutation({
+            query: (body) => ({ url: "", method: "PUT", body }),
+            invalidatesTags: ["profile", "combinedProfile"],
         }),
+
+        // ==========================
+        // 3. SECTION CRUD (dynamic)
+        // ==========================
         getSectionItems: builder.query({
-            query: (section) => section,
-            providesTags: (result, error, section) => [{ type: section }],
+            query: (section) => ({ url: `/${section}` }),
+            providesTags: (result, error, section) => [section],
         }),
         addSectionItem: builder.mutation({
             query: ({ section, data }) => ({
-                url: section,
+                url: `/${section}`,
                 method: "POST",
                 body: data,
             }),
-            invalidatesTags: (result, error, { section }) => [
-                "UserProfile",
-                { type: section },
-            ],
+            invalidatesTags: (r, e, { section }) => [section],
         }),
+        // updateSectionItem: builder.mutation({
+        //     query: ({ section, itemId, data }) => ({
+        //         url: `/${section}/${itemId}`,
+        //         method: "PUT",
+        //         body: data,
+        //     }),
+        //     invalidatesTags: (r, e, { section }) => [section],
+        // }),
         updateSectionItem: builder.mutation({
-            query: ({ section, itemId, data }) => ({
-                url: `${section}/${itemId}`,
-                method: "PUT",
-                body: data,
-            }),
-            invalidatesTags: (result, error, { section }) => [
-                "UserProfile",
-                { type: section },
+            query: ({ section, itemId, data }) => {
+                // Những section thuộc về profile chính
+                const profileSections = ["personalDetail", "aboutMe"];
+
+                if (profileSections.includes(section)) {
+                    return {
+                        url: "",
+                        method: "PUT",
+                        body: data, // JSON hoặc FormData
+                    };
+                }
+
+                // Các section còn lại (education, workExperience,...)
+                return {
+                    url: `/${section}/${itemId}`,
+                    method: "PUT",
+                    body: data,
+                };
+            },
+            invalidatesTags: (r, e, { section }) => [
+                section,
+                "combinedProfile",
             ],
         }),
+
         deleteSectionItem: builder.mutation({
             query: ({ section, itemId }) => ({
-                url: `${section}/${itemId}`,
+                url: `/${section}/${itemId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, { section }) => [
-                "UserProfile",
-                { type: section },
-            ],
+            invalidatesTags: (r, e, { section }) => [section],
         }),
     }),
 });
 
 export const {
-    useGetUserProfileQuery,
-    useGetCandidateProfileQuery,
-    useUpdateCandidateProfileMutation,
+    useGetCombinedProfileQuery,
+    useGetProfileQuery,
+    useUpdateProfileMutation,
     useGetSectionItemsQuery,
+    useLazyGetSectionItemsQuery, // ✅ THÊM lazy hook
     useAddSectionItemMutation,
     useUpdateSectionItemMutation,
     useDeleteSectionItemMutation,

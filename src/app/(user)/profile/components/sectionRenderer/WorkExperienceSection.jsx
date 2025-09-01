@@ -15,22 +15,19 @@ export default function WorkExperienceSection({ data, onEdit, onDelete }) {
             {data.map((work, index) => (
                 <div
                     key={index}
-                    className="flex items-start justify-between py-3 my-2 border-blue-600 border-t-3"
+                    className="flex items-start justify-between py-3 my-2 border-t-3 border-blue-600"
                 >
                     <div className="flex-1">
                         <h4 className="text-lg font-medium text-gray-900 ">
                             {work.position}
                         </h4>
-                        <p className="text-sm text-gray-600">{work.company}</p>
-                        <p className="text-xs text-gray-500">{work.time}</p>
+                        <p className="text-sm text-gray-600">
+                            {work.companyName}
+                        </p>
+                        <p className="text-xs text-gray-500">{work.duration}</p>
                         {work.description && (
                             <p className="mt-1 text-sm text-gray-700">
                                 {work.description}
-                            </p>
-                        )}
-                        {work.project && (
-                            <p className="mt-1 text-sm text-gray-700">
-                                <strong>Project:</strong> {work.project}
                             </p>
                         )}
                     </div>

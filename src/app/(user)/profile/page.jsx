@@ -2,8 +2,9 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
-    useGetUserProfileQuery,
-    useUpdateCandidateProfileMutation,
+    useGetCombinedProfileQuery,
+    useLazyGetSectionItemsQuery,
+    useUpdateProfileMutation,
     useAddSectionItemMutation,
     useUpdateSectionItemMutation,
     useDeleteSectionItemMutation,
@@ -17,81 +18,93 @@ import {
     setNormalizedProfile,
     selectNormalizedProfile,
 } from "@/features/profile/profileSlice";
+import PersonalDetailModal from "../components/PersonalDetailModal";
+
+const sectionToEndpointMap = {
+    candidateSkills: "candidateSkills",
+    education: "education",
+    workExperience: "workExperience",
+    softSkills: "softSkills",
+    certificates: "certificates",
+    awards: "awards",
+};
 
 export default function ProfilePage() {
     const dispatch = useDispatch();
     const normalizedProfileData = useSelector(selectNormalizedProfile);
-    const {
-        data: profileData,
-        isLoading,
-        error,
-        isSuccess,
-    } = useGetUserProfileQuery();
-    console.log("useGetUserProfileQuery result:", {
-        profileData,
-        isLoading,
-        error,
-        isSuccess,
-    });
 
-    const [updateCandidateProfile] = useUpdateCandidateProfileMutation();
+    const {
+        data: candidateProfileData,
+        isLoading: isProfileLoading,
+        error: profileError,
+        isSuccess: profileSuccess,
+        refetch: refetchProfile,
+    } = useGetCombinedProfileQuery();
+
+    const [updateCandidateProfile] = useUpdateProfileMutation();
     const [addSectionItem] = useAddSectionItemMutation();
     const [updateSectionItem] = useUpdateSectionItemMutation();
     const [deleteSectionItem] = useDeleteSectionItemMutation();
-    const [isDeleting, setIsDeleting] = useState(false);
 
+    // ✅ FIX 1: Sử dụng lazy query thay vì query ngay
+    const [getSectionItems] = useLazyGetSectionItemsQuery();
+
+    const [isDeleting, setIsDeleting] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentSection, setCurrentSection] = useState(null);
     const [editingItemIndex, setEditingItemIndex] = useState(null);
 
-    useEffect(() => {
-        console.log("useEffect triggered:", {
-            profileData,
-            isLoading,
-            error,
-            isSuccess,
-        });
+    // Track các section đã được refetch sau CRUD
+    const [refreshedSections, setRefreshedSections] = useState(new Set());
 
-        if (isSuccess && profileData) {
-            console.log("Profile data from API:", profileData);
+    // Các section dạng array
+    const sectionIds = [
+        "education",
+        "candidateSkills",
+        "workExperience",
+        "softSkills",
+        "certificates",
+        "awards",
+    ];
+
+    // Load profile lần đầu từ combined query
+    useEffect(() => {
+        if (profileSuccess && candidateProfileData) {
             const normalizedData = {
                 personalDetail: {
-                    name: profileData?.name,
-                    title: profileData?.title,
-                    email: profileData?.email,
-                    dateOfBirth: profileData?.dateOfBirth,
-                    address: profileData?.address,
-                    phone: profileData?.phone,
-                    gender: profileData?.gender,
-                    personalLink: profileData?.personalLink,
-                    avatar: profileData?.avatar,
+                    id: candidateProfileData.id,
+                    fullName: candidateProfileData.fullName,
+                    title: candidateProfileData.title,
+                    email: candidateProfileData.email,
+                    dateOfBirth: candidateProfileData.dateOfBirth,
+                    phone: candidateProfileData.phone,
+                    gender: candidateProfileData.gender,
+                    personalLink: candidateProfileData.personalLink,
+                    avatar: candidateProfileData.avatar,
                 },
-                aboutMe: { text: profileData?.aboutMe || "" },
-                skills: profileData?.skills || [],
-                education: profileData?.education || [],
-                workExperience: profileData?.workExperience || [],
-                language: profileData?.language || [],
-                certificates: profileData?.certificates || [],
-                id: profileData?.id || "1",
+                aboutMe: { text: candidateProfileData.aboutMe || "" },
+                candidateSkills: candidateProfileData.candidateSkills || [],
+                education: candidateProfileData.education || [],
+                workExperience: candidateProfileData.workExperience || [],
+                softSkills: candidateProfileData.softSkills || [],
+                certificates: candidateProfileData.certificates || [],
+                awards: candidateProfileData.awards || [],
             };
-            console.log("Normalized data:", normalizedData);
             dispatch(setNormalizedProfile(normalizedData));
         }
-    }, [profileData, isSuccess, dispatch]);
+    }, [candidateProfileData, profileSuccess, dispatch]);
+
+    useEffect(() => {
+        if (!normalizedProfileData && !isProfileLoading && !profileError) {
+            refetchProfile();
+        }
+    }, [normalizedProfileData, isProfileLoading, profileError, refetchProfile]);
 
     const profileSectionData = getProfileSectionData(
         normalizedProfileData || {}
     );
 
-    const isArraySection = (sectionId) => {
-        return [
-            "skills",
-            "education",
-            "workExperience",
-            "language",
-            "certificates",
-        ].includes(sectionId);
-    };
+    const isArraySection = (sectionId) => sectionIds.includes(sectionId);
 
     const hasMeaningfulContent = (sectionId, sectionData) => {
         if (sectionId === "aboutMe") {
@@ -105,6 +118,27 @@ export default function ProfilePage() {
             : Object.keys(sectionData || {}).length > 0;
     };
 
+    // ✅ FIX 2: Hàm refetch section sau CRUD
+    const refreshSectionAfterCRUD = async (sectionId) => {
+        try {
+            const { data: freshData } = await getSectionItems(
+                sectionId
+            ).unwrap();
+
+            // Update normalized data với fresh data
+            if (freshData && normalizedProfileData) {
+                const updatedProfile = {
+                    ...normalizedProfileData,
+                    [sectionId]: freshData,
+                };
+                dispatch(setNormalizedProfile(updatedProfile));
+                setRefreshedSections((prev) => new Set(prev).add(sectionId));
+            }
+        } catch (error) {
+            console.error(`Failed to refresh ${sectionId}:`, error);
+        }
+    };
+
     const handleEdit = (section) => {
         setCurrentSection(section);
         setEditingItemIndex(null);
@@ -115,10 +149,6 @@ export default function ProfilePage() {
         setCurrentSection(section);
         setEditingItemIndex(null);
         setIsModalOpen(true);
-    };
-
-    const handleDelete = (section) => {
-        // Không hỗ trợ xóa section
     };
 
     const handleEditItem = (section, itemIndex) => {
@@ -137,24 +167,169 @@ export default function ProfilePage() {
             try {
                 const itemId =
                     normalizedProfileData[section.id]?.[itemIndex]?.id;
+
                 if (itemId) {
-                    console.log(`Deleting item ${itemId} from ${section.id}`);
                     await deleteSectionItem({
-                        section: section.id,
-                        profileId: "1",
-                        itemId,
-                    });
+                        section: sectionToEndpointMap[section.id] || section.id,
+                        itemId: itemId,
+                    }).unwrap();
+
+                    // ✅ FIX 3: Refresh section sau khi delete
+                    // await refreshSectionAfterCRUD(section.id);
+                    alert("Item deleted successfully");
+                    await refetchProfile();
                 } else {
-                    console.log("No itemId found for deletion");
+                    alert("Cannot delete: Item ID not found");
                 }
             } catch (error) {
                 console.error("Delete error:", error);
-                alert("Failed to delete item");
+                if (error.status === 401) {
+                    alert(
+                        "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+                    );
+                    window.location.href = "/login";
+                } else {
+                    alert(
+                        "Failed to delete item: " +
+                            (error.data?.message || error.message)
+                    );
+                }
             } finally {
                 setIsDeleting(false);
             }
         }
     };
+
+    // const handleSave = async (newData) => {
+    //     try {
+    //         if (
+    //             currentSection.id === "personalDetail" ||
+    //             currentSection.id === "aboutMe"
+    //         ) {
+    //             // PersonalDetail / AboutMe - update profile chính
+    //             const updatedData = {
+    //                 id: normalizedProfileData?.personalDetail?.id,
+    //                 fullName:
+    //                     currentSection.id === "personalDetail"
+    //                         ? newData.fullName ||
+    //                           normalizedProfileData?.personalDetail?.fullName
+    //                         : normalizedProfileData?.personalDetail?.fullName,
+    //                 title:
+    //                     currentSection.id === "personalDetail"
+    //                         ? newData.title ||
+    //                           normalizedProfileData?.personalDetail?.title
+    //                         : normalizedProfileData?.personalDetail?.title,
+    //                 email:
+    //                     currentSection.id === "personalDetail"
+    //                         ? newData.email ||
+    //                           normalizedProfileData?.personalDetail?.email
+    //                         : normalizedProfileData?.personalDetail?.email,
+    //                 dateOfBirth:
+    //                     currentSection.id === "personalDetail"
+    //                         ? newData.dateOfBirth ||
+    //                           normalizedProfileData?.personalDetail?.dateOfBirth
+    //                         : normalizedProfileData?.personalDetail
+    //                               ?.dateOfBirth,
+    //                 phone:
+    //                     currentSection.id === "personalDetail"
+    //                         ? newData.phone ||
+    //                           normalizedProfileData?.personalDetail?.phone
+    //                         : normalizedProfileData?.personalDetail?.phone,
+    //                 gender:
+    //                     currentSection.id === "personalDetail"
+    //                         ? newData.gender ||
+    //                           normalizedProfileData?.personalDetail?.gender
+    //                         : normalizedProfileData?.personalDetail?.gender,
+    //                 personalLink:
+    //                     currentSection.id === "personalDetail"
+    //                         ? newData.personalLink ||
+    //                           normalizedProfileData?.personalDetail
+    //                               ?.personalLink
+    //                         : normalizedProfileData?.personalDetail
+    //                               ?.personalLink,
+    //                 avatar:
+    //                     currentSection.id === "personalDetail"
+    //                         ? newData.avatarFile ||
+    //                           normalizedProfileData?.personalDetail?.avatar
+    //                         : normalizedProfileData?.personalDetail?.avatar,
+    //                 aboutMe:
+    //                     currentSection.id === "aboutMe"
+    //                         ? newData.text
+    //                         : normalizedProfileData?.aboutMe?.text,
+    //             };
+
+    //             let requestBody = updatedData;
+    //             if (newData.avatarFile && newData.avatarFile instanceof File) {
+    //                 requestBody = new FormData();
+    //                 for (const key in updatedData) {
+    //                     if (
+    //                         updatedData[key] !== undefined &&
+    //                         updatedData[key] !== null
+    //                     ) {
+    //                         requestBody.append(key, updatedData[key]);
+    //                     }
+    //                 }
+    //             }
+
+    //             await updateCandidateProfile(requestBody).unwrap();
+    //             alert("Profile updated successfully");
+
+    //             // Refetch combined profile để có data mới nhất
+    //             refetchProfile();
+    //         } else if (isArraySection(currentSection.id)) {
+    //             // Các section dạng array
+    //             if (editingItemIndex !== null) {
+    //                 // Update existing item
+    //                 const itemId =
+    //                     normalizedProfileData[currentSection.id]?.[
+    //                         editingItemIndex
+    //                     ]?.id;
+
+    //                 if (itemId) {
+    //                     await updateSectionItem({
+    //                         section:
+    //                             sectionToEndpointMap[currentSection.id] ||
+    //                             currentSection.id,
+    //                         itemId: itemId,
+    //                         data: newData,
+    //                     }).unwrap();
+    //                     alert("Item updated successfully");
+    //                 } else {
+    //                     alert("Cannot update: Item ID not found");
+    //                     return;
+    //                 }
+    //             } else {
+    //                 // Add new item
+    //                 await addSectionItem({
+    //                     section:
+    //                         sectionToEndpointMap[currentSection.id] ||
+    //                         currentSection.id,
+    //                     data: newData,
+    //                 }).unwrap();
+    //                 alert("Item added successfully");
+    //             }
+
+    //             // ✅ FIX 4: Refresh section sau CRUD
+    //             await refetchProfile();
+    //             // await refreshSectionAfterCRUD(currentSection.id);
+    //         }
+
+    //         setIsModalOpen(false);
+    //         setCurrentSection(null);
+    //         setEditingItemIndex(null);
+    //     } catch (error) {
+    //         console.error("Save error:", error);
+    //         if (error.status === 401) {
+    //             alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    //             window.location.href = "/login";
+    //         } else {
+    //             alert(
+    //                 "Failed to save data: " +
+    //                     (error.data?.message || error.message)
+    //             );
+    //         }
+    //     }
+    // };
 
     const handleSave = async (newData) => {
         try {
@@ -162,43 +337,124 @@ export default function ProfilePage() {
                 currentSection.id === "personalDetail" ||
                 currentSection.id === "aboutMe"
             ) {
+                // Chuẩn bị dữ liệu update profile
                 const updatedData = {
-                    ...profileData,
-                    ...(currentSection.id === "aboutMe"
-                        ? { aboutMe: newData.text }
-                        : newData),
+                    id: normalizedProfileData?.personalDetail?.id,
+                    fullName:
+                        currentSection.id === "personalDetail"
+                            ? newData.fullName ||
+                              normalizedProfileData?.personalDetail?.fullName
+                            : normalizedProfileData?.personalDetail?.fullName,
+                    title:
+                        currentSection.id === "personalDetail"
+                            ? newData.title ||
+                              normalizedProfileData?.personalDetail?.title
+                            : normalizedProfileData?.personalDetail?.title,
+                    email:
+                        currentSection.id === "personalDetail"
+                            ? newData.email ||
+                              normalizedProfileData?.personalDetail?.email
+                            : normalizedProfileData?.personalDetail?.email,
+                    dateOfBirth:
+                        currentSection.id === "personalDetail"
+                            ? newData.dateOfBirth ||
+                              normalizedProfileData?.personalDetail?.dateOfBirth
+                            : normalizedProfileData?.personalDetail
+                                  ?.dateOfBirth,
+                    phone:
+                        currentSection.id === "personalDetail"
+                            ? newData.phone ||
+                              normalizedProfileData?.personalDetail?.phone
+                            : normalizedProfileData?.personalDetail?.phone,
+                    gender:
+                        currentSection.id === "personalDetail"
+                            ? newData.gender ||
+                              normalizedProfileData?.personalDetail?.gender
+                            : normalizedProfileData?.personalDetail?.gender,
+                    personalLink:
+                        currentSection.id === "personalDetail"
+                            ? newData.personalLink ||
+                              normalizedProfileData?.personalDetail
+                                  ?.personalLink
+                            : normalizedProfileData?.personalDetail
+                                  ?.personalLink,
+                    aboutMe:
+                        currentSection.id === "aboutMe"
+                            ? newData.text
+                            : normalizedProfileData?.aboutMe?.text,
                 };
-                await updateCandidateProfile({ id: "1", ...updatedData });
+
+                // Luôn tạo FormData (kể cả khi không có avatar)
+                const formData = new FormData();
+                for (const key in updatedData) {
+                    if (
+                        updatedData[key] !== undefined &&
+                        updatedData[key] !== null
+                    ) {
+                        formData.append(key, updatedData[key]);
+                    }
+                }
+                if (newData.avatarFile && newData.avatarFile instanceof File) {
+                    formData.append("avatar", newData.avatarFile);
+                }
+
+                // Gọi API update
+                await updateCandidateProfile(formData).unwrap();
+                alert("Profile updated successfully");
+
+                await refetchProfile();
             } else if (isArraySection(currentSection.id)) {
+                // Các section dạng array
                 if (editingItemIndex !== null) {
                     const itemId =
                         normalizedProfileData[currentSection.id]?.[
                             editingItemIndex
                         ]?.id;
+
                     if (itemId) {
                         await updateSectionItem({
-                            section: currentSection.id,
-                            profileId: "1",
-                            itemId,
+                            section:
+                                sectionToEndpointMap[currentSection.id] ||
+                                currentSection.id,
+                            itemId: itemId,
                             data: newData,
-                        });
+                        }).unwrap();
+                        alert("Item updated successfully");
+                    } else {
+                        alert("Cannot update: Item ID not found");
+                        return;
                     }
                 } else {
                     await addSectionItem({
-                        section: currentSection.id,
-                        profileId: "1",
+                        section:
+                            sectionToEndpointMap[currentSection.id] ||
+                            currentSection.id,
                         data: newData,
-                    });
+                    }).unwrap();
+                    alert("Item added successfully");
                 }
+
+                await refetchProfile();
             }
+
             setIsModalOpen(false);
             setCurrentSection(null);
             setEditingItemIndex(null);
         } catch (error) {
             console.error("Save error:", error);
-            alert("Failed to save data");
+            if (error.status === 401) {
+                alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+                window.location.href = "/login";
+            } else {
+                alert(
+                    "Failed to save data: " +
+                        (error.data?.message || error.message)
+                );
+            }
         }
     };
+
+
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
@@ -206,24 +462,26 @@ export default function ProfilePage() {
         setEditingItemIndex(null);
     };
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
+    if (isProfileLoading) return <div>Loading...</div>;
 
-    if (error) {
-        console.error("API error details:", JSON.stringify(error, null, 2));
+    if (profileError) {
+        if (profileError.status === 401) {
+            alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+            window.location.href = "/login";
+            return null;
+        }
         return (
             <div>
                 Error:{" "}
-                {error?.data?.message ||
-                    error?.error ||
-                    error?.message ||
+                {profileError?.data?.message ||
+                    profileError?.error ||
+                    profileError?.message ||
                     "Unable to load data"}
             </div>
         );
     }
 
-    if (!isLoading && !error && !normalizedProfileData) {
+    if (!isProfileLoading && !profileError && !normalizedProfileData) {
         return <div>No profile data available</div>;
     }
 
@@ -237,10 +495,6 @@ export default function ProfilePage() {
                             (isArraySection(section.id) ? [] : {});
                         const hasContent = hasMeaningfulContent(
                             section.id,
-                            sectionData
-                        );
-                        console.log(
-                            `Section: ${section.id}, hasContent: ${hasContent}, data:`,
                             sectionData
                         );
 
@@ -257,7 +511,7 @@ export default function ProfilePage() {
                                                       section,
                                                       itemIndex
                                                   )
-                                            : undefined
+                                            : () => handleEdit(section)
                                     }
                                     onDelete={
                                         isArraySection(section.id)
@@ -269,39 +523,6 @@ export default function ProfilePage() {
                                             : undefined
                                     }
                                 />
-                            );
-                        } else if (
-                            isArraySection(section.id) &&
-                            sectionData.length > 0
-                        ) {
-                            content = (
-                                <ul>
-                                    {sectionData.map((item, index) => (
-                                        <li
-                                            key={index}
-                                            className="text-sm text-gray-700"
-                                        >
-                                            <strong>
-                                                {item.name || "Unnamed"}
-                                            </strong>{" "}
-                                            ({item.level || "N/A"})
-                                            <button
-                                                onClick={() =>
-                                                    handleDeleteItem(
-                                                        section,
-                                                        index
-                                                    )
-                                                }
-                                                className="ml-2 text-red-500"
-                                                disabled={isDeleting}
-                                            >
-                                                {isDeleting
-                                                    ? "Deleting..."
-                                                    : "Delete"}
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
                             );
                         }
 
@@ -325,11 +546,6 @@ export default function ProfilePage() {
                                         ? () => handleAdd(section)
                                         : undefined
                                 }
-                                onDelete={
-                                    section.isCustom
-                                        ? () => handleDelete(section)
-                                        : undefined
-                                }
                             />
                         );
                     })}
@@ -338,28 +554,45 @@ export default function ProfilePage() {
             <div className="w-full lg:max-w-[25%] shrink-0 sticky top-24 h-fit max-h-[calc(100vh-2rem)] z-2">
                 <ProfileSidebarRight />
             </div>
-            {isModalOpen && currentSection && (
-                <GenericModal
-                    sectionId={currentSection.id}
-                    sectionTitle={currentSection.title}
-                    config={profileSectionConfigs[currentSection.id]}
-                    validationSchema={
-                        profileSectionConfigs[currentSection.id]
-                            .validationSchema
-                    }
-                    initialData={
-                        editingItemIndex !== null
-                            ? normalizedProfileData?.[currentSection.id]?.[
-                                  editingItemIndex
-                              ] || {}
-                            : isArraySection(currentSection.id)
-                            ? {}
-                            : normalizedProfileData?.[currentSection.id] || {}
-                    }
-                    onSave={handleSave}
-                    onClose={handleCloseModal}
-                />
-            )}
+            {isModalOpen &&
+                currentSection &&
+                (currentSection.id === "personalDetail" ? (
+                    <PersonalDetailModal
+                        sectionTitle={currentSection.title}
+                        config={profileSectionConfigs[currentSection.id]}
+                        validationSchema={
+                            profileSectionConfigs[currentSection.id]
+                                .validationSchema
+                        }
+                        initialData={
+                            normalizedProfileData?.personalDetail || {}
+                        }
+                        onSave={handleSave}
+                        onClose={handleCloseModal}
+                    />
+                ) : (
+                    <GenericModal
+                        sectionId={currentSection.id}
+                        sectionTitle={currentSection.title}
+                        config={profileSectionConfigs[currentSection.id]}
+                        validationSchema={
+                            profileSectionConfigs[currentSection.id]
+                                .validationSchema
+                        }
+                        initialData={
+                            editingItemIndex !== null
+                                ? normalizedProfileData?.[currentSection.id]?.[
+                                      editingItemIndex
+                                  ] || {}
+                                : isArraySection(currentSection.id)
+                                ? {}
+                                : normalizedProfileData?.[currentSection.id] ||
+                                  {}
+                        }
+                        onSave={handleSave}
+                        onClose={handleCloseModal}
+                    />
+                ))}
         </div>
     );
 }

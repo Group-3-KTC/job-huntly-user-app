@@ -18,6 +18,8 @@ import LoadingScreen from "../ui/loadingScreen";
 import { loginThunk } from "@/features/auth/authSlice";
 import { selectAuthLoading } from "@/features/auth/authSelectors";
 import GoogleSignIn from "@/components/auth/GoogleSignIn";
+import { clearNormalizedProfile } from "@/features/profile/profileSlice";
+import { profileApi } from "@/services/profileService"; 
 
 const CandidateLoginForm = ({ role }) => {
     const dispatch = useDispatch();
@@ -43,6 +45,21 @@ const CandidateLoginForm = ({ role }) => {
 
         try {
             const result = await dispatch(loginThunk(payload)).unwrap();
+
+            dispatch(clearNormalizedProfile());
+            dispatch(
+                profileApi.util.invalidateTags([
+                    "combinedProfile",
+                    "profile",
+                    "candidateSkills",
+                    "softSkills",
+                    "education",
+                    "workExperience",
+                    "certificates",
+                    "awards",
+                ])
+            );
+
             const roleRes = result?.user?.role;
 
             const okMsg = result?.message || "Đăng nhập thành công!";
