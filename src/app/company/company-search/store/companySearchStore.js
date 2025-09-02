@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { COMPANY_API } from "@/constants/apiConstants";
+import { COMPANY_API } from "@/constants/apiCompanyConstants";
 
 const useCompanySearchStore = create((set, get) => ({
     allCompanies: [],      // <— thêm
@@ -58,7 +58,20 @@ const useCompanySearchStore = create((set, get) => ({
     searchCompanies: async (params) => {
         set({ isLoading: true });
         try {
-            const response = await fetch(COMPANY_API.SEARCH_COMPANIES(params));
+            // Sử dụng hàm SEARCH_COMPANIES đã định nghĩa sẵn
+            const apiUrl = COMPANY_API.SEARCH_COMPANIES(params);
+            console.log('API request URL:', apiUrl);
+            
+            const response = await fetch(apiUrl);
+
+            if (response.status === 204) {
+                set({
+                    companies: [],
+                    isLoading: false,
+                    error: null
+                });
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error("Không thể tìm kiếm công ty");
@@ -71,7 +84,8 @@ const useCompanySearchStore = create((set, get) => ({
                 isLoading: false,
             });
         } catch (err) {
-            set({ error: err.message, isLoading: false });
+            console.error("Search error:", err);
+            set({ error: err.message, isLoading: false, companies: [] });
         }
     },
 

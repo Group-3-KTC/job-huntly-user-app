@@ -18,6 +18,10 @@ import {
     Heart,
     Settings,
     LogOut,
+    Menu,
+    X,
+    ChevronLeft,
+    ChevronRight,
 } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
@@ -47,6 +51,8 @@ import { logoutThunk } from "@/features/auth/authSlice";
 export const Header = () => {
     const dispatch = useDispatch();
     const [activeDropdown, setActiveDropdown] = useState(null);
+    const [mobileOpen, setMobileOpen] = useState(false);   // mở/đóng overlay
+    const [mobilePage, setMobilePage] = useState(null);    // null = trang gốc; 'jobs' | 'cv' | ...
     const [notificationCount, setNotificationCount] = useState(3);
     const router = useRouter();
     const pathname = usePathname();
@@ -91,8 +97,11 @@ export const Header = () => {
         }
     };
 
+    const toggleMobile = () => setMobileOpen((p) => !p);
+
     const jobsContent = (
-        <div className="flex gap-8">
+        // mobile: dọc 1 khối; md+: 2 khối ngang
+        <div className="flex flex-col gap-4 md:flex-row md:gap-8">
             <div className="flex-1">
                 <div className="mb-6">
                     <div className="mb-3 text-xs font-medium tracking-wide text-gray-500 uppercase">
@@ -145,7 +154,8 @@ export const Header = () => {
                 <div className="mb-3 text-xs font-medium tracking-wide text-gray-500 uppercase">
                     VIỆC LÀM THEO VỊ TRÍ
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                {/* mobile: 1 cột; md+: 2 cột */}
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                     {[
                         "Việc làm IT",
                         "Việc làm Marketing",
@@ -233,7 +243,8 @@ export const Header = () => {
             <div className="mb-4 text-xs font-medium tracking-wide text-gray-500 uppercase">
                 Bài viết nổi bật
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            {/* mobile: 1 cột; md+: 2 cột */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mb-4">
                 <div className="flex gap-3">
                     <div className="flex-shrink-0 w-16 h-16 bg-gray-200 rounded"></div>
                     <div>
@@ -316,9 +327,25 @@ export const Header = () => {
             .toUpperCase();
     };
 
+    const navItems = [
+        { key: "jobs", label: "Việc làm" },
+        { key: "cv", label: "Tạo CV" },
+        { key: "tools", label: "Công cụ" },
+        { key: "guide", label: "Cẩm nang nghề nghiệp" },
+        { key: "premium", label: "JobHuntly" },
+    ];
+
     return (
-        <header className="h-18 bg-[#0a66c2] relative ">
+        <header className="h-18 bg-[#0a66c2] relative">
             <div className="flex items-center h-full px-4">
+                {/* BTN menu mobile */}
+                <button
+                    className="flex items-center justify-center p-2 mr-2 text-white rounded lg:hidden hover:bg-white/20"
+                    onClick={toggleMobile}
+                >
+                    {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+
                 {/* Logo */}
                 <Link href="/">
                     <div className="flex-shrink-0">
@@ -332,18 +359,12 @@ export const Header = () => {
                     </div>
                 </Link>
 
-                {/* Navigation */}
-                <nav className="flex justify-between w-full ml-8">
+                {/* Navigation desktop */}
+                <nav className="hidden lg:flex justify-between w-full ml-8">
                     {/* Left Navigation */}
                     <div className="relative" onMouseLeave={handleMouseLeave}>
                         <ul className="flex items-center space-x-1">
-                            {[
-                                { key: "jobs", label: "Việc làm" },
-                                { key: "cv", label: "Tạo CV" },
-                                { key: "tools", label: "Công cụ" },
-                                { key: "guide", label: "Cẩm nang nghề nghiệp" },
-                                { key: "premium", label: "JobHuntly" },
-                            ].map((item) => (
+                            {navItems.map((item) => (
                                 <li key={item.key}>
                                     <div
                                         className="group flex items-center gap-1 text-white font-medium px-3 py-2 rounded-lg cursor-pointer hover:bg-[#d0e5f9] hover:text-[#0a66c2] transition-colors"
@@ -424,7 +445,10 @@ export const Header = () => {
                                             >
                                                 <Avatar>
                                                     <AvatarImage
-                                                        src="/placeholder.svg?height=32&width=32"
+                                                        src={
+                                                            user?.avatar ||
+                                                            "/placeholder.svg?height=32&width=32"
+                                                        }
                                                         alt="User Avatar"
                                                     />
                                                     <AvatarFallback className="bg-white text-[#0a66c2] text-sm font-semibold">
@@ -516,6 +540,89 @@ export const Header = () => {
                     </ul>
                 </nav>
             </div>
+
+            {/* OVERLAY MOBILE */}
+            {mobileOpen && (
+                <div className="lg:hidden fixed inset-0 bg-white z-50 flex flex-col">
+                    {/* BAR TRÊN CÙNG */}
+                    <div className="flex items-center justify-between h-14 px-4 border-b">
+                        {/* Back hoặc Logo */}
+                        {mobilePage ? (
+                            <button onClick={() => setMobilePage(null)} className="-ml-2 p-2">
+                                <ChevronLeft className="w-5 h-5" />
+                            </button>
+                        ) : (
+                            <Link href="/" onClick={() => setMobileOpen(false)}>
+                                <Image src={logo} alt="logo" height={32} className="h-8 w-auto" />
+                            </Link>
+                        )}
+
+                        <span className="font-semibold text-base truncate">
+                            {navItems.find((i) => i.key === mobilePage)?.label || ""}
+                        </span>
+
+                        <button onClick={() => setMobileOpen(false)} className="-mr-2 p-2">
+                            <X className="w-6 h-6" />
+                        </button>
+                    </div>
+
+                    {/* NỘI DUNG CUỘN */}
+                    <div className="flex-1 overflow-y-auto">
+                        {/* TRANG GỐC: danh mục */}
+                        {!mobilePage &&
+                            <ul className="divide-y">
+                                {navItems.map((item) => (
+                                    <li key={item.key}>
+                                        <button
+                                            className="w-full flex items-center justify-between px-4 py-4 text-[17px] font-medium"
+                                            onClick={() => setMobilePage(item.key)}
+                                        >
+                                            <span>{item.label}</span>
+                                            <ChevronRight className="w-5 h-5 text-gray-500" />
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        }
+
+                        {/* TRANG CON: render trực tiếp dropdownContent */}
+                        {mobilePage &&
+                            <div className="p-4 space-y-4">
+                                {dropdownContent[mobilePage]}
+                            </div>
+                        }
+                    </div>
+
+                    {/* ACTION ĐĂNG NHẬP / ĐĂNG KÝ / ĐĂNG XUẤT – chỉ ở trang gốc */}
+                    {!mobilePage && (
+                        <div className="border-t p-4 space-y-2">
+                            {!isLoggedIn ? (
+                                <>
+                                    <button
+                                        onClick={handleRegisterClick}
+                                        className="block w-full py-3 text-center font-semibold text-[#0a66c2] border border-[#0a66c2] rounded"
+                                    >
+                                        Đăng ký
+                                    </button>
+                                    <button
+                                        onClick={handleLoginClick}
+                                        className="block w-full py-3 text-center font-semibold text-white bg-[#0a66c2] rounded"
+                                    >
+                                        Đăng nhập
+                                    </button>
+                                </>
+                            ) : (
+                                <button
+                                    onClick={handleLogout}
+                                    className="block w-full py-3 text-center font-semibold text-red-600 border border-red-600 rounded"
+                                >
+                                    Đăng xuất
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
         </header>
     );
 };

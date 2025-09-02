@@ -13,7 +13,6 @@ const SearchPageContent = () => {
   const { fetchCompanies, fetchIndustries } = useCompanySearchStore();
   
   useEffect(() => {
-    // Tải trước dữ liệu cho trang tìm kiếm
     fetchCompanies();
     fetchIndustries();
   }, [fetchCompanies, fetchIndustries]);

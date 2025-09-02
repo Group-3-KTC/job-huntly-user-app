@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { COMPANY_API, JOB_API } from "@/constants/apiConstants";
+import { COMPANY_API, JOB_API } from "@/constants/apiCompanyConstants";
 
 const useCompanyDetailStore = create((set, get) => ({
     company: null,
