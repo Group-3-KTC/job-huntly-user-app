@@ -17,34 +17,38 @@ export default function GenericModal({
 }) {
     const [hasChanges, setHasChanges] = useState(false);
     const [isOngoing, setIsOngoing] = useState(false);
-
-    // Transform initial data for date fields
     const transformInitialData = () => {
         const transformed = { ...initialData };
         config.fields.forEach((field) => {
             if (field.type === "date" && transformed[field.key]) {
-                // Try parsing with "yyyy-MM-dd" (API format)
-                let parsed = parse(transformed[field.key], "yyyy-MM-dd", new Date());
+                let parsed = parse(
+                    transformed[field.key],
+                    "yyyy-MM-dd",
+                    new Date()
+                );
                 if (!isValid(parsed)) {
-                    // Fallback to "dd/MM/yyyy"
-                    parsed = parse(transformed[field.key], "dd/MM/yyyy", new Date());
+                    parsed = parse(
+                        transformed[field.key],
+                        "dd/MM/yyyy",
+                        new Date()
+                    );
                 }
                 transformed[field.key] = isValid(parsed) ? parsed : null;
             }
         });
-        // Handle duration split into startDate and endDate
         if (
+            (sectionId === "education" || sectionId === "workExperience") &&
             transformed.duration &&
             !transformed.startDate &&
             !transformed.endDate
         ) {
-            const [start, end] = transformed.duration.split(" - ");
-            const startParsed = parse(start, "yyyy", new Date());
+            const [startStr, endStr] = transformed.duration.split(" - ");
+            const startParsed = parse(startStr, "MM/yyyy", new Date());
             transformed.startDate = isValid(startParsed) ? startParsed : null;
-            if (end && end !== "now") {
-                const endParsed = parse(end, "yyyy", new Date());
+            if (endStr && endStr.toUpperCase() !== "NOW") {
+                const endParsed = parse(endStr, "MM/yyyy", new Date());
                 transformed.endDate = isValid(endParsed) ? endParsed : null;
-            } else if (end === "now") {
+            } else if (endStr.toUpperCase() === "NOW") {
                 transformed.endDate = null;
             }
         }
@@ -53,7 +57,7 @@ export default function GenericModal({
 
     const methods = useForm({
         resolver: yupResolver(validationSchema),
-        defaultValues: transformInitialData(),
+        defaultValues: { ...transformInitialData(), isOngoing: false },
         mode: "onBlur",
     });
 
@@ -62,32 +66,40 @@ export default function GenericModal({
         handleSubmit,
         watch,
         setValue,
+        setError,
+        clearErrors,
         formState: { errors },
     } = methods;
 
     const watchedValues = watch();
 
-    // Set isOngoing based on initial data
     useEffect(() => {
-        if (initialData.duration && initialData.duration.endsWith(" - now")) {
+        if (
+            (sectionId === "education" || sectionId === "workExperience") &&
+            initialData.duration &&
+            initialData.duration.toUpperCase().endsWith(" - NOW")
+        ) {
             setIsOngoing(true);
+            setValue("isOngoing", true);
             setValue("endDate", null);
         } else {
             setIsOngoing(false);
+            setValue("isOngoing", false);
         }
-    }, [initialData, setValue]);
+    }, [initialData, setValue, sectionId]);
 
-    // Detect changes
     useEffect(() => {
         const hasFormChanges = Object.keys(watchedValues).some((key) => {
             const currentValue = watchedValues[key];
             const initialValue = initialData[key];
 
-            // Check if the field is a date field
             const field = config.fields.find((f) => f.key === key);
             if (field?.type === "date" && currentValue) {
                 const formattedCurrent = currentValue
-                    ? format(currentValue, "dd/MM/yyyy")
+                    ? sectionId === "education" ||
+                      sectionId === "workExperience"
+                        ? format(currentValue, "MM/yyyy")
+                        : format(currentValue, "dd/MM/yyyy")
                     : "";
                 const formattedInitial = initialValue || "";
                 return formattedCurrent !== formattedInitial;
@@ -106,12 +118,29 @@ export default function GenericModal({
         });
 
         setHasChanges(hasFormChanges);
-    }, [watchedValues, initialData, config.fields]);
+    }, [watchedValues, initialData, config.fields, sectionId]);
+
+    const handleMonthChange = (key, month) => {
+        const year = watchedValues[key]
+            ? format(watchedValues[key], "yyyy")
+            : new Date().getFullYear();
+        const newDate = parse(`${month}/01/${year}`, "MM/dd/yyyy", new Date());
+        setValue(key, newDate, { shouldValidate: true });
+    };
+
+    const handleYearChange = (key, year) => {
+        const month = watchedValues[key]
+            ? format(watchedValues[key], "MM")
+            : "01";
+        const newDate = parse(`${month}/01/${year}`, "MM/dd/yyyy", new Date());
+        setValue(key, newDate, { shouldValidate: true });
+    };
 
     const onSubmit = (data) => {
         const processedData = { ...data };
 
-        // Convert date fields to YYYY-MM-DD for backend
+        delete processedData.isOngoing;
+
         config.fields.forEach((field) => {
             if (
                 field.type === "file" &&
@@ -121,23 +150,34 @@ export default function GenericModal({
                 processedData[`${field.key}File`] = data[field.key][0];
                 delete processedData[field.key];
             } else if (field.type === "date" && data[field.key]) {
-                processedData[field.key] = format(
-                    data[field.key],
-                    "yyyy-MM-dd"
-                );
+                processedData[field.key] =
+                    sectionId === "education" || sectionId === "workExperience"
+                        ? format(data[field.key], "MM/yyyy")
+                        : format(data[field.key], "yyyy-MM-dd");
             }
         });
 
-        // Combine startDate and endDate into duration string
-        if (data.startDate) {
-            processedData.duration = format(data.startDate, "yyyy");
+        // Combine startDate and endDate into duration string for education/workExperience
+        if (
+            (sectionId === "education" || sectionId === "workExperience") &&
+            data.startDate
+        ) {
+            processedData.duration = format(data.startDate, "MM/yyyy");
             if (data.endDate && !isOngoing) {
-                processedData.duration += ` - ${format(data.endDate, "yyyy")}`;
+                processedData.duration += ` - ${format(
+                    data.endDate,
+                    "MM/yyyy"
+                )}`;
             } else if (isOngoing) {
-                processedData.duration += " - now";
+                processedData.duration += " - NOW";
             }
             delete processedData.startDate;
             delete processedData.endDate;
+        } else if (
+            sectionId === "education" ||
+            sectionId === "workExperience"
+        ) {
+            processedData.duration = "";
         }
 
         onSave(processedData);
@@ -146,12 +186,29 @@ export default function GenericModal({
 
     if (!config) return null;
 
-    const isDurationSection = sectionId === "education" || sectionId === "workExperience";
+    const isDurationSection =
+        sectionId === "education" || sectionId === "workExperience";
+    const currentYear = new Date().getFullYear(); 
+    const months = Array.from({ length: 12 }, (_, i) =>
+        String(i + 1).padStart(2, "0")
+    );
+    const years = Array.from(
+        { length: currentYear - 1900 + 1 },
+        (_, i) => 1900 + i
+    );
+
+    const getMonthValue = (date) => (date ? format(date, "MM") : "");
+    const getYearValue = (date) => (date ? format(date, "yyyy") : "");
+
+    const ongoingLabel =
+        sectionId === "workExperience"
+            ? "I am currently working here"
+            : "I am currently studying here";
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm">
             <div className="w-full max-w-2xl p-4 bg-white rounded-lg shadow-lg">
-                {/* Header */}
+                
                 <div className="flex items-center justify-between pb-3 mb-4 border-b">
                     <h2 className="text-xl font-semibold text-gray-800">
                         {Object.keys(initialData).length > 0 ? "Edit" : "Add"}{" "}
@@ -165,7 +222,6 @@ export default function GenericModal({
                     </button>
                 </div>
 
-                {/* Form */}
                 <FormProvider {...methods}>
                     <form
                         onSubmit={handleSubmit(onSubmit)}
@@ -177,8 +233,13 @@ export default function GenericModal({
                                 className="flex flex-col gap-1"
                             >
                                 <label className="text-sm font-medium text-gray-700 capitalize">
-                                    {isDurationSection && field.key === "startDate" ? "From" :
-                                     isDurationSection && field.key === "endDate" ? "To" : field.label}
+                                    {isDurationSection &&
+                                    field.key === "startDate"
+                                        ? "From"
+                                        : isDurationSection &&
+                                          field.key === "endDate"
+                                        ? "To"
+                                        : field.label}
                                     {field.required && (
                                         <span className="ml-1 text-red-500">
                                             *
@@ -219,49 +280,161 @@ export default function GenericModal({
                                         ))}
                                     </select>
                                 ) : field.type === "date" ? (
-                                    <div className={
-                                        isDurationSection && (field.key === "startDate" || field.key === "endDate")
-                                            ? "flex items-start gap-4"
-                                            : ""
-                                    }>
-                                        <DatePicker
-                                            value={
-                                                watchedValues[field.key] || null
-                                            }
-                                            onChange={(date) =>
-                                                setValue(field.key, date)
-                                            }
-                                            placeholder={
-                                                field.placeholder ||
-                                                "DD/MM/YYYY"
-                                            }
-                                            name={field.key}
-                                            error={errors[field.key]?.message}
-                                            disabled={field.key === "endDate" && isOngoing}
-                                        />
-                                        {field.key === "endDate" && (
-                                            <label className="flex items-center gap-2 mt-2">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isOngoing}
-                                                    onChange={(e) => {
-                                                        setIsOngoing(
-                                                            e.target.checked
-                                                        );
-                                                        if (e.target.checked) {
-                                                            setValue(
-                                                                "endDate",
-                                                                null
-                                                            );
-                                                        }
-                                                    }}
-                                                    className="w-4 h-4"
-                                                />
-                                                <span className="text-sm text-gray-700">
-                                                    Ongoing
-                                                </span>
-                                            </label>
+                                    <div
+                                        className={
+                                            isDurationSection
+                                                ? "flex items-start gap-4"
+                                                : ""
+                                        }
+                                    >
+                                        {isDurationSection ? (
+                                            <div className="flex gap-2">
+                                                <select
+                                                    value={getMonthValue(
+                                                        watchedValues[field.key]
+                                                    )}
+                                                    onChange={(e) =>
+                                                        handleMonthChange(
+                                                            field.key,
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        field.key ===
+                                                            "endDate" &&
+                                                        isOngoing
+                                                    }
+                                                    className={`p-2 border rounded-md ${
+                                                        errors[field.key] ||
+                                                        (field.key ===
+                                                            "endDate" &&
+                                                            errors.isOngoing)
+                                                            ? "border-red-500 focus:border-red-500"
+                                                            : "border-gray-300 focus:border-blue-500"
+                                                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                                                        field.key ===
+                                                            "endDate" &&
+                                                        isOngoing
+                                                            ? "bg-gray-100"
+                                                            : ""
+                                                    }`}
+                                                >
+                                                    <option value="" disabled>
+                                                        Month
+                                                    </option>
+                                                    {months.map((m) => (
+                                                        <option
+                                                            key={m}
+                                                            value={m}
+                                                        >
+                                                            {m}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <select
+                                                    value={getYearValue(
+                                                        watchedValues[field.key]
+                                                    )}
+                                                    onChange={(e) =>
+                                                        handleYearChange(
+                                                            field.key,
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        field.key ===
+                                                            "endDate" &&
+                                                        isOngoing
+                                                    }
+                                                    className={`p-2 border rounded-md ${
+                                                        errors[field.key] ||
+                                                        (field.key ===
+                                                            "endDate" &&
+                                                            errors.isOngoing)
+                                                            ? "border-red-500 focus:border-red-500"
+                                                            : "border-gray-300 focus:border-blue-500"
+                                                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                                                        field.key ===
+                                                            "endDate" &&
+                                                        isOngoing
+                                                            ? "bg-gray-100"
+                                                            : ""
+                                                    }`}
+                                                >
+                                                    <option value="" disabled>
+                                                        Year
+                                                    </option>
+                                                    {years.map((y) => (
+                                                        <option
+                                                            key={y}
+                                                            value={y}
+                                                        >
+                                                            {y}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        ) : (
+                                            <DatePicker
+                                                value={
+                                                    watchedValues[field.key] ||
+                                                    null
+                                                }
+                                                onChange={(date) =>
+                                                    setValue(field.key, date)
+                                                }
+                                                placeholder={
+                                                    field.placeholder ||
+                                                    "DD/MM/YYYY"
+                                                }
+                                                name={field.key}
+                                                error={
+                                                    errors[field.key]?.message
+                                                }
+                                            />
                                         )}
+                                        {isDurationSection &&
+                                            field.key === "endDate" && (
+                                                <label className="flex items-center gap-2 mt-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isOngoing}
+                                                        {...register(
+                                                            "isOngoing"
+                                                        )}
+                                                        onChange={(e) => {
+                                                            const checked =
+                                                                e.target
+                                                                    .checked;
+                                                            setIsOngoing(
+                                                                checked
+                                                            );
+                                                            setValue(
+                                                                "isOngoing",
+                                                                checked
+                                                            );
+                                                            if (checked) {
+                                                                setValue(
+                                                                    "endDate",
+                                                                    null
+                                                                );
+                                                                clearErrors(
+                                                                    "endDate"
+                                                                );
+                                                            } else {
+                                                                setValue(
+                                                                    "endDate",
+                                                                    watchedValues.endDate
+                                                                );
+                                                            }
+                                                        }}
+                                                        className="w-4 h-4"
+                                                    />
+                                                    <span className="text-sm text-gray-700">
+                                                        {ongoingLabel}
+                                                    </span>
+                                                </label>
+                                            )}
                                     </div>
                                 ) : (
                                     <input
@@ -281,12 +454,16 @@ export default function GenericModal({
                                         {errors[field.key].message}
                                     </p>
                                 )}
+                                {field.type === "date" && errors[field.key] && (
+                                    <p className="text-xs text-red-500">
+                                        {errors[field.key].message}
+                                    </p>
+                                )}
                             </div>
                         ))}
                     </form>
                 </FormProvider>
 
-                {/* Footer */}
                 <div className="flex justify-end gap-3 pt-3 mt-5 border-t">
                     <button
                         type="button"

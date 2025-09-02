@@ -161,6 +161,13 @@ export const profileSectionConfigs = {
                 .nullable(),
         }),
     },
+    candidateSkills: {
+        fields: [], 
+        validationSchema: yup.object().shape({
+            skillId: yup.string().required("Skill is required"),
+            levelId: yup.string().required("Level is required"),
+        }),
+    },
     softSkills: {
         fields: [
             {
@@ -217,6 +224,7 @@ export const profileSectionConfigs = {
                 label: "Start Date",
                 type: "date",
                 placeholder: "DD/MM/YYYY",
+                required: true,
             },
             {
                 key: "endDate",
@@ -239,12 +247,18 @@ export const profileSectionConfigs = {
                 .min(new Date(1900, 0, 1), "Start date must be after 1900")
                 .max(new Date(), "Start date cannot be in the future")
                 .required("Start date is required"),
+            isOngoing: yup.boolean(),
             endDate: yup
                 .date()
                 .typeError("Invalid end date format")
                 .min(yup.ref("startDate"), "End date must be after start date")
                 .max(new Date(), "End date cannot be in the future")
-                .nullable(),
+                .when("isOngoing", {
+                    is: false,
+                    then: (schema) =>
+                        schema.required("End date is required if not ongoing"),
+                    otherwise: (schema) => schema.nullable(),
+                }),
         }),
     },
     workExperience: {
@@ -266,6 +280,7 @@ export const profileSectionConfigs = {
                 label: "Start Date",
                 type: "date",
                 placeholder: "DD/MM/YYYY",
+                required: true,
             },
             {
                 key: "endDate",
@@ -296,12 +311,18 @@ export const profileSectionConfigs = {
                 .min(new Date(1900, 0, 1), "Start date must be after 1900")
                 .max(new Date(), "Start date cannot be in the future")
                 .required("Start date is required"),
+            isOngoing: yup.boolean(),
             endDate: yup
                 .date()
                 .typeError("Invalid end date format")
                 .min(yup.ref("startDate"), "End date must be after start date")
                 .max(new Date(), "End date cannot be in the future")
-                .nullable(),
+                .when("isOngoing", {
+                    is: false,
+                    then: (schema) =>
+                        schema.required("End date is required if not ongoing"),
+                    otherwise: (schema) => schema.nullable(),
+                }),
             description: yup
                 .string()
                 .max(500, "Maximum 500 characters")
