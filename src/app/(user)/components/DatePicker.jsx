@@ -5,24 +5,22 @@ import { format, parse, isValid } from "date-fns";
 const DatePicker = ({ value, onChange, placeholder, name, error }) => {
     const [inputValue, setInputValue] = useState("");
 
-    // Chuyển đổi giá trị Date thành định dạng yyyy-MM-dd cho input type="date"
     useEffect(() => {
         if (value && isValid(value)) {
-            setInputValue(format(value, "yyyy-MM-dd")); // Định dạng cho input date
+            setInputValue(format(value, "yyyy-MM-dd")); 
         } else {
             setInputValue("");
         }
     }, [value]);
 
-    // Xử lý khi người dùng chọn ngày từ native date picker
     const handleInputChange = (e) => {
-        const input = e.target.value; // Giá trị từ input date là yyyy-MM-dd
+        const input = e.target.value; 
         setInputValue(input);
 
         if (input) {
             const parsed = parse(input, "yyyy-MM-dd", new Date());
             if (isValid(parsed)) {
-                onChange(parsed); // Trả về Date object cho react-hook-form
+                onChange(parsed); 
             } else {
                 onChange(null);
             }
@@ -34,7 +32,7 @@ const DatePicker = ({ value, onChange, placeholder, name, error }) => {
     return (
         <div className="relative">
             <input
-                type="date" // Sử dụng native date picker
+                type="date" 
                 name={name}
                 value={inputValue}
                 onChange={handleInputChange}

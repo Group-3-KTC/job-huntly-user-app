@@ -41,10 +41,8 @@ export const logoutThunk = createAsyncThunk(
     "auth/logout",
     async (_, { rejectWithValue }) => {
         try {
-            // BE sẽ xóa httpOnly cookie
             await authService.logout();
 
-            // Invalidate RTK Query caches để buộc refetch data mới sau login
             dispatch(
                 profileApi.util.invalidateTags([
                     "combinedProfile",
@@ -57,8 +55,7 @@ export const logoutThunk = createAsyncThunk(
                     "awards",
                 ])
             );
-
-            // Clear normalizedProfile từ profileSlice
+            
             dispatch(clearNormalizedProfile());
 
             return true;

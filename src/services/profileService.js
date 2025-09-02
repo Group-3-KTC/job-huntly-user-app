@@ -12,12 +12,9 @@ const axiosBaseQuery =
                 signal,
                 headers: { ...headers },
             };
-
-            // Nếu body là FormData → xoá Content-Type, để axios tự thêm boundary
             if (body instanceof FormData) {
                 delete config.headers?.["Content-Type"];
             } else {
-                // Nếu là object thường → gửi JSON
                 config.headers = {
                     "Content-Type": "application/json",
                     ...headers,
@@ -51,18 +48,12 @@ export const profileApi = createApi({
         "softSkills",
     ],
     endpoints: (builder) => ({
-        // ==========================
-        // 1. COMBINED (nguồn chính)
-        // ==========================
         getCombinedProfile: builder.query({
             query: () => ({ url: "/combined" }),
             providesTags: ["combinedProfile"],
             keepUnusedDataFor: 60,
         }),
 
-        // ==========================
-        // 2. PROFILE (basic info)
-        // ==========================
         getProfile: builder.query({
             query: () => ({ url: "" }),
             providesTags: ["Profile"],
@@ -72,9 +63,6 @@ export const profileApi = createApi({
             invalidatesTags: ["profile", "combinedProfile"],
         }),
 
-        // ==========================
-        // 3. SECTION CRUD (dynamic)
-        // ==========================
         getSectionItems: builder.query({
             query: (section) => ({ url: `/${section}` }),
             providesTags: (result, error, section) => [section],
@@ -97,18 +85,16 @@ export const profileApi = createApi({
         // }),
         updateSectionItem: builder.mutation({
             query: ({ section, itemId, data }) => {
-                // Những section thuộc về profile chính
                 const profileSections = ["personalDetail", "aboutMe"];
 
                 if (profileSections.includes(section)) {
                     return {
                         url: "",
                         method: "PUT",
-                        body: data, // JSON hoặc FormData
+                        body: data, 
                     };
                 }
 
-                // Các section còn lại (education, workExperience,...)
                 return {
                     url: `/${section}/${itemId}`,
                     method: "PUT",
@@ -136,7 +122,7 @@ export const {
     useGetProfileQuery,
     useUpdateProfileMutation,
     useGetSectionItemsQuery,
-    useLazyGetSectionItemsQuery, // ✅ THÊM lazy hook
+    useLazyGetSectionItemsQuery,
     useAddSectionItemMutation,
     useUpdateSectionItemMutation,
     useDeleteSectionItemMutation,

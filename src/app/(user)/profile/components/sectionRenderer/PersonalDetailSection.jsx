@@ -8,7 +8,6 @@ const PersonalDetailSection = ({ data }) => {
         typeof displayAvatar === "string" &&
         (displayAvatar.startsWith("http") || displayAvatar.startsWith("https"));
 
-    // Convert YYYY-MM-DD to DD/MM/YY for display
     const formatDateForDisplay = (dateStr) => {
         if (!dateStr) return "Your Date of Birth Here";
         const parsed = parse(dateStr, "yyyy-MM-dd", new Date());
@@ -17,7 +16,6 @@ const PersonalDetailSection = ({ data }) => {
 
     return (
         <div className="space-y-4 text-gray-700 text-md">
-            {/* Avatar + Name */}
             <div className="flex items-center gap-2">
                 <div className="relative w-[60px] h-[60px]">
                     <div className="flex items-center justify-center w-full h-full overflow-hidden bg-gray-100 rounded-full">
@@ -50,7 +48,6 @@ const PersonalDetailSection = ({ data }) => {
                 </div>
             </div>
 
-            {/* Details */}
             <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
                 <div className="w-full space-y-2 sm:w-1/2">
                     <p className="flex items-center font-bold">
