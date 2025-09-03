@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+const stripTrailingSlash = (u) => (u ? u.replace(/\/+$/, "") : u);
 const nextConfig = {
   output: "standalone",
   env: {
@@ -9,8 +10,10 @@ const nextConfig = {
     if (process.env.NODE_ENV !== "development") return [];
 
     // Target có thể đọc từ env, fallback về IP dev
-    const target =
-      process.env.NEXT_PUBLIC_API_PROXY_TARGET || "http://18.142.226.139:8080";
+      const rawTarget =
+          process.env.NEXT_PUBLIC_API_PROXY_TARGET || "http://localhost:8080";
+
+      const target = stripTrailingSlash(rawTarget);
 
     return [
       {
