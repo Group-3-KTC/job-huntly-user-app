@@ -45,15 +45,23 @@ jobs:
         if: github.event_name == 'push'
         run: |
           docker build \
-            --build-arg NEXT_PUBLIC_API_BASE_URL="${{ secrets.PRODUCTION_API_BASE_URL }}" \
             --no-cache \
+            --build-arg NEXT_PUBLIC_API_PROXY_TARGET="${{ secrets.NEXT_PUBLIC_API_PROXY_TARGET }}" \
+            --build-arg NEXT_PUBLIC_API_BASE_URL="${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" \
+            --build-arg NEXT_PUBLIC_GOOGLE_CLIENT_ID="${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}" \
             -t $DOCKER_IMAGE:$DOCKER_TAG .
           docker push $DOCKER_IMAGE:$DOCKER_TAG
 
       - name: Create environment file
         if: github.event_name == 'push'
         run: |
-          echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.PRODUCTION_API_BASE_URL }}" > .env.production
+          {
+            echo "NEXT_PUBLIC_API_PROXY_TARGET=${{ secrets.NEXT_PUBLIC_API_PROXY_TARGET }}";
+            echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}";
+            echo "NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}";
+          } > .env.production
+      
+      
 
       - name: Copy Next.js files to server
         uses: appleboy/scp-action@v0.1.7
@@ -90,7 +98,7 @@ jobs:
             
             echo "Setting up environment variables..."
             # Tạo .env file với API URL từ secrets
-            echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.PRODUCTION_API_BASE_URL }}" > .env
+            cp .env.production .env
 
             echo "Creating network (if not exists)..."
             echo "Currently, we re-use jobhuntly-network..."
