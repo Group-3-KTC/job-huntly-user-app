@@ -38,7 +38,7 @@ export default function SectionCard({
                 <p className="p-3 mt-2 text-sm text-gray-400">{description}</p>
             );
         }
-        return <div className="p-3 mt-2 rounded-md ">{content}</div>;
+        return <div className="p-3 rounded-md ">{content}</div>;
     };
 
     return (

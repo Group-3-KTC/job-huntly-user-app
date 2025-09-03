@@ -1,106 +1,46 @@
-import { Mail, Gift, MapPin, Phone, User, Link, Camera } from "lucide-react";
+import { Mail, Gift, MapPin, Phone, User, Link } from "lucide-react";
 import Image from "next/image";
-import { useState, useRef } from "react";
-import userImg from "@/assets/images/user-img.png";
+import { format, parse, isValid } from "date-fns";
 
-export default function PersonalDetailSection({ data }) {
-    const [tempAvatar, setTempAvatar] = useState(null);
-    const [isUploading, setIsUploading] = useState(false);
-    const fileInputRef = useRef(null);
-
-    const handleImageChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            if (!file.type.startsWith("image/")) {
-                alert("Vui lòng chọn file ảnh!");
-                return;
-            }
-
-            if (file.size > 5 * 1024 * 1024) {
-                alert("File ảnh không được vượt quá 5MB!");
-                return;
-            }
-
-            setIsUploading(true);
-            const tempImageUrl = URL.createObjectURL(file);
-
-            setTimeout(() => {
-                setTempAvatar(tempImageUrl);
-                setIsUploading(false);
-                console.log("Ảnh upload tạm thời:", tempImageUrl);
-            }, 500);
-        }
-    };
-
-    const handleImageClick = () => {
-        fileInputRef.current?.click();
-    };
-
-
-    const getDisplayAvatar = () => {
-        if (tempAvatar) return tempAvatar;
-        return data.avatar || userImg;
-    };
-
-    const displayAvatar = getDisplayAvatar();
-    const shouldUseImgTag =
-        displayAvatar &&
+const PersonalDetailSection = ({ data }) => {
+    const displayAvatar = data?.avatar?.trim() || null;
+    const isValidUrl =
         typeof displayAvatar === "string" &&
-        (displayAvatar.startsWith("http") || displayAvatar.startsWith("blob:"));
+        (displayAvatar.startsWith("http") || displayAvatar.startsWith("https"));
+
+    const formatDateForDisplay = (dateStr) => {
+        if (!dateStr) return "Your Date of Birth Here";
+        const parsed = parse(dateStr, "yyyy-MM-dd", new Date());
+        return isValid(parsed) ? format(parsed, "dd/MM/yyyy") : "Invalid Date";
+    };
 
     return (
-        <div className="space-y-4 text-lg text-gray-700">
+        <div className="space-y-4 text-gray-700 text-md">
             <div className="flex items-center gap-2">
-                <div className="relative w-[60px] h-[60px] group">
-                    
-                    <div className="w-full h-full overflow-hidden bg-gray-100 rounded-full">
-                        {shouldUseImgTag ? (
+                <div className="relative w-[60px] h-[60px]">
+                    <div className="flex items-center justify-center w-full h-full overflow-hidden bg-gray-100 rounded-full">
+                        {isValidUrl ? (
                             <img
                                 src={displayAvatar}
-                                alt="User Image"
-                                className="object-cover object-center w-full h-full transition-opacity cursor-pointer group-hover:opacity-75"
-                                onClick={handleImageClick}
+                                alt="User Avatar"
+                                className="object-cover object-center w-full h-full rounded-full"
                                 onError={(e) => {
-                                    if (tempAvatar) {
-                                        setTempAvatar(null);
-                                    }
+                                    e.currentTarget.style.display = "none";
+                                    e.currentTarget.parentElement.innerHTML =
+                                        '<span class="text-gray-400 text-xs">Update your image</span>';
                                 }}
                             />
                         ) : (
-                            <Image
-                                src={displayAvatar}
-                                alt="User Image"
-                                width={60}
-                                height={60}
-                                className="object-cover object-center w-full h-full transition-opacity rounded-full cursor-pointer group-hover:opacity-75"
-                                onClick={handleImageClick}
-                            />
+                            <span className="text-xs text-gray-400">
+                                Update your image
+                            </span>
                         )}
                     </div>
-
-                    <div
-                        className="absolute inset-0 flex items-center justify-center transition-opacity bg-black bg-opacity-50 rounded-full opacity-0 cursor-pointer group-hover:opacity-100"
-                        onClick={handleImageClick}
-                    >
-                        {isUploading ? (
-                            <div className="w-6 h-6 border-2 border-white rounded-full border-b-transparent animate-spin"></div>
-                        ) : (
-                            <Camera size={20} className="text-white" />
-                        )}
-                    </div>
-
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="hidden"
-                    />
                 </div>
 
                 <div className="flex-1">
                     <h1 className="text-2xl font-bold text-black">
-                        {data.name || "Your Name Here"}
+                        {data.fullName || "Your Name Here"}
                     </h1>
                     <p className="mt-2 font-semibold text-gray-600 text-md">
                         {data.title || "Your Title Here"}
@@ -110,17 +50,13 @@ export default function PersonalDetailSection({ data }) {
 
             <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
                 <div className="w-full space-y-2 sm:w-1/2">
-                    <p className="flex items-center">
+                    <p className="flex items-center font-bold">
                         <Mail size={18} className="mr-2 text-gray-500" />
                         {data.email || "Your Email Here"}
                     </p>
                     <p className="flex items-center">
                         <Gift size={18} className="mr-2 text-gray-500" />
-                        {data.dateOfBirth
-                            ? new Date(data.dateOfBirth)
-                                  .toISOString()
-                                  .split("T")[0]
-                            : "Your Date of Birth Here"}
+                        {formatDateForDisplay(data.dateOfBirth)}
                     </p>
                     <p className="flex items-center">
                         <MapPin size={18} className="mr-2 text-gray-500" />
@@ -156,4 +92,6 @@ export default function PersonalDetailSection({ data }) {
             </div>
         </div>
     );
-}
+};
+
+export default PersonalDetailSection;

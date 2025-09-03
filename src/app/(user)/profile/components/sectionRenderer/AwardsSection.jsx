@@ -1,35 +1,40 @@
 "use client";
+import React from "react";
 import { Edit, Trash2 } from "lucide-react";
 
-export default function EducationSection({ data, onEdit, onDelete }) {
+const AwardsSection = ({ data, onEdit, onDelete }) => {
     if (!data || data.length === 0) {
         return (
-            <p className="text-sm text-gray-800 ">
-                Share your background education
+            <p className="text-sm text-gray-800">
+                Share your awards and achievements
             </p>
         );
     }
 
     return (
         <div className="space-y-3">
-            {data.map((education, index) => (
+            {data.map((item, index) => (
                 <div
-                    key={index}
+                    key={item.id}
                     className="flex items-start justify-between py-3 my-2 border-t-3 border-blue-600"
                 >
                     <div className="flex-1">
-                        <h4 className="text-xl font-medium text-gray-900 ">
-                            {education.schoolName}
+                        <h4 className="text-xl font-medium text-gray-900">
+                            {item.name || "Unnamed"}
                         </h4>
                         <p className="text-sm text-gray-600">
-                            {education.degree}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                            {education.majors}
+                            {item.issuer || "No issuer"}
                         </p>
                         <p className="text-xs text-gray-500">
-                            {education.duration}
+                            {item.date
+                                ? new Date(item.date).toLocaleDateString()
+                                : "N/A"}
                         </p>
+                        {item.description && (
+                            <p className="mt-1 text-sm text-gray-700">
+                                {item.description}
+                            </p>
+                        )}
                     </div>
                     <div className="flex gap-2 ml-3">
                         <button
@@ -55,4 +60,6 @@ export default function EducationSection({ data, onEdit, onDelete }) {
             ))}
         </div>
     );
-}
+};
+
+export default AwardsSection;

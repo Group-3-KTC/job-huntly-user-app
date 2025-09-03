@@ -30,7 +30,6 @@ const RecruiterLoginForm = ({ role }) => {
         const payload = {
             email: form.email,
             password: form.password,
-            role: role ?? "RECRUITER",
         };
 
         try {

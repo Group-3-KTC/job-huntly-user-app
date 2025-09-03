@@ -19,10 +19,13 @@ export default function SkillsSection({ data, onEdit, onDelete }) {
                 >
                     <div className="flex-1">
                         <h4 className="text-lg font-medium text-gray-900 ">
-                            {skill.name}
+                            {skill.skillName}
                         </h4>
                         <p className="text-sm text-gray-600">
-                            Level: {skill.level}
+                            Level: {skill.levelName}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                            Category: {skill.categoryName}
                         </p>
                     </div>
                     <div className="flex gap-2 ml-3">

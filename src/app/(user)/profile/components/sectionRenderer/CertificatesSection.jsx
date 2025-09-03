@@ -15,7 +15,7 @@ export default function CertificatesSection({ data, onEdit, onDelete }) {
             {data.map((certificate, index) => (
                 <div
                     key={index}
-                    className="flex items-start justify-between py-3 my-2 border-t-3 border-blue-600"
+                    className="flex items-start justify-between py-3 my-2 border-blue-600 border-t-3"
                 >
                     <div className="flex-1">
                         <h4 className="text-xl font-medium text-gray-900">
@@ -25,7 +25,9 @@ export default function CertificatesSection({ data, onEdit, onDelete }) {
                             {certificate.issuer}
                         </p>
                         <p className="text-xs text-gray-500">
-                            {certificate.date}
+                            {certificate.date
+                                ? new Date(certificate.date).toLocaleDateString()
+                                : "N/A"}
                         </p>
                         {certificate.description && (
                             <p className="mt-1 text-sm text-gray-700">
