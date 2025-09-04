@@ -8,6 +8,8 @@ import { profileApi } from "@/services/profileService";
 import { applicationApi } from "@/services/applicationService";
 import { savedCompaniesApi } from "@/services/savedCompaniesService";
 import savedCompaniesReducer from "@/features/savedCompanies/savedCompaniesSlice";
+import cvTemplateReducer from "@/features/templateCv/cvTemplateSlice"; 
+import { cvTemplateApi } from "@/services/cvTemplateService";
 import { attachStore } from "@/lib/api";
 
 export const store = configureStore({
@@ -17,6 +19,8 @@ export const store = configureStore({
         application: applicationReducer,
         toast: toastSlice,
         savedCompanies: savedCompaniesReducer,
+        cvTemplate: cvTemplateReducer,
+        [cvTemplateApi.reducerPath]: cvTemplateApi.reducer,
         [jobApi.reducerPath]: jobApi.reducer,
         [profileApi.reducerPath]: profileApi.reducer,
         [applicationApi.reducerPath]: applicationApi.reducer,
@@ -28,6 +32,7 @@ export const store = configureStore({
             profileApi.middleware,
             applicationApi.middleware,
             savedCompaniesApi.middleware,
+            cvTemplateApi.middleware
         ),
 });
 

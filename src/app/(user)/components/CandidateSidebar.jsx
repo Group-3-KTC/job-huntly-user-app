@@ -23,11 +23,11 @@ const navItems = [
         label: "Profile",
         icon: <User className="w-5 h-5 mr-2" />,
     },
-    // {
-    //     href: "/profile/manage-cv",
-    //     label: "Manage CV",
-    //     icon: <FileText className="w-5 h-5 mr-2" />,
-    // },
+    {
+        href: "/ManageCv",
+        label: "Manage CV",
+        icon: <FileText className="w-5 h-5 mr-2" />,
+    },
     {
         href: "/companyFollows",
         label: "Company Follows",
@@ -56,7 +56,7 @@ export default function CandidateSidebar() {
     return (
         <aside className="hidden w-full mr-6 lg:block ">
             <div className="bg-white shadow-md rounded-xl ">
-                <div className="p-4 bg-gradient-to-t overflow-hidden from-blue-200 to-indigo-50">
+                <div className="p-4 overflow-hidden bg-gradient-to-t from-blue-200 to-indigo-50">
                     <div className="flex flex-row items-center my-2">
                         <div className="flex flex-col ml-2">
                             <p className="text-sm font-medium text-blue-800">
