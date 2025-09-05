@@ -11,6 +11,10 @@ import {
     LayoutDashboard,
     Briefcase,
 } from "lucide-react";
+import {
+    selectAuthUser,
+} from "@/features/auth/authSelectors";
+import {  useSelector } from "react-redux";
 
 const navItems = [
     {
@@ -52,7 +56,8 @@ const navItems = [
 
 export default function CandidateSidebar() {
     const pathname = usePathname();
-
+    const user = useSelector(selectAuthUser);
+    
     return (
         <aside className="hidden w-full mr-6 lg:block ">
             <div className="bg-white shadow-md rounded-xl ">
@@ -63,7 +68,7 @@ export default function CandidateSidebar() {
                                 Welcome
                             </p>
                             <h3 className="text-2xl font-bold text-gray-900">
-                                Hoang Phuc Vo
+                                {user.fullName}
                             </h3>
                         </div>
                     </div>

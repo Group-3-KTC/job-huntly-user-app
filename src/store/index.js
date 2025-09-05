@@ -27,7 +27,26 @@ export const store = configureStore({
         [savedCompaniesApi.reducerPath]: savedCompaniesApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: [
+                    "persist/PERSIST",
+                    "persist/REHYDRATE",
+
+                    "cvTemplateApi/executeMutation/pending",
+                    "cvTemplateApi/executeMutation/fulfilled",
+                    "cvTemplateApi/executeMutation/rejected",
+
+                    "cvTemplateApi/executeQuery/fulfilled",
+                    "cvTemplateApi/executeQuery/pending",
+                    "cvTemplateApi/executeQuery/rejected",
+                ],
+                ignoredActionsPaths: ["payload", "meta.baseQueryMeta"],
+                ignoredPaths: [
+                    "cvTemplateApi",
+                ],
+            },
+        }).concat(
             jobApi.middleware,
             profileApi.middleware,
             applicationApi.middleware,

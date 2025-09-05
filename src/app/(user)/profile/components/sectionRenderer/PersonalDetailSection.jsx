@@ -59,20 +59,6 @@ const PersonalDetailSection = ({ data }) => {
                         {formatDateForDisplay(data.dateOfBirth)}
                     </p>
                     <p className="flex items-center">
-                        <MapPin size={18} className="mr-2 text-gray-500" />
-                        {data.address || "Your Address Here"}
-                    </p>
-                </div>
-                <div className="w-full space-y-2 sm:w-1/2">
-                    <p className="flex items-center">
-                        <Phone size={18} className="mr-2 text-gray-500" />
-                        {data.phone || "Your Phone Number Here"}
-                    </p>
-                    <p className="flex items-center">
-                        <User size={18} className="mr-2 text-gray-500" />
-                        {data.gender || "Your Gender Here"}
-                    </p>
-                    <p className="flex items-center">
                         <Link size={18} className="mr-2 text-gray-500" />
                         {data.personalLink ? (
                             <a
@@ -88,6 +74,36 @@ const PersonalDetailSection = ({ data }) => {
                             "Your Personal Link Here"
                         )}
                     </p>
+                    {/* <p className="flex items-center">
+                        <MapPin size={18} className="mr-2 text-gray-500" />
+                        {data.address || "Your Address Here"}
+                    </p> */}
+                </div>
+                <div className="w-full space-y-2 sm:w-1/2">
+                    <p className="flex items-center">
+                        <Phone size={18} className="mr-2 text-gray-500" />
+                        {data.phone || "Your Phone Number Here"}
+                    </p>
+                    <p className="flex items-center">
+                        <User size={18} className="mr-2 text-gray-500" />
+                        {data.gender || "Your Gender Here"}
+                    </p>
+                    {/* <p className="flex items-center">
+                        <Link size={18} className="mr-2 text-gray-500" />
+                        {data.personalLink ? (
+                            <a
+                                href={data.personalLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-base text-blue-500 hover:underline truncate max-w-[200px] inline-block align-middle"
+                                title={data.personalLink}
+                            >
+                                {data.personalLink}
+                            </a>
+                        ) : (
+                            "Your Personal Link Here"
+                        )}
+                    </p> */}
                 </div>
             </div>
         </div>
