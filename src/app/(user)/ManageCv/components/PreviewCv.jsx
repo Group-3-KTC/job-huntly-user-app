@@ -15,12 +15,11 @@ export default function PreviewCv({ templateId, templateName }) {
         refetchOnMountOrArgChange: true,
     });
     const [downloadTemplate] = useDownloadTemplateMutation();
-    const [zoom, setZoom] = useState(0.7); // Giữ zoom mặc định 0.7
+    const [zoom, setZoom] = useState(0.7); 
     const [isDownloading, setIsDownloading] = useState(false);
     const iframeRef = useRef(null);
 
     const handleDownload = async () => {
-        // if (!templateId) return;
         if (!templateId || isDownloading) return;
         try {
             const blob = await downloadTemplate(templateId).unwrap();
