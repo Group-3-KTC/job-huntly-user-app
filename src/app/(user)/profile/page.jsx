@@ -56,10 +56,8 @@ export default function ProfilePage() {
     const [currentSection, setCurrentSection] = useState(null);
     const [editingItemIndex, setEditingItemIndex] = useState(null);
 
-    // Track các section đã được refetch sau CRUD
     const [refreshedSections, setRefreshedSections] = useState(new Set());
 
-    // Các section dạng array
     const sectionIds = [
         "education",
         "candidateSkills",
@@ -69,7 +67,6 @@ export default function ProfilePage() {
         "awards",
     ];
 
-    // Load profile lần đầu từ combined query
     useEffect(() => {
         if (profileSuccess && candidateProfileData) {
             const normalizedData = {
