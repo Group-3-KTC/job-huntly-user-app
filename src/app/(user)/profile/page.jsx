@@ -17,9 +17,11 @@ import { profileSectionConfigs } from "@/app/(user)/profile/components/profileSe
 import {
     setNormalizedProfile,
     selectNormalizedProfile,
+    setCompletion
 } from "@/features/profile/profileSlice";
 import PersonalDetailModal from "../components/PersonalDetailModal";
 import CandidateSkillModal from "../components/CandidateSkillModal";
+import { calculateProfileCompletion } from "@/features/profile/profileCompletion";
 
 const sectionToEndpointMap = {
     candidateSkills: "candidateSkills",
@@ -47,7 +49,6 @@ export default function ProfilePage() {
     const [updateSectionItem] = useUpdateSectionItemMutation();
     const [deleteSectionItem] = useDeleteSectionItemMutation();
 
-    // ✅ FIX 1: Sử dụng lazy query thay vì query ngay
     const [getSectionItems] = useLazyGetSectionItemsQuery();
 
     const [isDeleting, setIsDeleting] = useState(false);
@@ -55,10 +56,8 @@ export default function ProfilePage() {
     const [currentSection, setCurrentSection] = useState(null);
     const [editingItemIndex, setEditingItemIndex] = useState(null);
 
-    // Track các section đã được refetch sau CRUD
     const [refreshedSections, setRefreshedSections] = useState(new Set());
 
-    // Các section dạng array
     const sectionIds = [
         "education",
         "candidateSkills",
@@ -68,7 +67,6 @@ export default function ProfilePage() {
         "awards",
     ];
 
-    // Load profile lần đầu từ combined query
     useEffect(() => {
         if (profileSuccess && candidateProfileData) {
             const normalizedData = {
@@ -92,6 +90,9 @@ export default function ProfilePage() {
                 awards: candidateProfileData.awards || [],
             };
             dispatch(setNormalizedProfile(normalizedData));
+
+            const completion = calculateProfileCompletion(normalizedData);
+            dispatch(setCompletion(completion));
         }
     }, [candidateProfileData, profileSuccess, dispatch]);
 
@@ -119,14 +120,12 @@ export default function ProfilePage() {
             : Object.keys(sectionData || {}).length > 0;
     };
 
-    // Hàm refetch section sau CRUD
     const refreshSectionAfterCRUD = async (sectionId) => {
         try {
             const { data: freshData } = await getSectionItems(
                 sectionId
             ).unwrap();
 
-            // Update normalized data với fresh data
             if (freshData && normalizedProfileData) {
                 const updatedProfile = {
                     ...normalizedProfileData,
@@ -175,8 +174,6 @@ export default function ProfilePage() {
                         itemId: itemId,
                     }).unwrap();
 
-                    // Refresh section sau khi delete
-                    // await refreshSectionAfterCRUD(section.id);
                     alert("Item deleted successfully");
                     await refetchProfile();
                 } else {
@@ -307,8 +304,8 @@ export default function ProfilePage() {
             setCurrentSection(null);
             setEditingItemIndex(null);
         } catch (error) {
-            console.error("Save error:", error);
-            if (error.status === 401) {
+            // be chưa catch 401 (làm sau)
+            if (error.status === 500) {
                 alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
                 window.location.href = "/login";
             } else {

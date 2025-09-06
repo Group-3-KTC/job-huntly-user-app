@@ -4,6 +4,7 @@ const profileSlice = createSlice({
     name: "profile",
     initialState: {
         normalizedProfile: null,
+        completion: { percent: 0, missingSections: [] },
     },
     reducers: {
         setNormalizedProfile(state, action) {
@@ -12,12 +13,18 @@ const profileSlice = createSlice({
         clearNormalizedProfile(state) {
             state.normalizedProfile = null;
         },
+        setCompletion: (state, action) => {
+            state.completion = action.payload;
+        },
     },
 });
 
-export const { setNormalizedProfile, clearNormalizedProfile } =
+export const { setNormalizedProfile, clearNormalizedProfile, setCompletion } =
     profileSlice.actions;
+
+export const selectNormalizedProfile = (state) =>
+    state.profile.normalizedProfile;
+
+export const selectProfileCompletion = (state) => state.profile.completion;
+
 export default profileSlice.reducer;
-
-
-export const selectNormalizedProfile = (state) => state.profile.normalizedProfile;

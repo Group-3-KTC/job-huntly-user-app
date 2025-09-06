@@ -39,21 +39,20 @@ export const cvTemplateApi = createApi({
     reducerPath: "cvTemplateApi",
     baseQuery: axiosBaseQuery(),
     tagTypes: ["CvTemplates", "CvPreview"],
-    refetchOnFocus: true, 
+    refetchOnFocus: true,
     refetchOnReconnect: true,
     endpoints: (builder) => ({
         getAllTemplates: builder.query({
             query: () => ({
-                url: "/", 
+                url: "/",
                 method: "GET",
             }),
             providesTags: ["CvTemplates"],
         }),
 
-        // ✅ Lấy preview (HTML)
         getPreview: builder.query({
             query: (templateId) => ({
-                url: `/${templateId}/preview`, 
+                url: `/${templateId}/preview`,
                 method: "GET",
                 headers: { Accept: "text/html" },
             }),
@@ -67,9 +66,7 @@ export const cvTemplateApi = createApi({
                 responseType: "blob",
                 headers: { Accept: "application/pdf" },
             }),
-            transformResponse: (response) => {
-                return response;
-            },
+            keepUnusedDataFor: 0,
         }),
     }),
 });

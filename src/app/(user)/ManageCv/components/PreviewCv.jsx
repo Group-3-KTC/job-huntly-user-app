@@ -1,69 +1,188 @@
 "use client";
 
+import { useState, useMemo, useRef, useEffect } from "react";
 import {
     useGetPreviewQuery,
     useDownloadTemplateMutation,
 } from "@/services/cvTemplateService";
 import { useSelector } from "react-redux";
+import { getScaledHtml } from "@/hooks/getScaledHtml";
 
-export default function PreviewCv({ templateId }) {
+export default function PreviewCv({ templateId, templateName }) {
     const { html } = useSelector((state) => state.cvTemplate);
     const { data, isFetching } = useGetPreviewQuery(templateId, {
         skip: !templateId,
         refetchOnMountOrArgChange: true,
     });
-
     const [downloadTemplate] = useDownloadTemplateMutation();
+    const [zoom, setZoom] = useState(0.7); 
+    const [isDownloading, setIsDownloading] = useState(false);
+    const iframeRef = useRef(null);
 
     const handleDownload = async () => {
-        if (!templateId) return;
+        if (!templateId || isDownloading) return;
         try {
             const blob = await downloadTemplate(templateId).unwrap();
-
             console.log("Blob:", blob);
-
             const file =
                 blob instanceof Blob
                     ? blob
                     : new Blob([blob], { type: "application/pdf" });
-
             const url = window.URL.createObjectURL(file);
             const link = document.createElement("a");
             link.href = url;
             link.setAttribute("download", `cv-${templateId}.pdf`);
             document.body.appendChild(link);
             link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
+
+            setTimeout(() => {
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }, 100);
         } catch (err) {
             console.error("Download failed:", err);
+        } finally {
+            setIsDownloading(false);
         }
     };
 
+    const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.1, 2.0));
+    const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.1, 0.3));
+    const resetZoom = () => setZoom(1.0);
 
-    if (!templateId) return <p>Chọn 1 CV để xem preview</p>;
+    const toggleFullscreen = () => {
+        const iframe = iframeRef.current;
+        if (!document.fullscreenElement && iframe) {
+            iframe.requestFullscreen().catch((err) => {
+                console.log("Fullscreen request failed:", err);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    };
+
+    const scaledHtml = useMemo(() => {
+        return getScaledHtml(data, zoom, { templateType: templateName });
+    }, [data, zoom, templateName]);
+
+    useEffect(() => {
+        const iframe = iframeRef.current;
+        if (!iframe) return;
+
+        const handleLoad = () => {
+            try {
+                const iframeDoc = iframe.contentDocument;
+                if (iframeDoc) {
+                    const viewport = iframeDoc.querySelector(
+                        'meta[name="viewport"]'
+                    );
+                    if (viewport) {
+                        viewport.setAttribute(
+                            "content",
+                            `width=device-width, initial-scale=1.0, maximum-scale=${zoom}, user-scalable=no`
+                        );
+                    }
+                }
+            } catch (e) {
+                console.log("Cross-origin iframe access restricted");
+            }
+        };
+
+        iframe.addEventListener("load", handleLoad);
+        return () => iframe.removeEventListener("load", handleLoad);
+    }, [zoom]);
+
+    if (isFetching) {
+        return (
+            <div className="flex flex-col items-center justify-center h-full p-4 bg-gray-100 rounded-xl">
+                <div className="w-8 h-8 mb-4 border-4 border-blue-500 rounded-full animate-spin border-t-transparent"></div>
+                <p className="text-gray-600">Loading preview...</p>
+            </div>
+        );
+    }
+
+    if (!templateId) {
+        return (
+            <div className="flex items-center justify-center h-full p-4 bg-gray-100 rounded-xl">
+                <div className="text-center">
+                    <div className="mb-4 text-6xl opacity-30">📄</div>
+                    <p className="text-lg text-gray-500">
+                        Chọn một CV template để xem preview
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold">CV Preview</h2>
-                <button
-                    onClick={handleDownload}
-                    className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-                >
-                    Download
-                </button>
+        <div className="flex flex-col h-full p-4 bg-gray-100 shadow-lg rounded-xl">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <h2 className="flex items-center gap-2 text-2xl font-semibold text-gray-800">
+                    <span>📋</span>
+                    CV Preview
+                </h2>
+
+                <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex items-center gap-1 p-1 bg-white rounded-lg shadow-sm">
+                        <button
+                            onClick={handleZoomOut}
+                            className="px-2 py-1 text-sm text-gray-600 transition-colors rounded hover:text-gray-800 hover:bg-gray-100"
+                            aria-label="Zoom Out"
+                            disabled={zoom <= 0.3}
+                        >
+                            🔍➖
+                        </button>
+
+                        <span className="px-2 py-1 text-xs text-gray-600 min-w-[50px] text-center bg-gray-50 rounded">
+                            {Math.round(zoom * 100)}%
+                        </span>
+
+                        <button
+                            onClick={handleZoomIn}
+                            className="px-2 py-1 text-sm text-gray-600 transition-colors rounded hover:text-gray-800 hover:bg-gray-100"
+                            aria-label="Zoom In"
+                            disabled={zoom >= 2.0}
+                        >
+                            🔍➕
+                        </button>
+                    </div>
+
+                    <button
+                        onClick={resetZoom}
+                        className="px-3 py-2 text-sm text-white transition-colors bg-gray-600 rounded-lg hover:bg-gray-700"
+                    >
+                        Reset
+                    </button>
+
+                    <button
+                        onClick={toggleFullscreen}
+                        className="px-3 py-2 text-sm text-white transition-colors bg-gray-600 rounded-lg hover:bg-gray-700"
+                        aria-label="Toggle Fullscreen"
+                    >
+                        ⛶ Fullscreen
+                    </button>
+
+                    <button
+                        onClick={handleDownload}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+                        aria-label="Download CV as PDF"
+                    >
+                        📥 Download
+                    </button>
+                </div>
             </div>
 
-            {isFetching ? (
-                <p>Loading preview...</p>
-            ) : (
+            <div className="flex-1 overflow-hidden bg-gray-800 rounded-lg shadow-inner">
                 <iframe
-                    srcDoc={data}
-                    className="w-full h-[600px] border rounded"
+                    ref={iframeRef}
+                    srcDoc={scaledHtml}
+                    className="w-full min-h-[70vh] border-0 rounded-lg bg-gray-800"
                     title="CV Preview"
+                    aria-label="Preview of the selected CV template"
+                    sandbox="allow-scripts allow-same-origin"
+                    loading="lazy"
                 />
-            )}
+            </div>
         </div>
     );
 }
