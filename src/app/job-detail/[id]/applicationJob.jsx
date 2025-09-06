@@ -8,22 +8,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import applicationSchema from "@/validation/applicationSchema";
 
-const API_BASE_URL = "http://18.142.226.139:8080";
+const API_BASE_URL = "http://localhost:8080";
 const APPLY_ENDPOINT = `${API_BASE_URL}/api/v1/application`;
-
-function getAccessToken() {
-    try {
-        const raw =
-            typeof window !== "undefined"
-                ? localStorage.getItem("authState")
-                : null;
-        if (!raw) return null;
-        const { accessToken } = JSON.parse(raw);
-        return accessToken || null;
-    } catch {
-        return null;
-    }
-}
 
 const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
     const fileInputRef = useRef(null);
@@ -69,8 +55,6 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
         try {
             setSubmitting(true);
 
-            const accessToken = getAccessToken();
-
             const formData = new FormData();
             formData.append("jobId", String(jobId));
             formData.append("cvFile", data.cvFile);
@@ -82,26 +66,83 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
 
             const res = await fetch(APPLY_ENDPOINT, {
                 method: "POST",
-                headers: accessToken
-                    ? { Authorization: `Bearer ${accessToken}` }
-                    : undefined,
+                credentials: "include",
                 body: formData,
             });
+            const readErrorPayload = async (response) => {
+                const ct = response.headers.get("content-type") || "";
+                try {
+                    if (ct.includes("application/json"))
+                        return await response.json();
+                    return await response.text();
+                } catch {
+                    return null;
+                }
+            };
 
-            const responseText = await res.text();
             if (!res.ok) {
-                console.error("Apply error:", res.status, responseText);
-                if (
-                    responseText?.toLowerCase().includes("duplicate") ||
-                    responseText?.toLowerCase().includes("constraint")
-                ) {
-                    alert("Bạn đã ứng tuyển công việc này rồi.");
+                const payload = await readErrorPayload(res);
+                console.error("Apply error:", res.status, payload);
+                const fieldMap = {
+                    candidateName: "fullName",
+                    phone_number: "phoneNumber",
+                    phoneNumber: "phoneNumber",
+                    email: "email",
+                    cvFile: "cvFile",
+                    description: "coverLetter",
+                };
+
+                if (payload && typeof payload === "object") {
+                    if (Array.isArray(payload.errors)) {
+                        payload.errors.forEach((e) => {
+                            if (e?.field && e?.message) {
+                                const feField = fieldMap[e.field] || e.field;
+                                setError(feField, {
+                                    type: "server",
+                                    message: e.message,
+                                });
+                            }
+                        });
+                    }
+
+                    const summary =
+                        payload.message ||
+                        payload.detail ||
+                        payload.error ||
+                        (Array.isArray(payload.errors) &&
+                            payload.errors
+                                .map((x) => x.message)
+                                .filter(Boolean)
+                                .join("\n")) ||
+                        `Yêu cầu thất bại (${res.status}).`;
+
+                    if (res.status === 409) {
+                        alert(summary || "Bạn đã ứng tuyển công việc này rồi.");
+                    } else if (res.status === 401) {
+                        alert(summary || "Bạn cần đăng nhập để nộp hồ sơ.");
+                    } else if (res.status === 400 || res.status === 422) {
+                        alert(
+                            summary ||
+                                "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại."
+                        );
+                    } else {
+                        alert(summary);
+                    }
                 } else {
-                    alert(`Nộp hồ sơ thất bại (${res.status}).`);
+                    const text = typeof payload === "string" ? payload : "";
+                    if (
+                        res.status === 409 &&
+                        text.toLowerCase().includes("duplicate")
+                    ) {
+                        alert("Bạn đã ứng tuyển công việc này rồi.");
+                    } else if (res.status === 401) {
+                        alert(text || "Bạn cần đăng nhập để nộp hồ sơ.");
+                    } else {
+                        alert(text || `Nộp hồ sơ thất bại (${res.status}).`);
+                    }
                 }
                 return;
             }
-
             alert("Nộp hồ sơ thành công!");
             reset();
             onClose();
@@ -121,7 +162,7 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                     <div className="flex justify-between items-start">
                         <div>
                             <Dialog.Title className="text-lg font-semibold text-blue-600 mb-1">
-                                Ứng tuyển {jobTitle}
+                                Apply for {jobTitle}
                             </Dialog.Title>
                         </div>
                         <button
@@ -136,7 +177,7 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                         <div className="border border-gray-300 rounded-lg p-4 space-y-4">
                             <div>
                                 <p className="text-sm font-medium text-gray-700 mb-1">
-                                    Chọn CV từ máy:
+                                    Select CV:
                                 </p>
                                 <Button
                                     variant="outline"
@@ -171,13 +212,13 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                             <div className="text-sm text-gray-800 space-y-3">
                                 <div>
                                     <label className="block font-medium mb-1">
-                                        Họ và tên:
+                                        FullName:
                                     </label>
                                     <input
                                         {...register("fullName")}
                                         type="text"
                                         className="w-full border rounded-md p-2 text-sm"
-                                        placeholder="Nhập họ tên"
+                                        placeholder="Enter your fullname"
                                         disabled={submitting}
                                     />
                                     {errors.fullName && (
@@ -194,7 +235,7 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                                         {...register("email")}
                                         type="email"
                                         className="w-full border rounded-md p-2 text-sm"
-                                        placeholder="Nhập email"
+                                        placeholder="Enter email"
                                         disabled={submitting}
                                     />
                                     {errors.email && (
@@ -205,13 +246,13 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                                 </div>
                                 <div>
                                     <label className="block font-medium mb-1">
-                                        Số điện thoại:
+                                        Phone number:
                                     </label>
                                     <input
                                         {...register("phoneNumber")}
                                         type="tel"
                                         className="w-full border rounded-md p-2 text-sm"
-                                        placeholder="Nhập số điện thoại"
+                                        placeholder="Phone number"
                                         disabled={submitting}
                                     />
                                     {errors.phoneNumber && (
@@ -225,12 +266,12 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1 mt-3">
-                                Thư giới thiệu:
+                                Cover letter:
                             </label>
                             <textarea
                                 {...register("coverLetter")}
                                 rows={4}
-                                placeholder="Một thư giới thiệu ngắn gọn, chỉn chu sẽ giúp bạn gây ấn tượng..."
+                                placeholder="Well-written cover letter will help you make an impression...."
                                 className="w-full border rounded-md p-2 text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 disabled={submitting}
                             />
@@ -243,7 +284,7 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                                 onClick={onClose}
                                 disabled={submitting}
                             >
-                                Hủy
+                                Cancel
                             </Button>
                             <Button
                                 type="submit"
@@ -251,8 +292,8 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                                 disabled={submitting}
                             >
                                 {submitting
-                                    ? "Đang nộp..."
-                                    : "Nộp hồ sơ ứng tuyển"}
+                                    ? "Processing..."
+                                    : "Apply"}
                             </Button>
                         </div>
                     </form>
