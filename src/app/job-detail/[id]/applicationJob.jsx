@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import applicationSchema from "@/validation/applicationSchema";
 
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "http://18.142.226.139:8080";
 const APPLY_ENDPOINT = `${API_BASE_URL}/api/v1/application`;
 
 const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {

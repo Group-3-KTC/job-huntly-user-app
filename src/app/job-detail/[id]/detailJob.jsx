@@ -52,13 +52,11 @@ export default function DetailJob({ job }) {
     const guardOr = useCallback(async (action) => {
         const logged = await isLoggedIn();
         if (!logged) {
-            // chỉ mở login prompt — KHÔNG chạy action
             setShowLoginPrompt(true);
             setShowApplyModal(false);
             setShowReportModal(false);
             return;
         }
-        // đã đăng nhập → chạy action và đảm bảo đóng login prompt
         setShowLoginPrompt(false);
         action?.();
     }, []);
