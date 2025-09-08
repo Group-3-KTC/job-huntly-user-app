@@ -5,32 +5,75 @@ import { setSelectedTemplateId } from "@/features/templateCv/cvTemplateSlice";
 import { useGetAllTemplatesQuery } from "@/services/cvTemplateService";
 import PreviewCv from "./PreviewCv";
 import { useEffect } from "react";
+import LoadingScreen from "@/components/ui/loadingScreen";
+import { selectNormalizedProfile, selectProfileCompletion, setCompletion, setNormalizedProfile } from "@/features/profile/profileSlice";
+import { calculateProfileCompletion } from "@/features/profile/profileCompletion";
+import { normalizeProfileData } from "@/features/profile/normalizeProfileData";
+import { useGetCombinedProfileQuery } from "@/services/profileService";
+import { CircleAlert, CircleCheckBig } from "lucide-react";
 
 export default function ManageCv() {
     const dispatch = useDispatch();
+    const { data: combined, isSuccess } = useGetCombinedProfileQuery();
     const { data: templates = [], isLoading } = useGetAllTemplatesQuery();
+
     const selectedTemplateId = useSelector(
         (state) => state.cvTemplate.selectedTemplateId
     );
 
+    const completion = useSelector(selectProfileCompletion);
     const selectedTemplate = templates.find(
         (tpl) => tpl.id === selectedTemplateId
     );
 
+    // choose template default  
     useEffect(() => {
         if (!isLoading && templates.length > 0 && !selectedTemplateId) {
             dispatch(setSelectedTemplateId(templates[0].id));
         }
     }, [isLoading, templates, selectedTemplateId, dispatch]);
 
-    if (isLoading) return <p>Loading templates...</p>;
+    // normalize profile
+    useEffect(() => {
+        if (isSuccess && combined) {
+            const normalized = normalizeProfileData(combined);
+            dispatch(setNormalizedProfile(normalized));
+            dispatch(setCompletion(calculateProfileCompletion(normalized)));
+        }
+    }, [isSuccess, combined, dispatch]);
+
+    if (isLoading) return <LoadingScreen message="Loading ..." />;
 
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="mb-4 text-lg font-bold text-gray-800">
-                    Choose Your CV Template
-                </h2>
+                <div className="px-6 py-4 mb-4 border-b border-gray-100 bg-gradient-to-r from-blue-200 to-indigo-50 rounded-xl">
+                    <div className="flex justify-between max-w-6xl mx-auto">
+                        <h1 className="pl-4 text-2xl font-bold text-gray-900 border-l-4 border-blue-800">
+                            Cv Templates
+                        </h1>
+                        <h1 className="flex items-center gap-2 pl-4 text-2xl font-bold text-gray-900">
+                            {completion.percent < 100 ? (
+                                <>
+                                    {completion.percent}%{" Profile state"}
+                                    {completion.percent < 70 ? (
+                                        <>
+                                            <span className="text-gray-600">
+                                                complete your profile
+                                            </span>
+                                            <CircleAlert className="w-6 h-6 text-yellow-500" />
+                                        </>
+                                    ) : null}
+                                </>
+                            ) : (
+                                <>
+                                    100%
+                                    <CircleCheckBig className="w-6 h-6 text-blue-800" />
+                                </>
+                            )}
+                        </h1>
+                    </div>
+                </div>
                 <div className="flex flex-wrap gap-4">
                     {templates.map((tpl) => {
                         const isSelected = tpl.id === selectedTemplateId;
@@ -76,6 +119,7 @@ export default function ManageCv() {
                     <PreviewCv
                         templateId={selectedTemplate.id}
                         templateName={selectedTemplate.name}
+                        completionPercent={completion.percent}
                     />
                 </div>
             )}

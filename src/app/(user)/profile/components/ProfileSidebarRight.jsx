@@ -85,7 +85,7 @@ export default function ProfileSidebarRight() {
                     ) : (
                         <p className="flex items-center justify-center gap-2 text-red-600">
                             <AlertCircle size={18} /> Need {70 - percent}% more
-                            to unlock CV
+                            to complete CV
                         </p>
                     )}
                 </div>

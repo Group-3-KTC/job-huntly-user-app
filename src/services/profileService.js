@@ -56,7 +56,7 @@ export const profileApi = createApi({
 
         getProfile: builder.query({
             query: () => ({ url: "" }),
-            providesTags: ["Profile"],
+            providesTags: ["profile"],
         }),
         updateProfile: builder.mutation({
             query: (body) => ({ url: "", method: "PUT", body }),

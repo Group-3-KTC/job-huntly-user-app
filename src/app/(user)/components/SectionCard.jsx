@@ -104,6 +104,7 @@ export default function SectionCard({
                                 src={imageSrc}
                                 alt={imageAlt || title}
                                 fill
+                                sizes="24"
                                 className="object-contain"
                             />
                         </div>
