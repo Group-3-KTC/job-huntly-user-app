@@ -11,10 +11,15 @@ import {
     LayoutDashboard,
     Briefcase,
 } from "lucide-react";
+import { selectAuthUser } from "@/features/auth/authSelectors";
+import { useDispatch, useSelector } from "react-redux";
 import {
-    selectAuthUser,
-} from "@/features/auth/authSelectors";
-import {  useSelector } from "react-redux";
+    selectPersonalDetail,
+    setPersonalDetail,
+} from "@/features/profile/personalDetailSlice";
+import { useGetCombinedProfileQuery } from "@/services/profileService";
+import { normalizeProfileData } from "@/features/profile/normalizeProfileData";
+import { useEffect } from "react";
 
 const navItems = [
     {
@@ -56,8 +61,18 @@ const navItems = [
 
 export default function CandidateSidebar() {
     const pathname = usePathname();
-    const user = useSelector(selectAuthUser);
-    
+    const dispatch = useDispatch();
+    const personalDetail = useSelector(selectPersonalDetail);
+
+    const { data, isSuccess } = useGetCombinedProfileQuery();
+
+    useEffect(() => {
+        if (isSuccess && data) {
+            const normalized = normalizeProfileData(data);
+            dispatch(setPersonalDetail(normalized.personalDetail));
+        }
+    }, [isSuccess, data, dispatch]);
+
     return (
         <aside className="hidden w-full mr-6 lg:block ">
             <div className="bg-white shadow-md rounded-xl ">
@@ -68,7 +83,7 @@ export default function CandidateSidebar() {
                                 Welcome
                             </p>
                             <h3 className="text-2xl font-bold text-gray-900">
-                                {user.fullName}
+                                {personalDetail?.fullName}
                             </h3>
                         </div>
                     </div>

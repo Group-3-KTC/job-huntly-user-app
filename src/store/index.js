@@ -11,10 +11,12 @@ import savedCompaniesReducer from "@/features/savedCompanies/savedCompaniesSlice
 import cvTemplateReducer from "@/features/templateCv/cvTemplateSlice"; 
 import { cvTemplateApi } from "@/services/cvTemplateService";
 import { attachStore } from "@/lib/api";
+import personalDetailReducer from "@/features/profile/personalDetailSlice";
 
 export const store = configureStore({
     reducer: {
         profile: profileReducer,
+        personalDetail: personalDetailReducer,
         auth: authReducer,
         application: applicationReducer,
         toast: toastSlice,
@@ -42,9 +44,7 @@ export const store = configureStore({
                     "cvTemplateApi/executeQuery/rejected",
                 ],
                 ignoredActionsPaths: ["payload", "meta.baseQueryMeta"],
-                ignoredPaths: [
-                    "cvTemplateApi",
-                ],
+                ignoredPaths: ["cvTemplateApi"],
             },
         }).concat(
             jobApi.middleware,

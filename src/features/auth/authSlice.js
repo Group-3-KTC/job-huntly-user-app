@@ -43,20 +43,7 @@ export const logoutThunk = createAsyncThunk(
         try {
             await authService.logout();
 
-            dispatch(
-                profileApi.util.invalidateTags([
-                    "combinedProfile",
-                    "profile",
-                    "candidateSkills",
-                    "softSkills",
-                    "education",
-                    "workExperience",
-                    "certificates",
-                    "awards",
-                ])
-            );
             
-            dispatch(clearNormalizedProfile());
 
             return true;
         } catch (err) {

@@ -1,16 +1,49 @@
 "use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { FileText, LayoutTemplate, Send, Heart, Paperclip } from "lucide-react";
+import { Send, Heart } from "lucide-react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useGetCombinedProfileQuery } from "@/services/profileService";
+import {
+    setNormalizedProfile,
+    setCompletion,
+    selectNormalizedProfile,
+    selectProfileCompletion,
+} from "@/features/profile/profileSlice";
+import { calculateProfileCompletion } from "@/features/profile/profileCompletion";
+import { normalizeProfileData } from "@/features/profile/normalizeProfileData";
+import LoadingScreen from "@/components/ui/loadingScreen";
 
 export default function CandidateDashboard() {
+    const dispatch = useDispatch();
+    const { data: combined, isSuccess } = useGetCombinedProfileQuery();
+    console.log(combined);
+
+    const normalizedProfile = useSelector(selectNormalizedProfile);
+    const completion = useSelector(selectProfileCompletion);
+
+    useEffect(() => {
+        if (isSuccess && combined) {
+            const normalized = normalizeProfileData(combined);
+            dispatch(setNormalizedProfile(normalized));
+            dispatch(setCompletion(calculateProfileCompletion(normalized)));
+        }
+    }, [isSuccess, combined, dispatch]);
+
+    if (!normalizedProfile) {
+        return <LoadingScreen message="Loading ..." />;
+    }
+
     return (
         <div className="flex flex-col gap-6">
             {/* Profile Section */}
             <div className="flex items-center gap-4 p-6 bg-white rounded-lg shadow-sm">
                 <Image
-                    src="/images/avatar-sample.jpg"
+                    src={
+                        normalizedProfile.personalDetail.avatar ||
+                        "/placeholder.svg?height=64&width=64"
+                    }
                     alt="Avatar"
                     width={64}
                     height={64}
@@ -18,87 +51,72 @@ export default function CandidateDashboard() {
                 />
                 <div className="flex-1">
                     <h2 className="text-lg font-bold text-gray-900">
-                        Hoang Phuc Vo
+                        {normalizedProfile.personalDetail.fullName}
                     </h2>
-                    <p className="text-sm text-gray-600">hehe</p>
-                    <p className="text-sm text-gray-600">
-                        phuc111239@gmail.com
+                    <p className="text-base font-semibold text-gray-600">
+                        {normalizedProfile.personalDetail.email}
                     </p>
                     <Link
                         href="/profile"
-                        className="inline-block mt-1 text-sm text-color-primary-main"
+                        className="inline-block mt-1 text-sm font-medium text-color-primary-main hover:text-blue-800 hover:font-semibold"
                     >
                         Update your profile &gt;
                     </Link>
                 </div>
             </div>
 
-            {/* CV Section */}
-            <div className="p-6 bg-white rounded-lg shadow-sm">
-                <h3 className="mb-2 text-base font-semibold text-gray-800">
-                    Your Attached CV
-                </h3>
-                <div className="flex items-center gap-3 p-4 bg-gray-100 border border-gray-200 rounded-lg">
-                    <div className="p-2 bg-orange-100 rounded-full text-color-primary-accent">
-                        <FileText className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1">
-                        <a
-                            href="profile"
-                            className="text-sm font-semibold text-gray-900 hover:underline"
-                        >
-                            CV Võ Hoàng Phúc - Intern FrontEnd 2.pdf
-                        </a>
-                        <p className="text-xs text-gray-500">
-                            Last uploaded: 23/07/2025
-                        </p>
-                    </div>
-                    <Link
-                        href="profile/applications"
-                        className="text-sm text-color-primary-main whitespace-nowrap"
-                    >
-                        Manage CV attachment &gt;
-                    </Link>
-                </div>
-            </div>
-
-            {/* ITviec Profile Completion */}
+            {/* Profile Completion */}
             <div className="p-6 bg-white rounded-lg shadow-sm">
                 <h3 className="mb-4 text-base font-semibold text-gray-800">
                     Complete your profile
                 </h3>
                 <div className="flex flex-col items-center gap-6 sm:flex-row">
-                    {/* Circle Progress */}
                     <div className="relative w-24 h-24">
-                        <svg className="w-full h-full">
+                        <svg className="w-24 h-24">
                             <circle
                                 cx="48"
                                 cy="48"
-                                r="38"
-                                fill="none"
-                                stroke="#f3f4f6"
+                                r="40"
+                                stroke="#e5e7eb"
                                 strokeWidth="8"
+                                fill="transparent"
                             />
                             <circle
                                 cx="48"
                                 cy="48"
-                                r="38"
-                                fill="none"
-                                stroke="#e67600"
+                                r="40"
+                                stroke="url(#gradient)"
                                 strokeWidth="8"
-                                strokeDasharray="238"
-                                strokeDashoffset="88"
-                                transform="rotate(-90 48 48)"
+                                fill="transparent"
+                                strokeDasharray={2 * Math.PI * 40}
+                                strokeDashoffset={
+                                    2 * Math.PI * 40 -
+                                    (2 * Math.PI * 40 * completion.percent) /
+                                        100
+                                }
+                                strokeLinecap="round"
+                                className="transition-all duration-500"
                             />
+                            <defs>
+                                <linearGradient
+                                    id="gradient"
+                                    x1="0%"
+                                    y1="0%"
+                                    x2="100%"
+                                    y2="0%"
+                                >
+                                    <stop offset="0%" stopColor="#2563eb" />
+                                    <stop offset="100%" stopColor="#3b82f6" />
+                                </linearGradient>
+                            </defs>
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
                             <span className="text-sm font-semibold text-gray-800">
-                                63%
+                                {completion.percent}%
                             </span>
                         </div>
                     </div>
 
-                    {/* Text */}
                     <div className="flex-1">
                         <p className="mb-1 text-sm text-gray-700">
                             Reach{" "}
@@ -117,8 +135,8 @@ export default function CandidateDashboard() {
                     </div>
                 </div>
             </div>
-
-            {/* Activity Stats */}
+            
+            {/* Activities */}
             <div className="p-6 bg-white rounded-lg shadow-sm">
                 <h3 className="mb-4 text-base font-semibold text-gray-800">
                     Your Activities
@@ -127,18 +145,17 @@ export default function CandidateDashboard() {
                     <div className="flex flex-col items-center p-4 text-blue-600 bg-blue-100 rounded">
                         <Send className="w-6 h-6 mb-1" />
                         <p className="text-sm">Applied Jobs</p>
-                        <p className="text-2xl font-bold">0</p>
+                        <p className="text-2xl font-bold">
+                            {normalizedProfile.appliedJobs ?? 0}
+                        </p>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-orange-100 rounded text-color-primary-accent">
                         <Heart className="w-6 h-6 mb-1" />
                         <p className="text-sm">Saved Jobs</p>
-                        <p className="text-2xl font-bold">0</p>
+                        <p className="text-2xl font-bold">
+                            {normalizedProfile.savedJobs ?? 0}
+                        </p>
                     </div>
-                    {/* <div className="flex flex-col items-center p-4 text-green-600 bg-green-100 rounded">
-                        <Paperclip className="w-6 h-6 mb-1" />
-                        <p className="text-sm">Job Invitations</p>
-                        <p className="text-2xl font-bold">0</p>
-                    </div> */}
                 </div>
             </div>
         </div>
