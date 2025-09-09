@@ -107,12 +107,12 @@ export default function SearchBar() {
     };
 
     return (
-        <div className="p-6 flex justify-center mb-2">
+        <div className="flex justify-center mb-2">
             <div className="bg-white rounded-full shadow-md w-full min-h-[56px] flex items-center px-4 gap-2">
                 <Input
                     type="text"
                     placeholder="Title ..."
-                    className="flex-1 border-0 px-4 py-2 text-sm text-gray-800 focus:outline-none"
+                    className="flex-1 px-4 py-2 text-sm text-gray-800 border-0 focus:outline-none"
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
                 />
@@ -127,7 +127,7 @@ export default function SearchBar() {
                         >
                             <MapPin className="mr-1" size={14} />
                             {selectedProvince || "City"}
-                            <ChevronDown className="ml-1 h-3 w-3 opacity-50" />
+                            <ChevronDown className="w-3 h-3 ml-1 opacity-50" />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-[220px] p-0">
@@ -174,7 +174,7 @@ export default function SearchBar() {
 
                 <Button
                     variant="outline"
-                    className="ml-2 border border-red-500 text-red-700 px-5 py-2 rounded-full text-sm"
+                    className="px-5 py-2 ml-2 text-sm text-red-700 border border-red-500 rounded-full"
                     onClick={handleReset}
                 >
                     Reset

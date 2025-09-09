@@ -1,3 +1,4 @@
+
 export const dynamic = "force-dynamic";
 import React from "react";
 import DetailJob from "./detailJob";
@@ -5,6 +6,7 @@ import { getJobDetail } from "@/services/jobDetailService";
 
 export default async function JobDetailPage({ params }) {
     const { id } = params;
+
 
     try {
         const job = await getJobDetail(id);
@@ -16,7 +18,7 @@ export default async function JobDetailPage({ params }) {
         );
     } catch (error) {
         return (
-            <div className="text-red-500 text-center mt-10">
+            <div className="mt-10 text-center text-red-500">
                 Không thể tải thông tin công việc.
             </div>
         );
