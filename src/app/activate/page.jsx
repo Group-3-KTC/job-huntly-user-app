@@ -1,9 +1,11 @@
 "use client";
 
 import {useEffect, useRef, useState} from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import {useSearchParams, useRouter} from "next/navigation";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_PROXY_TARGET + process.env.NEXT_PUBLIC_API_BASE_URL;
+
+console.log("API_BASE: ", API_BASE);
 
 export default function ActivatePage() {
     const search = useSearchParams();
@@ -85,8 +87,8 @@ export default function ActivatePage() {
                     <>
                         <h1 className="text-2xl font-semibold text-red-600 mb-3">Failed</h1>
                         <p className="text-gray-700 mb-6">{message}</p>
-                        
-                        <ResendForm />
+
+                        <ResendForm/>
                     </>
                 )}
             </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React, {useState} from "react";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import Link from "next/link";
 import Image from "next/image";
 import CandidateLoginForm from "@/components/auth/CandidateLoginForm";
@@ -23,11 +23,10 @@ const LoginPage = () => {
                         <Card className="shadow-md">
                             <CardHeader className="text-center">
                                 <CardTitle className="text-2xl font-semibold">
-                                    Đăng nhập
+                                    Log In
                                 </CardTitle>
                                 <p className="text-gray-600">
-                                    Liên kết tài khoản của bạn để tiếp tục sử
-                                    dụng dịch vụ của Job Huntly
+                                    Link your account to continue using Job Huntly's services.
                                 </p>
                             </CardHeader>
                             <CardContent>
@@ -41,33 +40,33 @@ const LoginPage = () => {
                                             value="candidate"
                                             className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
                                         >
-                                            Ứng viên
+                                            Candidate
                                         </TabsTrigger>
                                         <TabsTrigger
                                             value="recruiter"
                                             className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
                                         >
-                                            Nhà tuyển dụng
+                                            Recruiter
                                         </TabsTrigger>
                                     </TabsList>
 
                                     <TabsContent value="candidate">
-                                        <CandidateLoginForm role={activeTab} />
+                                        <CandidateLoginForm role={activeTab}/>
                                     </TabsContent>
 
                                     <TabsContent value="recruiter">
-                                        <RecruiterLoginForm role={activeTab} />
+                                        <RecruiterLoginForm role={activeTab}/>
                                     </TabsContent>
                                 </Tabs>
 
                                 <div className="mt-6 text-center">
                                     <p className="text-sm text-gray-600">
-                                        Chưa có tài khoản?{" "}
+                                        Don't have an account yet?{" "}
                                         <Link
                                             href="/register"
                                             className="font-medium text-orange-500 hover:underline"
                                         >
-                                            Đăng ký ngay
+                                            Sign Up Now
                                         </Link>
                                     </p>
                                 </div>
@@ -82,7 +81,7 @@ const LoginPage = () => {
                                 {activeTab === "candidate" ? (
                                     <div>
                                         <h3 className="mb-4 text-lg font-semibold">
-                                            Chào mừng bạn đến với{" "}
+                                            Welcome to{" "}
                                             <strong className="text-blue-600">
                                                 Job Huntly
                                             </strong>
@@ -96,7 +95,7 @@ const LoginPage = () => {
                                                 className="mr-2"
                                             />
                                             <span className="text-gray-600">
-                                                | Nền tảng tìm việc hàng đầu
+                                                | The leading job search platform
                                             </span>
                                         </div>
                                         <div className="flex justify-center mb-8">
@@ -109,19 +108,16 @@ const LoginPage = () => {
                                         </div>
                                         <div className="mb-6">
                                             <h4 className="mb-2 font-semibold">
-                                                Đăng nhập ngay để tận dụng tối
-                                                đa các công cụ của Job Huntly và
-                                                gia tăng cơ hội tiếp cận việc
-                                                làm hot nhất
+                                                Log in now to get the most out of Job Huntly's tools and increase your
+                                                chances of finding the hottest jobs.
                                             </h4>
                                             <ul className="mt-4 space-y-2">
                                                 {[
-                                                    "Tạo CV chuẩn ATS",
-                                                    "Ứng tuyển nhanh chóng hơn với hồ sơ đã được lưu",
-                                                    "Quản lý hồ sơ ứng tuyển và theo dõi cập nhật trạng thái ứng tuyển",
-                                                    "Xem được mức lương cho mỗi vị trí",
-                                                    "Lưu lại công việc yêu thích để ứng tuyển sau",
-                                                    "Thực hiện bài trắc nghiệm đánh giá tính cách làm việc",
+                                                    "Create an ATS-friendly CV",
+                                                    "Apply faster with a saved profile",
+                                                    "Manage applications and track application status updates",
+                                                    "See salary ranges for each position",
+                                                    "Save favorite jobs to apply later"
                                                 ].map((benefit, index) => (
                                                     <li
                                                         key={index}
@@ -136,16 +132,14 @@ const LoginPage = () => {
                                             </ul>
                                         </div>
                                         <p className="text-sm text-gray-500">
-                                            Nếu bạn gặp khó khăn trong việc đăng
-                                            nhập / tạo tài khoản, vui lòng liên
-                                            hệ với Job Huntly qua email
-                                            contact@JobHuntly.vn
+                                            If you have trouble logging in or creating an account, please contact Job
+                                            Huntly via email at support@jobhuntly.vn
                                         </p>
                                     </div>
                                 ) : (
                                     <div>
                                         <h3 className="mb-4 text-lg font-semibold">
-                                            Chào mừng Nhà tuyển dụng đến với{" "}
+                                            Welcome to{" "}
                                             <strong className="text-blue-600">
                                                 Job Huntly
                                             </strong>
@@ -159,7 +153,7 @@ const LoginPage = () => {
                                                 className="mr-2"
                                             />
                                             <span className="text-gray-600">
-                                                | Nền tảng tìm việc hàng đầu
+                                                | Recruiting Made Simple.
                                             </span>
                                         </div>
                                         <div className="flex justify-center mb-8">
@@ -172,16 +166,13 @@ const LoginPage = () => {
                                         </div>
                                         <div className="mb-6">
                                             <h4 className="mb-2 font-semibold">
-                                                Đăng nhập để truy cập các công
-                                                cụ tuyển dụng mạnh mẽ
+                                                Log in to access powerful recruiting tools
                                             </h4>
                                             <ul className="mt-4 space-y-2">
                                                 {[
-                                                    "Đăng tin tuyển dụng miễn phí",
-                                                    "Tìm kiếm ứng viên phù hợp",
-                                                    "Quản lý hồ sơ ứng tuyển",
-                                                    "Thống kê hiệu quả tuyển dụng",
-                                                    "Hỗ trợ tư vấn tuyển dụng",
+                                                    "Post job ads for free",
+                                                    "Find suitable candidates",
+                                                    "Manage application profiles"
                                                 ].map((benefit, index) => (
                                                     <li
                                                         key={index}
