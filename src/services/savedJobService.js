@@ -1,45 +1,97 @@
-import { apiFetch } from "../app/job-detail/[id]/_utils/auth";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import api from "@/lib/api";
 
-const SAVE_JOB_BASE = "/api/v1/save-job";
-
-export const savedJobApi = {
-    async status(jobId) {
-        const url = `${SAVE_JOB_BASE}/status?${new URLSearchParams({
-            job_id: String(jobId),
-        })}`;
-        const res = await apiFetch(url, { method: "GET", cache: "no-store" });
-        if (!res || !res.ok) return false;
+const axiosBaseQuery =
+    () =>
+    async (
+        { url, method = "GET", data, headers, responseType },
+        { signal }
+    ) => {
         try {
-            const data = await res.json();
-            return typeof data === "boolean" ? data : Boolean(data?.saved);
-        } catch (e) {
-            return false;
-        }
-    },
+            const config = {
+                url: `/save-job${url || ""}`,
+                method,
+                data,
+                signal,
+                responseType: responseType || "json",
+                headers: { ...headers },
+            };
 
-    async save(jobId) {
-        const res = await apiFetch(`${SAVE_JOB_BASE}/create`, {
-            method: "POST",
-            cache: "no-store",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ job_id: jobId }),
-        });
-        if (!res || !res.ok) return null;
-        try {
-            return await res.json();
-        } catch (e) {
-            return null;
-        }
-    },
+            if (data instanceof FormData) {
+                delete config.headers?.["Content-Type"];
+            } else {
+                config.headers = {
+                    "Content-Type": "application/json",
+                    ...headers,
+                };
+            }
 
-    async unsave(jobId) {
-        const url = `${SAVE_JOB_BASE}?${new URLSearchParams({
-            job_id: String(jobId),
-        })}`;
-        const res = await apiFetch(url, {
-            method: "DELETE",
-            cache: "no-store",
-        });
-        return !!res && (res.ok || res.status === 404);
-    },
-};
+            const result = await api(config);
+            return { data: result.data };
+        } catch (axiosError) {
+            return {
+                error: {
+                    status: axiosError.response?.status,
+                    data: axiosError.response?.data || axiosError.message,
+                },
+            };
+        }
+    };
+
+export const savedJobApi = createApi({
+    reducerPath: "savedJobApi",
+    baseQuery: axiosBaseQuery(),
+    tagTypes: ["SavedJobStatus", "SavedJobList"],
+    endpoints: (builder) => ({
+        getStatus: builder.query({
+            query: (jobId) => ({
+                url: `/status?job_id=${jobId}`,
+                method: "GET",
+            }),
+            providesTags: (result, error, jobId) =>
+                result ? [{ type: "SavedJobStatus", id: jobId }] : [],
+        }),
+
+        // Save
+        saveJob: builder.mutation({
+            query: ({ jobId }) => ({
+                url: "/create",
+                method: "POST",
+                data: { job_id: jobId },
+            }),
+            invalidatesTags: (result, error, { jobId }) => [
+                { type: "SavedJobStatus", id: jobId },
+                { type: "SavedJobList" },
+            ],
+        }),
+
+        // Unsave
+        unsaveJob: builder.mutation({
+            query: (jobId) => ({
+                url: `?job_id=${jobId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, jobId) => [
+                { type: "SavedJobStatus", id: jobId },
+                { type: "SavedJobList" },
+            ],
+        }),
+
+        // Optional: Get all saved jobs by current user
+        getSavedJobsByUser: builder.query({
+            query: () => ({
+                url: "/by-user",
+                method: "GET",
+            }),
+            providesTags: ["SavedJobStatus", "SavedJobList"],
+        }),
+    }),
+});
+
+export const {
+    useGetStatusQuery,
+    useLazyGetStatusQuery, 
+    useSaveJobMutation,
+    useUnsaveJobMutation,
+    useGetSavedJobsByUserQuery,
+} = savedJobApi;
