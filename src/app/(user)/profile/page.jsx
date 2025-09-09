@@ -17,9 +17,14 @@ import { profileSectionConfigs } from "@/app/(user)/profile/components/profileSe
 import {
     setNormalizedProfile,
     selectNormalizedProfile,
+    setCompletion,
 } from "@/features/profile/profileSlice";
 import PersonalDetailModal from "../components/PersonalDetailModal";
 import CandidateSkillModal from "../components/CandidateSkillModal";
+import { calculateProfileCompletion } from "@/features/profile/profileCompletion";
+import LoadingScreen from "@/components/ui/loadingScreen";
+import { normalizeProfileData } from "@/features/profile/normalizeProfileData";
+import { setPersonalDetail } from "@/features/profile/personalDetailSlice";
 
 const sectionToEndpointMap = {
     candidateSkills: "candidateSkills",
@@ -47,7 +52,6 @@ export default function ProfilePage() {
     const [updateSectionItem] = useUpdateSectionItemMutation();
     const [deleteSectionItem] = useDeleteSectionItemMutation();
 
-    // ✅ FIX 1: Sử dụng lazy query thay vì query ngay
     const [getSectionItems] = useLazyGetSectionItemsQuery();
 
     const [isDeleting, setIsDeleting] = useState(false);
@@ -55,10 +59,8 @@ export default function ProfilePage() {
     const [currentSection, setCurrentSection] = useState(null);
     const [editingItemIndex, setEditingItemIndex] = useState(null);
 
-    // Track các section đã được refetch sau CRUD
     const [refreshedSections, setRefreshedSections] = useState(new Set());
 
-    // Các section dạng array
     const sectionIds = [
         "education",
         "candidateSkills",
@@ -68,38 +70,20 @@ export default function ProfilePage() {
         "awards",
     ];
 
-    // Load profile lần đầu từ combined query
     useEffect(() => {
         if (profileSuccess && candidateProfileData) {
-            const normalizedData = {
-                personalDetail: {
-                    id: candidateProfileData.id,
-                    fullName: candidateProfileData.fullName,
-                    title: candidateProfileData.title,
-                    email: candidateProfileData.email,
-                    dateOfBirth: candidateProfileData.dateOfBirth,
-                    phone: candidateProfileData.phone,
-                    gender: candidateProfileData.gender,
-                    personalLink: candidateProfileData.personalLink,
-                    avatar: candidateProfileData.avatar,
-                },
-                aboutMe: { text: candidateProfileData.aboutMe || "" },
-                candidateSkills: candidateProfileData.candidateSkills || [],
-                education: candidateProfileData.education || [],
-                workExperience: candidateProfileData.workExperience || [],
-                softSkills: candidateProfileData.softSkills || [],
-                certificates: candidateProfileData.certificates || [],
-                awards: candidateProfileData.awards || [],
-            };
-            dispatch(setNormalizedProfile(normalizedData));
+            const normalized = normalizeProfileData(candidateProfileData);
+            dispatch(setNormalizedProfile(normalized));
+            dispatch(setCompletion(calculateProfileCompletion(normalized)));
+            dispatch(setPersonalDetail(normalized.personalDetail));
         }
     }, [candidateProfileData, profileSuccess, dispatch]);
 
-    useEffect(() => {
-        if (!normalizedProfileData && !isProfileLoading && !profileError) {
-            refetchProfile();
-        }
-    }, [normalizedProfileData, isProfileLoading, profileError, refetchProfile]);
+    // useEffect(() => {
+    //     if (!normalizedProfileData && !isProfileLoading && !profileError) {
+    //         refetchProfile();
+    //     }
+    // }, [normalizedProfileData, isProfileLoading, profileError, refetchProfile]);
 
     const profileSectionData = getProfileSectionData(
         normalizedProfileData || {}
@@ -119,14 +103,12 @@ export default function ProfilePage() {
             : Object.keys(sectionData || {}).length > 0;
     };
 
-    // Hàm refetch section sau CRUD
     const refreshSectionAfterCRUD = async (sectionId) => {
         try {
             const { data: freshData } = await getSectionItems(
                 sectionId
             ).unwrap();
 
-            // Update normalized data với fresh data
             if (freshData && normalizedProfileData) {
                 const updatedProfile = {
                     ...normalizedProfileData,
@@ -175,8 +157,6 @@ export default function ProfilePage() {
                         itemId: itemId,
                     }).unwrap();
 
-                    // Refresh section sau khi delete
-                    // await refreshSectionAfterCRUD(section.id);
                     alert("Item deleted successfully");
                     await refetchProfile();
                 } else {
@@ -269,7 +249,9 @@ export default function ProfilePage() {
                 await updateCandidateProfile(formData).unwrap();
                 alert("Profile updated successfully");
 
-                await refetchProfile();
+                const updated = await refetchProfile();
+                const normalized = normalizeProfileData(updated.data);
+                dispatch(setPersonalDetail(normalized.personalDetail));
             } else if (isArraySection(currentSection.id)) {
                 if (editingItemIndex !== null) {
                     const itemId =
@@ -307,8 +289,8 @@ export default function ProfilePage() {
             setCurrentSection(null);
             setEditingItemIndex(null);
         } catch (error) {
-            console.error("Save error:", error);
-            if (error.status === 401) {
+            // be chưa catch 401 (làm sau)
+            if (error.status === 500) {
                 alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
                 window.location.href = "/login";
             } else {
@@ -320,15 +302,13 @@ export default function ProfilePage() {
         }
     };
 
-
-
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setCurrentSection(null);
         setEditingItemIndex(null);
     };
 
-    if (isProfileLoading) return <div>Loading...</div>;
+    if (isProfileLoading) return <LoadingScreen message="Loading ..." />;
 
     if (profileError) {
         if (profileError.status === 401) {

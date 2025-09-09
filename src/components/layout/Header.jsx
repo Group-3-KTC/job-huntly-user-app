@@ -11,13 +11,7 @@ import {
     TrendingUp,
     Eye,
     Headphones,
-    User,
     Bell,
-    FileText,
-    Briefcase,
-    Heart,
-    Settings,
-    LogOut,
     Menu,
     X,
     ChevronLeft,
@@ -32,21 +26,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { Badge } from "@/components/ui/badge";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
     selectAuthHydrated,
     selectAuthLoading,
     selectAuthUser,
     selectIsLoggedIn,
 } from "@/features/auth/authSelectors";
 import { logoutThunk } from "@/features/auth/authSlice";
+import ProfileDropdown from "../ui/ProfileDropdown";
 
 export const Header = () => {
     const dispatch = useDispatch();
@@ -244,7 +230,7 @@ export const Header = () => {
                 Bài viết nổi bật
             </div>
             {/* mobile: 1 cột; md+: 2 cột */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mb-4">
+            <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">
                 <div className="flex gap-3">
                     <div className="flex-shrink-0 w-16 h-16 bg-gray-200 rounded"></div>
                     <div>
@@ -343,7 +329,11 @@ export const Header = () => {
                     className="flex items-center justify-center p-2 mr-2 text-white rounded lg:hidden hover:bg-white/20"
                     onClick={toggleMobile}
                 >
-                    {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                    {mobileOpen ? (
+                        <X className="w-6 h-6" />
+                    ) : (
+                        <Menu className="w-6 h-6" />
+                    )}
                 </button>
 
                 {/* Logo */}
@@ -360,7 +350,7 @@ export const Header = () => {
                 </Link>
 
                 {/* Navigation desktop */}
-                <nav className="hidden lg:flex justify-between w-full ml-8">
+                <nav className="justify-between hidden w-full ml-8 lg:flex">
                     {/* Left Navigation */}
                     <div className="relative" onMouseLeave={handleMouseLeave}>
                         <ul className="flex items-center space-x-1">
@@ -437,85 +427,11 @@ export const Header = () => {
 
                                 {/* Profile Dropdown */}
                                 <li>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                className="flex items-center py-6 text-white hover:bg-white/20"
-                                            >
-                                                <Avatar>
-                                                    <AvatarImage
-                                                        src={
-                                                            user?.avatar ||
-                                                            "/placeholder.svg?height=32&width=32"
-                                                        }
-                                                        alt="User Avatar"
-                                                    />
-                                                    <AvatarFallback className="bg-white text-[#0a66c2] text-sm font-semibold">
-                                                        {getUserInitials(
-                                                            user?.fullName,
-                                                        )}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <ChevronDown className="w-2 h-2" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent
-                                            className="w-56"
-                                            align="end"
-                                        >
-                                            <DropdownMenuLabel>
-                                                <div className="flex flex-col space-y-4">
-                                                    <p className="text-lg font-medium ">
-                                                        {user?.name ||
-                                                            user?.fullName ||
-                                                            "User"}
-                                                    </p>
-                                                    <p className="text-xs text-gray-500">
-                                                        {user?.email ||
-                                                            "user@example.com"}
-                                                    </p>
-                                                </div>
-                                            </DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem
-                                                className="cursor-pointer"
-                                                onClick={handleProfileClick}
-                                            >
-                                                <User className="w-4 h-4 mr-2" />
-
-                                                <span>Profile</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem className="cursor-pointer">
-                                                <FileText className="w-4 h-4 mr-2" />
-                                                <span>Manage CV</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem className="cursor-pointer">
-                                                <Briefcase className="w-4 h-4 mr-2" />
-                                                <span>My Jobs</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem className="cursor-pointer">
-                                                <Heart className="w-4 h-4 mr-2" />
-                                                <span>Saved Jobs</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem className="cursor-pointer">
-                                                <Bell className="w-4 h-4 mr-2" />
-                                                <span>Notifications</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem className="cursor-pointer">
-                                                <Settings className="w-4 h-4 mr-2" />
-                                                <span>Settings</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem
-                                                className="text-red-600 cursor-pointer focus:text-red-600"
-                                                onClick={handleLogout}
-                                            >
-                                                <LogOut className="w-4 h-4 mr-2" />
-                                                <span>Logout</span>
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <ProfileDropdown
+                                        user={user}
+                                        onLogout={handleLogout}
+                                        getUserInitials={getUserInitials}
+                                    />
                                 </li>
 
                                 {/* khi nào check role recruiter thì hiện */}
@@ -543,25 +459,37 @@ export const Header = () => {
 
             {/* OVERLAY MOBILE */}
             {mobileOpen && (
-                <div className="lg:hidden fixed inset-0 bg-white z-50 flex flex-col">
+                <div className="fixed inset-0 z-50 flex flex-col bg-white lg:hidden">
                     {/* BAR TRÊN CÙNG */}
-                    <div className="flex items-center justify-between h-14 px-4 border-b">
+                    <div className="flex items-center justify-between px-4 border-b h-14">
                         {/* Back hoặc Logo */}
                         {mobilePage ? (
-                            <button onClick={() => setMobilePage(null)} className="-ml-2 p-2">
+                            <button
+                                onClick={() => setMobilePage(null)}
+                                className="p-2 -ml-2"
+                            >
                                 <ChevronLeft className="w-5 h-5" />
                             </button>
                         ) : (
                             <Link href="/" onClick={() => setMobileOpen(false)}>
-                                <Image src={logo} alt="logo" height={32} className="h-8 w-auto" />
+                                <Image
+                                    src={logo}
+                                    alt="logo"
+                                    height={32}
+                                    className="w-auto h-8"
+                                />
                             </Link>
                         )}
 
-                        <span className="font-semibold text-base truncate">
-                            {navItems.find((i) => i.key === mobilePage)?.label || ""}
+                        <span className="text-base font-semibold truncate">
+                            {navItems.find((i) => i.key === mobilePage)
+                                ?.label || ""}
                         </span>
 
-                        <button onClick={() => setMobileOpen(false)} className="-mr-2 p-2">
+                        <button
+                            onClick={() => setMobileOpen(false)}
+                            className="p-2 -mr-2"
+                        >
                             <X className="w-6 h-6" />
                         </button>
                     </div>
@@ -569,13 +497,15 @@ export const Header = () => {
                     {/* NỘI DUNG CUỘN */}
                     <div className="flex-1 overflow-y-auto">
                         {/* TRANG GỐC: danh mục */}
-                        {!mobilePage &&
+                        {!mobilePage && (
                             <ul className="divide-y">
                                 {navItems.map((item) => (
                                     <li key={item.key}>
                                         <button
                                             className="w-full flex items-center justify-between px-4 py-4 text-[17px] font-medium"
-                                            onClick={() => setMobilePage(item.key)}
+                                            onClick={() =>
+                                                setMobilePage(item.key)
+                                            }
                                         >
                                             <span>{item.label}</span>
                                             <ChevronRight className="w-5 h-5 text-gray-500" />
@@ -583,19 +513,19 @@ export const Header = () => {
                                     </li>
                                 ))}
                             </ul>
-                        }
+                        )}
 
                         {/* TRANG CON: render trực tiếp dropdownContent */}
-                        {mobilePage &&
+                        {mobilePage && (
                             <div className="p-4 space-y-4">
                                 {dropdownContent[mobilePage]}
                             </div>
-                        }
+                        )}
                     </div>
 
                     {/* ACTION ĐĂNG NHẬP / ĐĂNG KÝ / ĐĂNG XUẤT – chỉ ở trang gốc */}
                     {!mobilePage && (
-                        <div className="border-t p-4 space-y-2">
+                        <div className="p-4 space-y-2 border-t">
                             {!isLoggedIn ? (
                                 <>
                                     <button
@@ -614,7 +544,7 @@ export const Header = () => {
                             ) : (
                                 <button
                                     onClick={handleLogout}
-                                    className="block w-full py-3 text-center font-semibold text-red-600 border border-red-600 rounded"
+                                    className="block w-full py-3 font-semibold text-center text-red-600 border border-red-600 rounded"
                                 >
                                     Đăng xuất
                                 </button>
