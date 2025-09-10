@@ -12,6 +12,8 @@ import cvTemplateReducer from "@/features/templateCv/cvTemplateSlice";
 import { cvTemplateApi } from "@/services/cvTemplateService";
 import { attachStore } from "@/lib/api";
 import personalDetailReducer from "@/features/profile/personalDetailSlice";
+import { savedJobApi } from "@/services/savedJobService";
+import loginPromptReducer from "@/features/auth/loginPromptSlice";
 
 export const store = configureStore({
     reducer: {
@@ -22,11 +24,13 @@ export const store = configureStore({
         toast: toastSlice,
         savedCompanies: savedCompaniesReducer,
         cvTemplate: cvTemplateReducer,
+        loginPrompt: loginPromptReducer,
         [cvTemplateApi.reducerPath]: cvTemplateApi.reducer,
         [jobApi.reducerPath]: jobApi.reducer,
         [profileApi.reducerPath]: profileApi.reducer,
         [applicationApi.reducerPath]: applicationApi.reducer,
         [savedCompaniesApi.reducerPath]: savedCompaniesApi.reducer,
+        [savedJobApi.reducerPath]: savedJobApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
@@ -51,7 +55,8 @@ export const store = configureStore({
             profileApi.middleware,
             applicationApi.middleware,
             savedCompaniesApi.middleware,
-            cvTemplateApi.middleware
+            cvTemplateApi.middleware,
+            savedJobApi.middleware
         ),
 });
 

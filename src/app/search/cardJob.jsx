@@ -2,23 +2,26 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Heart, HeartIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useJobSearchStore } from "@/store/jobSearchStore";
 import { useSearchJobsMutation } from "@/services/jobService";
+import JobCardItem from "./JobCardItem";
+import { toast } from "react-toastify";
+import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
+import { useDispatch } from "react-redux";
 
 export default function CardJob() {
     const [list, setList] = useState([]);
-    const [liked, setLiked] = useState({});
     const router = useRouter();
-
+    const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
     const jobsPerPage = 10;
 
     const { searchTerm, filters } = useJobSearchStore();
-
     const [searchJobs, { isLoading, error }] = useSearchJobsMutation();
     const debounceRef = useRef(null);
+
     const payload = useMemo(() => {
         const {
             keyword = "",
@@ -29,9 +32,7 @@ export default function CardJob() {
         return {
             keyword: keyword || undefined,
             companyName: companyName || undefined,
-
             cityName: province || undefined,
-
             categoryNames: filters?.categories?.length
                 ? filters.categories
                 : undefined,
@@ -46,11 +47,9 @@ export default function CardJob() {
             matchAllLevels: false,
             matchAllWorkTypes: false,
             matchAllWards: false,
-
             salaryMin: undefined,
             salaryMax: undefined,
-
-            postedFrom: undefined, 
+            postedFrom: undefined,
             postedTo: undefined,
         };
     }, [searchTerm, filters]);
@@ -79,6 +78,7 @@ export default function CardJob() {
                 setList(normalized);
                 setCurrentPage(1);
             } catch (e) {
+                console.error(e);
             }
         }, 300);
 
@@ -87,9 +87,6 @@ export default function CardJob() {
         };
     }, [payload, searchJobs]);
 
-    const toggleLike = (jobId) => {
-        setLiked((prev) => ({ ...prev, [jobId]: !prev[jobId] }));
-    };
     const totalPages = Math.ceil(list.length / jobsPerPage) || 1;
     const startIndex = (currentPage - 1) * jobsPerPage;
     const paginatedJobs = list.slice(startIndex, startIndex + jobsPerPage);
@@ -104,6 +101,15 @@ export default function CardJob() {
             </p>
         );
 
+    const handleNeedLogin = () => {
+        toast.error("Bạn cần đăng nhập để lưu job");
+    };
+    const handleToast = (msg, type) => {
+        if (type === "success") toast.success(msg);
+        if (type === "neutral") toast.info(msg);
+        if (type === "error") toast.error(msg);
+    };
+
     return (
         <div className="w-full max-w-[1000px] bg-white p-6 rounded-xl shadow-md space-y-6 mx-auto">
             {list.length === 0 ? (
@@ -112,71 +118,17 @@ export default function CardJob() {
                 </p>
             ) : (
                 paginatedJobs.map((job) => (
-                    <div
+                    <JobCardItem
                         key={job.id}
-                        className="border rounded-lg p-5 shadow space-y-3"
-                    >
-                        <div className="flex items-center justify-between flex-wrap gap-4">
-                            <div className="flex items-start gap-4 w-full md:w-auto">
-                                <img
-                                    src={job.avatar}
-                                    alt="Logo"
-                                    className="w-20 h-20 rounded object-contain object-center"
-                                />
-                                <div className="space-y-1">
-                                    <h3
-                                        className="font-semibold text-lg text-[#0a66c2] hover:underline cursor-pointer"
-                                        onClick={() =>
-                                            router.push(`/job-detail/${job.id}`)
-                                        }
-                                    >
-                                        {job.title}
-                                    </h3>
-                                    <p className="text-sm text-gray-600 font-medium">
-                                        {job.companyName}
-                                    </p>
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                        {job.skill.map((skill, index) => (
-                                            <span
-                                                key={index}
-                                                className="bg-white border border-[#0a66c2] text-[#0a66c2] text-xs px-2 py-1 rounded-full"
-                                            >
-                                                {skill}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    className="bg-[#0a66c2] text-white px-4 py-1 rounded-full"
-                                    onClick={() =>
-                                        router.push(`/job-detail/${job.id}`)
-                                    }
-                                >
-                                    Job Detail
-                                </Button>
-                                <button
-                                    onClick={() => toggleLike(job.id)}
-                                    className="text-gray-400 hover:text-red-500 transition-colors"
-                                >
-                                    {liked[job.id] ? (
-                                        <HeartIcon
-                                            size={16}
-                                            className="text-red-500 fill-red-500"
-                                        />
-                                    ) : (
-                                        <Heart size={16} />
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                        job={job}
+                        onNeedLogin={() => dispatch(showLoginPrompt())}
+                        onToast={handleToast}
+                    />
                 ))
             )}
 
             {/* Pagination Controls */}
-            <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
                 <Button
                     variant="outline"
                     size="icon"

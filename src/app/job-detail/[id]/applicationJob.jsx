@@ -8,8 +8,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import applicationSchema from "@/validation/applicationSchema";
 
-const API_BASE_URL = "http://18.142.226.139:8080";
-const APPLY_ENDPOINT = `${API_BASE_URL}/api/v1/application`;
+const APPLY_ENDPOINT = `/api/v1/application`;
 
 const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
     const fileInputRef = useRef(null);
@@ -44,11 +43,11 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
 
     const onSubmit = async (data) => {
         if (!jobId) {
-            alert("Thiếu jobId để nộp hồ sơ. Vui lòng thử lại.");
+            toast.error("Thiếu jobId để nộp hồ sơ. Vui lòng thử lại.");
             return;
         }
         if (!data.cvFile) {
-            alert("Bạn chưa chọn tệp CV.");
+            toast.warning("Bạn chưa chọn tệp CV.");
             return;
         }
 
@@ -117,16 +116,20 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                         `Yêu cầu thất bại (${res.status}).`;
 
                     if (res.status === 409) {
-                        alert(summary || "Bạn đã ứng tuyển công việc này rồi.");
+                        toast.info(
+                            summary || "Bạn đã ứng tuyển công việc này rồi."
+                        );
                     } else if (res.status === 401) {
-                        alert(summary || "Bạn cần đăng nhập để nộp hồ sơ.");
+                        toast.error(
+                            summary || "Bạn cần đăng nhập để nộp hồ sơ."
+                        );
                     } else if (res.status === 400 || res.status === 422) {
-                        alert(
+                        toast.warning(
                             summary ||
                                 "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại."
                         );
                     } else {
-                        alert(summary);
+                        toast.error(summary);
                     }
                 } else {
                     const text = typeof payload === "string" ? payload : "";
@@ -134,21 +137,25 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                         res.status === 409 &&
                         text.toLowerCase().includes("duplicate")
                     ) {
-                        alert("Bạn đã ứng tuyển công việc này rồi.");
+                        toast.info(
+                             "Bạn đã ứng tuyển công việc này rồi."
+                        );
                     } else if (res.status === 401) {
-                        alert(text || "Bạn cần đăng nhập để nộp hồ sơ.");
+                        toast.error(
+                             "Bạn cần đăng nhập để nộp hồ sơ."
+                        );
                     } else {
-                        alert(text || `Nộp hồ sơ thất bại (${res.status}).`);
+                        toast.error(text || `Nộp hồ sơ thất bại (${res.status}).`);
                     }
                 }
                 return;
             }
-            alert("Nộp hồ sơ thành công!");
+            toast.success("Nộp hồ sơ thành công!");
             reset();
             onClose();
         } catch (err) {
             console.error(err);
-            alert("Có lỗi xảy ra khi nộp hồ sơ.");
+            toast.error("Có lỗi xảy ra khi nộp hồ sơ.");
         } finally {
             setSubmitting(false);
         }
@@ -159,9 +166,9 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
             <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
             <div className="fixed inset-0 flex items-center justify-center p-4">
                 <Dialog.Panel className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto">
-                    <div className="flex justify-between items-start">
+                    <div className="flex items-start justify-between">
                         <div>
-                            <Dialog.Title className="text-lg font-semibold text-blue-600 mb-1">
+                            <Dialog.Title className="mb-1 text-lg font-semibold text-blue-600">
                                 Apply for {jobTitle}
                             </Dialog.Title>
                         </div>
@@ -174,9 +181,9 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <div className="border border-gray-300 rounded-lg p-4 space-y-4">
+                        <div className="p-4 space-y-4 border border-gray-300 rounded-lg">
                             <div>
-                                <p className="text-sm font-medium text-gray-700 mb-1">
+                                <p className="mb-1 text-sm font-medium text-gray-700">
                                     Select CV:
                                 </p>
                                 <Button
@@ -195,7 +202,7 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                                     className="hidden"
                                 />
                                 {selectedFile && (
-                                    <p className="text-sm mt-2 text-gray-700">
+                                    <p className="mt-2 text-sm text-gray-700">
                                         Tệp đã chọn:{" "}
                                         <span className="font-medium">
                                             {selectedFile.name}
@@ -203,60 +210,60 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                                     </p>
                                 )}
                                 {errors.cvFile && (
-                                    <p className="text-red-500 text-sm mt-1">
+                                    <p className="mt-1 text-sm text-red-500">
                                         {errors.cvFile.message}
                                     </p>
                                 )}
                             </div>
 
-                            <div className="text-sm text-gray-800 space-y-3">
+                            <div className="space-y-3 text-sm text-gray-800">
                                 <div>
-                                    <label className="block font-medium mb-1">
+                                    <label className="block mb-1 font-medium">
                                         FullName:
                                     </label>
                                     <input
                                         {...register("fullName")}
                                         type="text"
-                                        className="w-full border rounded-md p-2 text-sm"
+                                        className="w-full p-2 text-sm border rounded-md"
                                         placeholder="Enter your fullname"
                                         disabled={submitting}
                                     />
                                     {errors.fullName && (
-                                        <p className="text-red-500 text-sm mt-1">
+                                        <p className="mt-1 text-sm text-red-500">
                                             {errors.fullName.message}
                                         </p>
                                     )}
                                 </div>
                                 <div>
-                                    <label className="block font-medium mb-1">
+                                    <label className="block mb-1 font-medium">
                                         Email:
                                     </label>
                                     <input
                                         {...register("email")}
                                         type="email"
-                                        className="w-full border rounded-md p-2 text-sm"
+                                        className="w-full p-2 text-sm border rounded-md"
                                         placeholder="Enter email"
                                         disabled={submitting}
                                     />
                                     {errors.email && (
-                                        <p className="text-red-500 text-sm mt-1">
+                                        <p className="mt-1 text-sm text-red-500">
                                             {errors.email.message}
                                         </p>
                                     )}
                                 </div>
                                 <div>
-                                    <label className="block font-medium mb-1">
+                                    <label className="block mb-1 font-medium">
                                         Phone number:
                                     </label>
                                     <input
                                         {...register("phoneNumber")}
                                         type="tel"
-                                        className="w-full border rounded-md p-2 text-sm"
+                                        className="w-full p-2 text-sm border rounded-md"
                                         placeholder="Phone number"
                                         disabled={submitting}
                                     />
                                     {errors.phoneNumber && (
-                                        <p className="text-red-500 text-sm mt-1">
+                                        <p className="mt-1 text-sm text-red-500">
                                             {errors.phoneNumber.message}
                                         </p>
                                     )}
@@ -265,19 +272,19 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1 mt-3">
+                            <label className="block mt-3 mb-1 text-sm font-medium text-gray-700">
                                 Cover letter:
                             </label>
                             <textarea
                                 {...register("coverLetter")}
                                 rows={4}
                                 placeholder="Well-written cover letter will help you make an impression...."
-                                className="w-full border rounded-md p-2 text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full p-2 text-sm text-gray-800 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 disabled={submitting}
                             />
                         </div>
 
-                        <div className="flex justify-end gap-2 border-t pt-4">
+                        <div className="flex justify-end gap-2 pt-4 border-t">
                             <Button
                                 variant="ghost"
                                 type="button"
@@ -288,12 +295,10 @@ const ApplicationModal = ({ onClose, jobTitle = "", jobId }) => {
                             </Button>
                             <Button
                                 type="submit"
-                                className="bg-blue-600 text-white hover:bg-blue-700"
+                                className="text-white bg-blue-600 hover:bg-blue-700"
                                 disabled={submitting}
                             >
-                                {submitting
-                                    ? "Processing..."
-                                    : "Apply"}
+                                {submitting ? "Processing..." : "Apply"}
                             </Button>
                         </div>
                     </form>
