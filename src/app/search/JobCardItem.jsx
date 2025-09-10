@@ -19,17 +19,33 @@ import {
     useSaveJobMutation,
     useUnsaveJobMutation,
 } from "@/services/savedJobService";
-import { useDispatch } from "react-redux"; // Thêm useDispatch
-import { showLoginPrompt } from "@/features/auth/loginPromptSlice"; // Thêm showLoginPrompt
+import { useGetApplyStatusQuery } from "@/services/applicationService"; 
+import { useDispatch } from "react-redux";
+import { showLoginPrompt } from "@/features/auth/loginPromptSlice"; 
 import { isLoggedIn } from "../job-detail/[id]/_utils/auth";
+import { Badge } from "@/components/ui/badge";
+
+function getStatusColor(status) {
+    switch (status) {
+        case "Applied":
+            return "bg-blue-100 text-blue-700 border border-blue-300";
+        case "Reviewed":
+            return "bg-green-100 text-green-700 border border-green-300";
+        default:
+            return "bg-gray-100 text-gray-700 border border-gray-300";
+    }
+}
 
 export default function JobCardItem({ job, onToast }) {
     const router = useRouter();
-    const dispatch = useDispatch(); // Thêm dispatch để gọi showLoginPrompt
+    const dispatch = useDispatch(); 
 
     const [triggerGetStatus, { data, isFetching }] = useLazyGetStatusQuery();
     const [saveJob] = useSaveJobMutation();
     const [unsaveJob] = useUnsaveJobMutation();
+
+    const { data: applyStatus, isLoading: isStatusLoading } =
+        useGetApplyStatusQuery(job?.id, { skip: !job?.id });
 
     useEffect(() => {
         if (job?.id) {
@@ -182,20 +198,31 @@ export default function JobCardItem({ job, onToast }) {
                 {/* Right: Actions */}
                 <div className="flex flex-col items-end justify-between h-full mt-4 sm:mt-0">
                     {/* Save */}
-                    <button
-                        onClick={toggleSave}
-                        className="flex items-center justify-center rounded-full w-9 h-9 hover:bg-blue-50"
-                        disabled={isFetching}
-                    >
-                        {liked ? (
-                            <BookmarkCheck
-                                size={22}
-                                className="text-blue-700 fill-blue-700"
-                            />
-                        ) : (
-                            <Bookmark size={22} className="text-blue-700" />
+                    <div className="flex flex-col items-end gap-2 mb-4">
+                        <button
+                            onClick={toggleSave}
+                            className="flex items-center justify-center rounded-full w-9 h-9 hover:bg-blue-50"
+                            disabled={isFetching}
+                        >
+                            {liked ? (
+                                <BookmarkCheck
+                                    size={22}
+                                    className="text-blue-700 fill-blue-700"
+                                />
+                            ) : (
+                                <Bookmark size={22} className="text-blue-700" />
+                            )}
+                        </button>
+                        {!isStatusLoading && applyStatus?.applied && (
+                            <Badge
+                                className={`${getStatusColor(
+                                    "Applied"
+                                )} px-3 py-1 rounded-full font-medium text-xs`}
+                            >
+                                Applied
+                            </Badge>
                         )}
-                    </button>
+                    </div>
 
                     {/* View detail */}
                     <button
