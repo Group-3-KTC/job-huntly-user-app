@@ -6,8 +6,9 @@ import {
     useGetStatusQuery,
 } from "@/services/savedJobService";
 import { format } from "date-fns";
-import { Bookmark, BookmarkCheck } from "lucide-react";
+import { Bookmark, BookmarkCheck, Building2 } from "lucide-react";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 export default function SaveJobItem({ job }) {
     const router = useRouter();
@@ -53,7 +54,15 @@ export default function SaveJobItem({ job }) {
                     <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-700">
                         {job.titleJob}
                     </h3>
-                    <p className="text-sm text-gray-600">{job.companyName}</p>
+                    <div className="flex items-center gap-1 text-gray-600">
+                        <Building2 className="w-4 h-4 text-gray-500" />
+                        <Link
+                            href={`/company/company-detail/${job.company_id}`}
+                            className="underline underline-offset-2 hover:text-blue-700"
+                        >
+                            {job.companyName}
+                        </Link>
+                    </div>
                     <div className="flex flex-wrap gap-2 mt-2">
                         {job.skill_job.map((skill) => (
                             <span
