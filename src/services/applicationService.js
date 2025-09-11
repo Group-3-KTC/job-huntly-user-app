@@ -50,7 +50,10 @@ export const applicationApi = createApi({
                 method: "POST",
                 data: formData,
             }),
-            invalidatesTags: ["Applications"],
+            invalidatesTags: (result, error, { jobId }) => [
+                "Applications",
+                { type: "ApplicationStatus", id: jobId },
+            ],
         }),
 
         // [GET] get applications by user

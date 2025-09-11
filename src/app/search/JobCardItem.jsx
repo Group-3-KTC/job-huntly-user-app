@@ -13,42 +13,53 @@ import {
     Building2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     useLazyGetStatusQuery,
     useSaveJobMutation,
     useUnsaveJobMutation,
 } from "@/services/savedJobService";
-import { useDispatch } from "react-redux"; // Thêm useDispatch
-import { showLoginPrompt } from "@/features/auth/loginPromptSlice"; // Thêm showLoginPrompt
-import { isLoggedIn } from "../job-detail/[id]/_utils/auth";
+import { useGetApplyStatusQuery } from "@/services/applicationService";
+import { useDispatch, useSelector } from "react-redux";
+import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
+import ApplicationBadge from "@/components/ui/ApplicationBadge";
+import { selectIsLoggedIn } from "@/features/auth/authSelectors";
 
 export default function JobCardItem({ job, onToast }) {
+    const isLoggedIn = useSelector(selectIsLoggedIn);
     const router = useRouter();
-    const dispatch = useDispatch(); // Thêm dispatch để gọi showLoginPrompt
+    const dispatch = useDispatch();
 
     const [triggerGetStatus, { data, isFetching }] = useLazyGetStatusQuery();
     const [saveJob] = useSaveJobMutation();
     const [unsaveJob] = useUnsaveJobMutation();
 
-    useEffect(() => {
-        if (job?.id) {
-            triggerGetStatus(job.id);
-        }
-    }, [job?.id, triggerGetStatus]);
+    const {
+        data: applyStatus,
+        isLoading: isStatusLoading,
+        refetch,
+    } = useGetApplyStatusQuery(job?.id, {
+        skip: !job?.id || !isLoggedIn,
+    });
 
-    const liked = data?.saved ?? false;
+    useEffect(() => {
+        if (isLoggedIn && job?.id) {
+            triggerGetStatus(job.id);
+            refetch();
+        }
+    }, [isLoggedIn, job?.id, triggerGetStatus, refetch]);
+
+    const liked = isLoggedIn ? data?.saved ?? false : false;
 
     const guardOr = useCallback(
-        async (action) => {
-            const logged = await isLoggedIn(); // Sử dụng isLoggedIn thay vì isAuthenticated
-            if (!logged) {
-                dispatch(showLoginPrompt()); // Dispatch action để hiển thị modal
+        (action) => {
+            if (!isLoggedIn) {
+                dispatch(showLoginPrompt());
                 return;
             }
             action?.();
         },
-        [dispatch]
+        [dispatch, isLoggedIn]
     );
 
     const toggleSave = useCallback(
@@ -60,34 +71,33 @@ export default function JobCardItem({ job, onToast }) {
                 try {
                     if (!liked) {
                         await saveJob({ jobId: job.id }).unwrap();
-                        onToast?.("Đã lưu công việc", "success");
+                        onToast?.("Job saved successfully", "success");
                     } else {
                         await unsaveJob(job.id).unwrap();
-                        onToast?.("Đã bỏ lưu công việc", "neutral");
+                        onToast?.("Job removed from saved list", "neutral");
                     }
                     triggerGetStatus(job.id);
                 } catch (err) {
                     console.error("Toggle save error", err);
-                    onToast?.("Có lỗi xảy ra", "error");
+                    onToast?.("Something went wrong", "error");
                 }
             });
         },
-        [job?.id, liked, saveJob, unsaveJob, onToast, guardOr]
+        [job?.id, liked, saveJob, unsaveJob, onToast, guardOr, triggerGetStatus]
     );
 
     return (
-        <div className="flex items-stretch w-full mb-4 overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl hover:shadow-md">
-            {/* Left: Avatar */}
-            <div className="flex-shrink-0 w-32 min-h-full">
+        <div className="flex flex-col items-stretch w-full mb-4 overflow-hidden bg-white border border-gray-200 shadow-sm md:flex-row rounded-xl hover:shadow-md">
+            <div className="flex-shrink-0 w-full h-40 md:w-32 md:h-auto">
                 <img
                     src={job.company?.avatar}
                     alt={job.company?.company_name}
-                    className="object-contain w-full h-full"
+                    className="w-full h-full bg-white object-inherit"
                 />
             </div>
 
-            {/* Middle: Job Info */}
             <div className="flex flex-col justify-between flex-1 p-4 sm:flex-row sm:items-start">
+                {/* Left: job info */}
                 <div className="flex-1 pr-4 space-y-2">
                     <h3
                         className="font-semibold text-lg text-[#0a66c2] hover:underline cursor-pointer"
@@ -181,23 +191,29 @@ export default function JobCardItem({ job, onToast }) {
 
                 {/* Right: Actions */}
                 <div className="flex flex-col items-end justify-between h-full mt-4 sm:mt-0">
-                    {/* Save */}
-                    <button
-                        onClick={toggleSave}
-                        className="flex items-center justify-center rounded-full w-9 h-9 hover:bg-blue-50"
-                        disabled={isFetching}
-                    >
-                        {liked ? (
-                            <BookmarkCheck
-                                size={22}
-                                className="text-blue-700 fill-blue-700"
-                            />
-                        ) : (
-                            <Bookmark size={22} className="text-blue-700" />
-                        )}
-                    </button>
+                    <div className="flex flex-col items-end gap-2 mb-4">
+                        {/* Save luôn hiện */}
+                        <button
+                            onClick={toggleSave}
+                            className="flex items-center justify-center rounded-full w-9 h-9 hover:bg-blue-50"
+                            disabled={isFetching}
+                        >
+                            {liked ? (
+                                <BookmarkCheck
+                                    size={22}
+                                    className="text-blue-700 fill-blue-700"
+                                />
+                            ) : (
+                                <Bookmark size={22} className="text-blue-700" />
+                            )}
+                        </button>
 
-                    {/* View detail */}
+                        {/* Applied badge chỉ hiện khi logged in */}
+                        {isLoggedIn && !isStatusLoading && applyStatus?.applied && (
+                            <ApplicationBadge status="Applied" />
+                        )}
+                    </div>
+
                     <button
                         onClick={(e) => {
                             e.stopPropagation();

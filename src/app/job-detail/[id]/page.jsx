@@ -5,8 +5,16 @@ import DetailJob from "./detailJob";
 import { getJobDetail } from "@/services/jobDetailService";
 
 export default async function JobDetailPage({ params }) {
-    const { id } = params;
+    const resolvedParams = await params;
+    if (!resolvedParams || !resolvedParams.id) {
+        return (
+            <div className="mt-10 text-center text-red-500">
+                Không tìm thấy ID công việc.
+            </div>
+        );
+    }
 
+    const { id } = resolvedParams;
 
     try {
         const job = await getJobDetail(id);
