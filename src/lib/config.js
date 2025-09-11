@@ -13,5 +13,5 @@ export const API_CONFIG = {
 };
 
 if (!API_CONFIG.BASE_URL) {
-    console.warn("API base URL is not defined correctly");
+    console.warn("API base URL is not defined correctly!");
 }
