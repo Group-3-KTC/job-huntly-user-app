@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { X, Save } from "lucide-react";
 import axios from "axios";
+import LoadingScreen from "@/components/ui/loadingScreen";
 
 const validationSchema = yup.object().shape({
     categoryId: yup.string().required("Category is required"),
@@ -214,7 +215,7 @@ export default function CandidateSkillModal({
                         onSubmit={handleSubmit(onSubmit)}
                         className="space-y-4"
                     >
-                        {isLoading && <p>Loading...</p>}
+                        {isLoading && <LoadingScreen message="Loading ..." />}
                         {error && <p className="text-red-500">{error}</p>}
 
                         <div className="flex flex-col gap-1">

@@ -17,6 +17,7 @@ import {
     selectApplications,
     selectFormData,
 } from "@/features/application/applicationSlice";
+import LoadingScreen from "@/components/ui/loadingScreen";
 
 export default function ApplicationPage() {
     const dispatch = useDispatch();
@@ -111,7 +112,7 @@ export default function ApplicationPage() {
 
     if (isLoading) {
         return (
-            <div className="py-10 text-center text-gray-600">Loading...</div>
+            <LoadingScreen message="Loading..." />
         );
     }
 

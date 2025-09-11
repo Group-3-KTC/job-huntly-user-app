@@ -39,13 +39,13 @@ export default function SaveJobItem({ job }) {
     return (
         <div
             onClick={() => router.push(`/job-detail/${job.jobId}`)}
-            className="flex items-stretch w-full mb-4 overflow-hidden bg-white border border-gray-200 shadow-sm cursor-pointer rounded-xl hover:shadow-md hover:border-blue-300"
+            className="flex flex-col items-stretch w-full mb-4 overflow-hidden bg-white border border-gray-200 shadow-sm cursor-pointer md:flex-row rounded-xl hover:shadow-md hover:border-blue-300"
         >
-            <div className="flex-shrink-0 w-32 h-full">
+            <div className="flex-shrink-0 w-full h-48 md:w-32 md:h-auto">
                 <img
                     src={job.companyAvatar}
                     alt={job.companyName}
-                    className="object-cover w-full h-full"
+                    className="w-full h-full bg-white object-inherit"
                 />
             </div>
 

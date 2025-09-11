@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { useGetJobsQuery } from "@/services/jobService";
 import { Heart } from "lucide-react";
 import Link from "next/link";
+import LoadingScreen from "@/components/ui/loadingScreen";
 
 export default function RelatedJobs({ category = [] }) {
     const { data, isLoading, error } = useGetJobsQuery();
@@ -45,7 +46,7 @@ export default function RelatedJobs({ category = [] }) {
     const handleLoadMore = () => setVisibleCount((prev) => prev + 10);
     const handleCollapse = () => setVisibleCount(10);
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading) return <LoadingScreen message="Loading ..." />;
     if (error)
         return (
             <p className="text-red-500">Không tải được danh sách liên quan.</p>
@@ -55,7 +56,7 @@ export default function RelatedJobs({ category = [] }) {
 
     return (
         <div className="mt-8">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+            <h2 className="mb-4 text-2xl font-semibold text-gray-800">
                 Similar Job
             </h2>
 
@@ -63,24 +64,24 @@ export default function RelatedJobs({ category = [] }) {
                 <p className="text-gray-500">Chưa có công việc tương tự.</p>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         {relatedJobs.slice(0, visibleCount).map((job) => (
                             <JobCard key={job.id} job={job} />
                         ))}
                     </div>
 
-                    <div className="mt-6 flex justify-center gap-4">
+                    <div className="flex justify-center gap-4 mt-6">
                         {hasMore ? (
                             <button
                                 onClick={handleLoadMore}
-                                className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-primary/80 transition"
+                                className="px-4 py-2 text-white transition bg-blue-700 rounded hover:bg-primary/80"
                             >
                                 Xem thêm
                             </button>
                         ) : relatedJobs.length > 10 ? (
                             <button
                                 onClick={handleCollapse}
-                                className="px-4 py-2 bg-blue-200 text-gray-800 rounded hover:bg-gray-300 transition"
+                                className="px-4 py-2 text-gray-800 transition bg-blue-200 rounded hover:bg-gray-300"
                             >
                                 Ẩn bớt
                             </button>
@@ -96,15 +97,15 @@ function JobCard({ job }) {
     const [liked, setLiked] = useState(false);
 
     return (
-        <div className="border rounded-2xl p-4 bg-white shadow hover:shadow-md transition duration-200">
+        <div className="p-4 transition duration-200 bg-white border shadow rounded-2xl hover:shadow-md">
             <Link href={`/job-detail/${job.id}`}>
-                <div className="flex justify-between items-start gap-4">
+                <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-4">
-                        <div className="w-16 h-16 rounded-full overflow-hidden border">
+                        <div className="w-16 h-16 overflow-hidden border rounded-full">
                             <img
                                 src={job.avatar}
                                 alt={job.companyName}
-                                className="w-full h-full object-cover"
+                                className="object-cover w-full h-full"
                             />
                         </div>
                         <div>
@@ -128,7 +129,7 @@ function JobCard({ job }) {
                     </button>
                 </div>
 
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mt-3">
                     {job.skill?.map((skill, i) => (
                         <span
                             key={i}
@@ -139,11 +140,11 @@ function JobCard({ job }) {
                     ))}
                 </div>
 
-                <div className="mt-4 flex justify-between items-center">
+                <div className="flex items-center justify-between mt-4">
                     <span className="text-sm text-gray-600">
                         {job.salaryDisplay || ""}
                     </span>
-                    <span className="text-sm text-primary font-medium hover:underline">
+                    <span className="text-sm font-medium text-primary hover:underline">
                         Xem chi tiết
                     </span>
                 </div>
