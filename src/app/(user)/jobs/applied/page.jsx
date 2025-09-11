@@ -1,6 +1,5 @@
 "use client";
 import { useGetApplicationsByUserQuery } from "@/services/applicationService";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
     DollarSign,
@@ -12,17 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import LoadingScreen from "@/components/ui/loadingScreen";
-
-function getStatusColor(status) {
-    switch (status) {
-        case "Applied":
-            return "bg-blue-100 text-blue-700 border border-blue-300";
-        case "Reviewed":
-            return "bg-green-100 text-green-700 border border-green-300";
-        default:
-            return "bg-gray-100 text-gray-700 border border-gray-300";
-    }
-}
+import ApplicationBadge from "@/components/ui/ApplicationBadge";
 
 function formatDate(dateTimeString) {
     if (!dateTimeString) return "";
@@ -57,16 +46,13 @@ export default function AppliedPage() {
             {data?.content?.map((job) => (
                 <div
                     key={job.applicationId}
-                    className="flex items-stretch w-full mb-4 overflow-hidden bg-white border border-gray-200 shadow-sm cursor-pointer rounded-xl hover:shadow-md hover:border-blue-300"
+                    className="flex-col items-stretch w-full mb-4 overflow-hidden bg-white border border-gray-200 shadow-sm cursor-pointer md:flex md:flex-row rounded-xl hover:shadow-md hover:border-blue-300"
                 >
-                    {/* Company Logo */}
-                    <div className="flex-shrink-0 w-32 h-full">
+                    <div className="flex-shrink-0 w-full h-40 md:w-32 md:h-auto">
                         <img
                             src={job.companyAvatar}
                             alt={job.companyName}
-                            width={128}
-                            height={128}
-                            className="object-cover w-full h-full"
+                            className="w-full h-full bg-white object-inherit"
                         />
                     </div>
 
@@ -131,15 +117,11 @@ export default function AppliedPage() {
                             </div>
                         </div>
 
-                        {/* Status + Action */}
                         <div className="flex flex-col items-end justify-between h-full gap-3 mt-4 sm:mt-0 sm:min-w-[140px]">
-                            <Badge
-                                className={`${getStatusColor(
-                                    job.status
-                                )} px-3 py-1 rounded-full font-medium text-xs`}
-                            >
-                                {job.status}
-                            </Badge>
+                            <ApplicationBadge
+                                status={job.status}
+                                className="ml-2"
+                            />
 
                             <Button
                                 variant="outline"

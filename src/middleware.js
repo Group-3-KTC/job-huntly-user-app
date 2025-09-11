@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const COOKIE_NAME = "access_token";
+const COOKIE_NAME = "AT";
 
 // public
 const publicRoutes = [
