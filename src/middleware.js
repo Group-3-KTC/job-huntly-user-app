@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import {NextResponse} from "next/server";
 
-const COOKIE_NAME = "access_token";
+const COOKIE_NAME = "AT";
 
 // public
 const publicRoutes = [
@@ -54,7 +54,7 @@ function getRoleFromJwt(token) {
 }
 
 export function middleware(req) {
-    const { pathname, search } = req.nextUrl;
+    const {pathname, search} = req.nextUrl;
 
     // Bỏ qua tài nguyên tĩnh & api
     if (
