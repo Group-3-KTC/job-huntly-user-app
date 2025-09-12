@@ -60,16 +60,28 @@ export const jobApi = createApi({
             }),
         }),
         searchJobs: builder.mutation({
-            query: (body) => ({
-                url: "/search-lite",
-                method: "POST",
-                data: body,
-            }),
+            query: (body) => {
+                const page = body.page ?? 0;
+                const size = body.size ?? 10;
+                const sort = body.sort ?? "id,desc"; 
+
+                // filters, loại page/size/sort 
+                const filterBody = { ...body };
+                delete filterBody.page;
+                delete filterBody.size;
+                delete filterBody.sort;
+
+                return {
+                    url: `/search-lite?page=${page}&size=${size}&sort=${sort}`,
+                    method: "POST",
+                    data: filterBody, 
+                };
+            },
             transformResponse: (res) => {
                 if (Array.isArray(res)) {
                     return {
                         jobs: res,
-                        totalPages: 1,
+                        totalPages: 1, 
                         totalElements: res.length,
                     };
                 }
