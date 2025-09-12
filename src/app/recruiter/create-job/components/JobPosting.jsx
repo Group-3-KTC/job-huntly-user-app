@@ -3,7 +3,17 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Briefcase, FileText, Gift } from "lucide-react";
+import {
+    ArrowLeft,
+    ArrowRight,
+    Briefcase,
+    FileText,
+    Gift,
+    MapPin,
+    Clock,
+    Share2,
+} from "lucide-react";
+import { toast } from "react-toastify";
 import JobReviewPage from "./reviewpage.jsx";
 // Import custom components
 import StepIndicator from "@/app/recruiter/create-job/components/StepIndicator";
@@ -12,7 +22,16 @@ import JobDescriptionForm from "@/app/recruiter/create-job/components/JobDescrip
 import BenefitsForm from "@/app/recruiter/create-job/components/BenefitsForm";
 import RecentJobsList from "@/app/recruiter/create-job/components/RecentJobsList";
 import { useAppDispatch } from "@/store/hooks.js";
-import { addToast } from "@/store/slices/toastSlices.js";
+import {
+    getLevels,
+    getCities,
+    getWards,
+    getCategories,
+    getSkillsByCategory,
+    getWorkTypes,
+    createJob,
+} from "@/services/jobCreateService";
+import { getMyCompany } from "@/services/companyService";
 
 export default function JobPostingForm() {
     const [currentStep, setCurrentStep] = useState(1);
@@ -27,63 +46,34 @@ export default function JobPostingForm() {
         category: "",
     });
 
+    // API data states
     const [jobLevels, setJobLevels] = useState([]);
-    const [isLoadingLevels, setIsLoadingLevels] = useState(true);
-    const [lastSyncTime, setLastSyncTime] = useState(null);
+    const [cities, setCities] = useState([]);
+    const [wards, setWards] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [skills, setSkills] = useState([]);
+    const [workTypes, setWorkTypes] = useState([]);
 
-    const [availableSkills, setAvailableSkills] = useState([
-        "JavaScript",
-        "React",
-        "Node.js",
-        "Python",
-        "Java",
-        "TypeScript",
-        "HTML/CSS",
-        "Vue.js",
-        "Angular",
-        "PHP",
-        "C++",
-        "C#",
-        "Ruby",
-        "Go",
-        "Swift",
-        "Kotlin",
-        "Flutter",
-        "React Native",
-        "Docker",
-        "Kubernetes",
-        "AWS",
-        "Azure",
-        "GCP",
-        "MongoDB",
-        "PostgreSQL",
-        "MySQL",
-        "Redis",
-        "GraphQL",
-        "REST API",
-        "Git",
-        "Agile",
-        "Scrum",
-        "UI/UX Design",
-        "Figma",
-        "Adobe Creative Suite",
-        "Graphic Design",
-        "Communication",
-        "Illustrator",
-        "Photoshop",
-    ]);
+    // Loading states
+    const [isLoadingLevels, setIsLoadingLevels] = useState(true);
+    const [isLoadingCities, setIsLoadingCities] = useState(true);
+    const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+    const [isLoadingWorkTypes, setIsLoadingWorkTypes] = useState(true);
+    const [isLoadingSkills, setIsLoadingSkills] = useState(false);
 
     const dispatch = useAppDispatch();
 
     const [formData, setFormData] = useState({
         jobTitle: "",
         category: "",
-        city: [],
+        city: "",
         address: "",
         workType: [],
-        salaryRange: [5000, 22000],
+        salaryMin: 0,
+        salaryMax: 0,
+        salaryType: 0, // 0: range, 1: thỏa thuận
         level: [],
-        skill: ["Graphic Design", "Communication", "Illustrator"],
+        skill: [],
         benefits: [
             {
                 id: "1",
@@ -109,10 +99,14 @@ export default function JobPostingForm() {
         ],
         jobDescription: "",
         niceToHaves: "",
-        requirments: "",
+        requirements: "",
         datePost: new Date().toISOString().split("T")[0],
         expiredDate: "",
+        wardIds: [],
     });
+
+    const [companyId, setCompanyId] = useState(null);
+    const [companyName, setCompanyName] = useState("");
 
     const steps = [
         { number: 1, title: "Job Information", icon: Briefcase },
@@ -120,362 +114,310 @@ export default function JobPostingForm() {
         { number: 3, title: "Perks & Benefit", icon: Gift },
     ];
 
-    const [workTypes, setWorkTypes] = useState([
-        "Full-Time",
-        "Part-Time",
-        "Remote",
-        "Internship",
-        "Contract",
-    ]);
-    const [isLoadingWorkTypes, setIsLoadingWorkTypes] = useState(true);
-
-    const jobCategories = [
-        "Technology",
-        "Marketing",
-        "Finance",
-        "Healthcare",
-        "Education",
-        "Design",
-        "Sales",
-        "Human Resources",
-        "Customer Service",
-        "Operations",
-    ];
-
-    // Auto-sync job levels every 30 seconds
+    // Load initial data
     useEffect(() => {
-        fetchJobsAndSyncData();
-
-        const interval = setInterval(() => {
-            fetchJobsAndSyncData(true); // Silent sync
-        }, 30000); // 30 seconds
-
-        return () => clearInterval(interval);
+        loadInitialData();
     }, []);
 
-    const extractJobLevelsAndWorkTypesFromData = (jobsData) => {
-        const levelHierarchy = [
-            "Entry Level",
-            "Junior Level",
-            "Mid Level",
-            "Senior Level",
-            "Lead Level",
-            "Manager Level",
-            "Director Level",
-        ];
+    // Load skills when category changes
+    useEffect(() => {
+        if (formData.category) {
+            loadSkillsByCategory(formData.category);
+        }
+    }, [formData.category]);
 
-        const defaultWorkTypes = [
-            "Full-Time",
-            "Part-Time",
-            "Remote",
-            "Internship",
-            "Contract",
-        ];
+    // Load wards when city changes
+    useEffect(() => {
+        if (formData.city) {
+            loadWards(formData.city);
+        } else {
+            // Clear wards when no city is selected
+            setWards([]);
+            setFormData((prev) => ({
+                ...prev,
+                wardIds: [],
+            }));
+        }
+    }, [formData.city]);
 
-        // Extract all unique levels from jobs data
-        const allLevels = jobsData.reduce((levels, job) => {
-            if (job.level) {
-                if (Array.isArray(job.level)) {
-                    job.level.forEach((level) => {
-                        if (
-                            level &&
-                            typeof level === "string" &&
-                            level.trim() &&
-                            !levels.includes(level.trim())
-                        ) {
-                            levels.push(level.trim());
-                        }
-                    });
-                } else if (typeof job.level === "string" && job.level.trim()) {
-                    if (!levels.includes(job.level.trim())) {
-                        levels.push(job.level.trim());
-                    }
-                }
-            }
-            return levels;
-        }, []);
+    // Load company info when component mounts
+    useEffect(() => {
+        loadMyCompany();
+    }, []);
 
-        // Extract all unique work types from jobs data
-        const allWorkTypes = jobsData.reduce((workTypes, job) => {
-            if (job.workType) {
-                if (Array.isArray(job.workType)) {
-                    job.workType.forEach((type) => {
-                        if (
-                            type &&
-                            typeof type === "string" &&
-                            type.trim() &&
-                            !workTypes.includes(type.trim())
-                        ) {
-                            workTypes.push(type.trim());
-                        }
-                    });
-                } else if (
-                    typeof job.workType === "string" &&
-                    job.workType.trim()
-                ) {
-                    if (!workTypes.includes(job.workType.trim())) {
-                        workTypes.push(job.workType.trim());
-                    }
-                }
-            }
-            return workTypes;
-        }, []);
-
-        // Sort levels according to hierarchy, then alphabetically for unknown levels
-        const sortedLevels = allLevels.sort((a, b) => {
-            const indexA = levelHierarchy.indexOf(a);
-            const indexB = levelHierarchy.indexOf(b);
-
-            if (indexA !== -1 && indexB !== -1) {
-                return indexA - indexB;
-            }
-            if (indexA !== -1) return -1;
-            if (indexB !== -1) return 1;
-            return a.localeCompare(b);
-        });
-
-        // Sort work types with default types first, then alphabetically
-        const sortedWorkTypes = allWorkTypes.sort((a, b) => {
-            const indexA = defaultWorkTypes.indexOf(a);
-            const indexB = defaultWorkTypes.indexOf(b);
-
-            if (indexA !== -1 && indexB !== -1) {
-                return indexA - indexB;
-            }
-            if (indexA !== -1) return -1;
-            if (indexB !== -1) return 1;
-            return a.localeCompare(b);
-        });
-
-        return {
-            levels: sortedLevels.length > 0 ? sortedLevels : levelHierarchy,
-            workTypes:
-                sortedWorkTypes.length > 0 ? sortedWorkTypes : defaultWorkTypes,
-        };
-    };
-
-    const fetchJobsAndSyncData = async (silent = false) => {
+    const loadInitialData = async () => {
         try {
-            if (!silent) {
-                setIsLoadingLevels(true);
-                setIsLoadingWorkTypes(true);
-            }
-
-            const response = await fetch(
-                "https://687076977ca4d06b34b6dc20.mockapi.io/api/v1/jobs"
-            );
-
-            if (response.ok) {
-                const data = await response.json();
-                setJobs(data);
-
-                // Extract and sync job levels and work types
-                const { levels, workTypes: extractedWorkTypes } =
-                    extractJobLevelsAndWorkTypesFromData(data);
-                setJobLevels(levels);
-                setWorkTypes(extractedWorkTypes);
-                setLastSyncTime(new Date());
-
-                if (!silent) {
-                }
-            } else {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            await Promise.all([
+                loadLevels(),
+                loadCities(),
+                loadCategories(),
+                loadWorkTypes(),
+            ]);
         } catch (error) {
-            console.error("Error fetching jobs and syncing data:", error);
-
-            // Fallback to default values if API fails
-            const defaultLevels = [
-                "Entry Level",
-                "Junior Level",
-                "Mid Level",
-                "Senior Level",
-                "Lead Level",
-                "Manager Level",
-                "Director Level",
-            ];
-            const defaultWorkTypes = [
-                "Full-Time",
-                "Part-Time",
-                "Remote",
-                "Internship",
-                "Contract",
-            ];
-
-            setJobLevels(defaultLevels);
-            setWorkTypes(defaultWorkTypes);
-
-            if (!silent) {
-            }
-        } finally {
-            if (!silent) {
-                setIsLoadingLevels(false);
-                setIsLoadingWorkTypes(false);
-            }
+            console.error("Error loading initial data:", error);
         }
     };
 
-    const validateStep1 = () => {
-        let isValid = true;
-        const newErrors = {
-            jobTitle: "",
-            workType: "",
-            city: "",
-            address: "",
-            category: "",
-        };
-
-        if (!formData.jobTitle.trim()) {
-            newErrors.jobTitle = "Job title is required";
-            isValid = false;
+    const loadLevels = async () => {
+        try {
+            setIsLoadingLevels(true);
+            const data = await getLevels();
+            setJobLevels(data);
+        } catch (error) {
+            console.error("Error loading levels:", error);
+        } finally {
+            setIsLoadingLevels(false);
         }
+    };
 
-        if (!formData.category.trim()) {
-            newErrors.category = "Job category is required";
-            isValid = false;
+    const loadCities = async () => {
+        try {
+            setIsLoadingCities(true);
+            const data = await getCities();
+            setCities(data);
+        } catch (error) {
+            console.error("Error loading cities:", error);
+        } finally {
+            setIsLoadingCities(false);
         }
+    };
 
-        if (formData.city.length === 0) {
-            newErrors.city = "City selection is required";
-            isValid = false;
+    const loadWards = async (cityName) => {
+        try {
+            const data = await getWards(cityName);
+            setWards(data);
+            // Clear selected wards when city changes
+            setFormData((prev) => ({
+                ...prev,
+                wardIds: [],
+            }));
+        } catch (error) {
+            console.error("Error loading wards:", error);
+            setWards([]);
         }
+    };
 
-        if (!formData.address.trim()) {
-            newErrors.address = "Address is required";
-            isValid = false;
+    const loadCategories = async () => {
+        try {
+            setIsLoadingCategories(true);
+            const data = await getCategories();
+            setCategories(data);
+        } catch (error) {
+            console.error("Error loading categories:", error);
+        } finally {
+            setIsLoadingCategories(false);
         }
+    };
 
-        if (formData.workType.length === 0) {
-            newErrors.workType = "Please select at least one employment type";
-            isValid = false;
+    const loadSkillsByCategory = async (categoryName) => {
+        try {
+            setIsLoadingSkills(true);
+            const data = await getSkillsByCategory(categoryName);
+            setSkills(data);
+        } catch (error) {
+            console.error("Error loading skills:", error);
+        } finally {
+            setIsLoadingSkills(false);
+        }
+    };
+
+    const loadWorkTypes = async () => {
+        try {
+            setIsLoadingWorkTypes(true);
+            const data = await getWorkTypes();
+            setWorkTypes(data);
+        } catch (error) {
+            console.error("Error loading work types:", error);
+        } finally {
+            setIsLoadingWorkTypes(false);
+        }
+    };
+
+    const loadMyCompany = async () => {
+        try {
+            const company = await getMyCompany();
+            setCompanyId(company.id);
+            setCompanyName(company.companyName);
+        } catch (error) {
+            console.error("Error loading company:", error);
+        }
+    };
+
+    const handleInputChange = (field, value) => {
+        setFormData((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+
+        // Clear error when user starts typing
+        if (errors[field]) {
+            setErrors((prev) => ({
+                ...prev,
+                [field]: "",
+            }));
+        }
+    };
+
+    const validateStep = (step) => {
+        const newErrors = {};
+
+        if (step === 1) {
+            if (!formData.jobTitle.trim())
+                newErrors.jobTitle = "Please enter the job title";
+            if (!formData.category)
+                newErrors.category = "Please select a category";
+            if (!formData.city) newErrors.city = "Please select a city";
+            if (!formData.address.trim())
+                newErrors.address = "Please enter the address";
+            if (!formData.workType.length)
+                newErrors.workType = "Please select a job type";
         }
 
         setErrors(newErrors);
-        return isValid;
+        return Object.keys(newErrors).length === 0;
     };
 
-    const handleWorkTypeChange = (type, checked) => {
-        setFormData((prev) => ({
-            ...prev,
-            workType: checked
-                ? [...prev.workType, type]
-                : prev.workType.filter((t) => t !== type),
-        }));
-        if (checked && errors.workType) {
-            setErrors((prev) => ({ ...prev, workType: "" }));
-        }
-    };
-
-    const handleLevelChange = (level, checked) => {
-        setFormData((prev) => ({
-            ...prev,
-            level: checked
-                ? [...prev.level, level]
-                : prev.level.filter((l) => l !== level),
-        }));
-    };
-
-    const handleJobTitleChange = (e) => {
-        const value = e.target.value;
-        setFormData((prev) => ({ ...prev, jobTitle: value }));
-        if (value.trim() && errors.jobTitle) {
-            setErrors((prev) => ({ ...prev, jobTitle: "" }));
-        }
-    };
-
-    const handleCategoryChange = (value) => {
-        setFormData((prev) => ({ ...prev, category: value }));
-        if (value.trim() && errors.category) {
-            setErrors((prev) => ({ ...prev, category: "" }));
-        }
-    };
-
-    const handleCityChange = (city) => {
-        const cityArray = formData.city.includes(city)
-            ? formData.city.filter((c) => c !== city)
-            : [...formData.city, city];
-        setFormData((prev) => ({ ...prev, city: cityArray }));
-        if (cityArray.length > 0 && errors.city) {
-            setErrors((prev) => ({ ...prev, city: "" }));
-        }
-    };
-
-    const handleAddressChange = (e) => {
-        const value = e.target.value;
-        setFormData((prev) => ({ ...prev, address: value }));
-        if (value.trim() && errors.address) {
-            setErrors((prev) => ({ ...prev, address: "" }));
-        }
-    };
-
-    const handleSkillAdd = (skill, isNew = false) => {
-        if (skill && !formData.skill.includes(skill)) {
-            setFormData((prev) => ({
-                ...prev,
-                skill: [...prev.skill, skill],
-            }));
-            if (isNew) {
-                setAvailableSkills((prev) => [...prev, skill]);
-            }
-        }
-    };
-
-    const handleSkillRemove = (skillToRemove) => {
-        setFormData((prev) => ({
-            ...prev,
-            skill: prev.skill.filter((skill) => skill !== skillToRemove),
-        }));
-    };
-
-    const handleBenefitAdd = (benefit) => {
-        setFormData((prev) => ({
-            ...prev,
-            benefits: [...prev.benefits, benefit],
-        }));
-        dispatch(
-            addToast({
-                title: "Benefit Added",
-                description: "New benefit has been added successfully!",
-                variant: "success",
-            })
-        );
-    };
-
-    const handleBenefitRemove = (benefitId) => {
-        setFormData((prev) => ({
-            ...prev,
-            benefits: prev.benefits.filter(
-                (benefit) => benefit.id !== benefitId
-            ),
-        }));
-    };
-
-    const handleDescriptionChange = (value) => {
-        setFormData((prev) => ({ ...prev, jobDescription: value }));
-    };
-
-    const handleRequirementsChange = (value) => {
-        setFormData((prev) => ({ ...prev, requirments: value }));
-    };
-
-    const handleNiceToHavesChange = (value) => {
-        setFormData((prev) => ({ ...prev, niceToHaves: value }));
-    };
-
-    const nextStep = () => {
-        if (currentStep === 1) {
-            if (!validateStep1()) {
-                return;
-            }
-        }
+    const handleNext = () => {
         if (currentStep < 3) {
-            setCurrentStep(currentStep + 1);
+            if (validateStep(currentStep)) {
+                setCurrentStep(currentStep + 1);
+            }
+        } else {
+            setShowReview(true);
         }
     };
 
-    const prevStep = () => {
+    const handlePrevious = () => {
         if (currentStep > 1) {
             setCurrentStep(currentStep - 1);
+        } else {
+            setShowReview(false);
+        }
+    };
+
+    const formatDateForAPI = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
+
+    const handleSubmit = async () => {
+        try {
+            setIsLoading(true);
+
+            // Check if company ID is available
+            if (!companyId) {
+                toast.error(
+                    "Cannot find company information. Please login again."
+                );
+                return false;
+            }
+
+            // Build location string with address, ward, and city
+            const buildLocationString = () => {
+                let locationParts = [];
+
+                // Add address detail
+                if (formData.address) {
+                    locationParts.push(formData.address);
+                }
+
+                // Add ward if available
+                if (formData.wardIds && formData.wardIds.length > 0) {
+                    const selectedWards = wards.filter((ward) =>
+                        formData.wardIds.includes(ward.id)
+                    );
+                    if (selectedWards.length > 0) {
+                        const wardNames = selectedWards
+                            .map((ward) => ward.name)
+                            .join(", ");
+                        locationParts.push(wardNames);
+                    }
+                }
+
+                // Add city
+                if (formData.city) {
+                    locationParts.push(formData.city);
+                }
+
+                return locationParts.join(", ");
+            };
+
+            // Prepare data according to API spec
+            const jobData = {
+                company_id: companyId, // Use actual company ID
+                title: formData.jobTitle,
+                date_post: formatDateForAPI(formData.datePost),
+                expired_date: formatDateForAPI(formData.expiredDate),
+                description: formData.jobDescription,
+                requirements: formData.requirements,
+                benefits: formData.benefits
+                    .map((b) => b.description)
+                    .join(", "),
+                location: buildLocationString(), // Use the built location string
+                status: "active",
+                salary_min: formData.salaryMin,
+                salary_max: formData.salaryMax,
+                salary_type: formData.salaryType,
+                category_names: [formData.category],
+                skill_names: formData.skill,
+                level_names: formData.level,
+                work_type_names: formData.workType,
+                ward_ids: formData.wardIds,
+            };
+
+            const response = await createJob(jobData);
+
+            // Always show success toast if we reach here (no exception thrown)
+            toast.success("Job created successfully!", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+
+            // Reset form
+            setFormData({
+                jobTitle: "",
+                category: "",
+                city: "",
+                address: "",
+                workType: [],
+                salaryMin: 0,
+                salaryMax: 0,
+                salaryType: 0,
+                level: [],
+                skill: [],
+                benefits: [],
+                jobDescription: "",
+                niceToHaves: "",
+                requirements: "",
+                datePost: new Date().toISOString().split("T")[0],
+                expiredDate: "",
+                wardIds: [],
+            });
+            setCurrentStep(1);
+            setShowReview(false);
+
+            return true; // Return success
+        } catch (error) {
+            console.error("Error creating job:", error);
+            toast.error("Error creating job", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            return false; // Return failure
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -483,103 +425,85 @@ export default function JobPostingForm() {
         return (
             <JobReviewPage
                 formData={formData}
-                onReturn={() => setShowReview(false)}
+                onEdit={() => setShowReview(false)}
+                onSubmit={handleSubmit}
+                isLoading={isLoading}
                 setParentFormData={setFormData}
                 setParentIsLoading={setIsLoading}
                 setParentJobs={setJobs}
                 parentJobs={jobs}
+                companyName={companyName}
             />
         );
     }
 
     return (
-        <div className="min-h-screen py-8">
+        <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-4xl mx-auto px-4">
-                {/* Step Indicator */}
-                <StepIndicator steps={steps} currentStep={currentStep} />
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                        Create New Job
+                    </h1>
+                    <p className="text-gray-600">
+                        Fill in the details to create an attractive job
+                    </p>
+                </div>
 
-                {/* Form Content */}
-                <Card className="w-full">
+                <StepIndicator currentStep={currentStep} steps={steps} />
+
+                <Card className="mt-8">
                     <CardContent className="p-8">
-                        {/* Step 1: Job Information */}
                         {currentStep === 1 && (
                             <JobInformationForm
                                 formData={formData}
+                                onInputChange={handleInputChange}
                                 errors={errors}
-                                jobCategories={jobCategories}
-                                workTypes={workTypes}
-                                isLoadingWorkTypes={isLoadingWorkTypes}
                                 jobLevels={jobLevels}
+                                cities={cities}
+                                wards={wards}
+                                categories={categories}
+                                skills={skills}
+                                workTypes={workTypes}
                                 isLoadingLevels={isLoadingLevels}
-                                availableSkills={availableSkills}
-                                onFormChange={setFormData}
-                                onJobTitleChange={handleJobTitleChange}
-                                onCategoryChange={handleCategoryChange}
-                                onAddressChange={handleAddressChange}
-                                onCityChange={handleCityChange}
-                                onWorkTypeChange={handleWorkTypeChange}
-                                onLevelChange={handleLevelChange}
-                                onSkillAdd={handleSkillAdd}
-                                onSkillRemove={handleSkillRemove}
+                                isLoadingCities={isLoadingCities}
+                                isLoadingCategories={isLoadingCategories}
+                                isLoadingWorkTypes={isLoadingWorkTypes}
+                                isLoadingSkills={isLoadingSkills}
                             />
                         )}
 
-                        {/* Step 2: Job Description */}
                         {currentStep === 2 && (
                             <JobDescriptionForm
                                 formData={formData}
-                                onDescriptionChange={handleDescriptionChange}
-                                onRequirementsChange={handleRequirementsChange}
-                                onNiceToHavesChange={handleNiceToHavesChange}
+                                onInputChange={handleInputChange}
                             />
                         )}
 
-                        {/* Step 3: Perks & Benefits */}
                         {currentStep === 3 && (
                             <BenefitsForm
                                 formData={formData}
-                                onBenefitAdd={handleBenefitAdd}
-                                onBenefitRemove={handleBenefitRemove}
+                                onInputChange={handleInputChange}
                             />
                         )}
 
-                        {/* Navigation Buttons */}
-                        <div className="flex justify-between pt-8 border-t">
-                            <div>
-                                {currentStep > 1 && (
-                                    <Button
-                                        variant="outline"
-                                        onClick={prevStep}
-                                        disabled={isLoading}
-                                    >
-                                        <ArrowLeft className="w-4 h-4 mr-2" />
-                                        Previous Step
-                                    </Button>
-                                )}
-                            </div>
-                            <div>
-                                {currentStep < 3 ? (
-                                    <Button
-                                        onClick={nextStep}
-                                        className="bg-blue-600 hover:bg-blue-700"
-                                    >
-                                        Next Step
-                                        <ArrowRight className="w-4 h-4 ml-2" />
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        onClick={() => setShowReview(true)}
-                                        className="bg-blue-600 hover:bg-blue-700"
-                                    >
-                                        Review & Publish
-                                    </Button>
-                                )}
-                            </div>
+                        <div className="flex justify-between mt-8">
+                            <Button
+                                variant="outline"
+                                onClick={handlePrevious}
+                                disabled={currentStep === 1}
+                            >
+                                <ArrowLeft className="w-4 h-4 mr-2" />
+                                Back
+                            </Button>
+
+                            <Button onClick={handleNext} disabled={isLoading}>
+                                {currentStep === 3 ? "Previous" : "Next"}
+                                <ArrowRight className="w-4 h-4 ml-2" />
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Recent Jobs Display */}
                 <RecentJobsList jobs={jobs} />
             </div>
         </div>

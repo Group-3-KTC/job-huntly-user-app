@@ -2,71 +2,81 @@
 
 import React from "react";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import TextEditor from "./TextEditor";
 
-const JobDescriptionForm = ({
-  formData,
-  onDescriptionChange,
-  onRequirementsChange,
-  onNiceToHavesChange,
-}) => {
-  return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Details</h2>
-        <p className="text-gray-600">
-          Add the description of the job, responsibilities, who you are, and
-          nice-to-haves.
-        </p>
-      </div>
+const JobDescriptionForm = ({ formData, onInputChange }) => {
+    return (
+        <div className="space-y-8">
+            <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    Job Description
+                </h2>
+                <p className="text-gray-600">
+                    Detailed description of the job and requirements
+                </p>
+            </div>
 
-      {/* Job Description */}
-      <div className="space-y-2">
-        <Label className="text-base font-medium">Job Description</Label>
-        <p className="text-sm text-gray-600">
-          Describe the job position and what it entails
-        </p>
-        <TextEditor
-          placeholder="Enter job description"
-          value={formData.jobDescription}
-          onChange={onDescriptionChange}
-          maxLength={5000}
-          minHeight="200px"
-        />
-      </div>
+            {/* Job Description */}
+            <div className="space-y-2">
+                <Label htmlFor="jobDescription">Job Description *</Label>
+                <TextEditor
+                    value={formData.jobDescription || ""}
+                    onChange={(value) => onInputChange("jobDescription", value)}
+                    placeholder="Detailed description of the job, responsibilities and tasks..."
+                />
+            </div>
 
-      {/* Requirements */}
-      <div className="space-y-2">
-        <Label className="text-base font-medium">Requirements</Label>
-        <p className="text-sm text-gray-600">
-          List the main requirements for this position (one per line)
-        </p>
-        <TextEditor
-          placeholder="Enter job requirements (one per line)"
-          value={formData.requirments}
-          onChange={onRequirementsChange}
-          maxLength={2000}
-          minHeight="150px"
-        />
-      </div>
+            {/* Requirements */}
+            <div className="space-y-2">
+                <Label htmlFor="requirements">Requirements *</Label>
+                <TextEditor
+                    value={formData.requirements || ""}
+                    onChange={(value) => onInputChange("requirements", value)}
+                    placeholder="Requirements for experience, skills, and qualifications..."
+                />
+            </div>
 
-      {/* Nice-To-Haves */}
-      <div className="space-y-2">
-        <Label className="text-base font-medium">Nice-To-Haves</Label>
-        <p className="text-sm text-gray-600">
-          Add nice-to-have skills and qualifications for the role to encourage a
-          more diverse set of candidates to apply
-        </p>
-        <TextEditor
-          placeholder="Enter nice-to-haves"
-          value={formData.niceToHaves}
-          onChange={onNiceToHavesChange}
-          maxLength={1500}
-          minHeight="120px"
-        />
-      </div>
-    </div>
-  );
+            {/* Nice to Haves */}
+            <div className="space-y-2">
+                <Label htmlFor="niceToHaves">Nice to Haves (optional)</Label>
+                <TextEditor
+                    value={formData.niceToHaves || ""}
+                    onChange={(value) => onInputChange("niceToHaves", value)}
+                    placeholder="Optional requirements..."
+                />
+            </div>
+
+            {/* Dates */}
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="datePost">Date Posted</Label>
+                    <input
+                        id="datePost"
+                        type="date"
+                        value={formData.datePost || ""}
+                        onChange={(e) =>
+                            onInputChange("datePost", e.target.value)
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="expiredDate">Expired Date *</Label>
+                    <input
+                        id="expiredDate"
+                        type="date"
+                        value={formData.expiredDate || ""}
+                        onChange={(e) =>
+                            onInputChange("expiredDate", e.target.value)
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        min={formData.datePost || ""}
+                    />
+                </div>
+            </div>
+        </div>
+    );
 };
 
-export default JobDescriptionForm; 
+export default JobDescriptionForm;

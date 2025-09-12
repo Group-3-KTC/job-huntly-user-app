@@ -14,11 +14,11 @@ import JobSidebar from "@/app/recruiter/create-job/components/JobSidebar";
 import PublishingSettings from "@/app/recruiter/create-job/components/PublishingSettings";
 import SuccessDialog from "@/app/recruiter/create-job/components/SuccessDialog";
 
-const API_BASE_URL = "https://687076977ca4d06b34b6dc20.mockapi.io/api/v1/jobs";
-
 export default function JobReviewPage({
     formData,
-    onReturn,
+    onEdit,
+    onSubmit,
+    isLoading,
     setParentFormData,
     setParentIsLoading,
     setParentJobs,
@@ -30,7 +30,6 @@ export default function JobReviewPage({
     });
     const [datePostError, setDatePostError] = useState("");
     const [expiredDateError, setExpiredDateError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
     const dispatch = useAppDispatch();
@@ -44,154 +43,43 @@ export default function JobReviewPage({
         });
     };
 
+    const formatDateForAPI = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
+
     const getCombinedDescription = () => {
         return [formData.jobDescription, formData.niceToHaves]
             .filter(Boolean)
             .join("\n\n");
     };
 
-    const getRequirmentsArray = () => {
-        if (!formData.requirments || !formData.requirments.trim()) {
-            return [];
-        }
-        return formData.requirments
-            .split("\n")
-            .map((req) => req.trim())
-            .filter(Boolean);
-    };
-
-    const getBenefitsArray = () => {
-        return formData.benefits.map(
-            (benefit) => `${benefit.title}:${benefit.description}`
-        );
-    };
-
-    const submitJob = async () => {
-        setIsLoading(true);
-        setParentIsLoading(true);
-        let datePostISO = null;
-        let expiredDateISO = null;
-
-        try {
-            if (reviewData.datePost && reviewData.datePost.trim()) {
-                const postDate = new Date(reviewData.datePost);
-                if (!isNaN(postDate.getTime())) {
-                    datePostISO = postDate.toISOString();
-                }
-            }
-
-            if (reviewData.expiredDate && reviewData.expiredDate.trim()) {
-                const expiredDate = new Date(reviewData.expiredDate);
-                if (!isNaN(expiredDate.getTime())) {
-                    expiredDateISO = expiredDate.toISOString();
-                }
-            }
-        } catch (error) {
-            console.error("Date validation error:", error);
-            dispatch(
-                addToast({
-                    title: "Invalid Dates",
-                    description: "Please check your date selections.",
-                    variant: "destructive",
-                })
-            );
-            setIsLoading(false);
-            setParentIsLoading(false);
-            return;
-        }
-
-        if (!datePostISO || !expiredDateISO) {
-            dispatch(
-                addToast({
-                    title: "Missing Dates",
-                    description:
-                        "Please select both post date and expiration date.",
-                    variant: "destructive",
-                })
-            );
-            setIsLoading(false);
-            setParentIsLoading(false);
-            return;
-        }
-
-        const jobData = {
-            title: formData.jobTitle,
-            category: formData.category,
-            description: getCombinedDescription(),
-            requirments: getRequirmentsArray(),
-            city: formData.city,
-            location: formData.address,
-            workType: formData.workType,
-            salaryMin: formData.salaryRange[0].toString(),
-            salaryMax: formData.salaryRange[1].toString(),
-            level: formData.level,
-            skill: formData.skill,
-            benefits: getBenefitsArray(),
-            datePost: datePostISO,
-            expiredDate: expiredDateISO,
-        };
-
-        try {
-            const response = await fetch(API_BASE_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(jobData),
-            });
-
-            if (response.ok) {
-                const newJob = await response.json();
-                setParentJobs((prev) => [...prev, newJob]);
-                dispatch(
-                    addToast({
-                        title: "Success!",
-                        description: "Job posted successfully!",
-                        variant: "success",
-                    })
-                );
-                setShowSuccessDialog(true);
-                console.log("Job posted successfully:", newJob);
-            } else {
-                throw new Error("Failed to post job");
-            }
-        } catch (error) {
-            console.error("Error posting job:", error);
-            dispatch(
-                addToast({
-                    title: "Error",
-                    description: "Failed to post job. Please try again.",
-                    variant: "destructive",
-                })
-            );
-        } finally {
-            setIsLoading(false);
-            setParentIsLoading(false);
-        }
-    };
-
-    const handleSubmit = () => {
+    const validateDates = () => {
         let isValid = true;
         let newDatePostError = "";
         let newExpiredDateError = "";
 
         if (!reviewData.datePost) {
-            newDatePostError = "Post Date is required.";
+            newDatePostError = "Please select a date posted";
             isValid = false;
         }
 
         if (!reviewData.expiredDate) {
-            newExpiredDateError = "Expiration Date is required.";
+            newExpiredDateError = "Please select an expired date";
             isValid = false;
         }
 
         if (reviewData.datePost && reviewData.expiredDate) {
-            const postDate = new Date(reviewData.datePost);
+            const datePost = new Date(reviewData.datePost);
             const expiredDate = new Date(reviewData.expiredDate);
 
-            if (expiredDate <= postDate) {
+            if (expiredDate <= datePost) {
                 newExpiredDateError =
-                    "Expiration date must be after the post date.";
+                    "Expired date must be after the date posted";
                 isValid = false;
             }
         }
@@ -199,17 +87,77 @@ export default function JobReviewPage({
         setDatePostError(newDatePostError);
         setExpiredDateError(newExpiredDateError);
 
-        if (!isValid) {
+        return isValid;
+    };
+
+    const validateForm = () => {
+        const errors = [];
+
+        if (!formData.jobTitle?.trim()) {
+            errors.push("Job title");
+        }
+        if (!formData.category) {
+            errors.push("Category");
+        }
+        if (!formData.city) {
+            errors.push("City");
+        }
+        if (!formData.address?.trim()) {
+            errors.push("Address");
+        }
+        if (!formData.workType?.length) {
+            errors.push("Job type");
+        }
+        if (!formData.jobDescription?.trim()) {
+            errors.push("Job description");
+        }
+        if (!formData.requirements?.trim()) {
+            errors.push("Requirements");
+        }
+
+        return errors;
+    };
+
+    const handleSubmit = async () => {
+        const dateErrors = validateDates();
+        const formErrors = validateForm();
+
+        if (!dateErrors || formErrors.length > 0) {
+            if (formErrors.length > 0) {
+                dispatch(
+                    addToast({
+                        type: "error",
+                        message: `Please fill in all the fields: ${formErrors.join(
+                            ", "
+                        )}`,
+                    })
+                );
+            }
             return;
         }
 
-        setParentFormData((prev) => ({
-            ...prev,
-            datePost: reviewData.datePost,
-            expiredDate: reviewData.expiredDate,
-        }));
+        // Update parent form data with review data
+        if (setParentFormData) {
+            setParentFormData((prev) => ({
+                ...prev,
+                datePost: reviewData.datePost,
+                expiredDate: reviewData.expiredDate,
+            }));
+        }
 
-        submitJob();
+        // Call the parent submit function
+        if (onSubmit) {
+            try {
+                const result = await onSubmit();
+                // Only show success dialog if the submission was actually successful
+                if (result !== false) {
+                    setShowSuccessDialog(true);
+                }
+            } catch (error) {
+                console.error("Error in review submit:", error);
+                // Don't show success dialog on error
+            }
+        }
     };
 
     const handleDatePostChange = (e) => {
@@ -218,7 +166,8 @@ export default function JobReviewPage({
         if (
             expiredDateError &&
             e.target.value &&
-            new Date(reviewData.expiredDate) <= new Date(e.target.value)
+            reviewData.expiredDate &&
+            new Date(reviewData.expiredDate) > new Date(e.target.value)
         ) {
             setExpiredDateError("");
         }
@@ -230,82 +179,101 @@ export default function JobReviewPage({
         if (
             datePostError &&
             e.target.value &&
-            new Date(e.target.value) <= new Date(reviewData.datePost)
+            reviewData.datePost &&
+            new Date(e.target.value) > new Date(reviewData.datePost)
         ) {
             setDatePostError("");
         }
     };
 
+    const handleSuccess = () => {
+        setShowSuccessDialog(false);
+        onEdit(); // Go back to form
+    };
+
     return (
-        <div className="min-h-screen py-8">
+        <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-6xl mx-auto px-4">
-                {/* Header */}
                 <div className="mb-8">
-                    <div className="flex items-center gap-4 mb-4">
-                        <Button
-                            variant="ghost"
-                            onClick={onReturn}
-                            className="p-2"
-                        >
-                            <ArrowLeft className="w-5 h-5" />
-                        </Button>
-                        <h1 className="text-2xl font-bold text-gray-900">
-                            Review Job Posting
-                        </h1>
-                    </div>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                        Preview Job
+                    </h1>
                     <p className="text-gray-600">
-                        Review your job posting details before publishing
+                        Check the information before posting
                     </p>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
-                        {/* Job Header */}
-                        <Card>
-                            <div className="p-8">
-                                <JobReviewHeader formData={formData} onReturn={onReturn} />
-                            </div>
-                        </Card>
+                        <JobReviewHeader
+                            title={formData.jobTitle}
+                            company="Your company"
+                            location={formData.address}
+                            workType={formData.workType}
+                            salaryMin={formData.salaryMin}
+                            salaryMax={formData.salaryMax}
+                            salaryType={formData.salaryType}
+                        />
 
-                        {/* Job Details */}
-                        <JobDetailCard formData={formData} />
+                        <JobDetailCard
+                            description={getCombinedDescription()}
+                            requirements={formData.requirements}
+                            benefits={formData.benefits}
+                            skills={formData.skill}
+                            levels={formData.level}
+                        />
                     </div>
 
                     {/* Sidebar */}
                     <div className="space-y-6">
-                        {/* Job Info and Skills */}
-                        <JobSidebar 
-                            formData={formData} 
-                            reviewData={reviewData} 
-                            formatDate={formatDate} 
+                        <JobSidebar
+                            category={formData.category}
+                            skills={formData.skill}
+                            levels={formData.level}
+                            workTypes={formData.workType}
                         />
 
-                        {/* Publishing Settings */}
-                        <Card>
-                            <div className="p-6">
-                                <h3 className="text-lg font-semibold mb-4">Publishing Settings</h3>
-                                <PublishingSettings
-                                    reviewData={reviewData}
-                                    datePostError={datePostError}
-                                    expiredDateError={expiredDateError}
-                                    isLoading={isLoading}
-                                    handleDatePostChange={handleDatePostChange}
-                                    handleExpiredDateChange={handleExpiredDateChange}
-                                    handleSubmit={handleSubmit}
-                                    onReturn={onReturn}
-                                />
-                            </div>
-                        </Card>
+                        <PublishingSettings
+                            datePost={reviewData.datePost}
+                            expiredDate={reviewData.expiredDate}
+                            onDatePostChange={handleDatePostChange}
+                            onExpiredDateChange={handleExpiredDateChange}
+                            datePostError={datePostError}
+                            expiredDateError={expiredDateError}
+                        />
                     </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-between mt-8">
+                    <Button
+                        variant="outline"
+                        onClick={onEdit}
+                        disabled={isLoading}
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Back to edit
+                    </Button>
+
+                    <Button
+                        onClick={handleSubmit}
+                        disabled={isLoading}
+                        className="bg-blue-600 hover:bg-blue-700"
+                    >
+                        {isLoading ? "Creating..." : "Create job"}
+                    </Button>
                 </div>
             </div>
 
             {/* Success Dialog */}
-            <SuccessDialog 
-                open={showSuccessDialog} 
-                onOpenChange={setShowSuccessDialog} 
-            />
+            {showSuccessDialog && (
+                <SuccessDialog
+                    onClose={handleSuccess}
+                    title="Job created successfully!"
+                    message="Your job has been created and will be approved within 24 hours."
+                />
+            )}
         </div>
     );
 }
