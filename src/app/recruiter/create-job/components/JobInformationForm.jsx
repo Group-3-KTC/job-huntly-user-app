@@ -17,6 +17,7 @@ import {
 import { X, Loader2 } from "lucide-react";
 import ProvinceCombobox from "./province-combobox";
 import SkillSelector from "./SkillSelector";
+import ReactSelect from "react-select";
 
 const JobInformationForm = ({
     formData,
@@ -89,6 +90,11 @@ const JobInformationForm = ({
         }
     };
 
+    const categoryOptions = (categories || []).map((c) => ({
+        value: c.name,
+        label: c.name,
+    }));
+
     return (
         <div className="space-y-8">
             <div>
@@ -115,38 +121,31 @@ const JobInformationForm = ({
                 )}
             </div>
 
-            {/* Category */}
+            {/* Categories (multi-select dropdown) */}
             <div className="space-y-2">
-                <Label htmlFor="category">Category *</Label>
-                <Select
-                    value={formData.category || ""}
-                    onValueChange={(value) => onInputChange("category", value)}
-                >
-                    <SelectTrigger
-                        className={errors.category ? "border-red-500" : ""}
-                    >
-                        <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {isLoadingCategories ? (
-                            <div className="flex items-center justify-center p-4">
-                                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                                Loading...
-                            </div>
-                        ) : (
-                            categories.map((category) => (
-                                <SelectItem
-                                    key={category.id}
-                                    value={category.name}
-                                >
-                                    {category.name}
-                                </SelectItem>
-                            ))
-                        )}
-                    </SelectContent>
-                </Select>
-                {errors.category && (
-                    <p className="text-red-500 text-sm">{errors.category}</p>
+                <Label>Categories *</Label>
+                {isLoadingCategories ? (
+                    <div className="flex items-center justify-center p-4">
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        Loading...
+                    </div>
+                ) : (
+                    <ReactSelect
+                        isMulti
+                        classNamePrefix="react-select"
+                        options={categoryOptions}
+                        value={(formData.categories || []).map((name) => ({ value: name, label: name }))}
+                        onChange={(selected) =>
+                            onInputChange(
+                                "categories",
+                                (selected || []).map((opt) => opt.value)
+                            )
+                        }
+                        placeholder="Select one or more categories"
+                    />
+                )}
+                {errors.categories && (
+                    <p className="text-red-500 text-sm">{errors.categories}</p>
                 )}
             </div>
 
@@ -390,7 +389,7 @@ const JobInformationForm = ({
             {/* Skills */}
             <div className="space-y-2">
                 <Label>Skills</Label>
-                {formData.category ? (
+                {formData.categories && formData.categories.length > 0 ? (
                     <SkillSelector
                         availableSkills={skills}
                         selectedSkills={formData.skill || []}
@@ -400,7 +399,7 @@ const JobInformationForm = ({
                     />
                 ) : (
                     <div className="text-sm text-gray-500 p-4 border border-gray-200 rounded-md">
-                        Please select a category before viewing the skill list
+                        Please select at least one category before viewing the skill list
                     </div>
                 )}
             </div>
