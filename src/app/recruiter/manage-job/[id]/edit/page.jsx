@@ -13,7 +13,7 @@ import { patchJobById } from "@/services/recruiterJobsService";
 function toIsoDateFromDDMMYYYY(value) {
     if (!value) return "";
     const [d, m, y] = String(value).split("-");
-    if (!y) return value; // assume already yyyy-MM-dd
+    if (!y) return value;
     const iso = `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
     return iso;
 }
@@ -50,7 +50,7 @@ export default function EditJobPage() {
                     description: data.description || "",
                 });
             } catch (e) {
-                setError(e?.message || "Không tải được job");
+                setError(e?.message || "Unable to load job");
             } finally {
                 setLoading(false);
             }
@@ -73,31 +73,31 @@ export default function EditJobPage() {
             await patchJobById(jobId, payload);
             router.push("/recruiter/manage-job");
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || "Lưu thất bại");
+            setError(e?.response?.data?.message || e?.message || "Save failed");
         } finally {
             setSaving(false);
         }
     };
 
-    if (loading) return <div className="p-6">Đang tải...</div>;
+    if (loading) return <div className="p-6">Loading...</div>;
 
     return (
         <div className="p-6 max-w-3xl mx-auto space-y-4">
-            <h1 className="text-xl font-semibold">Sửa Job #{jobId}</h1>
+            <h1 className="text-xl font-semibold">Edit Job #{jobId}</h1>
             <Card className="p-4 space-y-4">
                 <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">
-                    Chỉ sửa được các thông tin cơ bản (tiêu đề, trạng thái, ngày hết hạn, mô tả). Muốn sửa toàn bộ, vui lòng chuyển job sang INACTIVE và tạo job mới.
+                    You can only edit basic information (title, status, expired date, description). To edit everything, please deactivate the job and create a new one.
                 </div>
                 <div>
-                    <label className="text-sm font-medium">Tiêu đề</label>
+                    <label className="text-sm font-medium">Title</label>
                     <Input value={form.title} onChange={onChange("title")} />
                 </div>
                 <div>
-                    <label className="text-sm font-medium">Trạng thái</label>
+                    <label className="text-sm font-medium">Status</label>
                     <div className="mt-1">
                         <Select value={form.status} onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}>
                             <SelectTrigger className="w-48">
-                                <SelectValue placeholder="Chọn trạng thái" />
+                                <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="ACTIVE">ACTIVE</SelectItem>
@@ -108,22 +108,22 @@ export default function EditJobPage() {
                     </div>
                 </div>
                 <div>
-                    <label className="text-sm font-medium">Hết hạn</label>
+                    <label className="text-sm font-medium">Expired date</label>
                     <Input
                         type="date"
                         value={form.expired_date ? toIsoDateFromDDMMYYYY(form.expired_date) : ""}
                         onChange={(e) => setForm((f) => ({ ...f, expired_date: e.target.value }))}
                     />
-                    <div className="text-xs text-muted-foreground mt-1">Định dạng gửi: dd-MM-yyyy</div>
+                    <div className="text-xs text-muted-foreground mt-1">Format: dd-MM-yyyy</div>
                 </div>
                 <div>
-                    <label className="text-sm font-medium">Mô tả</label>
+                    <label className="text-sm font-medium">Description</label>
                     <Textarea value={form.description} onChange={onChange("description")} rows={6} />
                 </div>
                 {error && <div className="text-red-500 text-sm">{error}</div>}
                 <div className="flex gap-2">
-                    <Button disabled={saving} onClick={onSave}>Lưu</Button>
-                    <Button variant="outline" onClick={() => router.back()}>Hủy</Button>
+                    <Button disabled={saving} onClick={onSave}>Save</Button>
+                    <Button variant="outline" onClick={() => router.back()}>Cancel</Button>
                 </div>
             </Card>
         </div>

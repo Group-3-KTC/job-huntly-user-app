@@ -49,24 +49,24 @@ export default function JobDetailModal({ open, onOpenChange, job, jobId }) {
                             <div className="flex items-center gap-1"><DollarSign className="w-4 h-4" /> {j.salaryDisplay}</div>
                         </div>
                         <div className="text-xs text-muted-foreground flex flex-wrap gap-3">
-                            <div className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Đăng: {j.date_post}</div>
-                            <div className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Hết hạn: {j.expired_date}</div>
+                            <div className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Posted: {j.date_post}</div>
+                            <div className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Expired: {j.expired_date}</div>
                         </div>
                         {j.description && (
                             <div>
-                                <div className="font-medium mb-1">Mô tả</div>
+                                <div className="font-medium mb-1">Description</div>
                                 <div className="prose max-w-none text-sm leading-relaxed whitespace-pre-wrap">{j.description}</div>
                             </div>
                         )}
                         {j.requirements && (
                             <div>
-                                <div className="font-medium mb-1">Yêu cầu</div>
+                                <div className="font-medium mb-1">Requirements</div>
                                 <div className="prose max-w-none text-sm leading-relaxed whitespace-pre-wrap">{j.requirements}</div>
                             </div>
                         )}
                         {j.benefits && (
                             <div>
-                                <div className="font-medium mb-1">Phúc lợi</div>
+                                <div className="font-medium mb-1">Benefits</div>
                                 <div className="prose max-w-none text-sm leading-relaxed whitespace-pre-wrap">{j.benefits}</div>
                             </div>
                         )}
@@ -75,7 +75,7 @@ export default function JobDetailModal({ open, onOpenChange, job, jobId }) {
                     <div className="space-y-4">
                         {Array.isArray(j.category_names) && j.category_names.length > 0 && (
                             <div>
-                                <div className="flex items-center gap-2 font-medium mb-2"><Briefcase className="w-4 h-4" /> Danh mục</div>
+                                <div className="flex items-center gap-2 font-medium mb-2"><Briefcase className="w-4 h-4" /> Categories</div>
                                 <div className="flex flex-wrap gap-2">
                                     {j.category_names.map((s, i) => (
                                         <Badge key={i} variant="outline">{s}</Badge>
@@ -86,7 +86,7 @@ export default function JobDetailModal({ open, onOpenChange, job, jobId }) {
 
                         {Array.isArray(j.skill_names) && j.skill_names.length > 0 && (
                             <div>
-                                <div className="flex items-center gap-2 font-medium mb-2"><Tags className="w-4 h-4" /> Kỹ năng</div>
+                                <div className="flex items-center gap-2 font-medium mb-2"><Tags className="w-4 h-4" /> Skills</div>
                                 <div className="flex flex-wrap gap-2">
                                     {j.skill_names.map((s, i) => (
                                         <Badge key={i}>{s}</Badge>
@@ -97,7 +97,7 @@ export default function JobDetailModal({ open, onOpenChange, job, jobId }) {
 
                         {Array.isArray(j.level_names) && j.level_names.length > 0 && (
                             <div>
-                                <div className="flex items-center gap-2 font-medium mb-2"><Layers className="w-4 h-4" /> Cấp bậc</div>
+                                <div className="flex items-center gap-2 font-medium mb-2"><Layers className="w-4 h-4" /> Levels</div>
                                 <div className="flex flex-wrap gap-2">
                                     {j.level_names.map((s, i) => (
                                         <Badge key={i} variant="secondary">{s}</Badge>
@@ -108,7 +108,7 @@ export default function JobDetailModal({ open, onOpenChange, job, jobId }) {
 
                         {Array.isArray(j.work_type_names) && j.work_type_names.length > 0 && (
                             <div>
-                                <div className="flex items-center gap-2 font-medium mb-2"><Briefcase className="w-4 h-4" /> Hình thức làm việc</div>
+                                <div className="flex items-center gap-2 font-medium mb-2"><Briefcase className="w-4 h-4" /> Work types</div>
                                 <div className="flex flex-wrap gap-2">
                                     {j.work_type_names.map((s, i) => (
                                         <Badge key={i} variant="outline">{s}</Badge>
@@ -119,7 +119,7 @@ export default function JobDetailModal({ open, onOpenChange, job, jobId }) {
                     </div>
                 </div>
 
-                {loading && <div className="text-sm text-muted-foreground">Đang tải chi tiết...</div>}
+                {loading && <div className="text-sm text-muted-foreground">Loading...</div>}
             </DialogContent>
         </Dialog>
     );
