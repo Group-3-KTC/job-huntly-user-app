@@ -8,307 +8,426 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import ProvinceCombobox from "./province-combobox";
 import SkillSelector from "./SkillSelector";
 
 const JobInformationForm = ({
-  formData,
-  errors,
-  jobCategories,
-  workTypes,
-  isLoadingWorkTypes,
-  jobLevels,
-  isLoadingLevels,
-  availableSkills,
-  onFormChange,
-  onJobTitleChange,
-  onCategoryChange,
-  onAddressChange,
-  onCityChange,
-  onWorkTypeChange,
-  onLevelChange,
-  onSkillAdd,
-  onSkillRemove
+    formData,
+    onInputChange,
+    errors,
+    jobLevels = [],
+    cities = [],
+    wards = [],
+    categories = [],
+    skills = [],
+    workTypes = [],
+    isLoadingLevels = false,
+    isLoadingCities = false,
+    isLoadingCategories = false,
+    isLoadingWorkTypes = false,
+    isLoadingSkills = false,
 }) => {
-  return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Basic Information
-        </h2>
-        <p className="text-gray-600">
-          This information will be displayed publicly
-        </p>
-      </div>
+    const handleSalaryTypeChange = (type) => {
+        onInputChange("salaryType", type);
+    };
 
-      {/* Job Title */}
-      <div className="space-y-2">
-        <Label htmlFor="jobTitle" className="text-base font-medium">
-          Job Title
-        </Label>
-        <p className="text-sm text-gray-600">
-          Job titles must describe one position
-        </p>
-        <Input
-          id="jobTitle"
-          placeholder="e.g. Software Engineer"
-          value={formData.jobTitle}
-          onChange={onJobTitleChange}
-          className={`mt-2 ${errors.jobTitle ? "border-red-500" : ""}`}
-        />
-        {errors.jobTitle && (
-          <p className="text-red-500 text-sm mt-1">{errors.jobTitle}</p>
-        )}
-      </div>
+    const handleWorkTypeChange = (workType, checked) => {
+        const currentWorkTypes = formData.workType || [];
+        if (checked) {
+            onInputChange("workType", [...currentWorkTypes, workType]);
+        } else {
+            onInputChange(
+                "workType",
+                currentWorkTypes.filter((wt) => wt !== workType)
+            );
+        }
+    };
 
-      {/* Job Category */}
-      <div className="space-y-2">
-        <Label htmlFor="category" className="text-base font-medium">
-          Job Category
-        </Label>
-        <p className="text-sm text-gray-600">
-          Select the primary category for this job
-        </p>
-        <Select onValueChange={onCategoryChange} value={formData.category}>
-          <SelectTrigger
-            className={`w-full ${errors.category ? "border-red-500" : ""}`}
-          >
-            <SelectValue placeholder="Select a category" />
-          </SelectTrigger>
-          <SelectContent>
-            {jobCategories.map((category) => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {errors.category && (
-          <p className="text-red-500 text-sm mt-1">{errors.category}</p>
-        )}
-      </div>
+    const handleLevelChange = (level, checked) => {
+        const currentLevels = formData.level || [];
+        if (checked) {
+            onInputChange("level", [...currentLevels, level]);
+        } else {
+            onInputChange(
+                "level",
+                currentLevels.filter((l) => l !== level)
+            );
+        }
+    };
 
-      {/* City and Address */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* City Selection */}
-        <div className="space-y-2">
-          <Label className="text-base font-medium">Cities</Label>
-          <p className="text-sm text-gray-600">
-            Select job locations (multiple allowed)
-          </p>
-          <div>
-            <ProvinceCombobox
-              value={formData.city.length > 0 ? formData.city[0] : ""}
-              onChange={onCityChange}
-              error={errors.city}
-              multiple={true}
-            />
-            {formData.city.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {formData.city.map((city) => (
-                  <Badge key={city} variant="secondary" className="px-3 py-1">
-                    {city}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-4 w-4 p-0 ml-2 hover:bg-transparent"
-                      onClick={() => onCityChange(city)}
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div>
-          {errors.city && (
-            <p className="text-red-500 text-sm mt-1">{errors.city}</p>
-          )}
-        </div>
+    const handleSkillAdd = (skill) => {
+        const currentSkills = formData.skill || [];
+        if (!currentSkills.includes(skill)) {
+            onInputChange("skill", [...currentSkills, skill]);
+        }
+    };
 
-        {/* Address */}
-        <div className="space-y-2">
-          <Label htmlFor="address" className="text-base font-medium">
-            Address
-          </Label>
-          <p className="text-sm text-gray-600">
-            Enter the specific address
-          </p>
-          <Input
-            id="address"
-            placeholder="e.g. 123 Main Street, District 1"
-            value={formData.address}
-            onChange={onAddressChange}
-            className={`mt-2 ${errors.address ? "border-red-500" : ""}`}
-          />
-          {errors.address && (
-            <p className="text-red-500 text-sm mt-1">{errors.address}</p>
-          )}
-        </div>
-      </div>
+    const handleSkillRemove = (skill) => {
+        const currentSkills = formData.skill || [];
+        onInputChange(
+            "skill",
+            currentSkills.filter((s) => s !== skill)
+        );
+    };
 
-      {/* Work Type */}
-      <div className="space-y-4">
-        <Label className="text-base font-medium">Type of Employment</Label>
-        <p className="text-sm text-gray-600">
-          You can select multiple types of employment
-        </p>
-        {isLoadingWorkTypes ? (
-          <div className="flex items-center justify-center py-4">
-            <div className="text-sm text-gray-500">
-              Synchronizing work types from API...
+    const handleWardChange = (wardId, checked) => {
+        const currentWardIds = formData.wardIds || [];
+        if (checked) {
+            onInputChange("wardIds", [...currentWardIds, wardId]);
+        } else {
+            onInputChange(
+                "wardIds",
+                currentWardIds.filter((id) => id !== wardId)
+            );
+        }
+    };
+
+    return (
+        <div className="space-y-8">
+            <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    Basic Information
+                </h2>
+                <p className="text-gray-600">
+                    This information will be displayed publicly
+                </p>
             </div>
-          </div>
-        ) : (
-          <div
-            className={`space-y-3 ${
-              errors.workType ? "border border-red-500 rounded-md p-3" : ""
-            }`}
-          >
-            {workTypes.map((type) => (
-              <div key={type} className="flex items-center space-x-2">
-                <Checkbox
-                  id={type}
-                  checked={formData.workType.includes(type)}
-                  onCheckedChange={(checked) => onWorkTypeChange(type, checked)}
+
+            {/* Job Title */}
+            <div className="space-y-2">
+                <Label htmlFor="jobTitle">Job Title *</Label>
+                <Input
+                    id="jobTitle"
+                    value={formData.jobTitle || ""}
+                    onChange={(e) => onInputChange("jobTitle", e.target.value)}
+                    placeholder="Example: Senior Frontend Developer"
+                    className={errors.jobTitle ? "border-red-500" : ""}
                 />
-                <Label htmlFor={type} className="text-sm font-normal">
-                  {type}
-                </Label>
-              </div>
-            ))}
-          </div>
-        )}
-        {errors.workType && (
-          <p className="text-red-500 text-sm">{errors.workType}</p>
-        )}
-      </div>
+                {errors.jobTitle && (
+                    <p className="text-red-500 text-sm">{errors.jobTitle}</p>
+                )}
+            </div>
 
-      {/* Salary Slider */}
-      <div className="space-y-4">
-        <Label className="text-base font-medium">Salary</Label>
-        <p className="text-sm text-gray-600">
-          Please specify the estimated salary range for the role. *You can leave this blank
-        </p>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm">$</span>
-              <Input
-                type="number"
-                value={formData.salaryRange[0]}
-                onChange={(e) =>
-                  onFormChange({
-                    ...formData,
-                    salaryRange: [
-                      Number.parseInt(e.target.value) || 0,
-                      formData.salaryRange[1],
-                    ],
-                  })
-                }
-                className="w-24"
-              />
+            {/* Category */}
+            <div className="space-y-2">
+                <Label htmlFor="category">Category *</Label>
+                <Select
+                    value={formData.category || ""}
+                    onValueChange={(value) => onInputChange("category", value)}
+                >
+                    <SelectTrigger
+                        className={errors.category ? "border-red-500" : ""}
+                    >
+                        <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {isLoadingCategories ? (
+                            <div className="flex items-center justify-center p-4">
+                                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                Loading...
+                            </div>
+                        ) : (
+                            categories.map((category) => (
+                                <SelectItem
+                                    key={category.id}
+                                    value={category.name}
+                                >
+                                    {category.name}
+                                </SelectItem>
+                            ))
+                        )}
+                    </SelectContent>
+                </Select>
+                {errors.category && (
+                    <p className="text-red-500 text-sm">{errors.category}</p>
+                )}
             </div>
-            <span className="text-sm text-gray-500">to</span>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm">$</span>
-              <Input
-                type="number"
-                value={formData.salaryRange[1]}
-                onChange={(e) =>
-                  onFormChange({
-                    ...formData,
-                    salaryRange: [
-                      formData.salaryRange[0],
-                      Number.parseInt(e.target.value) || 0,
-                    ],
-                  })
-                }
-                className="w-24"
-              />
-            </div>
-          </div>
-          <div className="px-2">
-            <div className="py-6 relative">
-              <Slider
-                value={formData.salaryRange}
-                onValueChange={(value) =>
-                  onFormChange({
-                    ...formData,
-                    salaryRange: value,
-                  })
-                }
-                max={100000}
-                min={1000}
-                step={1000}
-                className="w-full"
-              />
-              <div className="flex justify-between mt-2 text-xs text-gray-500">
-                <span>$1,000</span>
-                <span>$50,000</span>
-                <span>$100,000</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Job Levels */}
-      <div className="space-y-4">
-        <Label className="text-base font-medium">Job Levels</Label>
-        <p className="text-sm text-gray-600">
-          Select appropriate job levels (multiple allowed)
-        </p>
-        {isLoadingLevels ? (
-          <div className="flex items-center justify-center py-4">
-            <div className="text-sm text-gray-500">
-              Synchronizing job levels from API...
+            {/* City */}
+            <div className="space-y-2">
+                <Label htmlFor="city">City *</Label>
+                <Select
+                    value={formData.city || ""}
+                    onValueChange={(value) => onInputChange("city", value)}
+                >
+                    <SelectTrigger
+                        className={errors.city ? "border-red-500" : ""}
+                    >
+                        <SelectValue placeholder="Select city" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {isLoadingCities ? (
+                            <div className="flex items-center justify-center p-4">
+                                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                Loading...
+                            </div>
+                        ) : (
+                            cities.map((city, index) => (
+                                <SelectItem key={index} value={city.city_name}>
+                                    {city.city_name}
+                                </SelectItem>
+                            ))
+                        )}
+                    </SelectContent>
+                </Select>
+                {errors.city && (
+                    <p className="text-red-500 text-sm">{errors.city}</p>
+                )}
             </div>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {jobLevels.length > 0 ? (
-              jobLevels.map((level) => (
-                <div key={level} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={level}
-                    checked={formData.level.includes(level)}
-                    onCheckedChange={(checked) => onLevelChange(level, checked)}
-                  />
-                  <Label htmlFor={level} className="text-sm font-normal">
-                    {level}
-                  </Label>
+
+            {/* Wards */}
+            {formData.city && (
+                <div className="space-y-2">
+                    <Label>District/Ward *</Label>
+                    {wards.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+                            {wards.map((ward) => (
+                                <div
+                                    key={ward.id}
+                                    className="flex items-center space-x-2"
+                                >
+                                    <Checkbox
+                                        id={`ward-${ward.id}`}
+                                        checked={
+                                            formData.wardIds?.includes(
+                                                ward.id
+                                            ) || false
+                                        }
+                                        onCheckedChange={(checked) =>
+                                            handleWardChange(ward.id, checked)
+                                        }
+                                    />
+                                    <Label
+                                        htmlFor={`ward-${ward.id}`}
+                                        className="text-sm"
+                                    >
+                                        {ward.name}
+                                    </Label>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-sm text-gray-500 p-4 border border-gray-200 rounded-md">
+                            No district/ward found in city: {formData.city}
+                        </div>
+                    )}
                 </div>
-              ))
-            ) : (
-              <div className="text-sm text-gray-500 py-4">
-                No job levels found in API. Please add some jobs first.
-              </div>
             )}
-          </div>
-        )}
-      </div>
 
-      {/* Required Skills */}
-      <div className="space-y-4">
-        <Label className="text-base font-medium">Required Skills</Label>
-        <p className="text-sm text-gray-600">Add required skills for the job</p>
-        <SkillSelector 
-          skills={availableSkills}
-          selectedSkills={formData.skill}
-          onSkillAdd={onSkillAdd}
-          onSkillRemove={onSkillRemove}
-        />
-      </div>
-    </div>
-  );
+            {/* Address */}
+            <div className="space-y-2">
+                <Label htmlFor="address">Detailed address *</Label>
+                <Input
+                    id="address"
+                    value={formData.address || ""}
+                    onChange={(e) => onInputChange("address", e.target.value)}
+                    placeholder="Example: 123 ABC Street, District 1"
+                    className={errors.address ? "border-red-500" : ""}
+                />
+                {errors.address && (
+                    <p className="text-red-500 text-sm">{errors.address}</p>
+                )}
+            </div>
+
+            {/* Work Type */}
+            <div className="space-y-2">
+                <Label>Job Type *</Label>
+                <div className="grid grid-cols-2 gap-2">
+                    {isLoadingWorkTypes ? (
+                        <div className="flex items-center justify-center p-4 col-span-2">
+                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                            Loading...
+                        </div>
+                    ) : (
+                        workTypes.map((workType) => (
+                            <div
+                                key={workType.name}
+                                className="flex items-center space-x-2"
+                            >
+                                <Checkbox
+                                    id={`workType-${workType.name}`}
+                                    checked={
+                                        formData.workType?.includes(
+                                            workType.name
+                                        ) || false
+                                    }
+                                    onCheckedChange={(checked) =>
+                                        handleWorkTypeChange(
+                                            workType.name,
+                                            checked
+                                        )
+                                    }
+                                />
+                                <Label
+                                    htmlFor={`workType-${workType.name}`}
+                                    className="text-sm"
+                                >
+                                    {workType.name}
+                                </Label>
+                            </div>
+                        ))
+                    )}
+                </div>
+                {errors.workType && (
+                    <p className="text-red-500 text-sm">{errors.workType}</p>
+                )}
+            </div>
+
+            {/* Salary */}
+            <div className="space-y-4">
+                <Label>Salary</Label>
+                <div className="space-y-2">
+                    <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id="salary-range"
+                                checked={formData.salaryType === 0}
+                                onCheckedChange={() =>
+                                    handleSalaryTypeChange(0)
+                                }
+                            />
+                            <Label htmlFor="salary-range">Salary Range</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id="salary-negotiate"
+                                checked={formData.salaryType === 1}
+                                onCheckedChange={() =>
+                                    handleSalaryTypeChange(1)
+                                }
+                            />
+                            <Label htmlFor="salary-negotiate">Negotiable</Label>
+                        </div>
+                    </div>
+
+                    {formData.salaryType === 0 && (
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="salaryMin">
+                                        Minimum Salary (VND)
+                                    </Label>
+                                    <Input
+                                        id="salaryMin"
+                                        type="number"
+                                        value={formData.salaryMin || ""}
+                                        onChange={(e) =>
+                                            onInputChange(
+                                                "salaryMin",
+                                                parseInt(e.target.value) || 0
+                                            )
+                                        }
+                                        placeholder="Example: 10000000"
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="salaryMax">
+                                        Maximum Salary (VND)
+                                    </Label>
+                                    <Input
+                                        id="salaryMax"
+                                        type="number"
+                                        value={formData.salaryMax || ""}
+                                        onChange={(e) =>
+                                            onInputChange(
+                                                "salaryMax",
+                                                parseInt(e.target.value) || 0
+                                            )
+                                        }
+                                        placeholder="Example: 20000000"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Level */}
+            <div className="space-y-2">
+                <Label>Level *</Label>
+                <div className="grid grid-cols-2 gap-2">
+                    {isLoadingLevels ? (
+                        <div className="flex items-center justify-center p-4 col-span-2">
+                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                            Loading...
+                        </div>
+                    ) : (
+                        jobLevels.map((level) => (
+                            <div
+                                key={level.id}
+                                className="flex items-center space-x-2"
+                            >
+                                <Checkbox
+                                    id={`level-${level.id}`}
+                                    checked={
+                                        formData.level?.includes(level.name) ||
+                                        false
+                                    }
+                                    onCheckedChange={(checked) =>
+                                        handleLevelChange(level.name, checked)
+                                    }
+                                />
+                                <Label
+                                    htmlFor={`level-${level.id}`}
+                                    className="text-sm"
+                                >
+                                    {level.name}
+                                </Label>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+
+            {/* Skills */}
+            <div className="space-y-2">
+                <Label>Skills</Label>
+                {formData.category ? (
+                    <SkillSelector
+                        availableSkills={skills}
+                        selectedSkills={formData.skill || []}
+                        onSkillAdd={handleSkillAdd}
+                        onSkillRemove={handleSkillRemove}
+                        isLoading={isLoadingSkills}
+                    />
+                ) : (
+                    <div className="text-sm text-gray-500 p-4 border border-gray-200 rounded-md">
+                        Please select a category before viewing the skill list
+                    </div>
+                )}
+            </div>
+
+            {/* Selected Skills Display */}
+            {formData.skill && formData.skill.length > 0 && (
+                <div className="space-y-2">
+                    <Label>Selected Skills</Label>
+                    <div className="flex flex-wrap gap-2">
+                        {formData.skill.map((skill) => (
+                            <Badge
+                                key={skill}
+                                variant="secondary"
+                                className="flex items-center gap-1"
+                            >
+                                {skill}
+                                <X
+                                    className="w-3 h-3 cursor-pointer"
+                                    onClick={() => handleSkillRemove(skill)}
+                                />
+                            </Badge>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 };
 
-export default JobInformationForm; 
+export default JobInformationForm;

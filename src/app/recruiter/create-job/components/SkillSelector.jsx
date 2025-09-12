@@ -4,110 +4,118 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X } from "lucide-react";
+import { X, Plus, Loader2 } from "lucide-react";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 
-const SkillSelector = ({ skills, selectedSkills, onSkillAdd, onSkillRemove }) => {
-  const [showSkillInput, setShowSkillInput] = useState(false);
-  const [newSkillInput, setNewSkillInput] = useState("");
+const SkillSelector = ({
+    availableSkills = [],
+    selectedSkills = [],
+    onSkillAdd,
+    onSkillRemove,
+    isLoading = false,
+}) => {
+    const [open, setOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
-  const addNewSkill = () => {
-    if (newSkillInput.trim() && !skills.includes(newSkillInput.trim())) {
-      onSkillAdd(newSkillInput.trim(), true); // true indicates it's a new skill to add to available skills
-      setNewSkillInput("");
-      setShowSkillInput(false);
-    } else if (newSkillInput.trim()) {
-      onSkillAdd(newSkillInput.trim());
-      setNewSkillInput("");
-      setShowSkillInput(false);
-    }
-  };
+    const filteredSkills = availableSkills.filter(
+        (skill) =>
+            skill.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            !selectedSkills.includes(skill.name)
+    );
 
-  return (
-    <div>
-      <div className="flex items-center justify-between">
-        {!showSkillInput ? (
-          <>
-            <Select onValueChange={onSkillAdd}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select a skill" />
-              </SelectTrigger>
-              <SelectContent>
-                {skills
-                  .filter((skill) => !selectedSkills.includes(skill))
-                  .map((skill) => (
-                    <SelectItem key={skill} value={skill}>
-                      {skill}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-blue-600 border-blue-600 bg-transparent"
-              onClick={() => setShowSkillInput(true)}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add New
-            </Button>
-          </>
-        ) : (
-          <div className="flex gap-2">
-            <Input
-              placeholder="Enter new skill"
-              value={newSkillInput}
-              onChange={(e) => setNewSkillInput(e.target.value)}
-              className="w-48"
-              onKeyPress={(e) => e.key === "Enter" && addNewSkill()}
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={addNewSkill}
-              disabled={!newSkillInput.trim()}
-            >
-              Add
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setShowSkillInput(false);
-                setNewSkillInput("");
-              }}
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
-        )}
-      </div>
+    const handleSkillSelect = (skillName) => {
+        onSkillAdd(skillName);
+        setSearchTerm("");
+        setOpen(false);
+    };
 
-      {selectedSkills.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-4">
-          {selectedSkills.map((skill) => (
-            <Badge key={skill} variant="secondary" className="px-3 py-1">
-              {skill}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-4 w-4 p-0 ml-2 hover:bg-transparent"
-                onClick={() => onSkillRemove(skill)}
-              >
-                <X className="w-3 h-3" />
-              </Button>
-            </Badge>
-          ))}
+    const handleSkillRemove = (skillName) => {
+        onSkillRemove(skillName);
+    };
+
+    return (
+        <div className="space-y-4">
+            {/* Selected Skills */}
+            {selectedSkills.length > 0 && (
+                <div className="space-y-2">
+                    <div className="flex flex-wrap gap-2">
+                        {selectedSkills.map((skill) => (
+                            <Badge
+                                key={skill}
+                                variant="secondary"
+                                className="flex items-center gap-1"
+                            >
+                                {skill}
+                                <X
+                                    className="w-3 h-3 cursor-pointer hover:text-red-500"
+                                    onClick={() => handleSkillRemove(skill)}
+                                />
+                            </Badge>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Skill Selector */}
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add skill
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                    <Command>
+                        <CommandInput
+                            placeholder="Search skill..."
+                            value={searchTerm}
+                            onValueChange={setSearchTerm}
+                        />
+                        <CommandList>
+                            {isLoading ? (
+                                <div className="flex items-center justify-center p-4">
+                                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                    Loading...
+                                </div>
+                            ) : filteredSkills.length === 0 ? (
+                                <CommandEmpty>
+                                    {availableSkills.length === 0
+                                        ? "No skills found for this category"
+                                        : "No skills found"}
+                                </CommandEmpty>
+                            ) : (
+                                <CommandGroup>
+                                    {filteredSkills.map((skill) => (
+                                        <CommandItem
+                                            key={skill.id}
+                                            onSelect={() =>
+                                                handleSkillSelect(skill.name)
+                                            }
+                                            className="cursor-pointer"
+                                        >
+                                            {skill.name}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            )}
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
-export default SkillSelector; 
+export default SkillSelector;

@@ -3,39 +3,27 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 
-const SuccessDialog = ({ open, onOpenChange }) => {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <CheckCircle className="w-6 h-6 text-green-500" />
-            Job Posted Successfully!
-          </DialogTitle>
-          <DialogDescription>
-            Your job listing has been successfully published
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button
-            onClick={() => onOpenChange(false)}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            OK
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
+const SuccessDialog = ({ onClose, title, message }) => {
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                <div className="text-center">
+                    <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                        {title}
+                    </h2>
+                    <p className="text-gray-600 mb-6">{message}</p>
+                    <Button
+                        onClick={onClose}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                    >
+                        Close
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
 };
 
-export default SuccessDialog; 
+export default SuccessDialog;

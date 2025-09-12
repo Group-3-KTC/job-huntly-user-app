@@ -1,14 +1,14 @@
 "use client";
 
-import {useForm} from "react-hook-form";
-import {yupResolver} from "@hookform/resolvers/yup";
-import React from "react";
-import {Label} from "@/components/ui/label";
-import {Input} from "@/components/ui/input";
-import {loginSchema} from "@/validation/loginSchema";
-import {Button} from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useState } from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { loginSchema } from "@/validation/loginSchema";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {Lock, Mail} from "lucide-react";
+import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import googleLogo from "@/assets/images/logo-gg.png";
 import {useRouter} from "next/navigation";
@@ -23,6 +23,7 @@ import {profileApi} from "@/services/profileService";
 
 const CandidateLoginForm = ({role}) => {
     const dispatch = useDispatch();
+    const [showPassword, setShowPassword] = useState(false);
 
     const isAuthLoading = useSelector(selectAuthLoading);
 
@@ -125,11 +126,22 @@ const CandidateLoginForm = ({role}) => {
                         <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="password"
-                            type={"password"}
+                            type={showPassword ? "text" : "password"}
                             placeholder="Enter password"
                             className="pl-10 pr-10"
                             {...register("password")}
                         />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
+                        >
+                            {showPassword ? (
+                                <EyeOff className="w-4 h-4" />
+                            ) : (
+                                <Eye className="w-4 h-4" />
+                            )}
+                        </button>
                     </div>
                     {errors.password && (
                         <p className="mt-1 text-sm text-red-500">
