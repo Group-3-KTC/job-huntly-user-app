@@ -1,20 +1,21 @@
-import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import React from "react";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { loginSchema } from "@/validation/loginSchema";
-import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import LoadingScreen from "../ui/loadingScreen";
-import { loginThunk } from "@/features/auth/authSlice";
-import { toast } from "react-toastify";
-import { selectAuthLoading } from "@/features/auth/authSelectors";
+import {Button} from "@/components/ui/button";
 
-const RecruiterLoginForm = ({ role }) => {
+import Link from "next/link";
+import {useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {loginSchema} from "@/validation/loginSchema";
+import {useRouter} from "next/navigation";
+import {useDispatch, useSelector} from "react-redux";
+import LoadingScreen from "../ui/loadingScreen";
+import {loginThunk} from "@/features/auth/authSlice";
+import {toast} from "react-toastify";
+import {selectAuthLoading} from "@/features/auth/authSelectors";
+
+const RecruiterLoginForm = ({role}) => {
     const dispatch = useDispatch();
     const router = useRouter();
     const isAuthLoading = useSelector(selectAuthLoading);
@@ -23,7 +24,7 @@ const RecruiterLoginForm = ({ role }) => {
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: {errors},
     } = useForm({
         resolver: yupResolver(loginSchema),
     });
@@ -38,7 +39,7 @@ const RecruiterLoginForm = ({ role }) => {
             const result = await dispatch(loginThunk(payload)).unwrap();
             const roleRes = result?.user?.role;
 
-            const okMsg = result?.message || "Đăng nhập thành công!";
+            const okMsg = result?.message || "Login successful!";
 
             router.replace("/recruiter/dashboard");
 
@@ -51,20 +52,20 @@ const RecruiterLoginForm = ({ role }) => {
                 err?.title ||
                 err?.message ||
                 err?.data?.message ||
-                "Đăng nhập thất bại";
+                "Login failed";
             toast.error(msg);
         }
     };
 
     if (isAuthLoading) {
-        return <LoadingScreen message="Đang đăng nhập..." />;
+        return <LoadingScreen message="Logging in..."/>;
     }
     return (
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div>
-                <Label htmlFor="recruiter-username">ID tài khoản</Label>
+                <Label htmlFor="recruiter-username">Email</Label>
                 <div className="relative">
-                    <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                    <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                     <Input
                         id="recruiter-email"
                         type="email"
@@ -82,9 +83,9 @@ const RecruiterLoginForm = ({ role }) => {
             </div>
 
             <div>
-                <Label htmlFor="recruiter-password">Mật khẩu</Label>
+                <Label htmlFor="recruiter-password">Password</Label>
                 <div className="relative">
-                    <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                    <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                     <Input
                         id="recruiter-password"
                         type={showPassword ? "text" : "password"}
@@ -124,7 +125,7 @@ const RecruiterLoginForm = ({ role }) => {
                     href="#"
                     className="text-sm text-blue-500 hover:underline"
                 >
-                    Quên mật khẩu?
+                    Forgot password?
                 </Link>
             </div>
         </form>

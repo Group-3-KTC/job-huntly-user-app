@@ -1,11 +1,11 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import authService from "@/services/authService";
-import { profileApi } from "@/services/profileService"; //  invalidate tags
-import { clearNormalizedProfile } from "@/features/profile/profileSlice";
+import {profileApi} from "@/services/profileService"; //  invalidate tags
+import {clearNormalizedProfile} from "@/features/profile/profileSlice";
 
 export const loginThunk = createAsyncThunk(
     "auth/login",
-    async (credentials, { rejectWithValue }) => {
+    async (credentials, {rejectWithValue}) => {
         try {
             return await authService.login(credentials);
         } catch (err) {
@@ -16,7 +16,7 @@ export const loginThunk = createAsyncThunk(
 
 export const registerThunk = createAsyncThunk(
     "auth/register",
-    async (payload, { rejectWithValue }) => {
+    async (payload, {rejectWithValue}) => {
         try {
             return await authService.register(payload);
         } catch (err) {
@@ -27,23 +27,21 @@ export const registerThunk = createAsyncThunk(
 
 export const meThunk = createAsyncThunk(
     "auth/me",
-    async (_, { rejectWithValue }) => {
+    async (_, {rejectWithValue}) => {
         try {
             const res = await authService.me();
             return res.user;
         } catch (e) {
-            return rejectWithValue({ message: "Not authenticated" });
+            return rejectWithValue({message: "Not authenticated"});
         }
     },
 );
 
 export const logoutThunk = createAsyncThunk(
     "auth/logout",
-    async (_, { rejectWithValue }) => {
+    async (_, {rejectWithValue}) => {
         try {
             await authService.logout();
-
-            
 
             return true;
         } catch (err) {
@@ -54,12 +52,13 @@ export const logoutThunk = createAsyncThunk(
                 data?.message ||
                 err?.message ||
                 "Logout failed";
-            return rejectWithValue({ message, raw: data });
+            return rejectWithValue({message, raw: data});
         } finally {
             try {
                 console.log("remove localStorage");
                 localStorage.removeItem("authState");
-            } catch {}
+            } catch {
+            }
         }
     },
 );
@@ -142,5 +141,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { authHydrated } = authSlice.actions;
+export const {authHydrated} = authSlice.actions;
 export default authSlice.reducer;

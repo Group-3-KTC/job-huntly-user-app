@@ -11,17 +11,17 @@ import Link from "next/link";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import googleLogo from "@/assets/images/logo-gg.png";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import {useRouter} from "next/navigation";
+import {toast} from "react-toastify";
+import {useDispatch, useSelector} from "react-redux";
 import LoadingScreen from "../ui/loadingScreen";
-import { loginThunk } from "@/features/auth/authSlice";
-import { selectAuthLoading } from "@/features/auth/authSelectors";
+import {loginThunk} from "@/features/auth/authSlice";
+import {selectAuthLoading} from "@/features/auth/authSelectors";
 import GoogleSignIn from "@/components/auth/GoogleSignIn";
-import { clearNormalizedProfile } from "@/features/profile/profileSlice";
-import { profileApi } from "@/services/profileService"; 
+import {clearNormalizedProfile} from "@/features/profile/profileSlice";
+import {profileApi} from "@/services/profileService";
 
-const CandidateLoginForm = ({ role }) => {
+const CandidateLoginForm = ({role}) => {
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
 
@@ -32,7 +32,7 @@ const CandidateLoginForm = ({ role }) => {
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: {errors},
     } = useForm({
         resolver: yupResolver(loginSchema),
     });
@@ -63,7 +63,7 @@ const CandidateLoginForm = ({ role }) => {
 
             const roleRes = result?.user?.role;
 
-            const okMsg = result?.message || "Đăng nhập thành công!";
+            const okMsg = result?.message || "Login successful!";
 
             router.replace("/");
 
@@ -76,49 +76,35 @@ const CandidateLoginForm = ({ role }) => {
                 err?.title ||
                 err?.message ||
                 err?.data?.message ||
-                "Đăng nhập thất bại";
+                "Login failed";
             toast.error(msg);
         }
     };
 
     if (isAuthLoading) {
-        return <LoadingScreen message="Đang đăng nhập..." />;
+        return <LoadingScreen message="Logging in..."/>;
     }
 
     return (
         <>
             <div className="space-y-3">
-                {/*<Button*/}
-                {/*    variant="outline"*/}
-                {/*    className="flex items-center justify-center w-full gap-2 bg-transparent"*/}
-                {/*    // onClick={handleGoogleLogin}*/}
-                {/*>*/}
-                {/*    <Image*/}
-                {/*        src={googleLogo}*/}
-                {/*        alt="Google"*/}
-                {/*        width={24}*/}
-                {/*        height={24}*/}
-                {/*    />*/}
-                {/*    Đăng nhập với Google*/}
-                {/*</Button>*/}
-                <GoogleSignIn role={role ?? "CANDIDATE"} />
+                <GoogleSignIn role={role ?? "CANDIDATE"}/>
             </div>
-
             <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
+                    <span className="w-full border-t"/>
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                     <span className="px-2 mt-3 mb-3 text-gray-500 bg-white">
-                        Hoặc
+                        OR
                     </span>
                 </div>
             </div>
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                 <div>
-                    <Label htmlFor="email">ID tài khoản</Label>
+                    <Label htmlFor="email">Email</Label>
                     <div className="relative">
-                        <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="email"
                             type="email"
@@ -135,9 +121,9 @@ const CandidateLoginForm = ({ role }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="password">Mật khẩu</Label>
+                    <Label htmlFor="password">Password</Label>
                     <div className="relative">
-                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="password"
                             type={showPassword ? "text" : "password"}
@@ -176,7 +162,7 @@ const CandidateLoginForm = ({ role }) => {
                         href="#"
                         className="text-sm text-blue-500 hover:underline"
                     >
-                        Quên mật khẩu?
+                        Forgot password?
                     </Link>
                 </div>
             </form>
