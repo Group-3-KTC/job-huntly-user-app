@@ -149,7 +149,7 @@ export default function NotificationBell({ className = "" }) {
   const connectStomp = useCallback(() => {
     if (stompRef.current?.active) return;
 
-    const sock = new SockJS(`${WS_ENDPOINT}`, null, {
+    const sock = new SockJS(WS_ENDPOINT, null, {
       withCredentials: true,
       transports: ["xhr-streaming", "xhr-polling", "websocket"],
       transportOptions: {
