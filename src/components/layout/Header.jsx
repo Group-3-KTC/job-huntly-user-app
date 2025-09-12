@@ -33,6 +33,7 @@ import {
 } from "@/features/auth/authSelectors";
 import { logoutThunk } from "@/features/auth/authSlice";
 import ProfileDropdown from "../ui/ProfileDropdown";
+import NotificationBell from "@/components/ui/NotificationBell";
 
 export const Header = () => {
     const dispatch = useDispatch();
@@ -411,18 +412,13 @@ export const Header = () => {
                             <>
                                 {/* Khi đã đăng nhập */}
                                 <li>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="relative text-white hover:bg-white/20"
-                                    >
-                                        <Bell className="w-5 h-5" />
-                                        {notificationCount > 0 && (
-                                            <Badge className="absolute flex items-center justify-center w-5 h-5 p-0 text-xs text-white bg-red-500 rounded-full -top-1 -right-1">
-                                                {notificationCount}
-                                            </Badge>
-                                        )}
-                                    </Button>
+                                    <NotificationBell
+                                        onClick={() => {
+                                            // mở dropdown danh sách hoặc điều hướng tuỳ bạn
+                                            // ví dụ:
+                                            // router.push("/notifications");
+                                        }}
+                                    />
                                 </li>
 
                                 {/* Profile Dropdown */}

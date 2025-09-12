@@ -1,20 +1,19 @@
+export const dynamic = "force-dynamic"; 
 
-export const dynamic = "force-dynamic";
 import React from "react";
 import DetailJob from "./detailJob";
 import { getJobDetail } from "@/services/jobDetailService";
 
 export default async function JobDetailPage({ params }) {
-    const resolvedParams = await params;
-    if (!resolvedParams || !resolvedParams.id) {
+    const { id } = await params; 
+
+    if (!id) {
         return (
             <div className="mt-10 text-center text-red-500">
                 Không tìm thấy ID công việc.
             </div>
         );
     }
-
-    const { id } = resolvedParams;
 
     try {
         const job = await getJobDetail(id);
@@ -25,9 +24,10 @@ export default async function JobDetailPage({ params }) {
             </div>
         );
     } catch (error) {
+        console.error("JobDetailPage error:", error); // Log chi tiết hơn
         return (
             <div className="mt-10 text-center text-red-500">
-                Không thể tải thông tin công việc.
+                Unable to load job information {error.message}.
             </div>
         );
     }
