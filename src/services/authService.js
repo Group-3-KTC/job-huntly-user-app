@@ -15,21 +15,13 @@ const authService = {
     },
 
     async me() {
-        const { data } = await api.get("/auth/me"); // lấy từ cookie httpOnly
+        const { data } = await api.get("/auth/me"); 
         return { user: data };
     },
 
     async logout() {
         try {
-            // await api.post("/auth/logout");
-            app.post("/auth/logout", (req, res) => {
-                res.clearCookie("at", {
-                    httpOnly: true,
-                    sameSite: "strict",
-                    secure: true,
-                });
-                res.status(200).json({ message: "Logged out" });
-            });
+            await api.post("/auth/logout");
         } catch {}
     },
 };

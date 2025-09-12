@@ -29,16 +29,16 @@ const AppInitializer = () => {
         dispatch(meThunk());
     }, [dispatch]);
 
-    // useEffect(() => {
-    //     if (!hydrated) return;
-    //     try {
-    //         if (user) {
-    //             localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
-    //         } else {
-    //             localStorage.removeItem(STORAGE_KEY);
-    //         }
-    //     } catch {}
-    // }, [hydrated, user]);
+    useEffect(() => {
+        if (!hydrated) return;
+        try {
+            if (user) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
+            } else {
+                localStorage.removeItem(STORAGE_KEY);
+            }
+        } catch {}
+    }, [hydrated, user]);
 
     return null;
 };

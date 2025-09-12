@@ -1,6 +1,6 @@
-// Constants cho API endpoints
-// export const BASE_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-export const BASE_API_URL = "http://18.142.226.139:8080/api/v1";
+export const BASE_API_URL =
+    process.env.NEXT_PUBLIC_API_PROXY_TARGET +
+    process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // Company endpoints
 export const COMPANY_API = {
@@ -13,9 +13,7 @@ export const COMPANY_API = {
             location
         )}`,
     GET_COMPANY_BY_NAME: (name) =>
-        `${BASE_API_URL}/companies/by-name?name=${encodeURIComponent(
-            name
-        )}`,
+        `${BASE_API_URL}/companies/by-name?name=${encodeURIComponent(name)}`,
     GET_COMPANY_LOCATIONS: `${BASE_API_URL}/companies/locations`,
     GET_ALL_CATEGORIES: `${BASE_API_URL}/category`,
     SEARCH_COMPANIES: (params) => {
