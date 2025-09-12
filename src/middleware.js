@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import {NextResponse} from "next/server";
 
 const COOKIE_NAME = "AT";
 
@@ -58,7 +58,7 @@ function getRoleFromJwt(token) {
 
 
 export function middleware(req) {
-    const { pathname, search } = req.nextUrl;
+    const {pathname, search} = req.nextUrl;
 
     // Bỏ qua tài nguyên tĩnh & api
     if (

@@ -2,42 +2,122 @@
 
 import React from "react";
 import { Label } from "@/components/ui/label";
-import BenefitItem from "./BenefitItem";
-import BenefitDialog from "./BenefitDialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Trash2 } from "lucide-react";
 
-const BenefitsForm = ({ formData, onBenefitAdd, onBenefitRemove }) => {
-  return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Perks & Benefits
-        </h2>
-        <p className="text-gray-600">List out your top perks and benefits.</p>
-      </div>
+const BenefitsForm = ({ formData, onInputChange }) => {
+    const handleBenefitChange = (index, field, value) => {
+        const newBenefits = [...(formData.benefits || [])];
+        newBenefits[index] = {
+            ...newBenefits[index],
+            [field]: value,
+        };
+        onInputChange("benefits", newBenefits);
+    };
 
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Label className="text-base font-medium">Perks and Benefits</Label>
-          <BenefitDialog onAddBenefit={onBenefitAdd} />
+    const addBenefit = () => {
+        const newBenefits = [...(formData.benefits || [])];
+        newBenefits.push({
+            id: Date.now().toString(),
+            title: "",
+            description: "",
+            icon: "gift",
+        });
+        onInputChange("benefits", newBenefits);
+    };
+
+    const removeBenefit = (index) => {
+        const newBenefits = [...(formData.benefits || [])];
+        newBenefits.splice(index, 1);
+        onInputChange("benefits", newBenefits);
+    };
+
+    return (
+        <div className="space-y-8">
+            <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    Benefits & Perks
+                </h2>
+                <p className="text-gray-600">
+                    Add attractive benefits and perks for candidates
+                </p>
+            </div>
+
+            <div className="space-y-4">
+                {(formData.benefits || []).map((benefit, index) => (
+                    <Card key={benefit.id || index}>
+                        <CardContent className="p-4">
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-start">
+                                    <h3 className="font-medium">
+                                        Benefits {index + 1}
+                                    </h3>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removeBenefit(index)}
+                                        className="text-red-500 hover:text-red-700"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor={`benefit-title-${index}`}>
+                                        Title
+                                    </Label>
+                                    <Input
+                                        id={`benefit-title-${index}`}
+                                        value={benefit.title || ""}
+                                        onChange={(e) =>
+                                            handleBenefitChange(
+                                                index,
+                                                "title",
+                                                e.target.value
+                                            )
+                                        }
+                                        placeholder="Example: Health insurance"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label
+                                        htmlFor={`benefit-description-${index}`}
+                                    >
+                                        Description
+                                    </Label>
+                                    <Input
+                                        id={`benefit-description-${index}`}
+                                        value={benefit.description || ""}
+                                        onChange={(e) =>
+                                            handleBenefitChange(
+                                                index,
+                                                "description",
+                                                e.target.value
+                                            )
+                                        }
+                                        placeholder="Detailed description of this benefit"
+                                    />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addBenefit}
+                    className="w-full"
+                >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add benefit
+                </Button>
+            </div>
         </div>
-
-        <p className="text-sm text-gray-600">
-          Encourage more people to apply by sharing the attractive rewards and
-          benefits you offer your employees
-        </p>
-
-        <div className="grid gap-6">
-          {formData.benefits.map((benefit) => (
-            <BenefitItem 
-              key={benefit.id} 
-              benefit={benefit} 
-              onRemove={onBenefitRemove} 
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
-export default BenefitsForm; 
+export default BenefitsForm;

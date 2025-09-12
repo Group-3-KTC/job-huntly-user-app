@@ -1,23 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Lock, Mail, Phone, User } from "lucide-react";
+import React, {useState} from "react";
+import {Label} from "@/components/ui/label";
+import {Input} from "@/components/ui/input";
+import {Eye, EyeOff, Lock, Mail, Phone, User} from "lucide-react";
 import Link from "next/link";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { recruiterRegisterSchema } from "@/validation/registerSchema";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import {Checkbox} from "@/components/ui/checkbox";
+import {Button} from "@/components/ui/button";
+import {useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {recruiterRegisterSchema} from "@/validation/registerSchema";
+import {useRouter} from "next/navigation";
+import {toast} from "react-toastify";
 import LoadingScreen from "../ui/loadingScreen";
-import { useDispatch, useSelector } from "react-redux";
-import { registerThunk } from "@/features/auth/authSlice";
-import { selectAuthLoading } from "@/features/auth/authSelectors";
+import {useDispatch, useSelector} from "react-redux";
+import {registerThunk} from "@/features/auth/authSlice";
+import {selectAuthLoading} from "@/features/auth/authSelectors";
 
-const RecruiterRegisterForm = ({ role }) => {
+const RecruiterRegisterForm = ({role}) => {
     const dispatch = useDispatch();
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +27,7 @@ const RecruiterRegisterForm = ({ role }) => {
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: {errors},
         setValue,
         watch,
     } = useForm({
@@ -50,7 +50,7 @@ const RecruiterRegisterForm = ({ role }) => {
             const result = await dispatch(registerThunk(payload)).unwrap();
             const okMsg =
                 result?.message ||
-                "Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.";
+                "Registration successful! Please check your email to activate your account.";
             toast.success(okMsg, {
                 autoClose: 1000,
                 onClose: () => router.push("/login"),
@@ -62,25 +62,25 @@ const RecruiterRegisterForm = ({ role }) => {
                 err?.title ||
                 (typeof err === "string"
                     ? err
-                    : "Đăng ký thất bại. Vui lòng thử lại.");
+                    : "Registration failed. Please try again.");
             toast.error(msg);
         }
     };
 
     if (isAuthLoading) {
-        return <LoadingScreen message="Đang đăng ký..." />;
+        return <LoadingScreen message="Registering..."/>;
     }
     return (
         <div className="space-y-4">
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                 <div>
-                    <Label htmlFor="fullName">Họ và tên</Label>
+                    <Label htmlFor="fullName">Full Name</Label>
                     <div className="relative">
-                        <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="fullName"
                             type="text"
-                            placeholder="Nhập họ và tên"
+                            placeholder="Enter your full name"
                             className="pl-10"
                             {...register("fullName")}
                         />
@@ -96,11 +96,11 @@ const RecruiterRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">
-                        <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="email"
                             type="email"
-                            placeholder="Nhập email"
+                            placeholder="Enter your email"
                             className="pl-10"
                             {...register("email")}
                         />
@@ -113,13 +113,13 @@ const RecruiterRegisterForm = ({ role }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="phone">Số điện thoại</Label>
+                    <Label htmlFor="phone">Phone Number</Label>
                     <div className="relative">
-                        <Phone className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <Phone className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="phone"
                             type="tel"
-                            placeholder="Nhập số điện thoại"
+                            placeholder="Enter your phone number"
                             className="pl-10"
                             {...register("phone")}
                         />
@@ -132,13 +132,13 @@ const RecruiterRegisterForm = ({ role }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="password">Mật khẩu</Label>
+                    <Label htmlFor="password">Password</Label>
                     <div className="relative">
-                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="password"
                             type={showPassword ? "text" : "password"}
-                            placeholder="Nhập mật khẩu"
+                            placeholder="Enter password"
                             className="pl-10 pr-10"
                             {...register("password")}
                         />
@@ -148,9 +148,9 @@ const RecruiterRegisterForm = ({ role }) => {
                             className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
                         >
                             {showPassword ? (
-                                <EyeOff className="w-4 h-4" />
+                                <EyeOff className="w-4 h-4"/>
                             ) : (
-                                <Eye className="w-4 h-4" />
+                                <Eye className="w-4 h-4"/>
                             )}
                         </button>
                     </div>
@@ -162,13 +162,13 @@ const RecruiterRegisterForm = ({ role }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
                     <div className="relative">
-                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="confirmPassword"
                             type={showConfirmPassword ? "text" : "password"}
-                            placeholder="Vui lòng xác nhận mật khẩu"
+                            placeholder="Please confirm your password"
                             className="pl-10 pr-10"
                             {...register("confirmPassword")}
                         />
@@ -180,9 +180,9 @@ const RecruiterRegisterForm = ({ role }) => {
                             className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
                         >
                             {showConfirmPassword ? (
-                                <EyeOff className="w-4 h-4" />
+                                <EyeOff className="w-4 h-4"/>
                             ) : (
-                                <Eye className="w-4 h-4" />
+                                <Eye className="w-4 h-4"/>
                             )}
                         </button>
                     </div>
@@ -193,76 +193,6 @@ const RecruiterRegisterForm = ({ role }) => {
                     )}
                 </div>
 
-                {/*<div className="pt-4 border-t">*/}
-                {/*    <h4 className="mb-4 font-medium text-orange-500">*/}
-                {/*        Thông Tin Công Ty*/}
-                {/*    </h4>*/}
-
-                {/*    <div className="space-y-4">*/}
-                {/*        <div>*/}
-                {/*            <Label htmlFor="taxCode">Mã số thuế</Label>*/}
-                {/*            <div className="relative">*/}
-                {/*                <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />*/}
-                {/*                <Input*/}
-                {/*                    id="taxCode"*/}
-                {/*                    type="text"*/}
-                {/*                    placeholder="Nhập mã số thuế"*/}
-                {/*                    className="pl-10"*/}
-                {/*                    {...register("taxCode")}*/}
-                {/*                />*/}
-                {/*            </div>*/}
-                {/*            {errors.taxCode && (*/}
-                {/*                <p className="mt-1 text-sm text-red-500">*/}
-                {/*                    {errors.taxCode.message}*/}
-                {/*                </p>*/}
-                {/*            )}*/}
-                {/*        </div>*/}
-
-                {/*        <div>*/}
-                {/*            <Label htmlFor="companyName">*/}
-                {/*                Tên công ty đăng ký kinh doanh*/}
-                {/*            </Label>*/}
-                {/*            <div className="relative">*/}
-                {/*                <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />*/}
-                {/*                <Input*/}
-                {/*                    id="companyName"*/}
-                {/*                    type="text"*/}
-                {/*                    placeholder="Nhập tên công ty đăng ký kinh doanh"*/}
-                {/*                    className="pl-10"*/}
-                {/*                    {...register("companyName")}*/}
-                {/*                />*/}
-                {/*            </div>*/}
-                {/*            {errors.companyName && (*/}
-                {/*                <p className="mt-1 text-sm text-red-500">*/}
-                {/*                    {errors.companyName.message}*/}
-                {/*                </p>*/}
-                {/*            )}*/}
-                {/*        </div>*/}
-
-                {/*        <div>*/}
-                {/*            <Label className="text-sm font-medium">*/}
-                {/*                Công ty bạn đang có nhu cầu tuyển dụng không?*/}
-                {/*            </Label>*/}
-                {/*            <RadioGroup*/}
-                {/*                defaultValue="yes"*/}
-                {/*                className="flex mt-2 space-x-4"*/}
-                {/*            >*/}
-                {/*                <div className="flex items-center space-x-2">*/}
-                {/*                    <RadioGroupItem*/}
-                {/*                        value="yes"*/}
-                {/*                        id="hiring-yes"*/}
-                {/*                    />*/}
-                {/*                    <Label htmlFor="hiring-yes">Có</Label>*/}
-                {/*                </div>*/}
-                {/*                <div className="flex items-center space-x-2">*/}
-                {/*                    <RadioGroupItem value="no" id="hiring-no" />*/}
-                {/*                    <Label htmlFor="hiring-no">Không</Label>*/}
-                {/*                </div>*/}
-                {/*            </RadioGroup>*/}
-                {/*        </div>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
-
                 <div className="flex flex-wrap">
                     <Checkbox
                         id="recruiter-terms"
@@ -272,21 +202,21 @@ const RecruiterRegisterForm = ({ role }) => {
                         }
                     />
                     <div htmlFor="recruiter-terms" className="text-sm">
-                        Tôi đã đọc và chấp nhận{" "}
+                        I have read and agree to the{" "}
                         <Link
                             href="#"
                             className="text-orange-500 hover:underline"
                         >
-                            Điều Khoản Sử Dụng
+                            Terms of Service
                         </Link>{" "}
-                        và{" "}
+                        and{" "}
                         <Link
                             href="#"
                             className="text-orange-500 hover:underline"
                         >
-                            Chính Sách Bảo Mật
+                            Privacy Policy
                         </Link>{" "}
-                        của Job Huntly
+                        of Job Huntly
                     </div>
                     {errors.terms && (
                         <p className="text-sm text-red-500">
@@ -296,7 +226,7 @@ const RecruiterRegisterForm = ({ role }) => {
                 </div>
 
                 <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                    Đăng Ký
+                    Sign Up
                 </Button>
             </form>
         </div>

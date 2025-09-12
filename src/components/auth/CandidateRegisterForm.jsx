@@ -1,25 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
+import React, {useState} from "react";
+import {Button} from "@/components/ui/button";
 import Image from "next/image";
 import googleLogo from "@/assets/images/logo-gg.png";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Lock, Mail, Phone, User } from "lucide-react";
+import {Label} from "@/components/ui/label";
+import {Input} from "@/components/ui/input";
+import {Checkbox} from "@/components/ui/checkbox";
+import {Eye, EyeOff, Lock, Mail, Phone, User} from "lucide-react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { candidateRegisterSchema } from "@/validation/registerSchema";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import {useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {candidateRegisterSchema} from "@/validation/registerSchema";
+import {toast} from "react-toastify";
+import {useRouter} from "next/navigation";
 import LoadingScreen from "../ui/loadingScreen";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAuthLoading } from "@/features/auth/authSelectors";
-import { registerThunk } from "@/features/auth/authSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {selectAuthLoading} from "@/features/auth/authSelectors";
+import {registerThunk} from "@/features/auth/authSlice";
+import GoogleSignIn from "@/components/auth/GoogleSignIn";
 
-const CandidateRegisterForm = ({ role }) => {
+const CandidateRegisterForm = ({role}) => {
     const dispatch = useDispatch();
     const router = useRouter();
     const isAuthLoading = useSelector(selectAuthLoading);
@@ -29,7 +30,7 @@ const CandidateRegisterForm = ({ role }) => {
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: {errors},
         setValue,
         watch,
     } = useForm({
@@ -53,7 +54,7 @@ const CandidateRegisterForm = ({ role }) => {
             const result = await dispatch(registerThunk(payload)).unwrap();
             const okMsg =
                 result?.message ||
-                "Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.";
+                "Registration successful! Please check your email to activate your account.";
             toast.success(okMsg, {
                 autoClose: 1000,
                 onClose: () => router.push("/login"),
@@ -65,51 +66,39 @@ const CandidateRegisterForm = ({ role }) => {
                 err?.title ||
                 (typeof err === "string"
                     ? err
-                    : "Đăng ký thất bại. Vui lòng thử lại.");
+                    : "Registration failed. Please try again.");
             toast.error(msg);
         }
     };
 
     if (isAuthLoading) {
-        return <LoadingScreen message="Registering..." />;
+        return <LoadingScreen message="Registering..."/>;
     }
 
     return (
         <div className="space-y-4">
-            {/* Social Register Buttons */}
             <div className="space-y-3">
-                <Button
-                    variant="outline"
-                    className="flex items-center justify-center w-full gap-2 bg-transparent"
-                >
-                    <Image
-                        src={googleLogo}
-                        alt="Google"
-                        width={24}
-                        height={24}
-                    />
-                    Đăng ký với Google
-                </Button>
+                <GoogleSignIn role={role ?? "CANDIDATE"}/>
             </div>
 
             <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
+                    <span className="w-full border-t"/>
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                    <span className="px-2 text-gray-500 bg-white">Hoặc</span>
+                    <span className="px-2 text-gray-500 bg-white">OR</span>
                 </div>
             </div>
 
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                 <div>
-                    <Label htmlFor="fullName">Họ và tên</Label>
+                    <Label htmlFor="fullName">Full Name</Label>
                     <div className="relative">
-                        <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <User className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="fullName"
                             type="text"
-                            placeholder="Nhập họ và tên"
+                            placeholder="Enter your full name"
                             className="pl-10"
                             {...register("fullName")}
                         />
@@ -125,11 +114,11 @@ const CandidateRegisterForm = ({ role }) => {
                 <div>
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">
-                        <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="email"
                             type="email"
-                            placeholder="Nhập email"
+                            placeholder="Enter your email"
                             className="pl-10"
                             {...register("email")}
                         />
@@ -142,13 +131,13 @@ const CandidateRegisterForm = ({ role }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="phone">Số điện thoại</Label>
+                    <Label htmlFor="phone">Phone Number</Label>
                     <div className="relative">
-                        <Phone className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <Phone className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="phone"
                             type="tel"
-                            placeholder="Nhập số điện thoại"
+                            placeholder="Enter your phone number"
                             className="pl-10"
                             {...register("phone")}
                         />
@@ -161,13 +150,13 @@ const CandidateRegisterForm = ({ role }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="password">Mật khẩu</Label>
+                    <Label htmlFor="password">Password</Label>
                     <div className="relative">
-                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="password"
                             type={showPassword ? "text" : "password"}
-                            placeholder="Nhập mật khẩu"
+                            placeholder="Enter password"
                             className="pl-10 pr-10"
                             {...register("password")}
                         />
@@ -177,9 +166,9 @@ const CandidateRegisterForm = ({ role }) => {
                             className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
                         >
                             {showPassword ? (
-                                <EyeOff className="w-4 h-4" />
+                                <EyeOff className="w-4 h-4"/>
                             ) : (
-                                <Eye className="w-4 h-4" />
+                                <Eye className="w-4 h-4"/>
                             )}
                         </button>
                     </div>
@@ -191,13 +180,13 @@ const CandidateRegisterForm = ({ role }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
                     <div className="relative">
-                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
                         <Input
                             id="confirmPassword"
                             type={showConfirmPassword ? "text" : "password"}
-                            placeholder="Vui lòng xác nhận mật khẩu"
+                            placeholder="Please confirm your password"
                             className="pl-10 pr-10"
                             {...register("confirmPassword")}
                         />
@@ -209,9 +198,9 @@ const CandidateRegisterForm = ({ role }) => {
                             className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
                         >
                             {showConfirmPassword ? (
-                                <EyeOff className="w-4 h-4" />
+                                <EyeOff className="w-4 h-4"/>
                             ) : (
-                                <Eye className="w-4 h-4" />
+                                <Eye className="w-4 h-4"/>
                             )}
                         </button>
                     </div>
@@ -231,21 +220,21 @@ const CandidateRegisterForm = ({ role }) => {
                         }
                     />
                     <div htmlFor="candidate-terms" className="text-sm">
-                        Tôi đã đọc và chấp nhận{" "}
+                        I have read and agree to the{" "}
                         <Link
                             href="#"
                             className="text-blue-500 hover:underline"
                         >
-                            Điều Khoản Sử Dụng
+                            Terms of Service
                         </Link>{" "}
-                        và{" "}
+                        and{" "}
                         <Link
                             href="#"
                             className="text-blue-500 hover:underline"
                         >
-                            Chính Sách Bảo Mật
+                            Privacy Policy
                         </Link>{" "}
-                        của Job Huntly
+                        of Job Huntly
                     </div>
                     {errors.terms && (
                         <p className="text-sm text-red-500">
@@ -258,7 +247,7 @@ const CandidateRegisterForm = ({ role }) => {
                     type="submit"
                     className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    Đăng Ký
+                    Sign Up
                 </Button>
             </form>
         </div>

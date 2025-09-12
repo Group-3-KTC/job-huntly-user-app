@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
-import { meThunk } from "@/features/auth/authSlice";
+import {useEffect, useRef} from "react";
+import {useRouter} from "next/navigation";
+import {toast} from "react-toastify";
+import {useDispatch} from "react-redux";
+import {meThunk} from "@/features/auth/authSlice";
 
-export default function GoogleSignIn({ role = "CANDIDATE" }) {
+export default function GoogleSignIn({role = "CANDIDATE"}) {
     const btnRef = useRef(null);
     const router = useRouter();
     const dispatch = useDispatch();
@@ -25,16 +25,16 @@ export default function GoogleSignIn({ role = "CANDIDATE" }) {
         window.google.accounts.id.initialize({
             client_id: clientId,
             // Callback nhận ID Token
-            callback: async ({ credential }) => {
+            callback: async ({credential}) => {
                 try {
                     const res = await fetch(
                         // "http://localhost:8080/api/v1/auth/google", 
-                         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google`,
+                        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google`,
                         {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
+                            headers: {"Content-Type": "application/json"},
                             credentials: "include",
-                            body: JSON.stringify({ idToken: credential }),
+                            body: JSON.stringify({idToken: credential}),
                         },
                     );
 
@@ -44,7 +44,7 @@ export default function GoogleSignIn({ role = "CANDIDATE" }) {
                     await dispatch(meThunk()).unwrap();
 
                     toast.success(
-                        data?.message || "Đăng nhập Google thành công!",
+                        data?.message || "Google sign-in successful!",
                     );
                     router.replace("/");
                 } catch (err) {
@@ -53,7 +53,7 @@ export default function GoogleSignIn({ role = "CANDIDATE" }) {
                         err?.title ||
                         err?.message ||
                         err?.data?.message ||
-                        "Đăng nhập Google thất bại";
+                        "Google sign-in failed";
                     toast.error(msg);
                 }
             },
@@ -68,15 +68,15 @@ export default function GoogleSignIn({ role = "CANDIDATE" }) {
             type: "standard",
             theme: "outline",
             size: "large",
-            text: "continue_with",
+            text: "sign_in_with",
             shape: "pill",
             logo_alignment: "left",
-            width: 360, // có thể bỏ
+            width: 360,
         });
 
         // 3) (Optional) One Tap prompt
         window.google.accounts.id.prompt();
     }, [role]);
 
-    return <div ref={btnRef} className="w-full flex justify-center" />;
+    return <div ref={btnRef} className="w-full flex justify-center"/>;
 }
