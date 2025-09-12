@@ -104,18 +104,16 @@ export default function CardJob() {
 
     return (
         <div className="w-full max-w-[1000px] bg-white p-6 rounded-xl shadow-md space-y-6 mx-auto">
-            {/* Phần list: Loading chỉ ở đây, không ảnh hưởng UI khác */}
             {error ? (
                 <p className="text-center text-red-500">
-                    Lỗi khi tải công việc:{" "}
-                    {error?.data?.message ||
-                        "Không thể tải danh sách công việc"}
+                    Error loading jobs:{" "}
+                    {error?.data?.message || "Unable to load job list"}
                 </p>
             ) : isLoading ? (
                 <p className="text-center text-gray-500">Đang tải dữ liệu...</p>
             ) : totalElements === 0 ? (
                 <p className="text-center text-gray-500">
-                    Không có công việc phù hợp.
+                    No matching jobs found
                 </p>
             ) : (
                 list.map((job) => (
@@ -128,7 +126,6 @@ export default function CardJob() {
                 ))
             )}
 
-            {/* Pagination luôn visible nếu totalPages > 1 (ngay cả khi loading) */}
             {totalPages > 1 && (
                 <Pagination
                     currentPage={currentPage}
