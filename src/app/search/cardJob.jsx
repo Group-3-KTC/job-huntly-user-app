@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useJobSearchStore } from "@/store/jobSearchStore";
 import { useSearchJobsMutation } from "@/services/jobService";
@@ -10,25 +8,28 @@ import JobCardItem from "./JobCardItem";
 import { toast } from "react-toastify";
 import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
 import { useDispatch } from "react-redux";
+import Pagination from "@/components/ui/pagination";
 
 export default function CardJob() {
     const [list, setList] = useState([]);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalElements, setTotalElements] = useState(0);
     const router = useRouter();
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
-    const jobsPerPage = 10;
+    const [pageSize, setPageSize] = useState(8); 
 
     const { searchTerm, filters } = useJobSearchStore();
     const [searchJobs, { isLoading, error }] = useSearchJobsMutation();
     const debounceRef = useRef(null);
 
+    // Build payload
     const payload = useMemo(() => {
         const {
             keyword = "",
             province = "",
             companyName = "",
         } = searchTerm || {};
-
         return {
             keyword: keyword || undefined,
             companyName: companyName || undefined,
@@ -51,8 +52,16 @@ export default function CardJob() {
             salaryMax: undefined,
             postedFrom: undefined,
             postedTo: undefined,
+            page: currentPage - 1, // 0-based
+            size: pageSize, // Dynamic size (7-8)
+            sort: "id,desc", // Default sort
         };
-    }, [searchTerm, filters]);
+    }, [searchTerm, filters, currentPage, pageSize]);
+
+    // Reset currentPage to 1 when searchTerm, filters, or pageSize change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, filters, pageSize]);
 
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -74,9 +83,9 @@ export default function CardJob() {
                     city: job.wards || [],
                     salaryDisplay: job.salaryDisplay,
                 }));
-
                 setList(normalized);
-                setCurrentPage(1);
+                setTotalPages(res.totalPages || 1);
+                setTotalElements(res.totalElements || 0);
             } catch (e) {
                 console.error(e);
             }
@@ -87,23 +96,6 @@ export default function CardJob() {
         };
     }, [payload, searchJobs]);
 
-    const totalPages = Math.ceil(list.length / jobsPerPage) || 1;
-    const startIndex = (currentPage - 1) * jobsPerPage;
-    const paginatedJobs = list.slice(startIndex, startIndex + jobsPerPage);
-
-    if (isLoading)
-        return <p className="text-center text-gray-500">Đang tải dữ liệu...</p>;
-    if (error)
-        return (
-            <p className="text-center text-red-500">
-                Lỗi khi tải công việc:{" "}
-                {error?.data?.message || "Không thể tải danh sách công việc"}
-            </p>
-        );
-
-    const handleNeedLogin = () => {
-        toast.error("Bạn cần đăng nhập để lưu job");
-    };
     const handleToast = (msg, type) => {
         if (type === "success") toast.success(msg);
         if (type === "neutral") toast.info(msg);
@@ -112,12 +104,19 @@ export default function CardJob() {
 
     return (
         <div className="w-full max-w-[1000px] bg-white p-6 rounded-xl shadow-md space-y-6 mx-auto">
-            {list.length === 0 ? (
+            {error ? (
+                <p className="text-center text-red-500">
+                    Error loading jobs:{" "}
+                    {error?.data?.message || "Unable to load job list"}
+                </p>
+            ) : isLoading ? (
+                <p className="text-center text-gray-500">Đang tải dữ liệu...</p>
+            ) : totalElements === 0 ? (
                 <p className="text-center text-gray-500">
-                    Không có công việc phù hợp.
+                    No matching jobs found
                 </p>
             ) : (
-                paginatedJobs.map((job) => (
+                list.map((job) => (
                     <JobCardItem
                         key={job.id}
                         job={job}
@@ -127,50 +126,13 @@ export default function CardJob() {
                 ))
             )}
 
-            {/* Pagination Controls */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() =>
-                        setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={currentPage === 1}
-                    className="w-9 h-9"
-                >
-                    <ChevronLeft className="w-4 h-4" />
-                </Button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                        <Button
-                            key={page}
-                            variant={
-                                page === currentPage ? "default" : "outline"
-                            }
-                            onClick={() => setCurrentPage(page)}
-                            className={`w-9 h-9 text-sm ${
-                                page === currentPage
-                                    ? "bg-[#0a66c2] text-white"
-                                    : ""
-                            }`}
-                        >
-                            {page}
-                        </Button>
-                    )
-                )}
-
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() =>
-                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                    className="w-9 h-9"
-                >
-                    <ChevronRight className="w-4 h-4" />
-                </Button>
-            </div>
+            {totalPages > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                />
+            )}
         </div>
     );
 }
