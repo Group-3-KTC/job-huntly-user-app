@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
 import { useDispatch } from "react-redux";
 import Pagination from "@/components/ui/pagination";
+import LoadingScreen from "@/components/ui/loadingScreen";
 
 export default function CardJob() {
     const [list, setList] = useState([]);
@@ -110,7 +111,7 @@ export default function CardJob() {
                     {error?.data?.message || "Unable to load job list"}
                 </p>
             ) : isLoading ? (
-                <p className="text-center text-gray-500">Đang tải dữ liệu...</p>
+                <LoadingScreen message="Loading job..." />
             ) : totalElements === 0 ? (
                 <p className="text-center text-gray-500">
                     No matching jobs found
