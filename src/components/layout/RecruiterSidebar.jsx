@@ -40,22 +40,22 @@ export default function RecruiterSidebar() {
             icon: Briefcase,
             children: [
                 {
-                    href: "/recruiter/post-job",
+                    href: "/recruiter/manage-job",
                     label: "All Job Posts",
                     icon: FileText,
                 },
                 {
-                    href: "/recruiter/jobs/active",
+                    href: "/recruiter/manage-job/active",
                     label: "Active Jobs",
                     icon: Briefcase,
                 },
                 {
-                    href: "/recruiter/jobs/drafts",
+                    href: "/recruiter/manage-job/drafts",
                     label: "Draft Jobs",
                     icon: FileText,
                 },
                 {
-                    href: "/recruiter/jobs/expired",
+                    href: "/recruiter/manage-job/expired",
                     label: "Expired Jobs",
                     icon: Calendar,
                 },

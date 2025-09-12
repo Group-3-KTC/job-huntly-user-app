@@ -30,4 +30,6 @@ export const COMPANY_API = {
 export const JOB_API = {
     GET_JOBS_BY_COMPANY: (companyId) =>
         `${BASE_API_URL}/job/company/${companyId}`,
+    SEARCH_JOBS_BY_COMPANY: (companyId, queryString = "") =>
+        `${BASE_API_URL}/job/company/${companyId}/search${queryString ? `?${queryString}` : ""}`,
 };
