@@ -166,17 +166,17 @@ export default function PreviewCv({
 
                     <button
                         onClick={handleDownload}
-                        disabled={completionPercent !== 100 || isDownloading}
+                        disabled={completionPercent < 50 || isDownloading}
                         className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors 
                             ${
-                                completionPercent === 100
+                                completionPercent >= 50
                                     ? "bg-blue-600 text-white hover:bg-blue-700"
                                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                             }`}
                         aria-label="Download CV as PDF"
                     >
                         <FileDown />
-                        {completionPercent === 100
+                        {completionPercent >= 50
                             ? "Download PDF"
                             : "Complete your profile"}
                     </button>

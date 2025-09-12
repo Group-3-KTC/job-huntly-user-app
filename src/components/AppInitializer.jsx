@@ -23,23 +23,22 @@ const AppInitializer = () => {
         if (didInit.current) return;
         didInit.current = true;
 
-        const parsed = safeParse(localStorage.getItem(STORAGE_KEY));
+        // const parsed = safeParse(localStorage.getItem(STORAGE_KEY));
 
-        dispatch(authHydrated({ user: parsed?.user ?? null }));
-
+        // dispatch(authHydrated({ user: parsed?.user ?? null }));
         dispatch(meThunk());
     }, [dispatch]);
 
-    useEffect(() => {
-        if (!hydrated) return;
-        try {
-            if (user) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
-            } else {
-                localStorage.removeItem(STORAGE_KEY);
-            }
-        } catch {}
-    }, [hydrated, user]);
+    // useEffect(() => {
+    //     if (!hydrated) return;
+    //     try {
+    //         if (user) {
+    //             localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
+    //         } else {
+    //             localStorage.removeItem(STORAGE_KEY);
+    //         }
+    //     } catch {}
+    // }, [hydrated, user]);
 
     return null;
 };
