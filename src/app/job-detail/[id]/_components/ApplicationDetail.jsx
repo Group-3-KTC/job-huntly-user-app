@@ -32,14 +32,13 @@ export default function ApplicationDetail({ jobId }) {
     }
 
     return (
-        <Card className="mt-4 border-l-4 border-blue-500">
+        <Card className="mt-4 border-4 border-blue-500">
             <CardHeader>
                 <CardTitle className="text-lg text-blue-700">
                     Your Application Details
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                {/* Candidate Info */}
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="flex items-center gap-2 text-gray-700">
                         <User className="w-4 h-4 text-blue-600" />

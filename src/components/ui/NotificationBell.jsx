@@ -24,8 +24,8 @@ function timeAgo(iso) {
 
 export default function NotificationBell({ className = "" }) {
   const router = useRouter();
-
-  const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || "").replace(/\/+$/, "");
+  const NEXT_PUBLIC_API_BASE = `${process.env.NEXT_PUBLIC_API_PROXY_TARGET}${process.env.NEXT_PUBLIC_API_BASE_URL}/`;
+  const API_BASE = (NEXT_PUBLIC_API_BASE || "").replace(/\/+$/, "");
   const WS_ENDPOINT = process.env.NEXT_PUBLIC_WS_ENDPOINT || "/ws";
   const SUB_DEST_TEMPLATE = process.env.NEXT_PUBLIC_SUB_DEST || "/user/queue/noti";
 
@@ -246,7 +246,7 @@ export default function NotificationBell({ className = "" }) {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent align="end" className="w-96 p-0">
+      <PopoverContent align="end" className="p-0 w-96">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <div className="text-sm font-semibold">
@@ -266,7 +266,7 @@ export default function NotificationBell({ className = "" }) {
         </div>
 
         {/* Body */}
-        <div className="max-h-96 overflow-y-auto">
+        <div className="overflow-y-auto max-h-96">
           {loading && (
             <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
