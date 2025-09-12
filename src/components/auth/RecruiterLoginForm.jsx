@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, Mail } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -18,6 +18,8 @@ const RecruiterLoginForm = ({ role }) => {
     const dispatch = useDispatch();
     const router = useRouter();
     const isAuthLoading = useSelector(selectAuthLoading);
+    const [showPassword, setShowPassword] = useState(false);
+    
     const {
         register,
         handleSubmit,
@@ -85,12 +87,23 @@ const RecruiterLoginForm = ({ role }) => {
                     <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
                     <Input
                         id="recruiter-password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         placeholder="Enter password"
                         className="pl-10 pr-10"
                         {...register("password")}
                         autoComplete="current-password"
                     />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
+                    >
+                        {showPassword ? (
+                            <EyeOff className="w-4 h-4" />
+                        ) : (
+                            <Eye className="w-4 h-4" />
+                        )}
+                    </button>
                 </div>
                 {errors.password && (
                     <p className="mt-1 text-sm text-red-500">
