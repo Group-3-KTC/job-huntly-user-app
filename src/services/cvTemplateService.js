@@ -44,7 +44,7 @@ export const cvTemplateApi = createApi({
     endpoints: (builder) => ({
         getAllTemplates: builder.query({
             query: () => ({
-                url: "/",
+                url: "",
                 method: "GET",
             }),
             providesTags: ["CvTemplates"],
