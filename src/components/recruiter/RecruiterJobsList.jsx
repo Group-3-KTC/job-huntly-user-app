@@ -46,7 +46,7 @@ export default function RecruiterJobsList({ tab = "all" }) {
                 const cid = res?.company_id || res?.id || res?.companyId || res?.company?.id;
                 if (mounted) setResolvedCompanyId(cid || null);
             } catch (e) {
-                if (mounted) setError(e?.message || "Không lấy được thông tin công ty");
+                if (mounted) setError(e?.message || "Unable to load company info");
             } finally {
                 if (mounted) setLoading(false);
             }
@@ -72,7 +72,7 @@ export default function RecruiterJobsList({ tab = "all" }) {
                 totalElements: res?.totalElements ?? res?.content?.length ?? 0,
             });
         } catch (e) {
-            setError(e?.message || "Lỗi tải dữ liệu");
+            setError(e?.message || "Error loading data");
         } finally {
             setLoading(false);
         }
@@ -139,13 +139,13 @@ export default function RecruiterJobsList({ tab = "all" }) {
                         </div>
                     </div>
                     <div className="text-right shrink-0 text-xs text-muted-foreground space-y-1">
-                        <div className="flex items-center gap-1 justify-end"><Calendar className="w-3 h-3" /> Đăng: {job.date_post}</div>
-                        <div className="flex items-center gap-1 justify-end"><Calendar className="w-3 h-3" /> Hết hạn: {job.expired_date}</div>
+                        <div className="flex items-center gap-1 justify-end"><Calendar className="w-3 h-3" /> Posted: {job.date_post}</div>
+                        <div className="flex items-center gap-1 justify-end"><Calendar className="w-3 h-3" /> Expired: {job.expired_date}</div>
                         <div className="pt-2">
                             <div className="flex items-center gap-2 justify-end">
-                                <Button size="sm" variant="secondary" onClick={() => { setDetailJob(job); setDetailJobId(job.id); setDetailOpen(true); }}>Xem</Button>
+                                <Button size="sm" variant="secondary" onClick={() => { setDetailJob(job); setDetailJobId(job.id); setDetailOpen(true); }}>View</Button>
                                 <Link href={`/recruiter/manage-job/${job.id}/edit`}>
-                                    <Button size="sm" variant="outline">Sửa</Button>
+                                    <Button size="sm" variant="outline">Edit</Button>
                                 </Link>
                             </div>
                         </div>
@@ -169,10 +169,10 @@ export default function RecruiterJobsList({ tab = "all" }) {
 
     const EmptyState = () => (
         <Card className="p-10 text-center">
-            <div className="text-lg font-medium mb-2">Chưa có tin tuyển dụng</div>
-            <div className="text-sm text-muted-foreground mb-4">Hãy tạo job đầu tiên để thu hút ứng viên.</div>
+            <div className="text-lg font-medium mb-2">No job found</div>
+            <div className="text-sm text-muted-foreground mb-4">Please create your first job to attract candidates.</div>
             <Link href="/recruiter/create-job">
-                <Button>Tạo Job</Button>
+                <Button>Create Job</Button>
             </Link>
         </Card>
     );
@@ -181,7 +181,7 @@ export default function RecruiterJobsList({ tab = "all" }) {
         <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
                 <Input
-                    placeholder="Tìm theo tiêu đề..."
+                    placeholder="Search by title..."
                     value={filters.keyword || ""}
                     onChange={(e) => setFilters((f) => ({ ...f, keyword: e.target.value }))}
                     className="w-64"
@@ -195,10 +195,10 @@ export default function RecruiterJobsList({ tab = "all" }) {
                         }
                     >
                         <SelectTrigger className="w-40">
-                            <SelectValue placeholder="Trạng thái" />
+                            <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="ALL">Tất cả</SelectItem>
+                            <SelectItem value="ALL">All</SelectItem>
                             <SelectItem value="ACTIVE">ACTIVE</SelectItem>
                             <SelectItem value="DRAFT">DRAFT</SelectItem>
                         </SelectContent>
@@ -207,28 +207,28 @@ export default function RecruiterJobsList({ tab = "all" }) {
 
                 <Select value={String(size)} onValueChange={(v) => setSize(Number(v))}>
                     <SelectTrigger className="w-28">
-                        <SelectValue placeholder="Kích thước" />
+                        <SelectValue placeholder="Size" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="5">5 / trang</SelectItem>
-                        <SelectItem value="10">10 / trang</SelectItem>
-                        <SelectItem value="20">20 / trang</SelectItem>
-                        <SelectItem value="50">50 / trang</SelectItem>
+                        <SelectItem value="5">5 / page</SelectItem>
+                        <SelectItem value="10">10 / page</SelectItem>
+                        <SelectItem value="20">20 / page</SelectItem>
+                        <SelectItem value="50">50 / page</SelectItem>
                     </SelectContent>
                 </Select>
 
                 <Select value={sort} onValueChange={setSort}>
                     <SelectTrigger className="w-48">
-                        <SelectValue placeholder="Sắp xếp" />
+                        <SelectValue placeholder="Sort" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="id,desc">Mới nhất</SelectItem>
-                        <SelectItem value="expiredDate,asc">Sắp hết hạn</SelectItem>
-                        <SelectItem value="expiredDate,desc">Hết hạn mới</SelectItem>
+                        <SelectItem value="id,desc">Newest</SelectItem>
+                        <SelectItem value="expiredDate,asc">Expiring soon</SelectItem>
+                        <SelectItem value="expiredDate,desc">Expired recently</SelectItem>
                     </SelectContent>
                 </Select>
 
-                <Button onClick={onSearch}>Áp dụng</Button>
+                <Button onClick={onSearch}>Apply</Button>
             </div>
 
             {loading && <LoadingSkeleton />}
@@ -243,16 +243,16 @@ export default function RecruiterJobsList({ tab = "all" }) {
             </div>
 
             <div className="flex items-center justify-between pt-2">
-                <div className="text-sm">Tổng: {data.totalElements}</div>
+                <div className="text-sm">Total: {data.totalElements}</div>
                 <div className="flex items-center gap-2">
                     <Button variant="outline" disabled={page <= 0} onClick={() => setPage((p) => p - 1)}>
-                        Trang trước
+                        Previous page
                     </Button>
                     <div className="text-sm">
                         {page + 1} / {Math.max(1, data.totalPages)}
                     </div>
                     <Button variant="outline" disabled={page + 1 >= data.totalPages} onClick={() => setPage((p) => p + 1)}>
-                        Trang sau
+                        Next page
                     </Button>
                 </div>
             </div>
