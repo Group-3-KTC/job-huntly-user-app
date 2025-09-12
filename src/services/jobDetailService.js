@@ -1,43 +1,38 @@
-const BASE_URL = "http://18.142.226.139:8080/api/v1";
+import api from "@/lib/api";
 
 export const getJobDetail = async (id) => {
-  if (!id && id !== 0) throw new Error("Missing job id");
+    if (!id && id !== 0) throw new Error("Missing job id");
 
-  const url = `${BASE_URL}/job/${id}`;
+    try {
+        const { data } = await api.get(
+            `${process.env.NEXT_PUBLIC_API_PROXY_TARGET}${process.env.NEXT_PUBLIC_API_BASE_URL}/job/${id}`,
+            {
+                headers: { "Cache-Control": "no-store" },
+            }
+        );
 
-  try {
-    const res = await fetch(url, {
-      cache: "no-store", // tránh dính cache khi chuyển giữa các id
-    });
-
-    if (!res.ok) {
-      console.error(`[getJobDetail] HTTP ${res.status} for ${url}`);
-      throw new Error(`Failed to fetch job detail (status ${res.status})`);
+        return {
+            id: data.id,
+            title: data.title || "",
+            description: data.description,
+            requirements: data.requirements,
+            benefits: data.benefits,
+            location: data.location,
+            companyId: data.company?.company_id ?? null,
+            companyName: data.company?.company_name || "",
+            avatar: data.company?.avatar || "",
+            category: data.category_names || [],
+            level: data.level_names || [],
+            workType: data.work_type_names || [],
+            skill: data.skill_names || [],
+            city: data.wards || [],
+            salaryDisplay: data.salaryDisplay || "Thỏa thuận",
+            datePost: data.date_post,
+            expiredDate: data.expired_date,
+        };
+    } catch (err) {
+        console.error("getJobDetail error:", err);
+        throw err;
     }
-
-    const data = await res.json();
-
-    return {
-      id: data.id,
-      title: data.title || "",
-      description: data.description,
-      requirements: data.requirements,
-      benefits: data.benefits,
-      location: data.location,
-      companyId: data.company?.company_id ?? null,
-      companyName: data.company?.company_name || "",
-      avatar: data.company?.avatar || "",
-      category: data.category_names || [],
-      level: data.level_names || [],
-      workType: data.work_type_names || [],
-      skill: data.skill_names || [],
-      city: data.wards || [],
-      salaryDisplay: data.salaryDisplay || "Thỏa thuận",
-      datePost: data.date_post,
-      expiredDate: data.expired_date,
-    };
-  } catch (err) {
-    console.error("getJobDetail error:", err);
-    throw err;
-  }
 };
+

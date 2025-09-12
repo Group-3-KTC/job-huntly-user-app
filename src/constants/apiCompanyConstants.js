@@ -13,9 +13,7 @@ export const COMPANY_API = {
             location
         )}`,
     GET_COMPANY_BY_NAME: (name) =>
-        `${BASE_API_URL}/companies/by-name?name=${encodeURIComponent(
-            name
-        )}`,
+        `${BASE_API_URL}/companies/by-name?name=${encodeURIComponent(name)}`,
     GET_COMPANY_LOCATIONS: `${BASE_API_URL}/companies/locations`,
     GET_ALL_CATEGORIES: `${BASE_API_URL}/category`,
     SEARCH_COMPANIES: (params) => {
