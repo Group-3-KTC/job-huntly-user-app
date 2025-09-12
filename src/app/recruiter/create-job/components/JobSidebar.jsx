@@ -4,10 +4,11 @@ import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-const JobSidebar = ({ category, skills, levels, workTypes }) => {
+const JobSidebar = ({ categories, skills, levels, workTypes }) => {
     const safeWorkTypes = Array.isArray(workTypes) ? workTypes : [];
     const safeSkills = Array.isArray(skills) ? skills : [];
     const safeLevels = Array.isArray(levels) ? levels : [];
+    const safeCategories = Array.isArray(categories) ? categories : [];
 
     return (
         <div className="space-y-6">
@@ -22,7 +23,9 @@ const JobSidebar = ({ category, skills, levels, workTypes }) => {
                     <div className="flex justify-between items-center">
                         <span className="text-gray-600">Category</span>
                         <span className="font-medium">
-                            {category || "Not selected"}
+                            {safeCategories.length > 0
+                                ? safeCategories.join(", ")
+                                : "Not selected"}
                         </span>
                     </div>
                     <div className="flex justify-between items-center">

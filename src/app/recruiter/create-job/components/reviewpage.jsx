@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useAppDispatch } from "@/store/hooks.js";
-import { addToast } from "@/store/slices/toastSlices.js";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "react-toastify";
 
 // Import custom components
 import JobReviewHeader from "@/app/recruiter/create-job/components/JobReviewHeader";
@@ -31,8 +30,6 @@ export default function JobReviewPage({
     const [datePostError, setDatePostError] = useState("");
     const [expiredDateError, setExpiredDateError] = useState("");
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-
-    const dispatch = useAppDispatch();
 
     const formatDate = (dateString) => {
         if (!dateString) return "";
@@ -96,7 +93,7 @@ export default function JobReviewPage({
         if (!formData.jobTitle?.trim()) {
             errors.push("Job title");
         }
-        if (!formData.category) {
+        if (!formData.categories || formData.categories.length === 0) {
             errors.push("Category");
         }
         if (!formData.city) {
@@ -124,14 +121,14 @@ export default function JobReviewPage({
 
         if (!dateErrors || formErrors.length > 0) {
             if (formErrors.length > 0) {
-                dispatch(
-                    addToast({
-                        type: "error",
-                        message: `Please fill in all the fields: ${formErrors.join(
-                            ", "
-                        )}`,
-                    })
+                toast.error(
+                    `Please fill in all the fields: ${formErrors.join(", ")}`,
+                    { position: "top-center" }
                 );
+            } else if (!dateErrors) {
+                toast.error("Please fix the date fields", {
+                    position: "top-center",
+                });
             }
             return;
         }
@@ -155,7 +152,6 @@ export default function JobReviewPage({
                 }
             } catch (error) {
                 console.error("Error in review submit:", error);
-                // Don't show success dialog on error
             }
         }
     };
@@ -228,7 +224,7 @@ export default function JobReviewPage({
                     {/* Sidebar */}
                     <div className="space-y-6">
                         <JobSidebar
-                            category={formData.category}
+                            categories={formData.categories}
                             skills={formData.skill}
                             levels={formData.level}
                             workTypes={formData.workType}

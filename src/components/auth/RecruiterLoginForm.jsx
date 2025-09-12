@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
@@ -133,3 +135,4 @@ const RecruiterLoginForm = ({role}) => {
 };
 
 export default RecruiterLoginForm;
+

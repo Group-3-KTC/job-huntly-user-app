@@ -43,7 +43,7 @@ export default function JobPostingForm() {
         workType: "",
         city: "",
         address: "",
-        category: "",
+        categories: "",
     });
 
     // API data states
@@ -53,7 +53,7 @@ export default function JobPostingForm() {
     const [categories, setCategories] = useState([]);
     const [skills, setSkills] = useState([]);
     const [workTypes, setWorkTypes] = useState([]);
-
+    
     // Loading states
     const [isLoadingLevels, setIsLoadingLevels] = useState(true);
     const [isLoadingCities, setIsLoadingCities] = useState(true);
@@ -65,7 +65,7 @@ export default function JobPostingForm() {
 
     const [formData, setFormData] = useState({
         jobTitle: "",
-        category: "",
+        categories: [],
         city: "",
         address: "",
         workType: [],
@@ -119,12 +119,14 @@ export default function JobPostingForm() {
         loadInitialData();
     }, []);
 
-    // Load skills when category changes
+    // Load skills when categories change (merge skills from all selected categories)
     useEffect(() => {
-        if (formData.category) {
-            loadSkillsByCategory(formData.category);
+        if (formData.categories && formData.categories.length > 0) {
+            loadSkillsForCategories(formData.categories);
+        } else {
+            setSkills([]);
         }
-    }, [formData.category]);
+    }, [formData.categories]);
 
     // Load wards when city changes
     useEffect(() => {
@@ -221,6 +223,34 @@ export default function JobPostingForm() {
         }
     };
 
+    const loadSkillsForCategories = async (categoryNames = []) => {
+        try {
+            setIsLoadingSkills(true);
+            const results = await Promise.all(
+                (categoryNames || []).map((name) =>
+                    getSkillsByCategory(name).catch(() => [])
+                )
+            );
+            const merged = [];
+            const seen = new Set();
+            results.forEach((arr) => {
+                (arr || []).forEach((skill) => {
+                    const key = skill?.id ?? skill?.name;
+                    if (key != null && !seen.has(key)) {
+                        seen.add(key);
+                        merged.push(skill);
+                    }
+                });
+            });
+            setSkills(merged);
+        } catch (error) {
+            console.error("Error loading skills for categories:", error);
+            setSkills([]);
+        } finally {
+            setIsLoadingSkills(false);
+        }
+    };
+
     const loadWorkTypes = async () => {
         try {
             setIsLoadingWorkTypes(true);
@@ -262,15 +292,11 @@ export default function JobPostingForm() {
         const newErrors = {};
 
         if (step === 1) {
-            if (!formData.jobTitle.trim())
-                newErrors.jobTitle = "Please enter the job title";
-            if (!formData.category)
-                newErrors.category = "Please select a category";
-            if (!formData.city) newErrors.city = "Please select a city";
-            if (!formData.address.trim())
-                newErrors.address = "Please enter the address";
-            if (!formData.workType.length)
-                newErrors.workType = "Please select a job type";
+            if (!formData.jobTitle.trim()) newErrors.jobTitle = "Vui lòng nhập tiêu đề công việc";
+            if (!formData.categories || formData.categories.length === 0) newErrors.categories = "Vui lòng chọn danh mục";
+            if (!formData.city) newErrors.city = "Vui lòng chọn thành phố";
+            if (!formData.address.trim()) newErrors.address = "Vui lòng nhập địa chỉ";
+            if (!formData.workType.length) newErrors.workType = "Vui lòng chọn loại hình công việc";
         }
 
         setErrors(newErrors);
@@ -362,14 +388,17 @@ export default function JobPostingForm() {
                 salary_min: formData.salaryMin,
                 salary_max: formData.salaryMax,
                 salary_type: formData.salaryType,
-                category_names: [formData.category],
+                category_names: formData.categories || [],
                 skill_names: formData.skill,
                 level_names: formData.level,
                 work_type_names: formData.workType,
                 ward_ids: formData.wardIds,
             };
 
+            console.log("Sending job data:", jobData); // Debug log
+
             const response = await createJob(jobData);
+            console.log("API Response:", response); // Debug log
 
             // Always show success toast if we reach here (no exception thrown)
             toast.success("Job created successfully!", {
@@ -384,7 +413,7 @@ export default function JobPostingForm() {
             // Reset form
             setFormData({
                 jobTitle: "",
-                category: "",
+                categories: [],
                 city: "",
                 address: "",
                 workType: [],
@@ -442,10 +471,10 @@ export default function JobPostingForm() {
             <div className="max-w-4xl mx-auto px-4">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                        Create New Job
+                        Tạo công việc mới
                     </h1>
                     <p className="text-gray-600">
-                        Fill in the details to create an attractive job
+                        Điền thông tin chi tiết để tạo công việc hấp dẫn
                     </p>
                 </div>
 
@@ -493,11 +522,11 @@ export default function JobPostingForm() {
                                 disabled={currentStep === 1}
                             >
                                 <ArrowLeft className="w-4 h-4 mr-2" />
-                                Back
+                                Quay lại
                             </Button>
 
                             <Button onClick={handleNext} disabled={isLoading}>
-                                {currentStep === 3 ? "Previous" : "Next"}
+                                {currentStep === 3 ? "Xem trước" : "Tiếp theo"}
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
                         </div>
