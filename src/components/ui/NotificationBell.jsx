@@ -53,7 +53,7 @@ export default function NotificationBell({ className = "" }) {
 
   const fetchUnreadCount = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/v1/notifications/unread-count`, {
+      const res = await fetch(`${API_BASE}/notifications/unread-count`, {
         credentials: "include",
         cache: "no-store",
       });
@@ -69,7 +69,7 @@ export default function NotificationBell({ className = "" }) {
       try {
         if (!append) setLoading(true);
         const res = await fetch(
-          `${API_BASE}/api/v1/notifications/feed?page=${p}&size=${size}`,
+          `${API_BASE}/notifications/feed?page=${p}&size=${size}`,
           { credentials: "include", cache: "no-store" }
         );
         if (res.ok) {
@@ -92,7 +92,7 @@ export default function NotificationBell({ className = "" }) {
 
   const markAllRead = useCallback(async () => {
     try {
-      await fetch(`${API_BASE}/api/v1/notifications/mark-all-read`, {
+      await fetch(`${API_BASE}/notifications/mark-all-read`, {
         method: "POST",
         credentials: "include",
       });
@@ -109,7 +109,7 @@ export default function NotificationBell({ className = "" }) {
     async (ids) => {
       if (!ids?.length) return;
       try {
-        await fetch(`${API_BASE}/api/v1/notifications/mark-read`, {
+        await fetch(`${API_BASE}/notifications/mark-read`, {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },

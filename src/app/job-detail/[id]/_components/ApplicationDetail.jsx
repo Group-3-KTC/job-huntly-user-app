@@ -32,7 +32,7 @@ export default function ApplicationDetail({ jobId }) {
     }
 
     return (
-        <Card className="mt-4 border-4 border-blue-500">
+        <Card className="mt-4 border-blue-500 border-dashed border-3">
             <CardHeader>
                 <CardTitle className="text-lg text-blue-700">
                     Your Application Details
