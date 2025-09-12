@@ -82,9 +82,13 @@ const authSlice = createSlice({
         clearError(state) {
             state.error = null;
         },
+        // authHydrated: (state, action) => {
+        //     const user = action.payload || {};
+        //     if (user !== undefined) state.user = user;
+        //     state.hydrated = true;
+        // },
         authHydrated: (state, action) => {
-            const user = action.payload || {};
-            if (user !== undefined) state.user = user;
+            state.user = action.payload?.user ?? null;
             state.hydrated = true;
         },
     },

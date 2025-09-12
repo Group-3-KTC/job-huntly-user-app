@@ -21,7 +21,15 @@ const authService = {
 
     async logout() {
         try {
-            await api.post("/auth/logout");
+            // await api.post("/auth/logout");
+            app.post("/auth/logout", (req, res) => {
+                res.clearCookie("at", {
+                    httpOnly: true,
+                    sameSite: "strict",
+                    secure: true,
+                });
+                res.status(200).json({ message: "Logged out" });
+            });
         } catch {}
     },
 };

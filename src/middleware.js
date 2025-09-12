@@ -47,11 +47,15 @@ function getRoleFromJwt(token) {
         const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
         const json = JSON.parse(atob(base64));
 
+        if (typeof json.role === "object") {
+            return json.role.roleName?.toString().toUpperCase() || null;
+        }
         return json.role?.toString().toUpperCase() || null;
     } catch {
         return null;
     }
 }
+
 
 export function middleware(req) {
     const { pathname, search } = req.nextUrl;
@@ -88,7 +92,7 @@ export function middleware(req) {
         const role = getRoleFromJwt(token);
         if (role !== "RECRUITER") {
             const url = req.nextUrl.clone();
-            url.pathname = "/profile";
+            url.pathname = "/";
             return NextResponse.redirect(url);
         }
     }
