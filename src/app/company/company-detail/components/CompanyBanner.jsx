@@ -1,14 +1,47 @@
 "use client";
 
-import React from "react";
+import React, { useState, useCallback } from "react";
 import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+
 import useCompanyDetailStore from "../store/companyDetailStore";
 import { getImageUrl } from "@/lib/utils";
 
+import { selectIsLoggedIn } from "@/features/auth/authSelectors";
+import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
+import ReportModal from "@/components/ui/report";
+import { MessageSquareWarning } from "lucide-react";
+
 const CompanyBanner = () => {
     const { company, toggleFollowCompany } = useCompanyDetailStore();
+    const isLoggedIn = useSelector(selectIsLoggedIn);
+    const dispatch = useDispatch();
+
+    const [openReport, setOpenReport] = useState(false);
 
     if (!company) return null;
+
+    const guardOr = useCallback(
+            (action) => {
+                if (!isLoggedIn) {
+                dispatch(showLoginPrompt());
+                setOpenReport(false);
+                return;
+            }
+            action?.();
+        },
+        [isLoggedIn, dispatch]
+    );
+
+    const handleFollow = useCallback(
+        () => guardOr(() => toggleFollowCompany()),
+        [guardOr, toggleFollowCompany]
+    );
+
+    const handleReport = useCallback(
+        () => guardOr(() => setOpenReport(true)),
+        [guardOr]
+    );
 
     return (
         <div
@@ -43,7 +76,7 @@ const CompanyBanner = () => {
                             )}
                             <a
                                 href={company.website}
-                                className="hover:text-blue-600 underline"
+                                className="underline hover:text-blue-600"
                             >
                                 {company.website?.replace("https://", "")}
                             </a>
@@ -52,18 +85,37 @@ const CompanyBanner = () => {
                         </div>
                     </div>
                 </div>
-                {/* Nút theo dõi */}
-                <button
-                    onClick={toggleFollowCompany}
-                    className={`px-4 py-2 text-lg font-semibold text-white transition rounded ${
-                        company.isFollowing ? "bg-gray-600" : "bg-[#0A66C2]"
-                    }`}
-                >
-                    {company.isFollowing
-                        ? "✓ Đang theo dõi"
-                        : "+ Theo dõi công ty"}
-                </button>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handleFollow}
+                        className={`px-4 py-2 text-lg font-semibold text-white transition rounded ${
+                            company.isFollowing ? "bg-gray-600" : "bg-[#0A66C2]"
+                        }`}
+                    >
+                        {company.isFollowing
+                            ? "✓ Đang theo dõi"
+                            : "+ Theo dõi công ty"}
+                    </button>
+
+                    {/* Report icon button */}
+                    <button
+                        onClick={handleReport}
+                        className="p-2 text-red-600 transition bg-white border rounded hover:bg-red-50"
+                        title="Report Company"
+                    >
+                        <MessageSquareWarning className="w-5 h-5" />
+                    </button>
+                </div>
             </div>
+
+            <ReportModal
+                open={openReport}
+                onClose={() => setOpenReport(false)}
+                type={2} // 2 = Company
+                contentId={company.id}
+            />
         </div>
     );
 };

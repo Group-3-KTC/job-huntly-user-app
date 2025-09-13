@@ -1,6 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import LoginPromptModal from "@/app/job-detail/[id]/_components/LoginPromptModal";
+import LoginPromptModal from "@/components/ui/LoginPromptModal";
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { hideLoginPrompt } from "@/features/auth/loginPromptSlice";
