@@ -57,7 +57,7 @@ export default function SaveJobItem({ job }) {
                     <div className="flex items-center gap-1 text-gray-600">
                         <Building2 className="w-4 h-4 text-gray-500" />
                         <Link
-                            href={`/company/company-detail/${job.company_id}`}
+                            href={`/company/company-detail/${job.companyId}`}
                             className="underline underline-offset-2 hover:text-blue-700"
                         >
                             {job.companyName}
