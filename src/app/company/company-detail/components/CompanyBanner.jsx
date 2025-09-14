@@ -1,14 +1,79 @@
 "use client";
 
-import React from "react";
+import React, { useState, useCallback } from "react";
 import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+import { MessageSquareWarning } from "lucide-react";
+
 import useCompanyDetailStore from "../store/companyDetailStore";
 import { getImageUrl } from "@/lib/utils";
+import { toast } from "react-toastify";
+import { selectIsLoggedIn } from "@/features/auth/authSelectors";
+import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
+
+import {
+    useGetFollowStatusQuery,
+    useGetFollowCountQuery,
+    useFollowCompanyMutation,
+    useUnfollowCompanyMutation,
+} from "@/services/followCompanyService";
+
+import ReportModal from "@/components/ui/report";
 
 const CompanyBanner = () => {
-    const { company, toggleFollowCompany } = useCompanyDetailStore();
+    const { company } = useCompanyDetailStore();
+    const isLoggedIn = useSelector(selectIsLoggedIn);
+    const dispatch = useDispatch();
+
+    const [openReport, setOpenReport] = useState(false);
 
     if (!company) return null;
+
+    // Query follow status + count
+    const { data: followStatus, isLoading: isFollowStatusLoading } =
+        useGetFollowStatusQuery(company.id, {
+            skip: !isLoggedIn,
+        });
+    const { data: followCount } = useGetFollowCountQuery(company.id);
+
+    const [followCompany] = useFollowCompanyMutation();
+    const [unfollowCompany] = useUnfollowCompanyMutation();
+
+    // Guard login
+    const guardOr = useCallback(
+        (action) => {
+            if (!isLoggedIn) {
+                dispatch(showLoginPrompt());
+                setOpenReport(false);
+                return;
+            }
+            action?.();
+        },
+        [isLoggedIn, dispatch]
+    );
+
+    // Handle follow/unfollow
+    const handleFollowToggle = useCallback(() => {
+        guardOr(async () => {
+            try {
+                if (followStatus?.followed) {
+                    await unfollowCompany(company.id).unwrap();
+                    toast.success("You unfollowed this company");
+                } else {
+                    await followCompany(company.id).unwrap();
+                    toast.success("You followed this company");
+                }
+            } catch (err) {
+                toast.error("Something went wrong, please try again");
+            }
+        });
+    }, [guardOr, followStatus, followCompany, unfollowCompany, company.id]);
+
+    // Handle report
+    const handleReport = useCallback(
+        () => guardOr(() => setOpenReport(true)),
+        [guardOr]
+    );
 
     return (
         <div
@@ -16,7 +81,7 @@ const CompanyBanner = () => {
             style={{
                 backgroundImage: `url(${
                     getImageUrl(company.avatarCover) ||
-                    "https://static.topcv.vn/company_covers/tap-doan-cong-nghiep-vien-thong-quan-doi-e3c6e7727df189e29507b150c6a7d893-64c328ef424bd.jpg"
+                    "https://static.topcv.vn/company_covers/default-cover.jpg"
                 })`,
             }}
         >
@@ -31,8 +96,8 @@ const CompanyBanner = () => {
                             className="object-contain w-full h-full"
                         />
                     </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-900">
+                    <div className="">
+                        <h1 className="text-xl font-bold text-gray-900 px-2 py-0.5 rounded bg-white w-auto">
                             {company.companyName}
                         </h1>
                         <div className="mt-2 text-sm text-white-600">
@@ -43,27 +108,57 @@ const CompanyBanner = () => {
                             )}
                             <a
                                 href={company.website}
-                                className="hover:text-blue-600 underline"
+                                className="underline hover:text-blue-600 px-2 py-0.5 rounded bg-white mr-2"
                             >
                                 {company.website?.replace("https://", "")}
                             </a>
-                            · {company.quantityEmployee}+ nhân viên ·{" "}
-                            {company.followersCount} người theo dõi
+                            <span className="px-2 py-0.5 rounded bg-white mr-2">
+                                {company.quantityEmployee}+ employees
+                            </span>
+                            <span className="px-2 py-0.5 rounded bg-white">
+                                {followCount?.totalFollowers ?? 0} followers
+                            </span>
                         </div>
                     </div>
                 </div>
-                {/* Nút theo dõi */}
-                <button
-                    onClick={toggleFollowCompany}
-                    className={`px-4 py-2 text-lg font-semibold text-white transition rounded ${
-                        company.isFollowing ? "bg-gray-600" : "bg-[#0A66C2]"
-                    }`}
-                >
-                    {company.isFollowing
-                        ? "✓ Đang theo dõi"
-                        : "+ Theo dõi công ty"}
-                </button>
+
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handleFollowToggle}
+                        disabled={isFollowStatusLoading}
+                        className={`px-4 py-2 text-lg font-semibold text-white transition rounded ${
+                            isLoggedIn && followStatus?.followed
+                                ? "bg-gray-600"
+                                : "bg-[#0A66C2]"
+                        } ${
+                            isFollowStatusLoading
+                                ? "opacity-50 cursor-not-allowed"
+                                : ""
+                        }`}
+                    >
+                        {isFollowStatusLoading
+                            ? "Loading..."
+                            : isLoggedIn && followStatus?.followed
+                            ? "✓ Unfollow"
+                            : "+ Follow Company"}
+                    </button>
+
+                    <button
+                        onClick={handleReport}
+                        className="p-2 text-red-600 transition bg-white border rounded hover:bg-red-50"
+                        title="Report Company"
+                    >
+                        <MessageSquareWarning className="w-5 h-5" />
+                    </button>
+                </div>
             </div>
+
+            <ReportModal
+                open={openReport}
+                onClose={() => setOpenReport(false)}
+                type={2} 
+                contentId={company.id}
+            />
         </div>
     );
 };

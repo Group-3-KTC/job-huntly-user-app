@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MapPin, ChevronDown, Search, Check } from "lucide-react";
@@ -18,59 +18,17 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { useJobSearchStore } from "@/store/jobSearchStore";
-
-const API_BASE = "http://18.142.226.139:8080/api/v1";
-
-async function fetchJSON(url, signal) {
-    try {
-        const res = await fetch(url, { signal });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return await res.json();
-    } catch (e) {
-        if (
-            e.name === "AbortError" ||
-            e.message === "signal is aborted without reason"
-        ) {
-            return null;
-        }
-        throw e;
-    }
-}
+import { useGetCitiesQuery } from "@/services/locationService";
 
 export default function SearchBar() {
     const [keyword, setKeyword] = useState("");
     const [selectedProvince, setSelectedProvince] = useState("");
     const [openProvince, setOpenProvince] = useState(false);
-    const [provinces, setProvinces] = useState([]);
     const [searchProvinceTerm, setSearchProvinceTerm] = useState("");
 
     const setSearchTerm = useJobSearchStore((state) => state.setSearchTerm);
 
-    useEffect(() => {
-        const controller = new AbortController();
-        (async () => {
-            try {
-                const data = await fetchJSON(
-                    `${API_BASE}/city`,
-                    controller.signal
-                );
-                if (!data) return;
-
-                const names = (Array.isArray(data) ? data : [])
-                    .map((c) => (typeof c === "string" ? c : c?.city_name))
-                    .filter(Boolean);
-                const uniqueSorted = Array.from(new Set(names)).sort((a, b) =>
-                    a.localeCompare(b, "vi")
-                );
-                setProvinces(uniqueSorted);
-            } catch (e) {
-                console.error("Failed to fetch cities:", e);
-            }
-        })();
-        return () => {
-            if (!controller.signal.aborted) controller.abort();
-        };
-    }, []);
+    const { data: provinces = [] } = useGetCitiesQuery();
 
     const filteredProvinces = useMemo(() => {
         const topProvinces = [
@@ -100,10 +58,7 @@ export default function SearchBar() {
     const handleReset = () => {
         setKeyword("");
         setSelectedProvince("");
-        setSearchTerm({
-            keyword: "",
-            province: "",
-        });
+        setSearchTerm({ keyword: "", province: "" });
     };
 
     return (

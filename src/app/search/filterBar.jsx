@@ -1,30 +1,49 @@
+
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useJobSearchStore } from "@/store/jobSearchStore";
 import clsx from "clsx";
-
-const API_BASE = "http://18.142.226.139:8080/api/v1";
-
-async function fetchJSON(url, signal) {
-    const res = await fetch(url, { signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
-}
+import { useJobSearchStore } from "@/store/jobSearchStore";
+import {
+    useGetCategoriesQuery,
+    useGetLevelsQuery,
+    useGetWorkTypesQuery,
+    useLazyGetSkillsByCategoryQuery,
+} from "@/services/filterService";
 
 export default function FilterBar() {
-    const [allCategories, setAllCategories] = useState([]);
-    const [allLevels, setAllLevels] = useState([]);
-    const [allWorkTypes, setAllWorkTypes] = useState([]);
-    const [allSkills, setAllSkills] = useState([]);
-
     const [showCategories, setShowCategories] = useState(false);
     const [showLevels, setShowLevels] = useState(false);
     const [showWorkTypes, setShowWorkTypes] = useState(false);
     const [showSkills, setShowSkills] = useState(false);
 
     const { filters, setFilters } = useJobSearchStore();
+
+    const { data: categoriesRes } = useGetCategoriesQuery();
+    const { data: levelsRes } = useGetLevelsQuery();
+    const { data: workTypesRes } = useGetWorkTypesQuery();
+    const [getSkillsByCategory, { data: skillsRes }] =
+        useLazyGetSkillsByCategoryQuery();
+
+    const [allSkills, setAllSkills] = useState([]);
+
+    useEffect(() => {
+        if (!filters.categories?.length) {
+            setAllSkills([]);
+            return;
+        }
+        Promise.all(
+            filters.categories.map((cate) =>
+                getSkillsByCategory(cate)
+                    .unwrap()
+                    .catch(() => [])
+            )
+        ).then((lists) => {
+            const merged = lists.flat().map((s) => s?.name ?? s);
+            setAllSkills(Array.from(new Set(merged.filter(Boolean))));
+        });
+    }, [filters.categories, getSkillsByCategory]);
 
     const toggleValue = useCallback(
         (listName, value) => {
@@ -38,121 +57,10 @@ export default function FilterBar() {
         [filters, setFilters]
     );
 
-    useEffect(() => {
-        const controller = new AbortController();
-        (async () => {
-            try {
-                const data = await fetchJSON(
-                    `${API_BASE}/category`,
-                    controller.signal
-                );
-                const names = (Array.isArray(data) ? data : []).map(
-                    (c) => c?.name ?? c
-                );
-                setAllCategories(Array.from(new Set(names.filter(Boolean))));
-            } catch (e) {
-                if (
-                    e.name !== "AbortError" &&
-                    e.message !== "signal is aborted without reason"
-                ) {
-                    console.error("Failed to fetch categories:", e);
-                }
-            }
-        })();
-        return () => {
-            if (!controller.signal.aborted) controller.abort();
-        };
-    }, []);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        (async () => {
-            try {
-                const data = await fetchJSON(
-                    `${API_BASE}/levels`,
-                    controller.signal
-                );
-                const names = (Array.isArray(data) ? data : []).map(
-                    (l) => l?.name ?? l
-                );
-                setAllLevels(Array.from(new Set(names.filter(Boolean))));
-            } catch (e) {
-                if (
-                    e.name !== "AbortError" &&
-                    e.message !== "signal is aborted without reason"
-                ) {
-                    console.error("Failed to fetch levels:", e);
-                }
-            }
-        })();
-        return () => {
-            if (!controller.signal.aborted) controller.abort();
-        };
-    }, []);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        (async () => {
-            try {
-                const data = await fetchJSON(
-                    `${API_BASE}/worktypes`,
-                    controller.signal
-                );
-                const names = (Array.isArray(data) ? data : []).map(
-                    (w) => w?.name ?? w
-                );
-                setAllWorkTypes(Array.from(new Set(names.filter(Boolean))));
-            } catch (e) {
-                if (
-                    e.name !== "AbortError" &&
-                    e.message !== "signal is aborted without reason"
-                ) {
-                    console.error("Failed to fetch work types:", e);
-                }
-            }
-        })();
-        return () => {
-            if (!controller.signal.aborted) controller.abort();
-        };
-    }, []);
-
-    // Load Skills theo category
-    useEffect(() => {
-        if (!filters.categories?.length) {
-            setAllSkills([]);
-            return;
-        }
-
-        const controller = new AbortController();
-        (async () => {
-            try {
-                // Có thể chọn nhiều category → gọi song song, union kết quả
-                const queries = filters.categories.map((cateName) =>
-                    fetchJSON(
-                        `${API_BASE}/skill/by-category?name=${encodeURIComponent(
-                            cateName
-                        )}`,
-                        controller.signal
-                    ).catch(() => [])
-                );
-                const lists = await Promise.all(queries);
-                const merged = lists.flat().map((s) => s?.name ?? s);
-                const unique = Array.from(new Set(merged.filter(Boolean)));
-                setAllSkills(unique);
-            } catch (e) {
-                if (e.name !== "AbortError") {
-                    console.error("Failed to fetch skills by category:", e);
-                }
-            }
-        })();
-
-        return () => controller.abort();
-    }, [filters.categories]);
-
     const renderTags = useCallback(
         (items, listName, colorClass, selectedBg, textClass) => (
             <div className="flex flex-wrap gap-2">
-                {items.map((item) => {
+                {(items || []).map((item) => {
                     const label = typeof item === "string" ? item : item?.name;
                     if (!label) return null;
                     const isSelected = filters[listName].includes(label);
@@ -177,7 +85,6 @@ export default function FilterBar() {
         [filters, toggleValue]
     );
 
-    // Nếu chưa chọn category và người dùng bật Skill section
     const shouldShowPickCategoryHint = useMemo(
         () =>
             showSkills &&
@@ -186,12 +93,12 @@ export default function FilterBar() {
     );
 
     return (
-        <div className="space-y-4 p-4 bg-white rounded-lg shadow">
+        <div className="p-4 space-y-4 bg-white rounded-lg shadow">
             {/* Work Types */}
             <div>
                 <div
                     onClick={() => setShowWorkTypes(!showWorkTypes)}
-                    className="flex justify-between items-center cursor-pointer font-semibold mb-2"
+                    className="flex items-center justify-between mb-2 font-semibold cursor-pointer"
                 >
                     <span>Work Type</span>
                     {showWorkTypes ? (
@@ -202,7 +109,7 @@ export default function FilterBar() {
                 </div>
                 {showWorkTypes &&
                     renderTags(
-                        allWorkTypes,
+                        workTypesRes || [],
                         "workTypes",
                         "border-yellow-500",
                         "bg-yellow-100",
@@ -214,7 +121,7 @@ export default function FilterBar() {
             <div>
                 <div
                     onClick={() => setShowLevels(!showLevels)}
-                    className="flex justify-between items-center cursor-pointer font-semibold mb-2"
+                    className="flex items-center justify-between mb-2 font-semibold cursor-pointer"
                 >
                     <span>Levels</span>
                     {showLevels ? (
@@ -225,7 +132,7 @@ export default function FilterBar() {
                 </div>
                 {showLevels &&
                     renderTags(
-                        allLevels,
+                        levelsRes || [],
                         "levels",
                         "border-green-500",
                         "bg-green-100",
@@ -237,7 +144,7 @@ export default function FilterBar() {
             <div>
                 <div
                     onClick={() => setShowCategories(!showCategories)}
-                    className="flex justify-between items-center cursor-pointer font-semibold mb-2"
+                    className="flex items-center justify-between mb-2 font-semibold cursor-pointer"
                 >
                     <span>Categories</span>
                     {showCategories ? (
@@ -248,7 +155,7 @@ export default function FilterBar() {
                 </div>
                 {showCategories &&
                     renderTags(
-                        allCategories,
+                        categoriesRes || [],
                         "categories",
                         "border-purple-500",
                         "bg-purple-100",
@@ -256,11 +163,11 @@ export default function FilterBar() {
                     )}
             </div>
 
-            {/* Skills (phụ thuộc Category) */}
+            {/* Skills */}
             <div>
                 <div
                     onClick={() => setShowSkills(!showSkills)}
-                    className="flex justify-between items-center cursor-pointer font-semibold mb-2"
+                    className="flex items-center justify-between mb-2 font-semibold cursor-pointer"
                 >
                     <span>Skills</span>
                     {showSkills ? (
@@ -269,7 +176,6 @@ export default function FilterBar() {
                         <ChevronDown size={18} />
                     )}
                 </div>
-
                 {shouldShowPickCategoryHint ? (
                     <p className="text-sm text-gray-500">
                         Vui lòng chọn ít nhất 1 Category để hiển thị danh sách

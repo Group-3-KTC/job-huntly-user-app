@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import RelatedJobs from "./relatedJobs";
 import ApplicationModal from "./applicationJob";
-import ReportModal from "./report";
+import ReportModal from "@/components/ui/report";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -262,6 +262,8 @@ export default function DetailJob({ job }) {
                             <ReportModal
                                 open={showReportModal}
                                 onClose={() => setShowReportModal(false)}
+                                type={0}
+                                contentId={dj.id}
                             />
                         </div>
 

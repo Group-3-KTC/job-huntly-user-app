@@ -1,13 +1,52 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import api from "@/lib/api";
+
+const axiosBaseQuery =
+    (basePath = "") =>
+    async (
+        { url, method = "GET", data, headers, responseType },
+        { signal }
+    ) => {
+        try {
+            const config = {
+                url: `${basePath}${url || ""}`,
+                method,
+                data,
+                signal,
+                responseType: responseType || "json",
+                headers: { ...headers },
+            };
+
+            if (data instanceof FormData) {
+                delete config.headers?.["Content-Type"];
+            } else {
+                config.headers = {
+                    "Content-Type": "application/json",
+                    ...headers,
+                };
+            }
+
+            const result = await api(config);
+            return { data: result.data };
+        } catch (axiosError) {
+            return {
+                error: {
+                    status: axiosError.response?.status,
+                    data: axiosError.response?.data || axiosError.message,
+                },
+            };
+        }
+    };
 
 export const jobApi = createApi({
     reducerPath: "jobApi",
-    baseQuery: fetchBaseQuery({
-        baseUrl: "http://18.142.226.139:8080/api/v1/job/",
-    }),
+    baseQuery: axiosBaseQuery("/job"),
     endpoints: (builder) => ({
         getJobs: builder.query({
-            query: () => "all",
+            query: () => ({
+                url: "/all",
+                method: "GET",
+            }),
             transformResponse: (response) => ({
                 jobs: response.content || [],
                 totalPages: response.totalPages,
@@ -15,20 +54,34 @@ export const jobApi = createApi({
             }),
         }),
         getJobById: builder.query({
-            query: (id) => `${id}`,
-        }),
-        // search + filter ở BE
-        searchJobs: builder.mutation({
-            query: (body) => ({
-                url: "search-lite",
-                method: "POST",
-                body,
+            query: (id) => ({
+                url: `/${id}`,
+                method: "GET",
             }),
+        }),
+        searchJobs: builder.mutation({
+            query: (body) => {
+                const page = body.page ?? 0;
+                const size = body.size ?? 10;
+                const sort = body.sort ?? "id,desc"; 
+
+                // filters, loại page/size/sort 
+                const filterBody = { ...body };
+                delete filterBody.page;
+                delete filterBody.size;
+                delete filterBody.sort;
+
+                return {
+                    url: `/search-lite?page=${page}&size=${size}&sort=${sort}`,
+                    method: "POST",
+                    data: filterBody, 
+                };
+            },
             transformResponse: (res) => {
                 if (Array.isArray(res)) {
                     return {
                         jobs: res,
-                        totalPages: 1,
+                        totalPages: 1, 
                         totalElements: res.length,
                     };
                 }

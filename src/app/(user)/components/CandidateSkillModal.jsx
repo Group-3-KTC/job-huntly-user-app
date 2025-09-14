@@ -4,7 +4,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { X, Save } from "lucide-react";
-import axios from "axios";
+import api from "@/lib/api";
 import LoadingScreen from "@/components/ui/loadingScreen";
 
 const validationSchema = yup.object().shape({
@@ -52,9 +52,7 @@ export default function CandidateSkillModal({
     const fetchCategories = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(
-                "http://18.142.226.139:8080/api/v1/category/roots"
-            );
+            const response = await api.get("/category/roots");
             setCategories(response.data);
             return response.data;
         } catch (err) {
@@ -68,9 +66,7 @@ export default function CandidateSkillModal({
     const fetchLevels = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(
-                "http://18.142.226.139:8080/api/v1/levels"
-            );
+            const response = await api.get("/levels");
             setLevels(response.data);
             return response.data;
         } catch (err) {
@@ -85,8 +81,8 @@ export default function CandidateSkillModal({
         if (!categoryId) return;
         setIsLoading(true);
         try {
-            const response = await axios.get(
-                `http://18.142.226.139:8080/api/v1/category/children-by-id/${categoryId}`
+            const response = await api.get(
+                `/category/children-by-id/${categoryId}`
             );
             setIndustries(response.data);
             return response.data;
@@ -102,10 +98,8 @@ export default function CandidateSkillModal({
         if (!industryName) return;
         setIsLoading(true);
         try {
-            const response = await axios.get(
-                `http://18.142.226.139:8080/api/v1/skill/by-category?name=${encodeURIComponent(
-                    industryName
-                )}`
+            const response = await api.get(
+                `/skill/by-category?name=${encodeURIComponent(industryName)}`
             );
             setSkills(response.data);
             return response.data;
@@ -218,6 +212,7 @@ export default function CandidateSkillModal({
                         {isLoading && <LoadingScreen message="Loading ..." />}
                         {error && <p className="text-red-500">{error}</p>}
 
+                        {/* Category */}
                         <div className="flex flex-col gap-1">
                             <label className="text-sm font-medium text-gray-700">
                                 Category{" "}
@@ -283,6 +278,7 @@ export default function CandidateSkillModal({
                             )}
                         </div>
 
+                        {/* Skill */}
                         <div className="flex flex-col gap-1">
                             <label className="text-sm font-medium text-gray-700">
                                 Skill{" "}
@@ -342,6 +338,7 @@ export default function CandidateSkillModal({
                             )}
                         </div>
 
+                        {/* Footer */}
                         <div className="flex justify-end gap-3 pt-3 mt-5 border-t">
                             <button
                                 type="button"

@@ -7,13 +7,15 @@ import toastSlice from "../store/slices/toastSlices";
 import { profileApi } from "@/services/profileService";
 import { applicationApi } from "@/services/applicationService";
 import { savedCompaniesApi } from "@/services/savedCompaniesService";
-import savedCompaniesReducer from "@/features/savedCompanies/savedCompaniesSlice";
 import cvTemplateReducer from "@/features/templateCv/cvTemplateSlice"; 
 import { cvTemplateApi } from "@/services/cvTemplateService";
 import { attachStore } from "@/lib/api";
 import personalDetailReducer from "@/features/profile/personalDetailSlice";
 import { savedJobApi } from "@/services/savedJobService";
 import loginPromptReducer from "@/features/auth/loginPromptSlice";
+import { locationApi } from "@/services/locationService";
+import { filterApi } from "@/services/filterService";
+import { followCompanyApi } from "@/services/followCompanyService";
 
 export const store = configureStore({
     reducer: {
@@ -22,15 +24,18 @@ export const store = configureStore({
         auth: authReducer,
         application: applicationReducer,
         toast: toastSlice,
-        savedCompanies: savedCompaniesReducer,
         cvTemplate: cvTemplateReducer,
         loginPrompt: loginPromptReducer,
         [cvTemplateApi.reducerPath]: cvTemplateApi.reducer,
+        [savedJobApi.reducerPath]: savedJobApi.reducer,
         [jobApi.reducerPath]: jobApi.reducer,
         [profileApi.reducerPath]: profileApi.reducer,
         [applicationApi.reducerPath]: applicationApi.reducer,
         [savedCompaniesApi.reducerPath]: savedCompaniesApi.reducer,
         [savedJobApi.reducerPath]: savedJobApi.reducer,
+        [locationApi.reducerPath]: locationApi.reducer,
+        [filterApi.reducerPath]: filterApi.reducer,
+        [followCompanyApi.reducerPath]: followCompanyApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
@@ -56,7 +61,10 @@ export const store = configureStore({
             applicationApi.middleware,
             savedCompaniesApi.middleware,
             cvTemplateApi.middleware,
-            savedJobApi.middleware
+            savedJobApi.middleware,
+            locationApi.middleware,
+            filterApi.middleware,
+            followCompanyApi.middleware
         ),
 });
 
