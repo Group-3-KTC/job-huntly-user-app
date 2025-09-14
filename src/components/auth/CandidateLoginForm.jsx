@@ -1,16 +1,13 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useState } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { loginSchema } from "@/validation/loginSchema";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Lock, Mail, Eye, EyeOff } from "lucide-react";
-import Image from "next/image";
-import googleLogo from "@/assets/images/logo-gg.png";
+import {useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
+import React, {useState} from "react";
+import {Label} from "@/components/ui/label";
+import {Input} from "@/components/ui/input";
+import {loginSchema} from "@/validation/loginSchema";
+import {Button} from "@/components/ui/button";
+import {Eye, EyeOff, Lock, Mail} from "lucide-react";
 import {useRouter} from "next/navigation";
 import {toast} from "react-toastify";
 import {useDispatch, useSelector} from "react-redux";
@@ -20,10 +17,13 @@ import {selectAuthLoading} from "@/features/auth/authSelectors";
 import GoogleSignIn from "@/components/auth/GoogleSignIn";
 import {clearNormalizedProfile} from "@/features/profile/profileSlice";
 import {profileApi} from "@/services/profileService";
+import clsx from "clsx";
 
-const CandidateLoginForm = ({role}) => {
+const CandidateLoginForm = ({role, onGoogleNeedsPassword, onForgot}) => {
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
+    const [showSetPwPanel, setShowSetPwPanel] = useState(false);
+    const [googleEmail, setGoogleEmail] = useState("");
 
     const isAuthLoading = useSelector(selectAuthLoading);
 
@@ -32,7 +32,7 @@ const CandidateLoginForm = ({role}) => {
     const {
         register,
         handleSubmit,
-        formState: {errors},
+        formState: {errors, isSubmitting},
     } = useForm({
         resolver: yupResolver(loginSchema),
     });
@@ -71,6 +71,10 @@ const CandidateLoginForm = ({role}) => {
                 autoClose: 3000,
             });
         } catch (err) {
+            if (err?.status === 409) {
+                onGoogleNeedsPassword?.(payload.email);
+                return;
+            }
             const msg =
                 err?.detail ||
                 err?.title ||
@@ -86,87 +90,117 @@ const CandidateLoginForm = ({role}) => {
     }
 
     return (
-        <>
+        <div className="w-full">
+
+
+            {/* Social */}
             <div className="space-y-3">
                 <GoogleSignIn role={role ?? "CANDIDATE"}/>
             </div>
-            <div className="relative">
+
+            {/* Separator */}
+            <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t"/>
+                    <span className="w-full border-t border-blue-100"/>
                 </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="px-2 mt-3 mb-3 text-gray-500 bg-white">
-                        OR
-                    </span>
+                <div className="relative flex justify-center">
+          <span className="px-3 text-xs font-medium tracking-wider text-blue-500 bg-white">
+            OR
+          </span>
                 </div>
             </div>
-            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                    <Label htmlFor="email">Email</Label>
-                    <div className="relative">
-                        <Mail className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="Enter email"
-                            className="pl-10"
-                            {...register("email")}
-                        />
-                    </div>
-                    {errors.email && (
-                        <p className="mt-1 text-sm text-red-500">
-                            {errors.email.message}
-                        </p>
-                    )}
-                </div>
 
-                <div>
-                    <Label htmlFor="password">Password</Label>
-                    <div className="relative">
-                        <Lock className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"/>
-                        <Input
-                            id="password"
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Enter password"
-                            className="pl-10 pr-10"
-                            {...register("password")}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2"
+            {/* Form Card */}
+            <div className="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm">
+                <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+                    {/* Email */}
+                    <div>
+                        <Label
+                            htmlFor="email"
+                            className="text-blue-900/80 font-medium"
                         >
-                            {showPassword ? (
-                                <EyeOff className="w-4 h-4" />
-                            ) : (
-                                <Eye className="w-4 h-4" />
-                            )}
-                        </button>
+                            Email
+                        </Label>
+                        <div className="relative mt-1">
+                            <Mail
+                                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-300"/>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="you@example.com"
+                                autoComplete="email"
+                                className={clsx(
+                                    "pl-10",
+                                    "focus-visible:ring-blue-500 focus-visible:ring-2",
+                                )}
+                                {...register("email")}
+                            />
+                        </div>
+                        {errors.email && (
+                            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
+                        )}
                     </div>
-                    {errors.password && (
-                        <p className="mt-1 text-sm text-red-500">
-                            {errors.password.message}
-                        </p>
-                    )}
-                </div>
 
-                <Button
-                    type="submit"
-                    className="w-full bg-blue-500 hover:bg-blue-600"
-                >
-                    Login
-                </Button>
+                    {/* Password */}
+                    <div>
+                        <Label
+                            htmlFor="password"
+                            className="text-blue-900/80 font-medium"
+                        >
+                            Password
+                        </Label>
+                        <div className="relative mt-1">
+                            <Lock
+                                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-300"/>
+                            <Input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Enter your password"
+                                autoComplete="current-password"
+                                className={clsx(
+                                    "pl-10 pr-10",
+                                    "focus-visible:ring-blue-500 focus-visible:ring-2",
+                                )}
+                                {...register("password")}
+                            />
+                            <button
+                                type="button"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                onClick={() => setShowPassword((s) => !s)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-600 transition"
+                            >
+                                {showPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                            </button>
+                        </div>
+                        {errors.password && (
+                            <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
+                        )}
+                    </div>
 
-                <div className="text-center">
-                    <Link
-                        href="#"
-                        className="text-sm text-blue-500 hover:underline"
+                    <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={clsx(
+                            "w-full",
+                            "bg-blue-600 hover:bg-blue-700",
+                            "focus-visible:ring-2 focus-visible:ring-blue-500",
+                        )}
                     >
-                        Forgot password?
-                    </Link>
-                </div>
-            </form>
-        </>
+                        {isSubmitting ? "Signing in..." : "Login"}
+                    </Button>
+
+                    <div className="pt-2 text-center text-sm text-blue-900/70">
+                        Don’t have an account?{" "}
+                        <a
+                            href="/register"
+                            className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                        >
+                            Create one
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
     );
 };
 

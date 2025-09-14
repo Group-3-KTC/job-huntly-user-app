@@ -1,37 +1,32 @@
 "use client";
 import {
-    ChevronDown,
-    Search,
-    Bookmark,
-    ListChecks,
-    ClipboardCheck,
-    Building,
-    Star,
-    Crown,
-    TrendingUp,
-    Eye,
-    Headphones,
     Bell,
-    Menu,
-    X,
+    Bookmark,
+    Building,
+    ChevronDown,
     ChevronLeft,
     ChevronRight,
+    ClipboardCheck,
+    Crown,
+    Eye,
+    Headphones,
+    ListChecks,
+    Menu,
+    Search,
+    Star,
+    TrendingUp,
+    X,
 } from "lucide-react";
-import React, { useState } from "react";
-import { Button } from "../ui/button";
+import React, {useState} from "react";
+import {Button} from "../ui/button";
 import Image from "next/image";
 import logo from "@/assets/images/logo-title-white.png";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { Badge } from "@/components/ui/badge";
-import {
-    selectAuthHydrated,
-    selectAuthLoading,
-    selectAuthUser,
-    selectIsLoggedIn,
-} from "@/features/auth/authSelectors";
-import { logoutThunk } from "@/features/auth/authSlice";
+import {usePathname, useRouter} from "next/navigation";
+import {useDispatch, useSelector} from "react-redux";
+import {Badge} from "@/components/ui/badge";
+import {selectAuthHydrated, selectAuthLoading, selectAuthUser, selectIsLoggedIn,} from "@/features/auth/authSelectors";
+import {logoutThunk} from "@/features/auth/authSlice";
 import ProfileDropdown from "../ui/ProfileDropdown";
 
 export const Header = () => {
@@ -67,7 +62,7 @@ export const Header = () => {
     };
 
     const handleLoginClick = () => {
-        router.push("/login");
+        router.push("/login?view=login");
     };
 
     const handleProfileClick = () => {
@@ -96,22 +91,22 @@ export const Header = () => {
                     <div className="space-y-2">
                         <Link href="/search">
                             <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                                <Search className="w-4 h-4 text-gray-600" />
+                                <Search className="w-4 h-4 text-gray-600"/>
                                 <span className="text-sm">Tìm việc làm</span>
                             </div>
                         </Link>
                         <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                            <Bookmark className="w-4 h-4 text-gray-600" />
+                            <Bookmark className="w-4 h-4 text-gray-600"/>
                             <span className="text-sm">Việc làm đã lưu</span>
                         </div>
                         <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                            <ListChecks className="w-4 h-4 text-gray-600" />
+                            <ListChecks className="w-4 h-4 text-gray-600"/>
                             <span className="text-sm">
                                 Việc làm đã ứng tuyển
                             </span>
                         </div>
                         <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                            <ClipboardCheck className="w-4 h-4 text-gray-600" />
+                            <ClipboardCheck className="w-4 h-4 text-gray-600"/>
                             <span className="text-sm">Việc làm phù hợp</span>
                         </div>
                     </div>
@@ -123,14 +118,14 @@ export const Header = () => {
                     <div className="space-y-2">
                         <Link href="/company/company-search">
                             <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                                <Building className="w-4 h-4 text-gray-600" />
+                                <Building className="w-4 h-4 text-gray-600"/>
                                 <span className="text-sm">
                                     Danh sách công ty
                                 </span>
                             </div>
                         </Link>
                         <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                            <Star className="w-4 h-4 text-gray-600" />
+                            <Star className="w-4 h-4 text-gray-600"/>
                             <span className="text-sm">Top công ty</span>
                         </div>
                     </div>
@@ -272,23 +267,23 @@ export const Header = () => {
             </div>
             <div className="space-y-2">
                 <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                    <Crown className="w-4 h-4 text-yellow-500" />
+                    <Crown className="w-4 h-4 text-yellow-500"/>
                     <span className="text-sm">CV Pro Template</span>
                 </div>
                 <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                    <TrendingUp className="w-4 h-4 text-green-500" />
+                    <TrendingUp className="w-4 h-4 text-green-500"/>
                     <span className="text-sm">Thống kê CV</span>
                 </div>
                 <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                    <Eye className="w-4 h-4 text-blue-500" />
+                    <Eye className="w-4 h-4 text-blue-500"/>
                     <span className="text-sm">Xem NTD đã xem CV</span>
                 </div>
                 <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                    <Star className="w-4 h-4 text-yellow-500" />
+                    <Star className="w-4 h-4 text-yellow-500"/>
                     <span className="text-sm">Ưu tiên hiển thị</span>
                 </div>
                 <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                    <Headphones className="w-4 h-4 text-purple-500" />
+                    <Headphones className="w-4 h-4 text-purple-500"/>
                     <span className="text-sm">Hỗ trợ ưu tiên</span>
                 </div>
             </div>
@@ -314,11 +309,11 @@ export const Header = () => {
     };
 
     const navItems = [
-        { key: "jobs", label: "Việc làm" },
-        { key: "cv", label: "Tạo CV" },
-        { key: "tools", label: "Công cụ" },
-        { key: "guide", label: "Cẩm nang nghề nghiệp" },
-        { key: "premium", label: "JobHuntly" },
+        {key: "jobs", label: "Việc làm"},
+        {key: "cv", label: "Tạo CV"},
+        {key: "tools", label: "Công cụ"},
+        {key: "guide", label: "Cẩm nang nghề nghiệp"},
+        {key: "premium", label: "JobHuntly"},
     ];
 
     return (
@@ -330,9 +325,9 @@ export const Header = () => {
                     onClick={toggleMobile}
                 >
                     {mobileOpen ? (
-                        <X className="w-6 h-6" />
+                        <X className="w-6 h-6"/>
                     ) : (
-                        <Menu className="w-6 h-6" />
+                        <Menu className="w-6 h-6"/>
                     )}
                 </button>
 
@@ -363,7 +358,8 @@ export const Header = () => {
                                         }
                                     >
                                         <span>{item.label}</span>
-                                        <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
+                                        <ChevronDown
+                                            className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180"/>
                                     </div>
                                 </li>
                             ))}
@@ -371,7 +367,8 @@ export const Header = () => {
 
                         {/* Dropdown Menu */}
                         {activeDropdown && (
-                            <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-lg min-w-[592px] p-5 z-50">
+                            <div
+                                className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-lg min-w-[592px] p-5 z-50">
                                 <div className="absolute left-0 w-full h-3 -top-3"></div>
                                 {dropdownContent[activeDropdown]}
                             </div>
@@ -416,9 +413,10 @@ export const Header = () => {
                                         size="icon"
                                         className="relative text-white hover:bg-white/20"
                                     >
-                                        <Bell className="w-5 h-5" />
+                                        <Bell className="w-5 h-5"/>
                                         {notificationCount > 0 && (
-                                            <Badge className="absolute flex items-center justify-center w-5 h-5 p-0 text-xs text-white bg-red-500 rounded-full -top-1 -right-1">
+                                            <Badge
+                                                className="absolute flex items-center justify-center w-5 h-5 p-0 text-xs text-white bg-red-500 rounded-full -top-1 -right-1">
                                                 {notificationCount}
                                             </Badge>
                                         )}
@@ -468,7 +466,7 @@ export const Header = () => {
                                 onClick={() => setMobilePage(null)}
                                 className="p-2 -ml-2"
                             >
-                                <ChevronLeft className="w-5 h-5" />
+                                <ChevronLeft className="w-5 h-5"/>
                             </button>
                         ) : (
                             <Link href="/" onClick={() => setMobileOpen(false)}>
@@ -490,7 +488,7 @@ export const Header = () => {
                             onClick={() => setMobileOpen(false)}
                             className="p-2 -mr-2"
                         >
-                            <X className="w-6 h-6" />
+                            <X className="w-6 h-6"/>
                         </button>
                     </div>
 
@@ -508,7 +506,7 @@ export const Header = () => {
                                             }
                                         >
                                             <span>{item.label}</span>
-                                            <ChevronRight className="w-5 h-5 text-gray-500" />
+                                            <ChevronRight className="w-5 h-5 text-gray-500"/>
                                         </button>
                                     </li>
                                 ))}

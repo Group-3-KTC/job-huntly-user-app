@@ -1,7 +1,5 @@
-import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import authService from "@/services/authService";
-import {profileApi} from "@/services/profileService"; //  invalidate tags
-import {clearNormalizedProfile} from "@/features/profile/profileSlice";
 
 export const loginThunk = createAsyncThunk(
     "auth/login",
@@ -9,9 +7,15 @@ export const loginThunk = createAsyncThunk(
         try {
             return await authService.login(credentials);
         } catch (err) {
-            return rejectWithValue(err?.response?.data || err.message);
+            const r = err?.response;
+            return rejectWithValue({
+                status: r?.status ?? 0,
+                message: r?.data?.message || err?.message || "Login failed",
+                email: credentials?.email,
+                path: r?.data?.path,
+            });
         }
-    },
+    }
 );
 
 export const registerThunk = createAsyncThunk(
@@ -63,6 +67,119 @@ export const logoutThunk = createAsyncThunk(
     },
 );
 
+export const activateThunk = createAsyncThunk(
+    "auth/activate",
+    async (token, {rejectWithValue}) => {
+        try {
+            return await authService.activate(token);
+        } catch (err) {
+            const r = err?.response;
+            return rejectWithValue({
+                status: r?.status,
+                data: r?.data,
+                message:
+                    r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Activation failed",
+            });
+        }
+    }
+);
+
+export const resendActivationThunk = createAsyncThunk(
+    "auth/resendActivation",
+    async (email, {rejectWithValue}) => {
+        try {
+            return await authService.resendActivation(email);
+        } catch (err) {
+            const r = err?.response;
+            return rejectWithValue({
+                status: r?.status,
+                data: r?.data,
+                message:
+                    r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Resend failed",
+            });
+        }
+    }
+);
+
+export const forgotPasswordThunk = createAsyncThunk(
+    "auth/forgotPassword",
+    async (email, {rejectWithValue}) => {
+        try {
+            return await authService.forgotPassword(email);
+        } catch (err) {
+            const r = err?.response;
+            return rejectWithValue({
+                status: r?.status,
+                message:
+                    r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Request failed",
+            });
+        }
+    }
+);
+
+export const resetPasswordThunk = createAsyncThunk(
+    "auth/resetPassword",
+    async ({token, newPassword}, {rejectWithValue}) => {
+        try {
+            return await authService.resetPassword({token, newPassword});
+        } catch (err) {
+            const r = err?.response;
+            return rejectWithValue({
+                status: r?.status,
+                message:
+                    r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Reset failed",
+            });
+        }
+    }
+);
+
+// gọi khi app init để lấy AT mới nếu RT cũ vần còn date
+export const refreshThunk = createAsyncThunk(
+    "auth/refresh",
+    async (_, {rejectWithValue}) => {
+        try {
+            return await authService.refresh();
+        } catch (err) {
+            const r = err?.response;
+            return rejectWithValue({
+                status: r?.status,
+                message:
+                    r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Refresh failed",
+            });
+        }
+    }
+);
+
+export const sendSetPasswordLinkThunk = createAsyncThunk(
+    "auth/sendSetPasswordLink",
+    async (email, {rejectWithValue}) => {
+        try {
+            return await authService.sendSetPasswordLink(email);
+        } catch (err) {
+            const r = err?.response;
+            return rejectWithValue({
+                status: r?.status,
+                message: r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Request failed",
+            });
+        }
+    }
+);
+
+export const setPasswordThunk = createAsyncThunk(
+    "auth/set",
+    async ({token, newPassword}, {rejectWithValue}) => {
+        try {
+            return await authService.setPassword({token, newPassword});
+        } catch (err) {
+            const r = err?.response;
+            return rejectWithValue({
+                status: r?.status,
+                message: r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Set password failed",
+            });
+        }
+    }
+);
+
 const initialState = {
     user: null,
     loading: false,
@@ -93,7 +210,7 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // -- Login --
+            // Login
             .addCase(loginThunk.pending, (s) => {
                 s.loading = true;
                 s.error = null;
@@ -107,7 +224,7 @@ const authSlice = createSlice({
                 s.loading = false;
                 s.error = a.payload || "Login failed";
             })
-            // -- Register --
+            // Register
             .addCase(registerThunk.pending, (s) => {
                 s.loading = true;
                 s.error = null;
@@ -119,7 +236,7 @@ const authSlice = createSlice({
                 s.loading = false;
                 s.error = a.payload || "Register failed";
             })
-            // -- Me --
+            // Me
             .addCase(meThunk.fulfilled, (s, a) => {
                 s.user = a.payload || null;
                 s.hydrated = true;
@@ -128,7 +245,7 @@ const authSlice = createSlice({
                 s.user = null;
                 s.hydrated = true;
             })
-            // -- Logout --
+            // Logout
             .addCase(logoutThunk.fulfilled, (s) => {
                 s.user = null;
                 s.error = null;
@@ -137,7 +254,80 @@ const authSlice = createSlice({
             .addCase(logoutThunk.rejected, (s) => {
                 s.user = null;
                 s.hydrated = true;
+            })
+            // Activate account
+            .addCase(activateThunk.pending, (s) => {
+                s.loading = true;
+                s.error = null;
+            })
+            .addCase(activateThunk.fulfilled, (s) => {
+                s.loading = false;
+            })
+            .addCase(activateThunk.rejected, (s, a) => {
+                s.loading = false;
+                s.error = a.payload || "Activation failed";
+            })
+            // Resend activation
+            .addCase(resendActivationThunk.pending, (s) => {
+                s.loading = true;
+                s.error = null;
+            })
+            .addCase(resendActivationThunk.fulfilled, (s) => {
+                s.loading = false;
+            })
+            .addCase(resendActivationThunk.rejected, (s, a) => {
+                s.loading = false;
+                s.error = a.payload || "Resend failed";
+            })
+            // Forgot password
+            .addCase(forgotPasswordThunk.pending, (s) => {
+                s.loading = true;
+                s.error = null;
+            })
+            .addCase(forgotPasswordThunk.fulfilled, (s) => {
+                s.loading = false;
+            })
+            .addCase(forgotPasswordThunk.rejected, (s, a) => {
+                s.loading = false;
+                s.error = a.payload || "Request failed";
+            })
+            // Reset password
+            .addCase(resetPasswordThunk.pending, (s) => {
+                s.loading = true;
+                s.error = null;
+            })
+            .addCase(resetPasswordThunk.fulfilled, (s) => {
+                s.loading = false;
+            })
+            .addCase(resetPasswordThunk.rejected, (s, a) => {
+                s.loading = false;
+                s.error = a.payload || "Reset failed";
+            })
+            // Send set-password link
+            .addCase(sendSetPasswordLinkThunk.pending, (s) => {
+                s.loading = true;
+                s.error = null;
+            })
+            .addCase(sendSetPasswordLinkThunk.fulfilled, (s) => {
+                s.loading = false;
+            })
+            .addCase(sendSetPasswordLinkThunk.rejected, (s, a) => {
+                s.loading = false;
+                s.error = a.payload || "Request failed";
+            })
+            // Set password
+            .addCase(setPasswordThunk.pending, (s) => {
+                s.loading = true;
+                s.error = null;
+            })
+            .addCase(setPasswordThunk.fulfilled, (s) => {
+                s.loading = false;
+            })
+            .addCase(setPasswordThunk.rejected, (s, a) => {
+                s.loading = false;
+                s.error = a.payload || "Set password failed";
             });
+
     },
 });
 
