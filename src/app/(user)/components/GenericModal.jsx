@@ -454,11 +454,11 @@ export default function GenericModal({
                                         {errors[field.key].message}
                                     </p>
                                 )}
-                                {field.type === "date" && errors[field.key] && (
+                                {/* {field.type === "date" && errors[field.key] && (
                                     <p className="text-xs text-red-500">
                                         {errors[field.key].message}
                                     </p>
-                                )}
+                                )} */}
                             </div>
                         ))}
                     </form>

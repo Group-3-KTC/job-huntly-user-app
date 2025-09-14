@@ -209,7 +209,7 @@ export default function CandidateSkillModal({
                         onSubmit={handleSubmit(onSubmit)}
                         className="space-y-4"
                     >
-                        {isLoading && <LoadingScreen message="Loading ..." />}
+                        {isLoading && <p>Loading ...</p>}
                         {error && <p className="text-red-500">{error}</p>}
 
                         {/* Category */}
