@@ -30,7 +30,7 @@ const NoCompanyMessage = () => {
                 </p>
                 <div className="space-y-3">
                     <Link
-                        href="/recruiter/company/create"
+                        href="/recruiter/create-company"
                         className="inline-block w-full px-6 py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
                     >
                         Create New Company

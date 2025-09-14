@@ -107,28 +107,23 @@ const MyCompanyContactInfo = () => {
                     </p>
                 )}
 
-                <div className="flex items-center gap-2 mt-4">
-                    <Map className="w-4 h-4 text-[#0A66C2]" />
-                    <strong>View on Map</strong>
-                </div>
+                {company.mapEmbedUrl && (
+                    <>
+                        <div className="flex items-center gap-2 mt-4">
+                            <Map className="w-4 h-4 text-[#0A66C2]" />
+                            <strong>View on Map</strong>
+                        </div>
+                        <iframe
+                            width="100%"
+                            height="250"
+                            style={{ border: 0, marginTop: "8px" }}
+                            src={company.mapEmbedUrl}
+                            allowFullScreen
+                            title="Google Maps"
+                        />
+                    </>
+                )}
             </div>
-            <iframe
-                width="100%"
-                height="250"
-                style={{ border: 0, marginTop: "8px" }}
-                src={
-                    company.mapEmbedUrl ||
-                    `https://www.google.com/maps/embed/v1/place?key=AIzaSyCVgO8KzHQ8iKcfqXgrMnUIGlD-piWiPpo&q=${encodeURIComponent(
-                        company.address +
-                            ", " +
-                            company.locationCity +
-                            ", " +
-                            company.locationCountry
-                    )}&zoom=15&language=en`
-                }
-                allowFullScreen
-                title="Google Maps"
-            />
         </div>
     );
 };

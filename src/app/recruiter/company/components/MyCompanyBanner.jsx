@@ -37,11 +37,13 @@ const MyCompanyBanner = () => {
                             {company.companyName}
                         </h1>
                         <div className="mt-2 text-sm text-white drop-shadow-md">
-                            {company.isProCompany && (
-                                <span className="px-2 py-0.5 mr-2 text-yellow-800 bg-yellow-100 rounded">
-                                    Pro Company
-                                </span>
-                            )}
+                            <span className={`px-2 py-0.5 mr-2 rounded ${
+                                company.isVip 
+                                    ? "text-yellow-800 bg-yellow-100" 
+                                    : "text-gray-800 bg-gray-100"
+                            }`}>
+                                {company.isVip ? "VIP Company" : "Normal"}
+                            </span>
                             <a
                                 href={company.website}
                                 className="hover:text-blue-200 underline"
@@ -49,7 +51,7 @@ const MyCompanyBanner = () => {
                                 {company.website?.replace("https://", "")}
                             </a>
                             <span className="text-white"> · {company.quantityEmployee}+ employees ·{" "}
-                            {company.followersCount} followers</span>
+                            {company.followersCount || 0} followers</span>
                         </div>
                     </div>
                 </div>
