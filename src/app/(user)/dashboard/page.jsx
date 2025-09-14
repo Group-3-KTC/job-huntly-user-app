@@ -14,12 +14,18 @@ import {
 import { calculateProfileCompletion } from "@/features/profile/profileCompletion";
 import { normalizeProfileData } from "@/features/profile/normalizeProfileData";
 import LoadingScreen from "@/components/ui/loadingScreen";
+import { useGetApplicationsByUserQuery } from "@/services/applicationService";
+import { useGetSavedJobsByUserQuery } from "@/services/savedJobService";
+
 
 export default function CandidateDashboard() {
     const dispatch = useDispatch();
     const { data: combined, isSuccess } = useGetCombinedProfileQuery();
-    console.log(combined);
-
+    const { data: applications } = useGetApplicationsByUserQuery({
+        page: 0,
+        size: 1,
+    });
+    const { data: savedJobs } = useGetSavedJobsByUserQuery();
     const normalizedProfile = useSelector(selectNormalizedProfile);
     const completion = useSelector(selectProfileCompletion);
 
@@ -135,7 +141,7 @@ export default function CandidateDashboard() {
                     </div>
                 </div>
             </div>
-            
+
             {/* Activities */}
             <div className="p-6 bg-white rounded-lg shadow-sm">
                 <h3 className="mb-4 text-base font-semibold text-gray-800">
@@ -146,14 +152,14 @@ export default function CandidateDashboard() {
                         <Send className="w-6 h-6 mb-1" />
                         <p className="text-sm">Applied Jobs</p>
                         <p className="text-2xl font-bold">
-                            {normalizedProfile.appliedJobs ?? 0}
+                            {applications?.totalElements ?? 0}
                         </p>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-orange-100 rounded text-color-primary-accent">
                         <Heart className="w-6 h-6 mb-1" />
                         <p className="text-sm">Saved Jobs</p>
                         <p className="text-2xl font-bold">
-                            {normalizedProfile.savedJobs ?? 0}
+                            {savedJobs?.length ?? 0}
                         </p>
                     </div>
                 </div>

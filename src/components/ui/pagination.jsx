@@ -1,17 +1,23 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { scrollToTop } from "@/hooks/scrollToTop";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
     if (totalPages <= 1) return null;
+
+    const handleChangePage = (page) => {
+        onPageChange(page);
+        scrollToTop({ duration: 900, easing: "easeOutCubic" });
+    };
 
     return (
         <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
             <Button
                 variant="outline"
                 size="icon"
-                onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
+                onClick={() => handleChangePage(Math.max(currentPage - 1, 1))}
                 disabled={currentPage === 1}
                 className="w-9 h-9"
             >
@@ -22,7 +28,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
                 <Button
                     key={page}
                     variant={page === currentPage ? "default" : "outline"}
-                    onClick={() => onPageChange(page)}
+                    onClick={() => handleChangePage(page)}
                     className={`w-9 h-9 text-sm ${
                         page === currentPage ? "bg-[#0a66c2] text-white" : ""
                     }`}
@@ -35,7 +41,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
                 variant="outline"
                 size="icon"
                 onClick={() =>
-                    onPageChange(Math.min(currentPage + 1, totalPages))
+                    handleChangePage(Math.min(currentPage + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
                 className="w-9 h-9"

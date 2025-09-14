@@ -176,7 +176,7 @@ export default function CandidateSkillModal({
                 skill.id !== initialData.id
         );
         if (isDuplicate) {
-            alert("This skill already exists in your profile.");
+            toast.error("This skill already exists in your profile.");
             return;
         }
 

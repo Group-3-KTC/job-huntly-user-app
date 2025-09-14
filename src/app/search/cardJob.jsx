@@ -18,7 +18,7 @@ export default function CardJob() {
     const router = useRouter();
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(8); 
+    const [pageSize, setPageSize] = useState(8);
 
     const { searchTerm, filters } = useJobSearchStore();
     const [searchJobs, { isLoading, error }] = useSearchJobsMutation();
@@ -104,7 +104,7 @@ export default function CardJob() {
     };
 
     return (
-        <div className="w-full max-w-[1000px] bg-white p-6 rounded-xl shadow-md space-y-6 mx-auto">
+        <div className="w-full max-w-[1000px] bg-white p-6 rounded-xl shadow-md space-y-6 mx-auto min-h-[500px]">
             {error ? (
                 <p className="text-center text-red-500">
                     Error loading jobs:{" "}

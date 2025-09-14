@@ -19,14 +19,16 @@ export default function CertificatesSection({ data, onEdit, onDelete }) {
                 >
                     <div className="flex-1">
                         <h4 className="text-xl font-medium text-gray-900">
-                            {certificate.name}
+                            {certificate.cerName}
                         </h4>
                         <p className="text-sm text-gray-600">
                             {certificate.issuer}
                         </p>
                         <p className="text-xs text-gray-500">
                             {certificate.date
-                                ? new Date(certificate.date).toLocaleDateString()
+                                ? new Date(
+                                      certificate.date
+                                  ).toLocaleDateString()
                                 : "N/A"}
                         </p>
                         {certificate.description && (
