@@ -41,18 +41,18 @@ const axiosBaseQuery =
 export const followCompanyApi = createApi({
     reducerPath: "followCompanyApi",
     baseQuery: axiosBaseQuery(),
-    tagTypes: ["FollowStatus", "FollowList", "FollowCount"],
+    tagTypes: ["FollowStatus", "FollowedCompanies", "FollowCount"],
     endpoints: (builder) => ({
         getFollowStatus: builder.query({
             query: (companyId) => ({
                 url: `/status?company_id=${companyId}`,
                 method: "GET",
             }),
-            providesTags: (result, error, companyId) =>
-                result ? [{ type: "FollowStatus", id: companyId }] : [],
+            providesTags: (result, error, companyId) => [
+                { type: "FollowStatus", id: companyId },
+            ],
         }),
 
-        // Follow company
         followCompany: builder.mutation({
             query: (companyId) => ({
                 url: "",
@@ -61,12 +61,11 @@ export const followCompanyApi = createApi({
             }),
             invalidatesTags: (result, error, companyId) => [
                 { type: "FollowStatus", id: companyId },
-                { type: "FollowList" },
+                "FollowedCompanies",
                 { type: "FollowCount", id: companyId },
             ],
         }),
 
-        // Unfollow company
         unfollowCompany: builder.mutation({
             query: (companyId) => ({
                 url: `?company_id=${companyId}`,
@@ -74,28 +73,27 @@ export const followCompanyApi = createApi({
             }),
             invalidatesTags: (result, error, companyId) => [
                 { type: "FollowStatus", id: companyId },
-                { type: "FollowList" },
+                "FollowedCompanies",
                 { type: "FollowCount", id: companyId },
             ],
         }),
-
 
         getFollowCount: builder.query({
             query: (companyId) => ({
                 url: `/count?company_id=${companyId}`,
                 method: "GET",
             }),
-            providesTags: (result, error, companyId) =>
-                result ? [{ type: "FollowCount", id: companyId }] : [],
+            providesTags: (result, error, companyId) => [
+                { type: "FollowCount", id: companyId },
+            ],
         }),
 
-        // Get danh sách company mà current user đang follow
         getFollowedCompaniesByUser: builder.query({
             query: () => ({
                 url: "/by-user",
                 method: "GET",
             }),
-            providesTags: ["FollowList"],
+            providesTags: ["FollowedCompanies"],
         }),
     }),
 });
