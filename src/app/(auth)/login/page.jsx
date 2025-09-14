@@ -1,18 +1,71 @@
 "use client";
 
-import React, {useState} from "react";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import React, {useEffect, useState} from "react";
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import Link from "next/link";
-import Image from "next/image";
 import CandidateLoginForm from "@/components/auth/CandidateLoginForm";
 import RecruiterLoginForm from "@/components/auth/RecruiterLoginForm";
-import logoTitle from "@/assets/images/logo-title.png";
-import banner from "@/assets/images/login-banner.png";
-import recruiterBanner from "@/assets/images/recruiter-banner.jpg";
+import SetPasswordPrompt from "@/components/auth/SetPasswordPrompt";
+import SetPasswordEmailSent from "@/components/auth/SetPasswordEmailSent";
+import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
+import {useRouter, useSearchParams} from "next/navigation";
+import RightPanel from "@/components/auth/RightPanel";
 
 const LoginPage = () => {
-    const [activeTab, setActiveTab] = useState("candidate");
+    const router = useRouter();
+    const [activeTab, setActiveTab] = useState("CANDIDATE");
+    const sp = useSearchParams();
+    const viewFromQuery = sp.get("view");
+
+    const theme = {
+        CANDIDATE: {
+            primary: "text-blue-700",
+            secondary: "text-blue-900/70",
+        },
+        RECRUITER: {
+            primary: "text-orange-700",
+            secondary: "text-orange-900/70",
+        },
+    };
+
+    const [view, setView] = useState("login");
+    const [googleEmail, setGoogleEmail] = useState("");
+    const [tokenFromQuery, setTokenFromQuery] = useState("");
+    const [resetTokenFromQuery, setResetTokenFromQuery] = useState("");
+
+    const onForgot = () => {
+        setView("forgot");
+        router.replace("/login?view=forgot", {scroll: false});
+    };
+
+    const onGoogleNeedsPassword = (email) => {
+        setGoogleEmail(email || "");
+        setView("ask_setpw");
+        router.replace("/login?view=ask_setpw", {scroll: false});
+    };
+
+    const handleAgreeSetPassword = () => {
+        setView("setpw_email_sent");
+        router.replace("/login?view=setpw_email_sent", {scroll: false});
+    };
+
+    const backToLogin = () => {
+        setView("login");
+        setGoogleEmail("");
+        router.replace("/login?view=login", {scroll: false});
+    };
+
+    const handleSetPwSuccess = () => {
+        setTokenFromQuery("");
+        setView("login");
+        router.replace("/login?view=login", {scroll: false});
+    };
+
+    useEffect(() => {
+        const allowed = new Set(["login", "forgot", "ask_setpw", "setpw_email_sent"]);
+        setView(allowed.has(viewFromQuery) ? viewFromQuery : "login");
+    }, [viewFromQuery]);
 
     return (
         <div className="min-h-screen ">
@@ -22,175 +75,121 @@ const LoginPage = () => {
                     <div className="w-full lg:w-1/2">
                         <Card className="shadow-md">
                             <CardHeader className="text-center">
-                                <CardTitle className="text-2xl font-semibold">
-                                    Log In
-                                </CardTitle>
-                                <p className="text-gray-600">
-                                    Link your account to continue using Job Huntly's services.
-                                </p>
-                            </CardHeader>
-                            <CardContent>
-                                <Tabs
-                                    value={activeTab}
-                                    onValueChange={setActiveTab}
-                                    className="w-full"
-                                >
-                                    <TabsList className="grid w-full grid-cols-2">
-                                        <TabsTrigger
-                                            value="candidate"
-                                            className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
-                                        >
-                                            Candidate
-                                        </TabsTrigger>
-                                        <TabsTrigger
-                                            value="recruiter"
-                                            className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
-                                        >
-                                            Recruiter
-                                        </TabsTrigger>
-                                    </TabsList>
+                                <div className="mb-6">
+                                    <h1
+                                        className={`text-2xl font-bold tracking-tight ${theme[activeTab].primary}`}
+                                    >
+                                        {view === "login" && "Log In"}
+                                        {view === "ask_setpw" && "Google account detected"}
+                                        {view === "setpw_email_sent" && "Check your email"}
+                                    </h1>
+                                    <p className={`mt-1 text-sm ${theme[activeTab].secondary}`}>
+                                        {view === "login" &&
+                                            "Link your account to continue using Job Huntly's services."}
+                                        {view === "ask_setpw" &&
+                                            "This account uses Google Sign-In. Do you want to set a password so you can log in with email/password too?"}
+                                        {view === "setpw_email_sent" &&
+                                            "We sent a set-password link to your email. Click the link to continue here."}
 
-                                    <TabsContent value="candidate">
-                                        <CandidateLoginForm role={activeTab}/>
-                                    </TabsContent>
-
-                                    <TabsContent value="recruiter">
-                                        <RecruiterLoginForm role={activeTab}/>
-                                    </TabsContent>
-                                </Tabs>
-
-                                <div className="mt-6 text-center">
-                                    <p className="text-sm text-gray-600">
-                                        Don't have an account yet?{" "}
-                                        <Link
-                                            href="/register"
-                                            className="font-medium text-orange-500 hover:underline"
-                                        >
-                                            Sign Up Now
-                                        </Link>
                                     </p>
                                 </div>
-                            </CardContent>
-                        </Card>
-                    </div>
+                            </CardHeader>
 
-                    {/* Right Side Content */}
-                    <div className="w-full lg:w-1/2">
-                        <Card className="shadow-md">
-                            <CardContent className="p-6">
-                                {activeTab === "candidate" ? (
-                                    <div>
-                                        <h3 className="mb-4 text-lg font-semibold">
-                                            Welcome to{" "}
-                                            <strong className="text-blue-600">
-                                                Job Huntly
-                                            </strong>
-                                        </h3>
-                                        <div className="flex items-center mb-6">
-                                            <Image
-                                                src={logoTitle}
-                                                alt="Job Huntly"
-                                                width={120}
-                                                height={32}
-                                                className="mr-2"
-                                            />
-                                            <span className="text-gray-600">
-                                                | The leading job search platform
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-center mb-8">
-                                            <Image
-                                                src={banner}
-                                                alt="Developer"
-                                                width={400}
-                                                height={300}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <h4 className="mb-2 font-semibold">
-                                                Log in now to get the most out of Job Huntly's tools and increase your
-                                                chances of finding the hottest jobs.
-                                            </h4>
-                                            <ul className="mt-4 space-y-2">
-                                                {[
-                                                    "Create an ATS-friendly CV",
-                                                    "Apply faster with a saved profile",
-                                                    "Manage applications and track application status updates",
-                                                    "See salary ranges for each position",
-                                                    "Save favorite jobs to apply later"
-                                                ].map((benefit, index) => (
-                                                    <li
-                                                        key={index}
-                                                        className="flex items-start"
+                            <CardContent>
+                                {view === "login" && (
+                                    <>
+                                        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                                            <TabsList className="grid w-full grid-cols-2">
+                                                <TabsTrigger
+                                                    value="CANDIDATE"
+                                                    className="data-[state=active]:border-blue-500 data-[state=active]:text-blue-500"
+                                                >
+                                                    Candidate
+                                                </TabsTrigger>
+                                                <TabsTrigger
+                                                    value="RECRUITER"
+                                                    className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
+                                                >
+                                                    Recruiter
+                                                </TabsTrigger>
+                                            </TabsList>
+
+                                            <TabsContent value="CANDIDATE">
+                                                <CandidateLoginForm
+                                                    role={activeTab}
+                                                    onGoogleNeedsPassword={onGoogleNeedsPassword}
+                                                    onForgot={onForgot}
+                                                />
+                                            </TabsContent>
+
+                                            <TabsContent value="RECRUITER">
+                                                <RecruiterLoginForm
+                                                    role={activeTab}
+                                                    onForgot={onForgot}
+                                                />
+                                            </TabsContent>
+                                            <div className="text-center">
+                                                <div className="text-center">
+                                                    <button
+                                                        type="button"
+                                                        className={`text-sm font-medium ${
+                                                            activeTab === "RECRUITER"
+                                                                ? " text-orange-600"
+                                                                : activeTab === "CANDIDATE"
+                                                                    ? " text-blue-600"
+                                                                    : " text-gray-600"
+                                                        } hover:underline`}
+                                                        onClick={() => onForgot?.()}
                                                     >
-                                                        <div className="mr-2 text-orange-500">
-                                                            •
-                                                        </div>
-                                                        <span>{benefit}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
+                                                        Forgot password?
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </Tabs>
+
+                                        <div className="mt-6 text-center">
+                                            <p className="text-sm text-gray-600">
+                                                Don't have an account yet?{" "}
+                                                <Link
+                                                    href="/register"
+                                                    className={`font-medium ${
+                                                        activeTab === "RECRUITER"
+                                                            ? " text-orange-500"
+                                                            : activeTab === "CANDIDATE"
+                                                                ? " text-blue-500"
+                                                                : " text-gray-500"
+                                                    } hover:underline`}
+                                                >
+                                                    Sign Up Now
+                                                </Link>
+                                            </p>
                                         </div>
-                                        <p className="text-sm text-gray-500">
-                                            If you have trouble logging in or creating an account, please contact Job
-                                            Huntly via email at support@jobhuntly.vn
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <h3 className="mb-4 text-lg font-semibold">
-                                            Welcome to{" "}
-                                            <strong className="text-blue-600">
-                                                Job Huntly
-                                            </strong>
-                                        </h3>
-                                        <div className="flex items-center mb-6">
-                                            <Image
-                                                src={logoTitle}
-                                                alt="Job Huntly"
-                                                width={120}
-                                                height={32}
-                                                className="mr-2"
-                                            />
-                                            <span className="text-gray-600">
-                                                | Recruiting Made Simple.
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-center mb-8">
-                                            <Image
-                                                src={recruiterBanner}
-                                                alt="Recruiter"
-                                                width={400}
-                                                height={300}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <h4 className="mb-2 font-semibold">
-                                                Log in to access powerful recruiting tools
-                                            </h4>
-                                            <ul className="mt-4 space-y-2">
-                                                {[
-                                                    "Post job ads for free",
-                                                    "Find suitable candidates",
-                                                    "Manage application profiles"
-                                                ].map((benefit, index) => (
-                                                    <li
-                                                        key={index}
-                                                        className="flex items-start"
-                                                    >
-                                                        <div className="mr-2 text-orange-500">
-                                                            •
-                                                        </div>
-                                                        <span>{benefit}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    </div>
+                                    </>
+                                )}
+
+                                {view === "ask_setpw" && (
+                                    <SetPasswordPrompt
+                                        email={googleEmail}
+                                        onYes={handleAgreeSetPassword}
+                                        onNo={backToLogin}
+                                    />
+                                )}
+
+                                {view === "setpw_email_sent" && (
+                                    <SetPasswordEmailSent
+                                        email={googleEmail}
+                                        onBack={backToLogin}
+                                    />
+                                )}
+
+                                {view === "forgot" && (
+                                    <ForgotPasswordForm onBack={() => setView("login")} activeTab={activeTab}/>
                                 )}
                             </CardContent>
                         </Card>
                     </div>
+
+                    <RightPanel activeTab={activeTab}/>
                 </div>
             </main>
         </div>
