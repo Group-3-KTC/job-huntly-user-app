@@ -25,6 +25,7 @@ import { calculateProfileCompletion } from "@/features/profile/profileCompletion
 import LoadingScreen from "@/components/ui/loadingScreen";
 import { normalizeProfileData } from "@/features/profile/normalizeProfileData";
 import { setPersonalDetail } from "@/features/profile/personalDetailSlice";
+import { toast } from "react-toastify";
 
 const sectionToEndpointMap = {
     candidateSkills: "candidateSkills",
@@ -157,20 +158,20 @@ export default function ProfilePage() {
                         itemId: itemId,
                     }).unwrap();
 
-                    alert("Item deleted successfully");
+                    toast.info("Item deleted successfully");
                     await refetchProfile();
                 } else {
-                    alert("Cannot delete: Item ID not found");
+                    toast.error("Cannot delete: Item ID not found");
                 }
             } catch (error) {
                 console.error("Delete error:", error);
                 if (error.status === 401) {
-                    alert(
+                    toast.warning(
                         "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
                     );
                     window.location.href = "/login";
                 } else {
-                    alert(
+                    toast.error(
                         "Failed to delete item: " +
                             (error.data?.message || error.message)
                     );
@@ -247,7 +248,7 @@ export default function ProfilePage() {
                 }
 
                 await updateCandidateProfile(formData).unwrap();
-                alert("Profile updated successfully");
+                toast.info("Profile updated successfully");
 
                 const updated = await refetchProfile();
                 const normalized = normalizeProfileData(updated.data);
@@ -267,9 +268,9 @@ export default function ProfilePage() {
                             itemId: itemId,
                             data: newData,
                         }).unwrap();
-                        alert("Item updated successfully");
+                        toast.info("Item updated successfully");
                     } else {
-                        alert("Cannot update: Item ID not found");
+                        toast.error("Cannot update: Item ID not found");
                         return;
                     }
                 } else {
@@ -279,7 +280,7 @@ export default function ProfilePage() {
                             currentSection.id,
                         data: newData,
                     }).unwrap();
-                    alert("Item added successfully");
+                    toast.info("Item added successfully");
                 }
 
                 await refetchProfile();
@@ -289,12 +290,11 @@ export default function ProfilePage() {
             setCurrentSection(null);
             setEditingItemIndex(null);
         } catch (error) {
-            // be chưa catch 401 (làm sau)
-            if (error.status === 500) {
-                alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+            if (error.status === 401) {
+                toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
                 window.location.href = "/login";
             } else {
-                alert(
+                toast.error(
                     "Failed to save data: " +
                         (error.data?.message || error.message)
                 );
@@ -312,7 +312,7 @@ export default function ProfilePage() {
 
     if (profileError) {
         if (profileError.status === 401) {
-            alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+            toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
             window.location.href = "/login";
             return null;
         }

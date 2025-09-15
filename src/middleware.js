@@ -80,7 +80,6 @@ export function middleware(req) {
     const token = req.cookies.get(COOKIE_NAME)?.value;
     console.log("token: ", token);
     if (!token) {
-        console.log("Bị redirect nè");
         const url = req.nextUrl.clone();
         url.pathname = "/login";
         url.searchParams.set("redirect", pathname + search);

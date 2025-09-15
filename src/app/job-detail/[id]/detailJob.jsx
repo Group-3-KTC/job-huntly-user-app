@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import RelatedJobs from "./relatedJobs";
 import ApplicationModal from "./applicationJob";
-import ReportModal from "./report";
+import ReportModal from "@/components/ui/report";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -207,7 +207,7 @@ export default function DetailJob({ job }) {
                                             Reapply
                                         </Button>
                                         <Button
-                                            className="flex-1 text-white bg-blue-600 hover:bg-blue-700"
+                                            className="flex-1 font-medium text-blue-600 bg-white border-2 border-blue-600 hover:bg-blue-600 hover:text-white"
                                             onClick={handleShowDetail}
                                         >
                                             View Details
@@ -262,6 +262,8 @@ export default function DetailJob({ job }) {
                             <ReportModal
                                 open={showReportModal}
                                 onClose={() => setShowReportModal(false)}
+                                type={0}
+                                contentId={dj.id}
                             />
                         </div>
 

@@ -1,63 +1,64 @@
 import * as yup from "yup";
+
 export const candidateRegisterSchema = yup.object().shape({
     fullName: yup
         .string()
-        .required("Họ và tên là bắt buộc")
-        .min(2, "Họ và tên phải có ít nhất 2 ký tự")
-        .max(50, "Họ và tên không được quá 50 ký tự"),
+        .required("Full name is required")
+        .min(2, "Full name must be at least 2 characters")
+        .max(50, "Full name cannot exceed 50 characters"),
     email: yup
         .string()
-        .required("Email là bắt buộc")
-        .email("Email không hợp lệ"),
+        .required("Email is required")
+        .email("Invalid email address"),
     phone: yup
         .string()
-        .required("Số điện thoại là bắt buộc")
-        .matches(/^[0-9]+$/, "Số điện thoại chỉ được chứa số")
-        .min(10, "Số điện thoại phải có ít nhất 10 số")
-        .max(11, "Số điện thoại không được quá 11 số"),
+        .required("Phone number is required")
+        .matches(/^[0-9]+$/, "Phone number must only contain digits")
+        .min(10, "Phone number must have at least 10 digits")
+        .max(11, "Phone number cannot exceed 11 digits"),
     password: yup
         .string()
-        .required("Mật khẩu là bắt buộc")
-        .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+        .required("Password is required")
+        .min(6, "Password must be at least 6 characters")
         .matches(
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-            "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số",
+            "Password must contain at least one uppercase letter, one lowercase letter, and one number",
         ),
     confirmPassword: yup
         .string()
-        .required("Xác nhận mật khẩu là bắt buộc")
-        .oneOf([yup.ref("password")], "Mật khẩu xác nhận không khớp"),
-    terms: yup.boolean().oneOf([true], "Bạn phải chấp nhận điều khoản sử dụng"),
+        .required("Confirm password is required")
+        .oneOf([yup.ref("password")], "Passwords do not match"),
+    terms: yup.boolean().oneOf([true], "You must accept the terms of use"),
 });
 
-// Schema cho đăng ký nhà tuyển dụng
+// Schema for recruiter registration
 export const recruiterRegisterSchema = yup.object().shape({
     fullName: yup
         .string()
-        .required("Họ và tên là bắt buộc")
-        .min(2, "Họ và tên phải có ít nhất 2 ký tự")
-        .max(50, "Họ và tên không được quá 50 ký tự"),
+        .required("Full name is required")
+        .min(2, "Full name must be at least 2 characters")
+        .max(50, "Full name cannot exceed 50 characters"),
     email: yup
         .string()
-        .required("Email là bắt buộc")
-        .email("Email không hợp lệ"),
+        .required("Email is required")
+        .email("Invalid email address"),
     phone: yup
         .string()
-        .required("Số điện thoại là bắt buộc")
-        .matches(/^[0-9]+$/, "Số điện thoại chỉ được chứa số")
-        .min(10, "Số điện thoại phải có ít nhất 10 số")
-        .max(11, "Số điện thoại không được quá 11 số"),
+        .required("Phone number is required")
+        .matches(/^[0-9]+$/, "Phone number must only contain digits")
+        .min(10, "Phone number must have at least 10 digits")
+        .max(11, "Phone number cannot exceed 11 digits"),
     password: yup
         .string()
-        .required("Mật khẩu là bắt buộc")
-        .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+        .required("Password is required")
+        .min(8, "Password must be at least 8 characters")
         .matches(
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-            "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số",
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/~`])/,
+            "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
         ),
     confirmPassword: yup
         .string()
-        .required("Xác nhận mật khẩu là bắt buộc")
-        .oneOf([yup.ref("password")], "Mật khẩu xác nhận không khớp"),
-    terms: yup.boolean().oneOf([true], "Bạn phải chấp nhận điều khoản sử dụng"),
+        .required("Confirm password is required")
+        .oneOf([yup.ref("password")], "Passwords do not match"),
+    terms: yup.boolean().oneOf([true], "You must accept the terms of use"),
 });
