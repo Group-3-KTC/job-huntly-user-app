@@ -139,16 +139,6 @@ const RecruiterLoginForm = ({role, onForgot}) => {
                     >
                         {isSubmitting ? "Signing in..." : "Login"}
                     </Button>
-
-                    <div className="pt-2 text-center text-sm text-orange-900/70">
-                        Don’t have an account?{" "}
-                        <a
-                            href="/register"
-                            className="font-medium text-orange-600 hover:text-orange-700 hover:underline"
-                        >
-                            Create one
-                        </a>
-                    </div>
                 </form>
             </div>
         </div>

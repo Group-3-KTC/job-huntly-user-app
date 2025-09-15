@@ -8,11 +8,14 @@ import CandidateRegisterForm from "@/components/auth/CandidateRegisterForm";
 import RecruiterRegisterForm from "@/components/auth/RecruiterRegisterForm";
 import AfterRegisterPanel from "@/components/auth/AfterRegisterPanel";
 import RightPanel from "@/components/auth/RightPanel";
+import {useSearchParams} from "next/navigation";
 
 export default function RegisterPage() {
-    const [activeTab, setActiveTab] = useState("CANDIDATE");
     const [candidateEmail, setCandidateEmail] = useState("");
     const [recruiterEmail, setRecruiterEmail] = useState("");
+    const sp = useSearchParams();
+    const initialRole = sp.get("role") === "RECRUITER" ? "RECRUITER" : "CANDIDATE";
+    const [activeTab, setActiveTab] = useState(initialRole);
 
     const theme = useMemo(
         () => ({
@@ -115,7 +118,7 @@ export default function RegisterPage() {
                                         <p className="text-sm text-gray-600">
                                             Already have an account?{" "}
                                             <Link
-                                                href="/login"
+                                                href={`/login?role=${activeTab}`}
                                                 className={`font-medium ${
                                                     activeTab === "RECRUITER"
                                                         ? " text-orange-500"
