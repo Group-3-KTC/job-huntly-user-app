@@ -5,6 +5,7 @@ import {useRouter} from "next/navigation";
 import {toast} from "react-toastify";
 import {useDispatch} from "react-redux";
 import {meThunk} from "@/features/auth/authSlice";
+import {API_CONFIG} from "@/lib/config";
 
 export default function GoogleSignIn({role = "CANDIDATE"}) {
     const btnRef = useRef(null);
@@ -28,8 +29,7 @@ export default function GoogleSignIn({role = "CANDIDATE"}) {
             callback: async ({credential}) => {
                 try {
                     const res = await fetch(
-                        // "http://localhost:8080/api/v1/auth/google", 
-                        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google`,
+                        `${API_CONFIG.BASE_URL}/auth/google`,
                         {
                             method: "POST",
                             headers: {"Content-Type": "application/json"},
