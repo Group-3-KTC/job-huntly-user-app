@@ -11,11 +11,11 @@ const ResultItem = ({ company }) => {
   const formatCompanySize = (size) => {
     const numSize = parseInt(size, 10);
     
-    if (numSize <= 10) return '1-10 nhân viên';
-    if (numSize <= 50) return '11-50 nhân viên';
-    if (numSize <= 200) return '51-200 nhân viên';
-    if (numSize <= 500) return '201-500 nhân viên';
-    return '500+ nhân viên';
+    if (numSize <= 10) return '1-10 employees';
+    if (numSize <= 50) return '11-50 employees';
+    if (numSize <= 200) return '51-200 employees';
+    if (numSize <= 500) return '201-500 employees';
+    return '500+ employees';
   };
 
   return (
@@ -49,7 +49,7 @@ const ResultItem = ({ company }) => {
             <div className="flex items-center space-x-2">
               <span className="text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full flex items-center">
                 <Briefcase className="mr-1 h-3.5 w-3.5" />
-                {company.jobsCount || 0} việc làm
+                {company.jobsCount || 0} jobs
               </span>
             </div>
           </div>
@@ -79,7 +79,7 @@ const ResultItem = ({ company }) => {
             {company.foundedYear && (
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-1 text-gray-400" />
-                Thành lập năm {company.foundedYear}
+                Founded in {company.foundedYear}
               </div>
             )}
           </div>
