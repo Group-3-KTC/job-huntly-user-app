@@ -76,8 +76,8 @@ export default function CandidateSidebar() {
     return (
         <aside className="hidden w-full mr-6 lg:block ">
             <div className="bg-white shadow-md rounded-xl ">
-                <div className="p-4 overflow-hidden bg-gradient-to-t from-blue-200 to-indigo-50">
-                    <div className="flex flex-row items-center my-2">
+                <div className="p-4 overflow-hidden border-b-2 border-blue">
+                    <div className="flex flex-row items-center my-2 ">
                         <div className="flex flex-col ml-2">
                             <p className="text-sm font-medium text-blue-800">
                                 Welcome

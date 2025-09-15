@@ -207,7 +207,7 @@ export default function DetailJob({ job }) {
                                             Reapply
                                         </Button>
                                         <Button
-                                            className="flex-1 text-white bg-blue-600 hover:bg-blue-700"
+                                            className="flex-1 font-medium text-blue-600 bg-white border-2 border-blue-600 hover:bg-blue-600 hover:text-white"
                                             onClick={handleShowDetail}
                                         >
                                             View Details

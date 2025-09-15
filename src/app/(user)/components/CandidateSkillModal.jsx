@@ -176,7 +176,7 @@ export default function CandidateSkillModal({
                 skill.id !== initialData.id
         );
         if (isDuplicate) {
-            alert("This skill already exists in your profile.");
+            toast.error("This skill already exists in your profile.");
             return;
         }
 
@@ -209,7 +209,7 @@ export default function CandidateSkillModal({
                         onSubmit={handleSubmit(onSubmit)}
                         className="space-y-4"
                     >
-                        {isLoading && <LoadingScreen message="Loading ..." />}
+                        {isLoading && <p>Loading ...</p>}
                         {error && <p className="text-red-500">{error}</p>}
 
                         {/* Category */}

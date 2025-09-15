@@ -78,7 +78,7 @@ export default function ApplicationPage() {
             setIsEditing(false);
         } catch (error) {
             console.error("Save error:", error);
-            alert("Failed to save application");
+            toast.error("Failed to save application");
         }
     };
 
@@ -93,11 +93,11 @@ export default function ApplicationPage() {
         const file = event.target.files[0];
         if (file) {
             if (!file.type.includes("pdf")) {
-                alert("Please select a PDF file!");
+                toast.error("Please select a PDF file!");
                 return;
             }
             if (file.size > 5 * 1024 * 1024) {
-                alert("File size must not exceed 5MB!");
+                toast.error("File size must not exceed 5MB!");
                 return;
             }
             const tempCvUrl = URL.createObjectURL(file);
