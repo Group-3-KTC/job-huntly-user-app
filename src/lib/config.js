@@ -9,7 +9,7 @@ const ABSOLUTE_BASE = isDev
 
 export const API_CONFIG = {
     BASE_URL: ABSOLUTE_BASE,
-    TIMEOUT: 10000,
+    TIMEOUT: 60000,
 };
 
 if (!API_CONFIG.BASE_URL) {
