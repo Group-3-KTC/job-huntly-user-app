@@ -34,6 +34,40 @@ export default function JobCardItem({ job, onToast }) {
     const [triggerGetStatus, { data, isFetching }] = useLazyGetStatusQuery();
     const [saveJob] = useSaveJobMutation();
     const [unsaveJob] = useUnsaveJobMutation();
+    function parseCustomDate(dateString) {
+        if (!dateString) return null;
+        const [day, month, year] = dateString.split("-").map(Number);
+        return new Date(year, month - 1, day);
+    }
+
+    function getPostedAgo(dateString) {
+        if (!dateString) return null;
+        const postDate = parseCustomDate(dateString);
+        if (!postDate || isNaN(postDate)) return null;
+
+        const now = new Date();
+        const diffTime = now - postDate; // ms
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 1) return "Posted today";
+        if (diffDays === 1) return "Posted 1 day ago";
+        return `Posted ${diffDays} days ago`;
+    }
+
+    function getExpiredIn(dateString) {
+        if (!dateString) return null;
+        const expDate = parseCustomDate(dateString);
+        if (!expDate || isNaN(expDate)) return null;
+
+        const now = new Date();
+        const diffTime = expDate - now; // ms
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 0) return "Expired";
+        if (diffDays === 0) return "Expires today";
+        if (diffDays === 1) return "Expires in 1 day";
+        return `Expires in ${diffDays} days`;
+    }
 
     const {
         data: applyStatus,
@@ -131,16 +165,6 @@ export default function JobCardItem({ job, onToast }) {
                                 <MapPin size={12} /> {job.wards[0].ward_name}
                             </span>
                         )}
-                        {job.date_post && (
-                            <span className="flex items-center gap-1">
-                                <CalendarDays size={12} /> {job.date_post}
-                            </span>
-                        )}
-                        {job.expired_date && (
-                            <span className="flex items-center gap-1 font-semibold text-red-600">
-                                <Clock size={12} /> {job.expired_date}
-                            </span>
-                        )}
                     </div>
 
                     {job.salaryDisplay && (
@@ -195,25 +219,44 @@ export default function JobCardItem({ job, onToast }) {
                 <div className="flex flex-col items-end justify-between h-full mt-4 sm:mt-0">
                     <div className="flex flex-col items-end gap-2 mb-4">
                         {/* Save luôn hiện */}
-                        <button
-                            onClick={toggleSave}
-                            className="flex items-center justify-center rounded-full w-9 h-9 hover:bg-blue-50"
-                            disabled={isFetching}
-                        >
-                            {liked ? (
-                                <BookmarkCheck
-                                    size={22}
-                                    className="text-blue-700 fill-blue-700"
-                                />
-                            ) : (
-                                <Bookmark size={22} className="text-blue-700" />
+                        <div className="flex items-center gap-4">
+                            {job.date_post && (
+                                <span className="flex items-center gap-1 leading-none">
+                                    <CalendarDays className="w-4 h-4 shrink-0" />
+                                    <span>{getPostedAgo(job.date_post)}</span>
+                                </span>
                             )}
-                        </button>
-
-                        {/* Applied badge chỉ hiện khi logged in */}
-                        {isLoggedIn && !isStatusLoading && applyStatus?.applied && (
-                            <ApplicationBadge status="Applied" />
-                        )}
+                            {job.expired_date && (
+                                <span className="flex items-center gap-1 font-semibold leading-none text-red-600">
+                                    <Clock className="w-4 h-4 shrink-0" />
+                                    <span>
+                                        {getExpiredIn(job.expired_date)}
+                                    </span>
+                                </span>
+                            )}
+                            {isLoggedIn &&
+                                !isStatusLoading &&
+                                applyStatus?.applied && (
+                                    <ApplicationBadge status="Applied" />
+                                )}
+                            <button
+                                onClick={toggleSave}
+                                className="flex items-center justify-center rounded-full hover:bg-blue-50"
+                                disabled={isFetching}
+                            >
+                                {liked ? (
+                                    <BookmarkCheck
+                                        size={22}
+                                        className="text-blue-700 fill-blue-700"
+                                    />
+                                ) : (
+                                    <Bookmark
+                                        size={22}
+                                        className="text-blue-700"
+                                    />
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     <button
