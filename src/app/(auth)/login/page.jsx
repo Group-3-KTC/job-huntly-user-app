@@ -14,9 +14,15 @@ import RightPanel from "@/components/auth/RightPanel";
 
 const LoginPage = () => {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState("CANDIDATE");
     const sp = useSearchParams();
+    const [view, setView] = useState("login");
+    const [googleEmail, setGoogleEmail] = useState("");
+    const [tokenFromQuery, setTokenFromQuery] = useState("");
+    const [resetTokenFromQuery, setResetTokenFromQuery] = useState("");
     const viewFromQuery = sp.get("view");
+    const roleFromQuery = sp.get("role");
+    const initialRole = sp.get("role") === "RECRUITER" ? "RECRUITER" : "CANDIDATE";
+    const [activeTab, setActiveTab] = useState(initialRole);
 
     const theme = {
         CANDIDATE: {
@@ -29,10 +35,12 @@ const LoginPage = () => {
         },
     };
 
-    const [view, setView] = useState("login");
-    const [googleEmail, setGoogleEmail] = useState("");
-    const [tokenFromQuery, setTokenFromQuery] = useState("");
-    const [resetTokenFromQuery, setResetTokenFromQuery] = useState("");
+
+    useEffect(() => {
+        if (roleFromQuery === "RECRUITER" || roleFromQuery === "CANDIDATE") {
+            setActiveTab(roleFromQuery);
+        }
+    }, [roleFromQuery]);
 
     const onForgot = () => {
         setView("forgot");
@@ -71,7 +79,6 @@ const LoginPage = () => {
         <div className="min-h-screen ">
             <main className="container px-8 py-8 mx-auto">
                 <div className="flex flex-col gap-8 lg:flex-row">
-                    {/* Login Form */}
                     <div className="w-full lg:w-1/2">
                         <Card className="shadow-md">
                             <CardHeader className="text-center">
@@ -151,16 +158,16 @@ const LoginPage = () => {
                                             <p className="text-sm text-gray-600">
                                                 Don't have an account yet?{" "}
                                                 <Link
-                                                    href="/register"
+                                                    href={`/register?role=${activeTab}`}
                                                     className={`font-medium ${
                                                         activeTab === "RECRUITER"
-                                                            ? " text-orange-500"
+                                                            ? " text-orange-600"
                                                             : activeTab === "CANDIDATE"
-                                                                ? " text-blue-500"
+                                                                ? " text-blue-600"
                                                                 : " text-gray-500"
                                                     } hover:underline`}
                                                 >
-                                                    Sign Up Now
+                                                    Create one
                                                 </Link>
                                             </p>
                                         </div>
