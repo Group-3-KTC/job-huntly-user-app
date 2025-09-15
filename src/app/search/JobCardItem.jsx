@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
 import ApplicationBadge from "@/components/ui/ApplicationBadge";
 import { selectIsLoggedIn } from "@/features/auth/authSelectors";
+import Image from "next/image";
 
 export default function JobCardItem({ job, onToast }) {
     const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -88,11 +89,12 @@ export default function JobCardItem({ job, onToast }) {
 
     return (
         <div className="flex flex-col items-stretch w-full mb-4 overflow-hidden bg-white border border-gray-200 shadow-sm md:flex-row rounded-xl hover:shadow-md">
-            <div className="flex-shrink-0 w-full h-40 md:w-32 md:h-auto">
-                <img
+            <div className="relative flex-shrink-0 w-full h-40 md:w-32 md:h-auto">
+                <Image
                     src={job.company?.avatar}
                     alt={job.company?.company_name}
-                    className="w-full h-full bg-white object-inherit"
+                    fill
+                    className="bg-white object-inherit"
                 />
             </div>
 

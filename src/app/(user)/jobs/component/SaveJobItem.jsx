@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { Bookmark, BookmarkCheck, Building2 } from "lucide-react";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function SaveJobItem({ job }) {
     const router = useRouter();
@@ -41,11 +42,12 @@ export default function SaveJobItem({ job }) {
             onClick={() => router.push(`/job-detail/${job.jobId}`)}
             className="flex flex-col items-stretch w-full mb-4 overflow-hidden bg-white border border-gray-200 shadow-sm cursor-pointer md:flex-row rounded-xl hover:shadow-md hover:border-blue-300"
         >
-            <div className="flex-shrink-0 w-full h-48 md:w-32 md:h-auto">
-                <img
+            <div className="relative flex-shrink-0 w-full h-48 md:w-32 md:h-auto">
+                <Image
+                    fill
                     src={job.companyAvatar}
                     alt={job.companyName}
-                    className="w-full h-full bg-white object-inherit"
+                    className="object-inherit"
                 />
             </div>
 
