@@ -1,17 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { getMyCompany } from "@/services/companyService";
 import { Building2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import JobPostingForm from "@/app/recruiter/create-job/components/JobPosting";
 
-export default function JobCreatePage() {
-    const router = useRouter();
+export default function CompanyGuard({ children }) {
     const [hasCompany, setHasCompany] = useState(false);
-    const [company, setCompany] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -21,7 +17,6 @@ export default function JobCreatePage() {
                 const companyData = await getMyCompany();
                 if (companyData && companyData.id) {
                     setHasCompany(true);
-                    setCompany(companyData);
                 } else {
                     setHasCompany(false);
                 }
@@ -66,9 +61,9 @@ export default function JobCreatePage() {
                                 Create New Company
                             </Button>
                         </Link>
-                        <Link href="/recruiter/dashboard">
+                        <Link href="/recruiter/profile">
                             <Button variant="outline" className="w-full">
-                                Back to Dashboard
+                                Back to Profile
                             </Button>
                         </Link>
                     </div>
@@ -77,6 +72,6 @@ export default function JobCreatePage() {
         );
     }
 
-    // Show job posting form if company exists
-    return <JobPostingForm />;
-}
+    // Show children if company exists
+    return <>{children}</>;
+} 

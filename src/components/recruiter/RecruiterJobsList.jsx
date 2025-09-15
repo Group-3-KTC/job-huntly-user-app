@@ -11,7 +11,7 @@ import { getMyCompany } from "@/services/companyService";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { Calendar, MapPin, Building2, DollarSign } from "lucide-react";
+import { Calendar, MapPin, Building2, DollarSign, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import JobDetailModal from "@/components/recruiter/JobDetailModal";
 
@@ -29,7 +29,6 @@ export default function RecruiterJobsList({ tab = "all" }) {
     const [sort, setSort] = useState("id,desc");
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [data, setData] = useState({ content: [], totalPages: 0, totalElements: 0 });
 
     // Resolve companyId từ user hoặc từ API /companies/my-company
@@ -46,7 +45,8 @@ export default function RecruiterJobsList({ tab = "all" }) {
                 const cid = res?.company_id || res?.id || res?.companyId || res?.company?.id;
                 if (mounted) setResolvedCompanyId(cid || null);
             } catch (e) {
-                if (mounted) setError(e?.message || "Unable to load company info");
+                // Không hiển thị lỗi, chỉ set companyId = null
+                if (mounted) setResolvedCompanyId(null);
             } finally {
                 if (mounted) setLoading(false);
             }
@@ -63,7 +63,6 @@ export default function RecruiterJobsList({ tab = "all" }) {
     const fetchData = async () => {
         if (!canQuery) return;
         setLoading(true);
-        setError(null);
         try {
             const res = await searchJobsByCompany({ companyId: resolvedCompanyId, filters, page, size, sort });
             setData({
@@ -72,7 +71,8 @@ export default function RecruiterJobsList({ tab = "all" }) {
                 totalElements: res?.totalElements ?? res?.content?.length ?? 0,
             });
         } catch (e) {
-            setError(e?.message || "Error loading data");
+            // Không hiển thị lỗi gì cả, chỉ set data rỗng
+            setData({ content: [], totalPages: 0, totalElements: 0 });
         } finally {
             setLoading(false);
         }
@@ -169,11 +169,25 @@ export default function RecruiterJobsList({ tab = "all" }) {
 
     const EmptyState = () => (
         <Card className="p-10 text-center">
-            <div className="text-lg font-medium mb-2">No job found</div>
-            <div className="text-sm text-muted-foreground mb-4">Please create your first job to attract candidates.</div>
-            <Link href="/recruiter/create-job">
-                <Button>Create Job</Button>
-            </Link>
+            <div className="flex flex-col items-center space-y-4">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                    <AlertCircle className="w-8 h-8 text-gray-400" />
+                </div>
+                <div>
+                    <div className="text-lg font-medium mb-2">No jobs found</div>
+                    <div className="text-sm text-muted-foreground mb-4">
+                        {tab === "all" 
+                            ? "You haven't posted any jobs yet. Create your first job to attract candidates."
+                            : `No ${tab} jobs found. Try creating a new job or check other tabs.`
+                        }
+                    </div>
+                </div>
+                <Link href="/recruiter/create-job">
+                    <Button className="bg-blue-600 hover:bg-blue-700">
+                        Create Your First Job
+                    </Button>
+                </Link>
+            </div>
         </Card>
     );
 
@@ -232,7 +246,6 @@ export default function RecruiterJobsList({ tab = "all" }) {
             </div>
 
             {loading && <LoadingSkeleton />}
-            {error && <div className="text-red-500">{error}</div>}
 
             {!loading && data.content.length === 0 && <EmptyState />}
 
@@ -242,20 +255,22 @@ export default function RecruiterJobsList({ tab = "all" }) {
                 ))}
             </div>
 
-            <div className="flex items-center justify-between pt-2">
-                <div className="text-sm">Total: {data.totalElements}</div>
-                <div className="flex items-center gap-2">
-                    <Button variant="outline" disabled={page <= 0} onClick={() => setPage((p) => p - 1)}>
-                        Previous page
-                    </Button>
-                    <div className="text-sm">
-                        {page + 1} / {Math.max(1, data.totalPages)}
+            {!loading && data.content.length > 0 && (
+                <div className="flex items-center justify-between pt-2">
+                    <div className="text-sm">Total: {data.totalElements}</div>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" disabled={page <= 0} onClick={() => setPage((p) => p - 1)}>
+                            Previous page
+                        </Button>
+                        <div className="text-sm">
+                            {page + 1} / {Math.max(1, data.totalPages)}
+                        </div>
+                        <Button variant="outline" disabled={page + 1 >= data.totalPages} onClick={() => setPage((p) => p + 1)}>
+                            Next page
+                        </Button>
                     </div>
-                    <Button variant="outline" disabled={page + 1 >= data.totalPages} onClick={() => setPage((p) => p + 1)}>
-                        Next page
-                    </Button>
                 </div>
-            </div>
+            )}
 
             <JobDetailModal open={detailOpen} onOpenChange={setDetailOpen} job={detailJob} jobId={detailJobId} />
         </div>

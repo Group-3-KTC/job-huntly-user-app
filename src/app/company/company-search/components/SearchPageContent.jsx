@@ -10,12 +10,14 @@ import useCompanySearchStore from '../store/companySearchStore';
 
 const SearchPageContent = () => {
   const router = useRouter();
-  const { fetchCompanies, fetchIndustries } = useCompanySearchStore();
+  const { fetchAllCompanies, fetchIndustries, fetchLocations } = useCompanySearchStore();
   
   useEffect(() => {
-    fetchCompanies();
+    // Load initial data
+    fetchAllCompanies(); // Load all companies for recommendations
     fetchIndustries();
-  }, [fetchCompanies, fetchIndustries]);
+    fetchLocations();
+  }, [fetchAllCompanies, fetchIndustries, fetchLocations]);
 
   const handleSearch = (searchParams) => {
     const queryParams = new URLSearchParams();
@@ -27,6 +29,15 @@ const SearchPageContent = () => {
     if (searchParams.location) {
       queryParams.append('location', searchParams.location);
     }
+    
+    if (searchParams.categoryIds?.length) {
+      queryParams.append('categoryIds', searchParams.categoryIds.join(','));
+    }
+    
+    // Add pagination params
+    queryParams.append('page', '0');
+    queryParams.append('size', '10');
+    queryParams.append('sort', 'id,asc');
     
     router.push(`/company/company-search/results?${queryParams.toString()}`);
   };
