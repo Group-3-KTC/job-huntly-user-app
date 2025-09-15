@@ -3,8 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Building, MapPin, Search, Filter, CheckCircle } from "lucide-react";
-import { BASE_API_URL } from "@/constants/apiCompanyConstants";
+import { Building, MapPin, Search, Filter, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 
 import SearchBar from "../components/SearchBar";
 import FilterSidebar from "../components/FilterSidebar";
@@ -19,22 +18,22 @@ const companySizes = [
     { id: "501+", label: "501+ nhân viên" },
 ];
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 10;
 
 const ResultPageContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [currentPage, setCurrentPage] = useState(1);
     const [showFilterOnMobile, setShowFilterOnMobile] = useState(false);
-    const [useDirectAPIResults, setUseDirectAPIResults] = useState(false);
-    const [apiResults, setApiResults] = useState([]);
 
     // Lấy state và actions từ Zustand store
     const {
         companies,
         industries,
+        locations,
         filters,
         searchTerm,
+        pagination,
+        sort,
         isLoading,
         error,
         fetchCompanies,
@@ -45,67 +44,78 @@ const ResultPageContent = () => {
         fetchLocations,
         setFilters,
         setSearchTerm,
-        getFilteredCompanies,
+        setPagination,
+        setSort,
         getFilterCounts,
     } = useCompanySearchStore();
 
+    // Khởi tạo dữ liệu
     useEffect(() => {
-        const name =
-            searchParams.get("name") || searchParams.get("company") || "";
+        fetchIndustries();
+        fetchLocations();
+    }, [fetchIndustries, fetchLocations]);
+
+    // Xử lý tìm kiếm từ URL params
+    useEffect(() => {
+        const name = searchParams.get("name") || searchParams.get("company") || "";
         const location = searchParams.get("location") || "";
         const categoryIdsParam = searchParams.get("categoryIds") || "";
-        const categoryIds = categoryIdsParam
-            ? categoryIdsParam.split(",").map(Number)
-            : [];
+        const categoryIds = categoryIdsParam ? categoryIdsParam.split(",").map(Number) : [];
+        const page = parseInt(searchParams.get("page")) || 0;
+        const size = parseInt(searchParams.get("size")) || ITEMS_PER_PAGE;
+        const sortParam = searchParams.get("sort") || "id,asc";
 
         setSearchTerm({ company: name, location });
+        setPagination({ page, size });
+        setSort({ 
+            field: sortParam.split(",")[0], 
+            direction: sortParam.split(",")[1] 
+        });
 
         if (categoryIds.length > 0) {
             setFilters((prev) => ({ ...prev, categoryIds }));
         }
 
         const performSearch = async () => {
-            if (name && categoryIds.length > 0) {
-                // Tìm kiếm kết hợp
-                await searchCompanies({
-                    name,
-                    categoryIds,
-                });
-            } else if (categoryIds.length > 0) {
-                await fetchCompaniesByCategories(categoryIds.join(","));
-            } else if (name) {
-                await searchCompanies({ name });
-            } else if (location) {
-                await fetchCompaniesByLocation(location);
-            } else {
-                await fetchCompanies();
+            try {
+                if (name && categoryIds.length > 0) {
+                    // Tìm kiếm kết hợp
+                    await searchCompanies(
+                        { name, categoryIds },
+                        page,
+                        size,
+                        sortParam
+                    );
+                } else if (categoryIds.length > 0) {
+                    await fetchCompaniesByCategories(categoryIds, page, size, sortParam);
+                } else if (name) {
+                    await searchCompanies({ name }, page, size, sortParam);
+                } else if (location) {
+                    await fetchCompaniesByLocation(location, page, size, sortParam);
+                } else {
+                    await fetchCompanies(page, size, sortParam);
+                }
+            } catch (error) {
+                console.error("Error performing search:", error);
             }
         };
 
         performSearch();
     }, [searchParams]);
 
-    // Lọc kết quả dựa trên bộ lọc hoặc sử dụng kết quả API trực tiếp
-    const filteredResults =
-        useDirectAPIResults && apiResults && apiResults.length > 0
-            ? apiResults
-            : getFilteredCompanies();
-    const filterCounts = getFilterCounts();
-
-    // Xử lý tìm kiếm
+    // Xử lý tìm kiếm từ SearchBar
     const handleSearch = (searchParams) => {
         setSearchTerm(searchParams);
+        setPagination({ page: 0, size: ITEMS_PER_PAGE });
 
         const queryParams = new URLSearchParams();
-        if (searchParams.company)
-            queryParams.append("company", searchParams.company);
-        if (searchParams.location)
-            queryParams.append("location", searchParams.location);
-        if (searchParams.categoryIds?.length)
-            queryParams.append(
-                "categoryIds",
-                searchParams.categoryIds.join(",")
-            );
+        if (searchParams.company) queryParams.append("company", searchParams.company);
+        if (searchParams.location) queryParams.append("location", searchParams.location);
+        if (searchParams.categoryIds?.length) {
+            queryParams.append("categoryIds", searchParams.categoryIds.join(","));
+        }
+        queryParams.append("page", "0");
+        queryParams.append("size", ITEMS_PER_PAGE.toString());
 
         window.history.pushState(
             null,
@@ -114,52 +124,129 @@ const ResultPageContent = () => {
         );
 
         searchCompanies({
-            name: searchParams.company, 
+            name: searchParams.company,
             location: searchParams.location,
             categoryIds: searchParams.categoryIds,
-        });
+        }, 0, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
     };
 
+    // Xử lý thay đổi bộ lọc
     const handleFilterChange = async (newFilters) => {
-
-        setApiResults([]);
-
         const updatedFilters = { ...filters, ...newFilters };
         setFilters(updatedFilters);
+        setPagination({ page: 0, size: ITEMS_PER_PAGE });
 
         try {
-            if (
-                updatedFilters.categoryIds &&
-                updatedFilters.categoryIds.length > 0
-            ) {
+            if (updatedFilters.categoryIds && updatedFilters.categoryIds.length > 0) {
                 const categoryIds = updatedFilters.categoryIds.join(",");
-                await fetchCompaniesByCategories(categoryIds);
-
-                setUseDirectAPIResults(false); 
+                await fetchCompaniesByCategories(categoryIds, 0, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
             } else {
-                setUseDirectAPIResults(false);
-                await fetchCompanies();
+                await fetchCompanies(0, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
             }
         } catch (error) {
             console.error("Error updating filters:", error);
         }
     };
 
-    // Logic phân trang
-    const totalPages = Math.ceil(filteredResults.length / ITEMS_PER_PAGE);
-    const paginatedResults = filteredResults.slice(
-        (currentPage - 1) * ITEMS_PER_PAGE,
-        currentPage * ITEMS_PER_PAGE
-    );
+    // Xử lý thay đổi trang
+    const handlePageChange = (newPage) => {
+        setPagination({ page: newPage, size: ITEMS_PER_PAGE });
+        
+        const queryParams = new URLSearchParams(window.location.search);
+        queryParams.set("page", newPage.toString());
+        
+        window.history.pushState(
+            null,
+            "",
+            `/company/company-search/results?${queryParams.toString()}`
+        );
 
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
+        // Thực hiện tìm kiếm với trang mới
+        const name = searchParams.get("name") || searchParams.get("company") || "";
+        const location = searchParams.get("location") || "";
+        const categoryIdsParam = searchParams.get("categoryIds") || "";
+        const categoryIds = categoryIdsParam ? categoryIdsParam.split(",").map(Number) : [];
+
+        const performSearch = async () => {
+            try {
+                if (name && categoryIds.length > 0) {
+                    await searchCompanies(
+                        { name, categoryIds },
+                        newPage,
+                        ITEMS_PER_PAGE,
+                        `${sort.field},${sort.direction}`
+                    );
+                } else if (categoryIds.length > 0) {
+                    await fetchCompaniesByCategories(categoryIds, newPage, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
+                } else if (name) {
+                    await searchCompanies({ name }, newPage, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
+                } else if (location) {
+                    await fetchCompaniesByLocation(location, newPage, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
+                } else {
+                    await fetchCompanies(newPage, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
+                }
+            } catch (error) {
+                console.error("Error changing page:", error);
+            }
+        };
+
+        performSearch();
         window.scrollTo(0, 0);
+    };
+
+    // Xử lý thay đổi sắp xếp
+    const handleSortChange = (field) => {
+        const newDirection = sort.field === field && sort.direction === "asc" ? "desc" : "asc";
+        setSort({ field, direction: newDirection });
+        setPagination({ page: 0, size: ITEMS_PER_PAGE });
+
+        const queryParams = new URLSearchParams(window.location.search);
+        queryParams.set("sort", `${field},${newDirection}`);
+        queryParams.set("page", "0");
+
+        window.history.pushState(
+            null,
+            "",
+            `/company/company-search/results?${queryParams.toString()}`
+        );
+
+        // Thực hiện tìm kiếm với sắp xếp mới
+        const name = searchParams.get("name") || searchParams.get("company") || "";
+        const location = searchParams.get("location") || "";
+        const categoryIdsParam = searchParams.get("categoryIds") || "";
+        const categoryIds = categoryIdsParam ? categoryIdsParam.split(",").map(Number) : [];
+
+        const performSearch = async () => {
+            try {
+                if (name && categoryIds.length > 0) {
+                    await searchCompanies(
+                        { name, categoryIds },
+                        0,
+                        ITEMS_PER_PAGE,
+                        `${field},${newDirection}`
+                    );
+                } else if (categoryIds.length > 0) {
+                    await fetchCompaniesByCategories(categoryIds, 0, ITEMS_PER_PAGE, `${field},${newDirection}`);
+                } else if (name) {
+                    await searchCompanies({ name }, 0, ITEMS_PER_PAGE, `${field},${newDirection}`);
+                } else if (location) {
+                    await fetchCompaniesByLocation(location, 0, ITEMS_PER_PAGE, `${field},${newDirection}`);
+                } else {
+                    await fetchCompanies(0, ITEMS_PER_PAGE, `${field},${newDirection}`);
+                }
+            } catch (error) {
+                console.error("Error changing sort:", error);
+            }
+        };
+
+        performSearch();
     };
 
     const toggleFilterOnMobile = () => {
         setShowFilterOnMobile(!showFilterOnMobile);
     };
+
+    const filterCounts = getFilterCounts();
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
@@ -194,230 +281,121 @@ const ResultPageContent = () => {
 
                 <div className="lg:w-3/4">
                     <div className="mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
-                            <Building className="mr-2 h-6 w-6 text-[#0A66C2]" />
-                            Tất cả công ty
-                        </h2>
-                        <div className="flex flex-wrap items-center text-gray-600 gap-2">
-                            {isLoading ? (
-                                <div className="flex items-center">
-                                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-[#0A66C2] mr-2"></div>
-                                    Đang tải...
-                                </div>
-                            ) : (
-                                <>
-                                    <p>
-                                        Hiển thị {filteredResults.length} kết
-                                        quả
-                                    </p>
-                                    {searchTerm.company && (
-                                        <div className="flex items-center bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm">
-                                            <Search className="w-4 h-4 mr-1" />
-                                            {searchTerm.company}
-                                        </div>
-                                    )}
-                                    {searchTerm.location && (
-                                        <div className="flex items-center bg-green-50 text-green-600 px-3 py-1 rounded-full text-sm">
-                                            <MapPin className="w-4 h-4 mr-1" />
-                                            {searchTerm.location}
-                                        </div>
-                                    )}
-                                    {filters.categoryIds.length > 0 && (
-                                        <div className="flex items-center bg-yellow-50 text-yellow-600 px-3 py-1 rounded-full text-sm">
-                                            <Filter className="w-4 h-4 mr-1" />
-                                            {filters.categoryIds.length} danh
-                                            mục đã lọc
-                                        </div>
-                                    )}
-                                </>
-                            )}
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                                <Building className="mr-2 h-6 w-6 text-[#0A66C2]" />
+                                Tất cả công ty
+                            </h2>
+                            
+                            {/* Sắp xếp */}
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-600">Sắp xếp theo:</span>
+                                <select
+                                    value={`${sort.field},${sort.direction}`}
+                                    onChange={(e) => {
+                                        const [field, direction] = e.target.value.split(",");
+                                        handleSortChange(field);
+                                    }}
+                                    className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="id,asc">Mặc định (A-Z)</option>
+                                    <option value="companyName,asc">Tên công ty (A-Z)</option>
+                                    <option value="companyName,desc">Tên công ty (Z-A)</option>
+                                    <option value="locationCity,asc">Địa điểm (A-Z)</option>
+                                    <option value="locationCity,desc">Địa điểm (Z-A)</option>
+                                    <option value="foundedYear,desc">Năm thành lập (Mới nhất)</option>
+                                    <option value="foundedYear,asc">Năm thành lập (Cũ nhất)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Thông tin kết quả */}
+                        <div className="text-sm text-gray-600 mb-4">
+                            Hiển thị {pagination.page * pagination.size + 1} - {Math.min((pagination.page + 1) * pagination.size, pagination.totalElements)} trong tổng số {pagination.totalElements} công ty
                         </div>
                     </div>
 
-                    {isLoading ? (
-                        <div className="flex justify-center items-center py-20">
-                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0A66C2]"></div>
+                    {/* Loading state */}
+                    {isLoading && (
+                        <div className="flex justify-center items-center py-12">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                         </div>
-                    ) : error ? (
-                        <div className="text-center py-12 bg-red-50 rounded-lg border border-red-100">
-                            <p className="text-red-500 mb-4">
-                                Có lỗi xảy ra: {error}
-                            </p>
-                            <button
-                                onClick={fetchCompanies}
-                                className="px-4 py-2 bg-[#0A66C2] text-white rounded-md hover:bg-[#085aab]"
-                            >
-                                Thử lại
-                            </button>
+                    )}
+
+                    {/* Error state */}
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                            <p className="text-red-600">{error}</p>
                         </div>
-                    ) : filteredResults.length === 0 ? (
-                        <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-100">
-                            <div className="flex justify-center mb-4">
-                                <Building className="h-16 w-16 text-gray-300" />
-                            </div>
-                            <p className="text-gray-500 mb-4 text-lg font-medium">
-                                Không tìm thấy công ty phù hợp với tiêu chí của
-                                bạn.
-                            </p>
-                            <p className="text-gray-600">
-                                Hãy điều chỉnh tìm kiếm hoặc bộ lọc của bạn.
-                            </p>
-                            <button
-                                onClick={() => {
-                                    setSearchTerm({
-                                        company: "",
-                                        location: "",
-                                    });
-                                    setFilters({
-                                        companySize: [],
-                                        categoryIds: [],
-                                        foundingYear: "any",
-                                    });
-                                    router.push(
-                                        "/company/company-search/results"
-                                    );
-                                }}
-                                className="mt-4 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100"
-                            >
-                                Xóa bộ lọc và tìm kiếm lại
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {paginatedResults.map((company) => (
-                                <ResultItem
-                                    key={company.id}
-                                    company={company}
-                                />
-                            ))}
+                    )}
 
-                            {/* Phân trang */}
-                            {totalPages > 1 && (
-                                <div className="flex justify-center items-center gap-2 mt-8">
-                                    <button
-                                        onClick={() =>
-                                            handlePageChange(currentPage - 1)
-                                        }
-                                        disabled={currentPage === 1}
-                                        className={`w-8 h-8 flex items-center justify-center rounded-md ${
-                                            currentPage === 1
-                                                ? "text-gray-400 cursor-not-allowed"
-                                                : "text-gray-700 hover:bg-gray-100"
-                                        }`}
-                                        aria-label="Trang trước"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M15 19l-7-7 7-7"
-                                            />
-                                        </svg>
-                                    </button>
-
-                                    {Array.from(
-                                        { length: Math.min(totalPages, 5) },
-                                        (_, i) => {
-                                            // Hiển thị trang hiện tại và các trang xung quanh
-                                            let pageNum = currentPage;
-                                            if (pageNum <= 3) {
-                                                pageNum = i + 1;
-                                            } else if (
-                                                pageNum >=
-                                                totalPages - 2
-                                            ) {
-                                                pageNum = totalPages - 4 + i;
-                                            } else {
-                                                pageNum = pageNum - 2 + i;
-                                            }
-
-                                            // Nếu trang nằm ngoài phạm vi, không hiển thị
-                                            if (
-                                                pageNum <= 0 ||
-                                                pageNum > totalPages
-                                            ) {
-                                                return null;
-                                            }
-
-                                            return (
-                                                <button
-                                                    key={pageNum}
-                                                    onClick={() =>
-                                                        handlePageChange(
-                                                            pageNum
-                                                        )
-                                                    }
-                                                    className={`w-8 h-8 flex items-center justify-center rounded-md ${
-                                                        currentPage === pageNum
-                                                            ? "bg-[#0A66C2] text-white"
-                                                            : "text-gray-700 hover:bg-gray-100"
-                                                    }`}
-                                                >
-                                                    {pageNum}
-                                                </button>
-                                            );
-                                        }
-                                    )}
-
-                                    {totalPages > 5 &&
-                                        currentPage < totalPages - 2 && (
-                                            <>
-                                                {currentPage <
-                                                    totalPages - 3 && (
-                                                    <span className="px-2">
-                                                        ...
-                                                    </span>
-                                                )}
-                                                <button
-                                                    onClick={() =>
-                                                        handlePageChange(
-                                                            totalPages
-                                                        )
-                                                    }
-                                                    className="w-8 h-8 flex items-center justify-center rounded-md text-gray-700 hover:bg-gray-100"
-                                                >
-                                                    {totalPages}
-                                                </button>
-                                            </>
-                                        )}
-
-                                    <button
-                                        onClick={() =>
-                                            handlePageChange(currentPage + 1)
-                                        }
-                                        disabled={currentPage === totalPages}
-                                        className={`w-8 h-8 flex items-center justify-center rounded-md ${
-                                            currentPage === totalPages
-                                                ? "text-gray-400 cursor-not-allowed"
-                                                : "text-gray-700 hover:bg-gray-100"
-                                        }`}
-                                        aria-label="Trang sau"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M9 5l7 7-7 7"
-                                            />
-                                        </svg>
-                                    </button>
+                    {/* Kết quả */}
+                    {!isLoading && !error && (
+                        <>
+                            {companies.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <Building className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                        Không tìm thấy công ty nào
+                                    </h3>
+                                    <p className="text-gray-500">
+                                        Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc của bạn
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {companies.map((company) => (
+                                        <ResultItem key={company.id} company={company} />
+                                    ))}
                                 </div>
                             )}
-                        </div>
+
+                            {/* Pagination */}
+                            {pagination.totalPages > 1 && (
+                                <div className="mt-8 flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => handlePageChange(pagination.page - 1)}
+                                            disabled={pagination.first}
+                                            className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            <ChevronLeft className="w-4 h-4" />
+                                        </button>
+
+                                        <div className="flex items-center gap-1">
+                                            {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                                                const pageNum = Math.max(0, Math.min(pagination.totalPages - 5, pagination.page - 2)) + i;
+                                                return (
+                                                    <button
+                                                        key={pageNum}
+                                                        onClick={() => handlePageChange(pageNum)}
+                                                        className={`px-3 py-2 text-sm font-medium rounded-md ${
+                                                            pageNum === pagination.page
+                                                                ? "bg-blue-600 text-white"
+                                                                : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
+                                                        }`}
+                                                    >
+                                                        {pageNum + 1}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+
+                                        <button
+                                            onClick={() => handlePageChange(pagination.page + 1)}
+                                            disabled={pagination.last}
+                                            className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            <ChevronRight className="w-4 h-4" />
+                                        </button>
+                                    </div>
+
+                                    <div className="text-sm text-gray-700">
+                                        Trang {pagination.page + 1} / {pagination.totalPages}
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
