@@ -7,6 +7,7 @@ import {
 import Link from "next/link";
 import { Eye, Trash2, Building2, Users, Briefcase } from "lucide-react";
 import LoadingScreen from "@/components/ui/loadingScreen";
+import Image from "next/image";
 
 export default function ListCompanyFollowed() {
     const {
@@ -86,13 +87,15 @@ export default function ListCompanyFollowed() {
                             className="relative flex items-center px-4 py-6 transition-all duration-300 bg-white border border-gray-200 shadow-sm z-2 group rounded-2xl hover:shadow-lg hover:border-blue-200"
                         >
                             <div className="flex-shrink-0 mr-6">
-                                <img
+                                <Image
+                                    width={80}
+                                    height={80}
                                     src={
                                         company.companyAvatar ||
                                         "https://static.topcv.vn/company_logos/default-logo.png"
                                     }
                                     alt={`${company.companyName} logo`}
-                                    className="w-20 h-20 transition-shadow duration-300 object-inhertit rounded-xl group-hover:shadow-md"
+                                    className="transition-shadow duration-300 object-inhertit rounded-xl group-hover:shadow-md"
                                 />
                             </div>
 
