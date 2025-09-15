@@ -4,10 +4,11 @@ import { useGetJobsQuery } from "@/services/jobService";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 import LoadingScreen from "@/components/ui/loadingScreen";
+import Image from "next/image";
 
 export default function RelatedJobs({ category = [] }) {
     const { data, isLoading, error } = useGetJobsQuery();
-    const [visibleCount, setVisibleCount] = useState(10);
+    const [visibleCount, setVisibleCount] = useState(5);
     const jobsSource = useMemo(() => {
         if (Array.isArray(data)) return data;
         if (Array.isArray(data?.jobs)) return data.jobs;
@@ -101,11 +102,12 @@ function JobCard({ job }) {
             <Link href={`/job-detail/${job.id}`}>
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-4">
-                        <div className="w-16 h-16 overflow-hidden border rounded-full">
-                            <img
+                        <div className="relative w-16 h-16 overflow-hidden border rounded-full">
+                            <Image
+                                fill
                                 src={job.avatar}
                                 alt={job.companyName}
-                                className="object-cover w-full h-full"
+                                className="object-cover"
                             />
                         </div>
                         <div>
