@@ -9,24 +9,24 @@ const CallToAction = () => {
             <div className="relative z-10 px-8 py-12 md:py-16 md:px-12">
                 <div className="max-w-3xl mx-auto text-center">
                     <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-                        Bạn là một nhà tuyển dụng?
+                        Are you a recruiter?
                     </h2>
                     <p className="mb-8 text-xl text-blue-100">
-                        Đăng ký miễn phí để quảng cáo công ty của bạn và tiếp
-                        cận với hàng ngàn ứng viên tiềm năng!
+                        Register for free to advertise your company and reach
+                        thousands of potential candidates!
                     </p>
                     <div className="flex flex-col justify-center gap-4 sm:flex-row">
                         <Link
                             href="/src/app/recruiter/create-job"
                             className="px-8 py-3 bg-white text-[#0A66C2] hover:bg-blue-50 font-medium rounded-lg transition-colors"
                         >
-                            Đăng tin tuyển dụng
+                            Post a job
                         </Link>
                         <Link
                             href="/recruiter/paymoney"
                             className="px-8 py-3 bg-[#085aab] text-white hover:bg-[#064884] font-medium rounded-lg transition-colors border border-blue-500"
                         >
-                            Xem các gói dịch vụ
+                            View service packages
                         </Link>
                     </div>
                 </div>
