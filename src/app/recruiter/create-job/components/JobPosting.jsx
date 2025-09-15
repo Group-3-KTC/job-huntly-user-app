@@ -471,10 +471,10 @@ export default function JobPostingForm() {
             <div className="max-w-4xl mx-auto px-4">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                        Tạo công việc mới
+                        Create New Job
                     </h1>
                     <p className="text-gray-600">
-                        Điền thông tin chi tiết để tạo công việc hấp dẫn
+                        Fill in the details to create a job
                     </p>
                 </div>
 
@@ -522,11 +522,11 @@ export default function JobPostingForm() {
                                 disabled={currentStep === 1}
                             >
                                 <ArrowLeft className="w-4 h-4 mr-2" />
-                                Quay lại
+                                Back
                             </Button>
 
                             <Button onClick={handleNext} disabled={isLoading}>
-                                {currentStep === 3 ? "Xem trước" : "Tiếp theo"}
+                                {currentStep === 3 ? "Previous" : "Next"}
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
                         </div>

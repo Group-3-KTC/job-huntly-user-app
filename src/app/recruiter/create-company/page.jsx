@@ -4,22 +4,25 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Building2, Upload, MapPin, Globe, Phone, Mail, Calendar, Users, Loader2 } from "lucide-react";
 import { createCompany } from "@/services/companyService";
 import { getAllCategories } from "@/services/categoryService";
 import { useSelector } from "react-redux";
+import CompanyImageUpload from "./components/CompanyImageUpload";
+import BasicInformation from "./components/BasicInformation";
+import LocationInformation from "./components/LocationInformation";
+import CompanyDetails from "./components/CompanyDetails";
+import SocialMedia from "./components/SocialMedia";
+import CategorySelection from "./components/CategorySelection";
 
 export default function CreateCompanyPage() {
     const router = useRouter();
     const user = useSelector((state) => state.auth.user);
     const [loading, setLoading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const [categoriesLoading, setCategoriesLoading] = useState(true);
     const [categories, setCategories] = useState([]);
+    
+    // State cho form data
     const [formData, setFormData] = useState({
         companyName: "",
         description: "",
@@ -37,22 +40,25 @@ export default function CreateCompanyPage() {
         twitterUrl: "",
         linkedinUrl: "",
         mapEmbedUrl: "",
-        avatar: "",
-        avatarCover: "",
-        categoryIds: []
+        categoryIds: [] // Đảm bảo luôn là array
     });
 
+    // State cho files và preview
+    const [avatarFile, setAvatarFile] = useState(null);
+    const [coverFile, setCoverFile] = useState(null);
+    const [avatarPreview, setAvatarPreview] = useState(null);
+    const [coverPreview, setCoverPreview] = useState(null);
     const [errors, setErrors] = useState({});
 
     // Load categories from API
     useEffect(() => {
         const loadCategories = async () => {
             try {
-                const categoriesData = await getAllCategories();
-                setCategories(categoriesData || []);
+                setCategoriesLoading(true);
+                const response = await getAllCategories();
+                setCategories(response || []);
             } catch (error) {
                 console.error("Error loading categories:", error);
-                // Set empty array if error
                 setCategories([]);
             } finally {
                 setCategoriesLoading(false);
@@ -62,28 +68,80 @@ export default function CreateCompanyPage() {
         loadCategories();
     }, []);
 
-    const handleInputChange = (field, value) => {
+    const handleInputChange = (name, value) => {
         setFormData(prev => ({
             ...prev,
-            [field]: value
+            [name]: value
         }));
         
         // Clear error when user starts typing
-        if (errors[field]) {
+        if (errors[name]) {
             setErrors(prev => ({
                 ...prev,
-                [field]: ""
+                [name]: null
             }));
         }
     };
 
-    const handleCategoryChange = (categoryId, checked) => {
+    const handleCategoryChange = (categoryIds) => {
         setFormData(prev => ({
             ...prev,
-            categoryIds: checked 
-                ? [...prev.categoryIds, categoryId]
-                : prev.categoryIds.filter(id => id !== categoryId)
+            categoryIds: Array.isArray(categoryIds) ? categoryIds : []
         }));
+    };
+
+    const handleImageUpload = (file, type) => {
+        if (!file) return;
+
+        // Kiểm tra kích thước file (5MB = 5 * 1024 * 1024 bytes)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            setErrors(prev => ({
+                ...prev,
+                [type]: `File size must be less than 5MB. Current size: ${(file.size / 1024 / 1024).toFixed(2)}MB`
+            }));
+            return;
+        }
+
+        // Kiểm tra định dạng file
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            setErrors(prev => ({
+                ...prev,
+                [type]: 'File must be JPEG, JPG, PNG, or WebP format'
+            }));
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            if (type === 'avatar') {
+                setAvatarFile(file);
+                setAvatarPreview(reader.result);
+            } else if (type === 'avatarCover') {
+                setCoverFile(file);
+                setCoverPreview(reader.result);
+            }
+        };
+        reader.readAsDataURL(file);
+
+        // Clear error if exists
+        if (errors[type]) {
+            setErrors(prev => ({
+                ...prev,
+                [type]: null
+            }));
+        }
+    };
+
+    const removeImage = (type) => {
+        if (type === 'avatar') {
+            setAvatarFile(null);
+            setAvatarPreview(null);
+        } else if (type === 'avatarCover') {
+            setCoverFile(null);
+            setCoverPreview(null);
+        }
     };
 
     const validateForm = () => {
@@ -131,6 +189,8 @@ export default function CreateCompanyPage() {
         }
         
         setLoading(true);
+        setUploadProgress(0);
+        
         try {
             // Add userId to form data
             const companyData = {
@@ -138,11 +198,29 @@ export default function CreateCompanyPage() {
                 userId: user?.id || user?.userId
             };
             
-            await createCompany(companyData);
-            router.push("/recruiter/company");
+            // Simulate progress for better UX
+            const progressInterval = setInterval(() => {
+                setUploadProgress(prev => {
+                    if (prev >= 90) return prev;
+                    return prev + Math.random() * 10;
+                });
+            }, 500);
+            
+            // Gọi createCompany với files
+            await createCompany(companyData, avatarFile, coverFile);
+            
+            clearInterval(progressInterval);
+            setUploadProgress(100);
+            
+            // Delay một chút để user thấy progress 100%
+            setTimeout(() => {
+                router.push("/recruiter/company");
+            }, 500);
+            
         } catch (error) {
             console.error("Error creating company:", error);
-            // Handle error silently as per requirement
+            setUploadProgress(0);
+            // Có thể thêm toast notification ở đây
         } finally {
             setLoading(false);
         }
@@ -156,276 +234,78 @@ export default function CreateCompanyPage() {
                     <p className="text-gray-600">Set up your company profile to start posting jobs and attracting candidates.</p>
                 </div>
 
+                {/* Progress Bar */}
+                {loading && (
+                    <div className="mb-6">
+                        <div className="flex justify-between text-sm text-gray-600 mb-2">
+                            <span>Uploading...</span>
+                            <span>{Math.round(uploadProgress)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${uploadProgress}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-8">
+                    {/* Company Images - Moved to top */}
+                    <Card className="p-6">
+                        <CompanyImageUpload
+                            formData={formData}
+                            errors={errors}
+                            avatarPreview={avatarPreview}
+                            coverPreview={coverPreview}
+                            onImageUpload={handleImageUpload}
+                            onRemoveImage={removeImage}
+                        />
+                    </Card>
+
                     {/* Basic Information */}
                     <Card className="p-6">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Building2 className="w-5 h-5 text-blue-600" />
-                            <h2 className="text-xl font-semibold">Basic Information</h2>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="companyName">Company Name *</Label>
-                                <Input
-                                    id="companyName"
-                                    value={formData.companyName}
-                                    onChange={(e) => handleInputChange("companyName", e.target.value)}
-                                    placeholder="Enter company name"
-                                    className={errors.companyName ? "border-red-500" : ""}
-                                />
-                                {errors.companyName && (
-                                    <p className="text-sm text-red-500">{errors.companyName}</p>
-                                )}
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email *</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={(e) => handleInputChange("email", e.target.value)}
-                                    placeholder="contact@company.com"
-                                    className={errors.email ? "border-red-500" : ""}
-                                />
-                                {errors.email && (
-                                    <p className="text-sm text-red-500">{errors.email}</p>
-                                )}
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <Label htmlFor="phoneNumber">Phone Number *</Label>
-                                <Input
-                                    id="phoneNumber"
-                                    value={formData.phoneNumber}
-                                    onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-                                    placeholder="+84 123 456 789"
-                                    className={errors.phoneNumber ? "border-red-500" : ""}
-                                />
-                                {errors.phoneNumber && (
-                                    <p className="text-sm text-red-500">{errors.phoneNumber}</p>
-                                )}
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <Label htmlFor="website">Website</Label>
-                                <Input
-                                    id="website"
-                                    value={formData.website}
-                                    onChange={(e) => handleInputChange("website", e.target.value)}
-                                    placeholder="https://company.com"
-                                />
-                            </div>
-                        </div>
-                        
-                        <div className="mt-6 space-y-2">
-                            <Label htmlFor="description">Company Description</Label>
-                            <Textarea
-                                id="description"
-                                value={formData.description}
-                                onChange={(e) => handleInputChange("description", e.target.value)}
-                                placeholder="Tell us about your company..."
-                                rows={4}
-                            />
-                        </div>
+                        <BasicInformation
+                            formData={formData}
+                            errors={errors}
+                            onInputChange={handleInputChange}
+                        />
                     </Card>
 
                     {/* Location Information */}
                     <Card className="p-6">
-                        <div className="flex items-center gap-2 mb-6">
-                            <MapPin className="w-5 h-5 text-green-600" />
-                            <h2 className="text-xl font-semibold">Location Information</h2>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="address">Address *</Label>
-                                <Input
-                                    id="address"
-                                    value={formData.address}
-                                    onChange={(e) => handleInputChange("address", e.target.value)}
-                                    placeholder="123 Main Street"
-                                    className={errors.address ? "border-red-500" : ""}
-                                />
-                                {errors.address && (
-                                    <p className="text-sm text-red-500">{errors.address}</p>
-                                )}
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <Label htmlFor="locationCity">City *</Label>
-                                <Input
-                                    id="locationCity"
-                                    value={formData.locationCity}
-                                    onChange={(e) => handleInputChange("locationCity", e.target.value)}
-                                    placeholder="Ho Chi Minh City"
-                                    className={errors.locationCity ? "border-red-500" : ""}
-                                />
-                                {errors.locationCity && (
-                                    <p className="text-sm text-red-500">{errors.locationCity}</p>
-                                )}
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <Label htmlFor="locationCountry">Country</Label>
-                                <Input
-                                    id="locationCountry"
-                                    value={formData.locationCountry}
-                                    onChange={(e) => handleInputChange("locationCountry", e.target.value)}
-                                    placeholder="Vietnam"
-                                />
-                            </div>
-                        </div>
+                        <LocationInformation
+                            formData={formData}
+                            errors={errors}
+                            onInputChange={handleInputChange}
+                        />
                     </Card>
 
                     {/* Company Details */}
                     <Card className="p-6">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Calendar className="w-5 h-5 text-purple-600" />
-                            <h2 className="text-xl font-semibold">Company Details</h2>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="foundedYear">Founded Year *</Label>
-                                <Input
-                                    id="foundedYear"
-                                    type="number"
-                                    value={formData.foundedYear}
-                                    onChange={(e) => handleInputChange("foundedYear", parseInt(e.target.value))}
-                                    min="1800"
-                                    max={new Date().getFullYear()}
-                                    className={errors.foundedYear ? "border-red-500" : ""}
-                                />
-                                {errors.foundedYear && (
-                                    <p className="text-sm text-red-500">{errors.foundedYear}</p>
-                                )}
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <Label htmlFor="quantityEmployee">Number of Employees *</Label>
-                                <Input
-                                    id="quantityEmployee"
-                                    type="number"
-                                    value={formData.quantityEmployee}
-                                    onChange={(e) => handleInputChange("quantityEmployee", parseInt(e.target.value))}
-                                    min="1"
-                                    className={errors.quantityEmployee ? "border-red-500" : ""}
-                                />
-                                {errors.quantityEmployee && (
-                                    <p className="text-sm text-red-500">{errors.quantityEmployee}</p>
-                                )}
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <Label htmlFor="status">Status</Label>
-                                <Select value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="active">Active</SelectItem>
-                                        <SelectItem value="inactive">Inactive</SelectItem>
-                                        <SelectItem value="pending">Pending</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                        
-                        <div className="mt-6 flex items-center space-x-2">
-                            <Checkbox
-                                id="isProCompany"
-                                checked={formData.isProCompany}
-                                onCheckedChange={(checked) => handleInputChange("isProCompany", checked)}
-                            />
-                            <Label htmlFor="isProCompany" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                Pro Company (Premium features)
-                            </Label>
-                        </div>
+                        <CompanyDetails
+                            formData={formData}
+                            errors={errors}
+                            onInputChange={handleInputChange}
+                        />
                     </Card>
 
                     {/* Social Media */}
                     <Card className="p-6">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Globe className="w-5 h-5 text-blue-500" />
-                            <h2 className="text-xl font-semibold">Social Media & Links</h2>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="facebookUrl">Facebook URL</Label>
-                                <Input
-                                    id="facebookUrl"
-                                    value={formData.facebookUrl}
-                                    onChange={(e) => handleInputChange("facebookUrl", e.target.value)}
-                                    placeholder="https://facebook.com/company"
-                                />
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <Label htmlFor="linkedinUrl">LinkedIn URL</Label>
-                                <Input
-                                    id="linkedinUrl"
-                                    value={formData.linkedinUrl}
-                                    onChange={(e) => handleInputChange("linkedinUrl", e.target.value)}
-                                    placeholder="https://linkedin.com/company/company"
-                                />
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <Label htmlFor="twitterUrl">Twitter URL</Label>
-                                <Input
-                                    id="twitterUrl"
-                                    value={formData.twitterUrl}
-                                    onChange={(e) => handleInputChange("twitterUrl", e.target.value)}
-                                    placeholder="https://twitter.com/company"
-                                />
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <Label htmlFor="mapEmbedUrl">Google Maps Embed URL</Label>
-                                <Input
-                                    id="mapEmbedUrl"
-                                    value={formData.mapEmbedUrl}
-                                    onChange={(e) => handleInputChange("mapEmbedUrl", e.target.value)}
-                                    placeholder="https://www.google.com/maps/embed/..."
-                                />
-                            </div>
-                        </div>
+                        <SocialMedia
+                            formData={formData}
+                            onInputChange={handleInputChange}
+                        />
                     </Card>
 
                     {/* Categories */}
                     <Card className="p-6">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Users className="w-5 h-5 text-orange-600" />
-                            <h2 className="text-xl font-semibold">Industry Categories</h2>
-                        </div>
-                        
-                        {categoriesLoading ? (
-                            <div className="flex items-center justify-center py-8">
-                                <Loader2 className="w-6 h-6 animate-spin mr-2" />
-                                <span>Loading categories...</span>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {categories.map((category) => (
-                                    <div key={category.id} className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id={`category-${category.id}`}
-                                            checked={formData.categoryIds.includes(category.id)}
-                                            onCheckedChange={(checked) => handleCategoryChange(category.id, checked)}
-                                        />
-                                        <Label 
-                                            htmlFor={`category-${category.id}`}
-                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                        >
-                                            {category.name}
-                                        </Label>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        <CategorySelection
+                            categories={categories}
+                            categoriesLoading={categoriesLoading}
+                            formData={formData}
+                            onCategoryChange={handleCategoryChange}
+                        />
                     </Card>
 
                     {/* Submit Buttons */}

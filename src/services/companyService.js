@@ -11,10 +11,40 @@ export const getMyCompany = async () => {
     }
 };
 
-// Service để tạo company mới
-export const createCompany = async (companyData) => {
+// Service để tạo company mới với ảnh
+export const createCompany = async (companyData, avatarFile = null, coverFile = null) => {
     try {
-        const response = await api.post('/companies/add', companyData);
+        const formData = new FormData();
+        
+        // Thêm tất cả dữ liệu text vào FormData
+        Object.keys(companyData).forEach(key => {
+            if (companyData[key] !== null && companyData[key] !== undefined && companyData[key] !== '') {
+                if (key === 'categoryIds' && Array.isArray(companyData[key])) {
+                    // Convert array to comma-separated string
+                    formData.append('categoryIds', companyData[key].join(','));
+                } else {
+                    formData.append(key, companyData[key]);
+                }
+            }
+        });
+        
+        // Thêm files nếu có
+        if (avatarFile) {
+            formData.append('avatarFile', avatarFile);
+        }
+        if (coverFile) {
+            formData.append('avatarCoverFile', coverFile);
+        }
+        
+        // Tạo axios instance riêng với timeout dài hơn cho upload
+        const uploadApi = api.create({
+            timeout: 120000, // 2 phút cho upload
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        
+        const response = await uploadApi.post('/companies/add', formData);
         return response.data;
     } catch (error) {
         console.error('Error creating company:', error);
@@ -31,4 +61,4 @@ export const updateCompany = async (companyId, companyData) => {
         console.error('Error updating company:', error);
         throw error;
     }
-}; 
+};
