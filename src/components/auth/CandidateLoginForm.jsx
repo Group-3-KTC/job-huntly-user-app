@@ -188,16 +188,6 @@ const CandidateLoginForm = ({role, onGoogleNeedsPassword, onForgot}) => {
                     >
                         {isSubmitting ? "Signing in..." : "Login"}
                     </Button>
-
-                    <div className="pt-2 text-center text-sm text-blue-900/70">
-                        Don’t have an account?{" "}
-                        <a
-                            href="/register"
-                            className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-                        >
-                            Create one
-                        </a>
-                    </div>
                 </form>
             </div>
         </div>

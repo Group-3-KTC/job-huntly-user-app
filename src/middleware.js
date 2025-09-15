@@ -78,7 +78,6 @@ export function middleware(req) {
     if (!needAuth) return NextResponse.next();
 
     const token = req.cookies.get(COOKIE_NAME)?.value;
-    console.log("token: ", token);
     if (!token) {
         const url = req.nextUrl.clone();
         url.pathname = "/login";
