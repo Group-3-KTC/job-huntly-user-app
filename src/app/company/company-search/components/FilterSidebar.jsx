@@ -51,9 +51,9 @@ const FilterSidebar = ({
         });
     };
 
-    const hasActiveFilters = 
-        filters.categoryIds.length > 0 || 
-        filters.companySize.length > 0 || 
+    const hasActiveFilters =
+        filters.categoryIds.length > 0 ||
+        filters.companySize.length > 0 ||
         filters.foundingYear !== "any";
 
     return (
@@ -61,7 +61,7 @@ const FilterSidebar = ({
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                     <Filter className="w-5 h-5" />
-                    Bộ lọc
+                    Filter
                 </h3>
                 {hasActiveFilters && (
                     <button
@@ -69,7 +69,7 @@ const FilterSidebar = ({
                         className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
                     >
                         <X className="w-4 h-4" />
-                        Xóa tất cả
+                        Clear all
                     </button>
                 )}
             </div>
@@ -81,7 +81,7 @@ const FilterSidebar = ({
                         onClick={() => toggleSection("industry")}
                         className="w-full flex items-center justify-between text-left font-medium text-gray-900 mb-3"
                     >
-                        Ngành nghề
+                        Industry
                         {expandedSections.industry ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -98,15 +98,25 @@ const FilterSidebar = ({
                                 >
                                     <input
                                         type="checkbox"
-                                        checked={filters.categoryIds.includes(industry.cate_id)}
-                                        onChange={() => handleIndustryChange(industry.cate_id)}
+                                        checked={filters.categoryIds.includes(
+                                            industry.cate_id
+                                        )}
+                                        onChange={() =>
+                                            handleIndustryChange(
+                                                industry.cate_id
+                                            )
+                                        }
                                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                     />
                                     <span className="text-sm text-gray-700 flex-1">
                                         {industry.cate_name}
                                     </span>
                                     <span className="text-xs text-gray-500">
-                                        ({filterCounts?.industry?.[industry.cate_name] || 0})
+                                        (
+                                        {filterCounts?.industry?.[
+                                            industry.cate_name
+                                        ] || 0}
+                                        )
                                     </span>
                                 </label>
                             ))}
@@ -120,7 +130,7 @@ const FilterSidebar = ({
                         onClick={() => toggleSection("companySize")}
                         className="w-full flex items-center justify-between text-left font-medium text-gray-900 mb-3"
                     >
-                        Quy mô công ty
+                        Company size
                         {expandedSections.companySize ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -137,15 +147,22 @@ const FilterSidebar = ({
                                 >
                                     <input
                                         type="checkbox"
-                                        checked={filters.companySize.includes(size.id)}
-                                        onChange={() => handleCompanySizeChange(size.id)}
+                                        checked={filters.companySize.includes(
+                                            size.id
+                                        )}
+                                        onChange={() =>
+                                            handleCompanySizeChange(size.id)
+                                        }
                                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                     />
                                     <span className="text-sm text-gray-700 flex-1">
                                         {size.label}
                                     </span>
                                     <span className="text-xs text-gray-500">
-                                        ({filterCounts?.companySize?.[size.id] || 0})
+                                        (
+                                        {filterCounts?.companySize?.[size.id] ||
+                                            0}
+                                        )
                                     </span>
                                 </label>
                             ))}
@@ -159,7 +176,7 @@ const FilterSidebar = ({
                         onClick={() => toggleSection("foundingYear")}
                         className="w-full flex items-center justify-between text-left font-medium text-gray-900 mb-3"
                     >
-                        Năm thành lập
+                        Founded year
                         {expandedSections.foundingYear ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -175,13 +192,20 @@ const FilterSidebar = ({
                                     name="foundingYear"
                                     value="any"
                                     checked={filters.foundingYear === "any"}
-                                    onChange={(e) => handleFoundingYearChange(e.target.value)}
+                                    onChange={(e) =>
+                                        handleFoundingYearChange(e.target.value)
+                                    }
                                     className="border-gray-300 text-blue-600 focus:ring-blue-500"
                                 />
-                                <span className="text-sm text-gray-700">Tất cả</span>
+                                <span className="text-sm text-gray-700">
+                                    All
+                                </span>
                             </label>
-                            
-                            {[2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015].map((year) => (
+
+                            {[
+                                2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017,
+                                2016, 2015,
+                            ].map((year) => (
                                 <label
                                     key={year}
                                     className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
@@ -190,11 +214,20 @@ const FilterSidebar = ({
                                         type="radio"
                                         name="foundingYear"
                                         value={year}
-                                        checked={filters.foundingYear === year.toString()}
-                                        onChange={(e) => handleFoundingYearChange(e.target.value)}
+                                        checked={
+                                            filters.foundingYear ===
+                                            year.toString()
+                                        }
+                                        onChange={(e) =>
+                                            handleFoundingYearChange(
+                                                e.target.value
+                                            )
+                                        }
                                         className="border-gray-300 text-blue-600 focus:ring-blue-500"
                                     />
-                                    <span className="text-sm text-gray-700">{year}</span>
+                                    <span className="text-sm text-gray-700">
+                                        {year}
+                                    </span>
                                 </label>
                             ))}
                         </div>

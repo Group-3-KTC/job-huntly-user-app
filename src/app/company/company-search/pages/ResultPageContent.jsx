@@ -3,7 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Building, MapPin, Search, Filter, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+    Building,
+    MapPin,
+    Search,
+    Filter,
+    CheckCircle,
+    ChevronLeft,
+    ChevronRight,
+} from "lucide-react";
 
 import SearchBar from "../components/SearchBar";
 import FilterSidebar from "../components/FilterSidebar";
@@ -11,11 +19,11 @@ import ResultItem from "../components/ResultItem";
 import useCompanySearchStore from "../store/companySearchStore";
 
 const companySizes = [
-    { id: "1-10", label: "1-10 nhân viên" },
-    { id: "11-50", label: "11-50 nhân viên" },
-    { id: "51-200", label: "51-200 nhân viên" },
-    { id: "201-500", label: "201-500 nhân viên" },
-    { id: "501+", label: "501+ nhân viên" },
+    { id: "1-10", label: "1-10 employees" },
+    { id: "11-50", label: "11-50 employees" },
+    { id: "51-200", label: "51-200 employees" },
+    { id: "201-500", label: "201-500 employees" },
+    { id: "501+", label: "501+ employees" },
 ];
 
 const ITEMS_PER_PAGE = 10;
@@ -57,19 +65,22 @@ const ResultPageContent = () => {
 
     // Xử lý tìm kiếm từ URL params
     useEffect(() => {
-        const name = searchParams.get("name") || searchParams.get("company") || "";
+        const name =
+            searchParams.get("name") || searchParams.get("company") || "";
         const location = searchParams.get("location") || "";
         const categoryIdsParam = searchParams.get("categoryIds") || "";
-        const categoryIds = categoryIdsParam ? categoryIdsParam.split(",").map(Number) : [];
+        const categoryIds = categoryIdsParam
+            ? categoryIdsParam.split(",").map(Number)
+            : [];
         const page = parseInt(searchParams.get("page")) || 0;
         const size = parseInt(searchParams.get("size")) || ITEMS_PER_PAGE;
         const sortParam = searchParams.get("sort") || "id,asc";
 
         setSearchTerm({ company: name, location });
         setPagination({ page, size });
-        setSort({ 
-            field: sortParam.split(",")[0], 
-            direction: sortParam.split(",")[1] 
+        setSort({
+            field: sortParam.split(",")[0],
+            direction: sortParam.split(",")[1],
         });
 
         if (categoryIds.length > 0) {
@@ -87,11 +98,21 @@ const ResultPageContent = () => {
                         sortParam
                     );
                 } else if (categoryIds.length > 0) {
-                    await fetchCompaniesByCategories(categoryIds, page, size, sortParam);
+                    await fetchCompaniesByCategories(
+                        categoryIds,
+                        page,
+                        size,
+                        sortParam
+                    );
                 } else if (name) {
                     await searchCompanies({ name }, page, size, sortParam);
                 } else if (location) {
-                    await fetchCompaniesByLocation(location, page, size, sortParam);
+                    await fetchCompaniesByLocation(
+                        location,
+                        page,
+                        size,
+                        sortParam
+                    );
                 } else {
                     await fetchCompanies(page, size, sortParam);
                 }
@@ -109,10 +130,15 @@ const ResultPageContent = () => {
         setPagination({ page: 0, size: ITEMS_PER_PAGE });
 
         const queryParams = new URLSearchParams();
-        if (searchParams.company) queryParams.append("company", searchParams.company);
-        if (searchParams.location) queryParams.append("location", searchParams.location);
+        if (searchParams.company)
+            queryParams.append("company", searchParams.company);
+        if (searchParams.location)
+            queryParams.append("location", searchParams.location);
         if (searchParams.categoryIds?.length) {
-            queryParams.append("categoryIds", searchParams.categoryIds.join(","));
+            queryParams.append(
+                "categoryIds",
+                searchParams.categoryIds.join(",")
+            );
         }
         queryParams.append("page", "0");
         queryParams.append("size", ITEMS_PER_PAGE.toString());
@@ -123,11 +149,16 @@ const ResultPageContent = () => {
             `/company/company-search/results?${queryParams.toString()}`
         );
 
-        searchCompanies({
-            name: searchParams.company,
-            location: searchParams.location,
-            categoryIds: searchParams.categoryIds,
-        }, 0, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
+        searchCompanies(
+            {
+                name: searchParams.company,
+                location: searchParams.location,
+                categoryIds: searchParams.categoryIds,
+            },
+            0,
+            ITEMS_PER_PAGE,
+            `${sort.field},${sort.direction}`
+        );
     };
 
     // Xử lý thay đổi bộ lọc
@@ -137,11 +168,23 @@ const ResultPageContent = () => {
         setPagination({ page: 0, size: ITEMS_PER_PAGE });
 
         try {
-            if (updatedFilters.categoryIds && updatedFilters.categoryIds.length > 0) {
+            if (
+                updatedFilters.categoryIds &&
+                updatedFilters.categoryIds.length > 0
+            ) {
                 const categoryIds = updatedFilters.categoryIds.join(",");
-                await fetchCompaniesByCategories(categoryIds, 0, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
+                await fetchCompaniesByCategories(
+                    categoryIds,
+                    0,
+                    ITEMS_PER_PAGE,
+                    `${sort.field},${sort.direction}`
+                );
             } else {
-                await fetchCompanies(0, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
+                await fetchCompanies(
+                    0,
+                    ITEMS_PER_PAGE,
+                    `${sort.field},${sort.direction}`
+                );
             }
         } catch (error) {
             console.error("Error updating filters:", error);
@@ -151,10 +194,10 @@ const ResultPageContent = () => {
     // Xử lý thay đổi trang
     const handlePageChange = (newPage) => {
         setPagination({ page: newPage, size: ITEMS_PER_PAGE });
-        
+
         const queryParams = new URLSearchParams(window.location.search);
         queryParams.set("page", newPage.toString());
-        
+
         window.history.pushState(
             null,
             "",
@@ -162,10 +205,13 @@ const ResultPageContent = () => {
         );
 
         // Thực hiện tìm kiếm với trang mới
-        const name = searchParams.get("name") || searchParams.get("company") || "";
+        const name =
+            searchParams.get("name") || searchParams.get("company") || "";
         const location = searchParams.get("location") || "";
         const categoryIdsParam = searchParams.get("categoryIds") || "";
-        const categoryIds = categoryIdsParam ? categoryIdsParam.split(",").map(Number) : [];
+        const categoryIds = categoryIdsParam
+            ? categoryIdsParam.split(",").map(Number)
+            : [];
 
         const performSearch = async () => {
             try {
@@ -177,13 +223,32 @@ const ResultPageContent = () => {
                         `${sort.field},${sort.direction}`
                     );
                 } else if (categoryIds.length > 0) {
-                    await fetchCompaniesByCategories(categoryIds, newPage, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
+                    await fetchCompaniesByCategories(
+                        categoryIds,
+                        newPage,
+                        ITEMS_PER_PAGE,
+                        `${sort.field},${sort.direction}`
+                    );
                 } else if (name) {
-                    await searchCompanies({ name }, newPage, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
+                    await searchCompanies(
+                        { name },
+                        newPage,
+                        ITEMS_PER_PAGE,
+                        `${sort.field},${sort.direction}`
+                    );
                 } else if (location) {
-                    await fetchCompaniesByLocation(location, newPage, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
+                    await fetchCompaniesByLocation(
+                        location,
+                        newPage,
+                        ITEMS_PER_PAGE,
+                        `${sort.field},${sort.direction}`
+                    );
                 } else {
-                    await fetchCompanies(newPage, ITEMS_PER_PAGE, `${sort.field},${sort.direction}`);
+                    await fetchCompanies(
+                        newPage,
+                        ITEMS_PER_PAGE,
+                        `${sort.field},${sort.direction}`
+                    );
                 }
             } catch (error) {
                 console.error("Error changing page:", error);
@@ -196,7 +261,8 @@ const ResultPageContent = () => {
 
     // Xử lý thay đổi sắp xếp
     const handleSortChange = (field) => {
-        const newDirection = sort.field === field && sort.direction === "asc" ? "desc" : "asc";
+        const newDirection =
+            sort.field === field && sort.direction === "asc" ? "desc" : "asc";
         setSort({ field, direction: newDirection });
         setPagination({ page: 0, size: ITEMS_PER_PAGE });
 
@@ -211,10 +277,13 @@ const ResultPageContent = () => {
         );
 
         // Thực hiện tìm kiếm với sắp xếp mới
-        const name = searchParams.get("name") || searchParams.get("company") || "";
+        const name =
+            searchParams.get("name") || searchParams.get("company") || "";
         const location = searchParams.get("location") || "";
         const categoryIdsParam = searchParams.get("categoryIds") || "";
-        const categoryIds = categoryIdsParam ? categoryIdsParam.split(",").map(Number) : [];
+        const categoryIds = categoryIdsParam
+            ? categoryIdsParam.split(",").map(Number)
+            : [];
 
         const performSearch = async () => {
             try {
@@ -226,13 +295,32 @@ const ResultPageContent = () => {
                         `${field},${newDirection}`
                     );
                 } else if (categoryIds.length > 0) {
-                    await fetchCompaniesByCategories(categoryIds, 0, ITEMS_PER_PAGE, `${field},${newDirection}`);
+                    await fetchCompaniesByCategories(
+                        categoryIds,
+                        0,
+                        ITEMS_PER_PAGE,
+                        `${field},${newDirection}`
+                    );
                 } else if (name) {
-                    await searchCompanies({ name }, 0, ITEMS_PER_PAGE, `${field},${newDirection}`);
+                    await searchCompanies(
+                        { name },
+                        0,
+                        ITEMS_PER_PAGE,
+                        `${field},${newDirection}`
+                    );
                 } else if (location) {
-                    await fetchCompaniesByLocation(location, 0, ITEMS_PER_PAGE, `${field},${newDirection}`);
+                    await fetchCompaniesByLocation(
+                        location,
+                        0,
+                        ITEMS_PER_PAGE,
+                        `${field},${newDirection}`
+                    );
                 } else {
-                    await fetchCompanies(0, ITEMS_PER_PAGE, `${field},${newDirection}`);
+                    await fetchCompanies(
+                        0,
+                        ITEMS_PER_PAGE,
+                        `${field},${newDirection}`
+                    );
                 }
             } catch (error) {
                 console.error("Error changing sort:", error);
@@ -284,34 +372,56 @@ const ResultPageContent = () => {
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-2xl font-bold text-gray-800 flex items-center">
                                 <Building className="mr-2 h-6 w-6 text-[#0A66C2]" />
-                                Tất cả công ty
+                                All companies
                             </h2>
-                            
+
                             {/* Sắp xếp */}
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-gray-600">Sắp xếp theo:</span>
+                                <span className="text-sm text-gray-600">
+                                    Sort by:
+                                </span>
                                 <select
                                     value={`${sort.field},${sort.direction}`}
                                     onChange={(e) => {
-                                        const [field, direction] = e.target.value.split(",");
+                                        const [field, direction] =
+                                            e.target.value.split(",");
                                         handleSortChange(field);
                                     }}
                                     className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
-                                    <option value="id,asc">Mặc định (A-Z)</option>
-                                    <option value="companyName,asc">Tên công ty (A-Z)</option>
-                                    <option value="companyName,desc">Tên công ty (Z-A)</option>
-                                    <option value="locationCity,asc">Địa điểm (A-Z)</option>
-                                    <option value="locationCity,desc">Địa điểm (Z-A)</option>
-                                    <option value="foundedYear,desc">Năm thành lập (Mới nhất)</option>
-                                    <option value="foundedYear,asc">Năm thành lập (Cũ nhất)</option>
+                                    <option value="id,asc">
+                                        Default (A-Z)
+                                    </option>
+                                    <option value="companyName,asc">
+                                        Company Name (A-Z)
+                                    </option>
+                                    <option value="companyName,desc">
+                                        Company Name (Z-A)
+                                    </option>
+                                    <option value="locationCity,asc">
+                                        Location (A-Z)
+                                    </option>
+                                    <option value="locationCity,desc">
+                                        Location (Z-A)
+                                    </option>
+                                    <option value="foundedYear,desc">
+                                        Founded Year (Newest)
+                                    </option>
+                                    <option value="foundedYear,asc">
+                                        Founded Year (Oldest)
+                                    </option>
                                 </select>
                             </div>
                         </div>
 
                         {/* Thông tin kết quả */}
                         <div className="text-sm text-gray-600 mb-4">
-                            Hiển thị {pagination.page * pagination.size + 1} - {Math.min((pagination.page + 1) * pagination.size, pagination.totalElements)} trong tổng số {pagination.totalElements} công ty
+                            Displaying {pagination.page * pagination.size + 1} -{" "}
+                            {Math.min(
+                                (pagination.page + 1) * pagination.size,
+                                pagination.totalElements
+                            )}{" "}
+                            out of {pagination.totalElements} companies
                         </div>
                     </div>
 
@@ -336,16 +446,19 @@ const ResultPageContent = () => {
                                 <div className="text-center py-12">
                                     <Building className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                                     <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                        Không tìm thấy công ty nào
+                                        No companies found
                                     </h3>
                                     <p className="text-gray-500">
-                                        Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc của bạn
+                                        Try changing your search or filter
                                     </p>
                                 </div>
                             ) : (
                                 <div className="space-y-4">
                                     {companies.map((company) => (
-                                        <ResultItem key={company.id} company={company} />
+                                        <ResultItem
+                                            key={company.id}
+                                            company={company}
+                                        />
                                     ))}
                                 </div>
                             )}
@@ -355,7 +468,11 @@ const ResultPageContent = () => {
                                 <div className="mt-8 flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <button
-                                            onClick={() => handlePageChange(pagination.page - 1)}
+                                            onClick={() =>
+                                                handlePageChange(
+                                                    pagination.page - 1
+                                                )
+                                            }
                                             disabled={pagination.first}
                                             className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
@@ -363,26 +480,52 @@ const ResultPageContent = () => {
                                         </button>
 
                                         <div className="flex items-center gap-1">
-                                            {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                                                const pageNum = Math.max(0, Math.min(pagination.totalPages - 5, pagination.page - 2)) + i;
-                                                return (
-                                                    <button
-                                                        key={pageNum}
-                                                        onClick={() => handlePageChange(pageNum)}
-                                                        className={`px-3 py-2 text-sm font-medium rounded-md ${
-                                                            pageNum === pagination.page
-                                                                ? "bg-blue-600 text-white"
-                                                                : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
-                                                        }`}
-                                                    >
-                                                        {pageNum + 1}
-                                                    </button>
-                                                );
-                                            })}
+                                            {Array.from(
+                                                {
+                                                    length: Math.min(
+                                                        5,
+                                                        pagination.totalPages
+                                                    ),
+                                                },
+                                                (_, i) => {
+                                                    const pageNum =
+                                                        Math.max(
+                                                            0,
+                                                            Math.min(
+                                                                pagination.totalPages -
+                                                                    5,
+                                                                pagination.page -
+                                                                    2
+                                                            )
+                                                        ) + i;
+                                                    return (
+                                                        <button
+                                                            key={pageNum}
+                                                            onClick={() =>
+                                                                handlePageChange(
+                                                                    pageNum
+                                                                )
+                                                            }
+                                                            className={`px-3 py-2 text-sm font-medium rounded-md ${
+                                                                pageNum ===
+                                                                pagination.page
+                                                                    ? "bg-blue-600 text-white"
+                                                                    : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
+                                                            }`}
+                                                        >
+                                                            {pageNum + 1}
+                                                        </button>
+                                                    );
+                                                }
+                                            )}
                                         </div>
 
                                         <button
-                                            onClick={() => handlePageChange(pagination.page + 1)}
+                                            onClick={() =>
+                                                handlePageChange(
+                                                    pagination.page + 1
+                                                )
+                                            }
                                             disabled={pagination.last}
                                             className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
@@ -391,7 +534,8 @@ const ResultPageContent = () => {
                                     </div>
 
                                     <div className="text-sm text-gray-700">
-                                        Trang {pagination.page + 1} / {pagination.totalPages}
+                                        Page {pagination.page + 1} /{" "}
+                                        {pagination.totalPages}
                                     </div>
                                 </div>
                             )}

@@ -12,7 +12,7 @@ const useCompanySearchStore = create((set, get) => ({
     locations: [],
     isLoading: false,
     error: null,
-    
+
     // Pagination states
     pagination: {
         page: 0,
@@ -22,24 +22,24 @@ const useCompanySearchStore = create((set, get) => ({
         first: true,
         last: false,
     },
-    
+
     // Filter states
     filters: {
         companySize: [],
         categoryIds: [],
         foundingYear: "any",
     },
-    
+
     // Search terms
     searchTerm: {
         company: "",
         location: "",
     },
-    
+
     // Sorting
     sort: {
         field: "id",
-        direction: "asc"
+        direction: "asc",
     },
 
     // Cập nhật filters
@@ -70,7 +70,9 @@ const useCompanySearchStore = create((set, get) => ({
     fetchAllCompanies: async () => {
         set({ isLoading: true });
         try {
-            const response = await api.get(`${COMPANY_API.GET_ALL_COMPANIES}?unpaged=true`);
+            const response = await api.get(
+                `${COMPANY_API.GET_ALL_COMPANIES}?unpaged=true`
+            );
 
             set({
                 allCompanies: response.data,
@@ -88,11 +90,11 @@ const useCompanySearchStore = create((set, get) => ({
         set({ isLoading: true });
         try {
             const response = await api.get(COMPANY_API.GET_ALL_COMPANIES, {
-                params: { page, size, sort }
+                params: { page, size, sort },
             });
 
             const data = response.data;
-            
+
             set({
                 companies: data.content || data,
                 pagination: {
@@ -119,12 +121,12 @@ const useCompanySearchStore = create((set, get) => ({
                 ...params,
                 page,
                 size,
-                sort
+                sort,
             };
-            
+
             const apiUrl = COMPANY_API.SEARCH_COMPANIES(searchParams);
-            console.log('API request URL:', apiUrl);
-            
+            console.log("API request URL:", apiUrl);
+
             const response = await api.get(apiUrl);
 
             if (response.status === 204) {
@@ -139,13 +141,13 @@ const useCompanySearchStore = create((set, get) => ({
                         last: true,
                     },
                     isLoading: false,
-                    error: null
+                    error: null,
                 });
                 return;
             }
 
             const data = response.data;
-            
+
             set({
                 companies: data.content || data,
                 pagination: {
@@ -166,12 +168,20 @@ const useCompanySearchStore = create((set, get) => ({
     },
 
     // Lấy danh sách công ty theo danh mục
-    fetchCompaniesByCategories: async (categoryIds, page = 0, size = 10, sort = "id,asc") => {
+    fetchCompaniesByCategories: async (
+        categoryIds,
+        page = 0,
+        size = 10,
+        sort = "id,asc"
+    ) => {
         set({ isLoading: true });
         try {
-            const response = await api.get(COMPANY_API.GET_COMPANIES_BY_CATEGORIES(categoryIds), {
-                params: { page, size, sort }
-            });
+            const response = await api.get(
+                COMPANY_API.GET_COMPANIES_BY_CATEGORIES(categoryIds),
+                {
+                    params: { page, size, sort },
+                }
+            );
 
             if (response.status === 204) {
                 set({
@@ -185,13 +195,13 @@ const useCompanySearchStore = create((set, get) => ({
                         last: true,
                     },
                     isLoading: false,
-                    error: null
+                    error: null,
                 });
                 return;
             }
 
             const data = response.data;
-            
+
             set({
                 companies: data.content || data,
                 pagination: {
@@ -206,24 +216,32 @@ const useCompanySearchStore = create((set, get) => ({
                 error: null,
             });
         } catch (err) {
-            set({ 
-                error: err.message, 
+            set({
+                error: err.message,
                 isLoading: false,
-                companies: []
+                companies: [],
             });
         }
     },
 
     // Lấy danh sách công ty theo địa điểm
-    fetchCompaniesByLocation: async (location, page = 0, size = 10, sort = "id,asc") => {
+    fetchCompaniesByLocation: async (
+        location,
+        page = 0,
+        size = 10,
+        sort = "id,asc"
+    ) => {
         set({ isLoading: true });
         try {
-            const response = await api.get(COMPANY_API.GET_COMPANIES_BY_LOCATION(location), {
-                params: { page, size, sort }
-            });
+            const response = await api.get(
+                COMPANY_API.GET_COMPANIES_BY_LOCATION(location),
+                {
+                    params: { page, size, sort },
+                }
+            );
 
             const data = response.data;
-            
+
             set({
                 companies: data.content || data,
                 pagination: {
@@ -263,7 +281,9 @@ const useCompanySearchStore = create((set, get) => ({
         try {
             const response = await api.get(COMPANY_API.GET_COMPANY_LOCATIONS);
 
-            const locationNames = response.data.map((location) => location.name);
+            const locationNames = response.data.map(
+                (location) => location.name
+            );
             set({ locations: locationNames });
         } catch (err) {
             console.error("Error fetching locations:", err);
@@ -275,12 +295,12 @@ const useCompanySearchStore = create((set, get) => ({
         set({ isLoading: true });
         try {
             const response = await api.get(COMPANY_API.GET_COMPANY_DETAIL(id));
-            
+
             set({
                 isLoading: false,
                 error: null,
             });
-            
+
             return response.data;
         } catch (err) {
             set({ error: err.message, isLoading: false });
@@ -318,8 +338,16 @@ const useCompanySearchStore = create((set, get) => ({
                 .map((ind) => ind.cate_name);
 
             filtered = filtered.filter((company) => {
-                const matchById = company.categoryIds && company.categoryIds.some((id) => filters.categoryIds.includes(id));
-                const matchByParent = company.parentCategories && company.parentCategories.some((name) => selectedCategoryNames.includes(name));
+                const matchById =
+                    company.categoryIds &&
+                    company.categoryIds.some((id) =>
+                        filters.categoryIds.includes(id)
+                    );
+                const matchByParent =
+                    company.parentCategories &&
+                    company.parentCategories.some((name) =>
+                        selectedCategoryNames.includes(name)
+                    );
                 return matchById || matchByParent;
             });
         }
@@ -330,10 +358,14 @@ const useCompanySearchStore = create((set, get) => ({
                 const size = parseInt(company.quantityEmployee, 10);
 
                 return filters.companySize.some((range) => {
-                    if (range === "1-10" && size >= 1 && size <= 10) return true;
-                    if (range === "11-50" && size >= 11 && size <= 50) return true;
-                    if (range === "51-200" && size >= 51 && size <= 200) return true;
-                    if (range === "201-500" && size >= 201 && size <= 500) return true;
+                    if (range === "1-10" && size >= 1 && size <= 10)
+                        return true;
+                    if (range === "11-50" && size >= 11 && size <= 50)
+                        return true;
+                    if (range === "51-200" && size >= 51 && size <= 200)
+                        return true;
+                    if (range === "201-500" && size >= 201 && size <= 500)
+                        return true;
                     if (range === "501+" && size > 500) return true;
                     return false;
                 });
@@ -429,7 +461,7 @@ const useCompanySearchStore = create((set, get) => ({
             },
             sort: {
                 field: "id",
-                direction: "asc"
+                direction: "asc",
             },
         });
     },
