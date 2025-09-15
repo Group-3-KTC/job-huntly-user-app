@@ -3,6 +3,7 @@
 import React from "react";
 import { Briefcase, Users, FileText, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import CompanyGuard from "@/components/recruiter/CompanyGuard";
 
 const RecruiterDashboard = () => {
     const stats = [
@@ -33,7 +34,8 @@ const RecruiterDashboard = () => {
     ];
 
     return (
-        <div className="space-y-8">
+        <CompanyGuard>
+            <div className="space-y-8">
             {/* Header */}
             <div>
                 <h1 className="text-2xl font-bold text-blue-700">
@@ -101,6 +103,7 @@ const RecruiterDashboard = () => {
                 </Card>
             </div>
         </div>
+        </CompanyGuard>
     );
 };
 
