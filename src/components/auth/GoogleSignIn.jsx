@@ -5,6 +5,7 @@ import {useRouter} from "next/navigation";
 import {toast} from "react-toastify";
 import {useDispatch} from "react-redux";
 import {meThunk} from "@/features/auth/authSlice";
+import {API_CONFIG} from "@/lib/config";
 
 export default function GoogleSignIn({role = "CANDIDATE"}) {
     const btnRef = useRef(null);
