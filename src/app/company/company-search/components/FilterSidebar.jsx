@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Filter, X, ChevronDown, ChevronUp } from "lucide-react";
 
 const FilterSidebar = ({
     filters,
@@ -10,9 +11,9 @@ const FilterSidebar = ({
     filterCounts,
 }) => {
     const [expandedSections, setExpandedSections] = useState({
+        industry: true,
         companySize: true,
-        category: true,
-        foundingYear: true,
+        foundingYear: false,
     });
 
     const toggleSection = (section) => {
@@ -22,236 +23,217 @@ const FilterSidebar = ({
         }));
     };
 
+    const handleIndustryChange = (industryId) => {
+        const newCategoryIds = filters.categoryIds.includes(industryId)
+            ? filters.categoryIds.filter((id) => id !== industryId)
+            : [...filters.categoryIds, industryId];
+
+        setFilters({ categoryIds: newCategoryIds });
+    };
+
     const handleCompanySizeChange = (size) => {
-        const newCompanySizes = filters.companySize.includes(size)
+        const newSizes = filters.companySize.includes(size)
             ? filters.companySize.filter((s) => s !== size)
             : [...filters.companySize, size];
 
-        setFilters({ companySize: newCompanySizes });
-    };
-
-    const handleCategoryChange = (categoryId) => {
-        // Đảm bảo categoryId là số nguyên để so sánh chính xác
-        const id = parseInt(categoryId, 10);
-        const newCategoryIds = filters.categoryIds.includes(id)
-            ? filters.categoryIds.filter((catId) => catId !== id)
-            : [...filters.categoryIds, id];
-
-        setFilters({ categoryIds: newCategoryIds });
+        setFilters({ companySize: newSizes });
     };
 
     const handleFoundingYearChange = (year) => {
         setFilters({ foundingYear: year });
     };
 
-    // Tạo danh sách năm thành lập (từ 2000 đến năm hiện tại)
-    const currentYear = new Date().getFullYear();
-    const foundingYears = Array.from({ length: currentYear - 1999 }, (_, i) =>
-        (currentYear - i).toString()
-    );
+    const clearAllFilters = () => {
+        setFilters({
+            categoryIds: [],
+            companySize: [],
+            foundingYear: "any",
+        });
+    };
+
+    const hasActiveFilters =
+        filters.categoryIds.length > 0 ||
+        filters.companySize.length > 0 ||
+        filters.foundingYear !== "any";
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold mb-4">Bộ lọc</h2>
-
-            {/* Quy mô công ty */}
-            <div className="mb-6">
-                <div
-                    className="flex justify-between items-center cursor-pointer mb-2 hover:text-[#0A66C2]"
-                    onClick={() => toggleSection("companySize")}
-                >
-                    <h3 className="font-medium">Quy mô công ty</h3>
-                    <svg
-                        className={`w-4 h-4 transition-transform ${
-                            expandedSections.companySize ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                    <Filter className="w-5 h-5" />
+                    Filter
+                </h3>
+                {hasActiveFilters && (
+                    <button
+                        onClick={clearAllFilters}
+                        className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
                     >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                        ></path>
-                    </svg>
-                </div>
-
-                {expandedSections.companySize && (
-                    <div className="pl-1 space-y-2">
-                        {companySizes.map((size) => (
-                            <div key={size.id} className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    id={`size-${size.id}`}
-                                    checked={filters.companySize.includes(
-                                        size.id
-                                    )}
-                                    onChange={() =>
-                                        handleCompanySizeChange(size.id)
-                                    }
-                                    className="h-4 w-4 rounded border-gray-300 text-[#0A66C2] focus:ring-[#0A66C2]"
-                                />
-                                <label
-                                    htmlFor={`size-${size.id}`}
-                                    className="ml-2 text-sm text-gray-700"
-                                >
-                                    {size.label} (
-                                    {filterCounts.companySize[size.id] || 0})
-                                </label>
-                            </div>
-                        ))}
-                    </div>
+                        <X className="w-4 h-4" />
+                        Clear all
+                    </button>
                 )}
             </div>
 
-            {/* Danh mục ngành nghề */}
-            <div className="mb-6">
-                <div
-                    className="flex justify-between items-center cursor-pointer mb-2 hover:text-[#0A66C2]"
-                    onClick={() => toggleSection("category")}
-                >
-                    <h3 className="font-medium">Danh mục ngành nghề</h3>
-                    <svg
-                        className={`w-4 h-4 transition-transform ${
-                            expandedSections.category ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+            <div className="space-y-6">
+                {/* Industry Filter */}
+                <div>
+                    <button
+                        onClick={() => toggleSection("industry")}
+                        className="w-full flex items-center justify-between text-left font-medium text-gray-900 mb-3"
                     >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                        ></path>
-                    </svg>
-                </div>
+                        Industry
+                        {expandedSections.industry ? (
+                            <ChevronUp className="w-4 h-4" />
+                        ) : (
+                            <ChevronDown className="w-4 h-4" />
+                        )}
+                    </button>
 
-                {expandedSections.category && (
-                    <div className="pl-1 space-y-2 max-h-60 overflow-y-auto">
-                        {industries.map((industry) => (
-                            <div
-                                key={industry.cate_id}
-                                className="flex items-center"
-                            >
-                                <input
-                                    type="checkbox"
-                                    id={`category-${industry.cate_id}`}
-                                    checked={filters.categoryIds.includes(
-                                        parseInt(industry.cate_id, 10)
-                                    )}
-                                    onChange={() =>
-                                        handleCategoryChange(industry.cate_id)
-                                    }
-                                    className="h-4 w-4 rounded border-gray-300 text-[#0A66C2] focus:ring-[#0A66C2]"
-                                />
+                    {expandedSections.industry && (
+                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                            {industries.map((industry) => (
                                 <label
-                                    htmlFor={`category-${industry.cate_id}`}
-                                    className="ml-2 text-sm text-gray-700"
+                                    key={industry.cate_id}
+                                    className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
                                 >
-                                    {industry.cate_name} (
-                                    {filterCounts.industry[
-                                        industry.cate_name
-                                    ] || 0}
-                                    )
+                                    <input
+                                        type="checkbox"
+                                        checked={filters.categoryIds.includes(
+                                            industry.cate_id
+                                        )}
+                                        onChange={() =>
+                                            handleIndustryChange(
+                                                industry.cate_id
+                                            )
+                                        }
+                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span className="text-sm text-gray-700 flex-1">
+                                        {industry.cate_name}
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                        (
+                                        {filterCounts?.industry?.[
+                                            industry.cate_name
+                                        ] || 0}
+                                        )
+                                    </span>
                                 </label>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Năm thành lập */}
-            <div className="mb-6">
-                <div
-                    className="flex justify-between items-center cursor-pointer mb-2 hover:text-[#0A66C2]"
-                    onClick={() => toggleSection("foundingYear")}
-                >
-                    <h3 className="font-medium">Năm thành lập</h3>
-                    <svg
-                        className={`w-4 h-4 transition-transform ${
-                            expandedSections.foundingYear ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                        ></path>
-                    </svg>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
-                {expandedSections.foundingYear && (
-                    <div className="pl-1">
-                        <div className="mb-2">
-                            <div className="flex items-center">
+                {/* Company Size Filter */}
+                <div>
+                    <button
+                        onClick={() => toggleSection("companySize")}
+                        className="w-full flex items-center justify-between text-left font-medium text-gray-900 mb-3"
+                    >
+                        Company size
+                        {expandedSections.companySize ? (
+                            <ChevronUp className="w-4 h-4" />
+                        ) : (
+                            <ChevronDown className="w-4 h-4" />
+                        )}
+                    </button>
+
+                    {expandedSections.companySize && (
+                        <div className="space-y-2">
+                            {companySizes.map((size) => (
+                                <label
+                                    key={size.id}
+                                    className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={filters.companySize.includes(
+                                            size.id
+                                        )}
+                                        onChange={() =>
+                                            handleCompanySizeChange(size.id)
+                                        }
+                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span className="text-sm text-gray-700 flex-1">
+                                        {size.label}
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                        (
+                                        {filterCounts?.companySize?.[size.id] ||
+                                            0}
+                                        )
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Founding Year Filter */}
+                <div>
+                    <button
+                        onClick={() => toggleSection("foundingYear")}
+                        className="w-full flex items-center justify-between text-left font-medium text-gray-900 mb-3"
+                    >
+                        Founded year
+                        {expandedSections.foundingYear ? (
+                            <ChevronUp className="w-4 h-4" />
+                        ) : (
+                            <ChevronDown className="w-4 h-4" />
+                        )}
+                    </button>
+
+                    {expandedSections.foundingYear && (
+                        <div className="space-y-2">
+                            <label className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
                                 <input
                                     type="radio"
-                                    id="year-any"
                                     name="foundingYear"
                                     value="any"
                                     checked={filters.foundingYear === "any"}
-                                    onChange={() =>
-                                        handleFoundingYearChange("any")
+                                    onChange={(e) =>
+                                        handleFoundingYearChange(e.target.value)
                                     }
-                                    className="h-4 w-4 border-gray-300 text-[#0A66C2] focus:ring-[#0A66C2]"
+                                    className="border-gray-300 text-blue-600 focus:ring-blue-500"
                                 />
-                                <label
-                                    htmlFor="year-any"
-                                    className="ml-2 text-sm text-gray-700"
-                                >
-                                    Tất cả
-                                </label>
-                            </div>
-                        </div>
+                                <span className="text-sm text-gray-700">
+                                    All
+                                </span>
+                            </label>
 
-                        <div className="max-h-40 overflow-y-auto space-y-2">
-                            {foundingYears.map((year) => (
-                                <div key={year} className="flex items-center">
+                            {[
+                                2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017,
+                                2016, 2015,
+                            ].map((year) => (
+                                <label
+                                    key={year}
+                                    className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                                >
                                     <input
                                         type="radio"
-                                        id={`year-${year}`}
                                         name="foundingYear"
                                         value={year}
-                                        checked={filters.foundingYear === year}
-                                        onChange={() =>
-                                            handleFoundingYearChange(year)
+                                        checked={
+                                            filters.foundingYear ===
+                                            year.toString()
                                         }
-                                        className="h-4 w-4 border-gray-300 text-[#0A66C2] focus:ring-[#0A66C2]"
+                                        onChange={(e) =>
+                                            handleFoundingYearChange(
+                                                e.target.value
+                                            )
+                                        }
+                                        className="border-gray-300 text-blue-600 focus:ring-blue-500"
                                     />
-                                    <label
-                                        htmlFor={`year-${year}`}
-                                        className="ml-2 text-sm text-gray-700"
-                                    >
+                                    <span className="text-sm text-gray-700">
                                         {year}
-                                    </label>
-                                </div>
+                                    </span>
+                                </label>
                             ))}
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-
-            {/* Nút xóa bộ lọc */}
-            <button
-                onClick={() =>
-                    setFilters({
-                        companySize: [],
-                        categoryIds: [],
-                        foundingYear: "any",
-                    })
-                }
-                className="w-full py-2 px-4 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-            >
-                Xóa tất cả bộ lọc
-            </button>
         </div>
     );
 };

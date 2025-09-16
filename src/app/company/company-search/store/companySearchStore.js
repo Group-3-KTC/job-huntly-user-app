@@ -2,22 +2,44 @@
 
 import { create } from "zustand";
 import { COMPANY_API } from "@/constants/apiCompanyConstants";
+import api from "@/lib/api";
 
 const useCompanySearchStore = create((set, get) => ({
-    allCompanies: [],      // <— thêm
-    companies: [],         // danh sách đang hiển thị
+    // Data states
+    allCompanies: [],
+    companies: [],
     industries: [],
     locations: [],
     isLoading: false,
     error: null,
+
+    // Pagination states
+    pagination: {
+        page: 0,
+        size: 10,
+        totalElements: 0,
+        totalPages: 0,
+        first: true,
+        last: false,
+    },
+
+    // Filter states
     filters: {
         companySize: [],
         categoryIds: [],
         foundingYear: "any",
     },
+
+    // Search terms
     searchTerm: {
         company: "",
         location: "",
+    },
+
+    // Sorting
+    sort: {
+        field: "id",
+        direction: "asc",
     },
 
     // Cập nhật filters
@@ -32,22 +54,59 @@ const useCompanySearchStore = create((set, get) => ({
             searchTerm: { ...get().searchTerm, ...newSearchTerm },
         }),
 
-    // Lấy danh sách công ty
-    fetchCompanies: async () => {
+    // Cập nhật pagination
+    setPagination: (newPagination) =>
+        set({
+            pagination: { ...get().pagination, ...newPagination },
+        }),
+
+    // Cập nhật sorting
+    setSort: (newSort) =>
+        set({
+            sort: { ...get().sort, ...newSort },
+        }),
+
+    // Lấy danh sách công ty (không phân trang)
+    fetchAllCompanies: async () => {
         set({ isLoading: true });
         try {
-            const response = await fetch(COMPANY_API.GET_ALL_COMPANIES);
-
-            if (!response.ok) {
-                throw new Error("Không thể tải danh sách công ty");
-            }
-
-            const data = await response.json();
+            const response = await api.get(
+                `${COMPANY_API.GET_ALL_COMPANIES}?unpaged=true`
+            );
 
             set({
-                allCompanies: data, // lưu gốc
-                companies:   data,  // hiển thị mặc định
+                allCompanies: response.data,
+                companies: response.data,
                 isLoading: false,
+                error: null,
+            });
+        } catch (err) {
+            set({ error: err.message, isLoading: false });
+        }
+    },
+
+    // Lấy danh sách công ty (có phân trang)
+    fetchCompanies: async (page = 0, size = 10, sort = "id,asc") => {
+        set({ isLoading: true });
+        try {
+            const response = await api.get(COMPANY_API.GET_ALL_COMPANIES, {
+                params: { page, size, sort },
+            });
+
+            const data = response.data;
+
+            set({
+                companies: data.content || data,
+                pagination: {
+                    page: data.pageable?.pageNumber || page,
+                    size: data.pageable?.pageSize || size,
+                    totalElements: data.totalElements || 0,
+                    totalPages: data.totalPages || 0,
+                    first: data.first || false,
+                    last: data.last || false,
+                },
+                isLoading: false,
+                error: null,
             });
         } catch (err) {
             set({ error: err.message, isLoading: false });
@@ -55,33 +114,52 @@ const useCompanySearchStore = create((set, get) => ({
     },
 
     // Tìm kiếm công ty theo nhiều tiêu chí
-    searchCompanies: async (params) => {
+    searchCompanies: async (params, page = 0, size = 10, sort = "id,asc") => {
         set({ isLoading: true });
         try {
-            // Sử dụng hàm SEARCH_COMPANIES đã định nghĩa sẵn
-            const apiUrl = COMPANY_API.SEARCH_COMPANIES(params);
-            console.log('API request URL:', apiUrl);
-            
-            const response = await fetch(apiUrl);
+            const searchParams = {
+                ...params,
+                page,
+                size,
+                sort,
+            };
+
+            const apiUrl = COMPANY_API.SEARCH_COMPANIES(searchParams);
+            console.log("API request URL:", apiUrl);
+
+            const response = await api.get(apiUrl);
 
             if (response.status === 204) {
                 set({
                     companies: [],
+                    pagination: {
+                        page: 0,
+                        size: size,
+                        totalElements: 0,
+                        totalPages: 0,
+                        first: true,
+                        last: true,
+                    },
                     isLoading: false,
-                    error: null
+                    error: null,
                 });
                 return;
             }
 
-            if (!response.ok) {
-                throw new Error("Không thể tìm kiếm công ty");
-            }
-
-            const data = await response.json();
+            const data = response.data;
 
             set({
-                companies: data,
+                companies: data.content || data,
+                pagination: {
+                    page: data.pageable?.pageNumber || page,
+                    size: data.pageable?.pageSize || size,
+                    totalElements: data.totalElements || 0,
+                    totalPages: data.totalPages || 0,
+                    first: data.first || false,
+                    last: data.last || false,
+                },
                 isLoading: false,
+                error: null,
             });
         } catch (err) {
             console.error("Search error:", err);
@@ -90,74 +168,92 @@ const useCompanySearchStore = create((set, get) => ({
     },
 
     // Lấy danh sách công ty theo danh mục
-    fetchCompaniesByCategories: async (categoryIds) => {
+    fetchCompaniesByCategories: async (
+        categoryIds,
+        page = 0,
+        size = 10,
+        sort = "id,asc"
+    ) => {
         set({ isLoading: true });
         try {
-            const response = await fetch(
-                COMPANY_API.GET_COMPANIES_BY_CATEGORIES(categoryIds)
+            const response = await api.get(
+                COMPANY_API.GET_COMPANIES_BY_CATEGORIES(categoryIds),
+                {
+                    params: { page, size, sort },
+                }
             );
 
-            // Xử lý trường hợp 204 No Content
             if (response.status === 204) {
                 set({
                     companies: [],
+                    pagination: {
+                        page: 0,
+                        size: size,
+                        totalElements: 0,
+                        totalPages: 0,
+                        first: true,
+                        last: true,
+                    },
                     isLoading: false,
-                    error: null
+                    error: null,
                 });
                 return;
             }
 
-            if (!response.ok) {
-                throw new Error(
-                    "Không thể tải danh sách công ty theo danh mục"
-                );
-            }
+            const data = response.data;
 
-            // Chỉ parse JSON khi có content
-            const contentType = response.headers.get("content-type");
-            let data = [];
-            
-            if (contentType && contentType.includes("application/json")) {
-                try {
-                    data = await response.json();
-                } catch (jsonError) {
-                    console.error("Error parsing JSON:", jsonError);
-                    data = [];
-                }
-            }
-
-            // Đảm bảo data luôn là mảng
-            const companies = Array.isArray(data) ? data : [];
-
-            set({ companies, isLoading: false, error: null });
-        } catch (err) {
-            set({ 
-                error: err.message, 
+            set({
+                companies: data.content || data,
+                pagination: {
+                    page: data.pageable?.pageNumber || page,
+                    size: data.pageable?.pageSize || size,
+                    totalElements: data.totalElements || 0,
+                    totalPages: data.totalPages || 0,
+                    first: data.first || false,
+                    last: data.last || false,
+                },
                 isLoading: false,
-                companies: [] // Đặt mảng rỗng để tránh hiển thị dữ liệu cũ
+                error: null,
+            });
+        } catch (err) {
+            set({
+                error: err.message,
+                isLoading: false,
+                companies: [],
             });
         }
     },
 
     // Lấy danh sách công ty theo địa điểm
-    fetchCompaniesByLocation: async (location) => {
+    fetchCompaniesByLocation: async (
+        location,
+        page = 0,
+        size = 10,
+        sort = "id,asc"
+    ) => {
         set({ isLoading: true });
         try {
-            const response = await fetch(
-                COMPANY_API.GET_COMPANIES_BY_LOCATION(location)
+            const response = await api.get(
+                COMPANY_API.GET_COMPANIES_BY_LOCATION(location),
+                {
+                    params: { page, size, sort },
+                }
             );
 
-            if (!response.ok) {
-                throw new Error(
-                    "Không thể tải danh sách công ty theo địa điểm"
-                );
-            }
-
-            const data = await response.json();
+            const data = response.data;
 
             set({
-                companies: data,
+                companies: data.content || data,
+                pagination: {
+                    page: data.pageable?.pageNumber || page,
+                    size: data.pageable?.pageSize || size,
+                    totalElements: data.totalElements || 0,
+                    totalPages: data.totalPages || 0,
+                    first: data.first || false,
+                    last: data.last || false,
+                },
                 isLoading: false,
+                error: null,
             });
         } catch (err) {
             set({ error: err.message, isLoading: false });
@@ -167,17 +263,9 @@ const useCompanySearchStore = create((set, get) => ({
     // Lấy danh sách ngành nghề (danh mục)
     fetchIndustries: async () => {
         try {
-            // Sử dụng API mới để lấy danh sách danh mục
-            const response = await fetch(COMPANY_API.GET_ALL_CATEGORIES);
+            const response = await api.get(COMPANY_API.GET_ALL_CATEGORIES);
 
-            if (!response.ok) {
-                throw new Error("Không thể tải danh sách ngành nghề");
-            }
-
-            const categories = await response.json();
-
-            // Chuyển đổi dữ liệu từ API thành định dạng cần thiết
-            const formattedCategories = categories.map((category) => ({
+            const formattedCategories = response.data.map((category) => ({
                 cate_id: category.id,
                 cate_name: category.name,
             }));
@@ -191,24 +279,36 @@ const useCompanySearchStore = create((set, get) => ({
     // Lấy danh sách vị trí
     fetchLocations: async () => {
         try {
-            const response = await fetch(COMPANY_API.GET_COMPANY_LOCATIONS);
+            const response = await api.get(COMPANY_API.GET_COMPANY_LOCATIONS);
 
-            if (!response.ok) {
-                throw new Error("Không thể tải danh sách vị trí");
-            }
-
-            const data = await response.json();
-
-            // Chuyển đổi từ mảng các object {name: "..."} thành mảng các chuỗi
-            const locationNames = data.map((location) => location.name);
-
+            const locationNames = response.data.map(
+                (location) => location.name
+            );
             set({ locations: locationNames });
         } catch (err) {
             console.error("Error fetching locations:", err);
         }
     },
 
-    // Lọc các công ty dựa trên bộ lọc và từ khóa tìm kiếm
+    // Lấy chi tiết công ty theo ID
+    fetchCompanyDetail: async (id) => {
+        set({ isLoading: true });
+        try {
+            const response = await api.get(COMPANY_API.GET_COMPANY_DETAIL(id));
+
+            set({
+                isLoading: false,
+                error: null,
+            });
+
+            return response.data;
+        } catch (err) {
+            set({ error: err.message, isLoading: false });
+            throw err;
+        }
+    },
+
+    // Lọc các công ty dựa trên bộ lọc và từ khóa tìm kiếm (client-side filtering)
     getFilteredCompanies: () => {
         const { companies, filters, searchTerm, industries } = get();
         let filtered = [...companies];
@@ -233,16 +333,21 @@ const useCompanySearchStore = create((set, get) => ({
 
         // Lọc theo danh mục
         if (filters.categoryIds.length > 0) {
-            // Lấy danh sách tên danh mục tương ứng với categoryIds đã chọn
             const selectedCategoryNames = industries
                 .filter((ind) => filters.categoryIds.includes(ind.cate_id))
                 .map((ind) => ind.cate_name);
 
             filtered = filtered.filter((company) => {
-                // Kiểm tra khớp theo categoryIds (danh mục con)
-                const matchById = company.categoryIds && company.categoryIds.some((id) => filters.categoryIds.includes(id));
-                // Kiểm tra khớp theo parentCategories (danh mục cha, so sánh tên)
-                const matchByParent = company.parentCategories && company.parentCategories.some((name) => selectedCategoryNames.includes(name));
+                const matchById =
+                    company.categoryIds &&
+                    company.categoryIds.some((id) =>
+                        filters.categoryIds.includes(id)
+                    );
+                const matchByParent =
+                    company.parentCategories &&
+                    company.parentCategories.some((name) =>
+                        selectedCategoryNames.includes(name)
+                    );
                 return matchById || matchByParent;
             });
         }
@@ -288,12 +393,10 @@ const useCompanySearchStore = create((set, get) => ({
     getFilterCounts: () => {
         const { allCompanies, industries } = get();
 
-        // Đếm công ty theo ngành
         const industryCounts = {};
         industries.forEach((industry) => {
             industryCounts[industry.cate_name] = allCompanies.filter(
                 (company) =>
-                    // Kiểm tra trong cả categories và parentCategories
                     (company.categories &&
                         company.categories.includes(industry.cate_name)) ||
                     (company.parentCategories &&
@@ -301,7 +404,6 @@ const useCompanySearchStore = create((set, get) => ({
             ).length;
         });
 
-        // Đếm công ty theo quy mô
         const sizeCounts = {
             "1-10": allCompanies.filter((c) => {
                 const size = parseInt(c.quantityEmployee, 10);
@@ -329,6 +431,39 @@ const useCompanySearchStore = create((set, get) => ({
             industry: industryCounts,
             companySize: sizeCounts,
         };
+    },
+
+    // Reset store
+    reset: () => {
+        set({
+            allCompanies: [],
+            companies: [],
+            industries: [],
+            locations: [],
+            isLoading: false,
+            error: null,
+            pagination: {
+                page: 0,
+                size: 10,
+                totalElements: 0,
+                totalPages: 0,
+                first: true,
+                last: false,
+            },
+            filters: {
+                companySize: [],
+                categoryIds: [],
+                foundingYear: "any",
+            },
+            searchTerm: {
+                company: "",
+                location: "",
+            },
+            sort: {
+                field: "id",
+                direction: "asc",
+            },
+        });
     },
 }));
 

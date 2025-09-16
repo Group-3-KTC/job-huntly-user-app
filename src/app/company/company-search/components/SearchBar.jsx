@@ -1,15 +1,51 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { Search, MapPin, Building, Tag, X } from "lucide-react";
+import React, {
+    useState,
+    useEffect,
+    useRef,
+    useCallback,
+    useMemo,
+} from "react";
+import {
+    Search,
+    MapPin,
+    Building,
+    Tag,
+    X,
+    ChevronDown,
+    Loader2,
+} from "lucide-react";
 import useCompanySearchStore from "../store/companySearchStore";
+
+// Custom hook for debouncing
+const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+};
 
 const SearchBar = ({
     onSearch,
     initialValues = { company: "", location: "", categoryIds: [] },
 }) => {
-    const { locations, industries, fetchLocations, fetchIndustries } =
-        useCompanySearchStore();
+    const {
+        locations,
+        industries,
+        fetchLocations,
+        fetchIndustries,
+        isLoading,
+    } = useCompanySearchStore();
 
     const [searchParams, setSearchParams] = useState({
         company: initialValues.company || "",
@@ -22,65 +58,123 @@ const SearchBar = ({
         useState(false);
     const [showCategorySuggestions, setShowCategorySuggestions] =
         useState(false);
-    const [filteredLocations, setFilteredLocations] = useState([]);
-    const [filteredIndustries, setFilteredIndustries] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([]);
+    const [categorySearchTerm, setCategorySearchTerm] = useState("");
+    const [isCategoryInputFocused, setIsCategoryInputFocused] = useState(false);
 
-    // Thêm debug state để kiểm tra giá trị input
-    const [debugInputs, setDebugInputs] = useState({
-        company: "",
-        location: "",
-    });
-
-    const locationRef = useRef(null);
     const companyRef = useRef(null);
+    const locationRef = useRef(null);
     const categoryRef = useRef(null);
+    const containerRef = useRef(null);
 
-    // Chỉ cập nhật khi initialValues thay đổi và khác với giá trị hiện tại
+    const isUpdatingFromInitial = useRef(false);
+    const hasInitializedCategories = useRef(false);
+
+    const stableCategoryIds = useMemo(() => {
+        return initialValues.categoryIds || [];
+    }, [JSON.stringify(initialValues.categoryIds || [])]);
+
+    // Debounced search terms for better performance
+    const debouncedCompany = useDebounce(searchParams.company, 300);
+    const debouncedLocation = useDebounce(searchParams.location, 300);
+    const debouncedCategorySearch = useDebounce(categorySearchTerm, 200);
+
+    // Load data on mount
     useEffect(() => {
-        const companyChanged =
-            initialValues.company !== searchParams.company &&
-            initialValues.company !== undefined;
-        const locationChanged =
-            initialValues.location !== searchParams.location &&
-            initialValues.location !== undefined;
-
-        if (companyChanged || locationChanged) {
-            setSearchParams((prev) => ({
-                ...prev,
-                company: initialValues.company || prev.company,
-                location: initialValues.location || prev.location,
-            }));
+        if (industries.length === 0) {
+            fetchIndustries();
         }
-    }, [initialValues.company, initialValues.location]);
+        if (locations.length === 0) {
+            fetchLocations();
+        }
+    }, [fetchIndustries, fetchLocations]);
 
-    // Tải danh sách vị trí và ngành nghề
+    // Update searchParams when initialValues change - FIXED
     useEffect(() => {
-        fetchLocations();
-        fetchIndustries();
-        console.log("Fetching data...");
-    }, [fetchLocations, fetchIndustries]);
+        const hasChanged =
+            initialValues.company !== searchParams.company ||
+            initialValues.location !== searchParams.location ||
+            JSON.stringify(stableCategoryIds) !==
+                JSON.stringify(searchParams.categoryIds);
 
-    // Xử lý click outside
+        if (hasChanged && !isUpdatingFromInitial.current) {
+            isUpdatingFromInitial.current = true;
+            setSearchParams({
+                company: initialValues.company || "",
+                location: initialValues.location || "",
+                categoryIds: stableCategoryIds,
+            });
+            // Reset the flag after a short delay
+            setTimeout(() => {
+                isUpdatingFromInitial.current = false;
+            }, 100);
+        }
+    }, [initialValues.company, initialValues.location, stableCategoryIds]);
+
+    // Initialize selectedCategories from initialValues - FIXED TO PREVENT INFINITE LOOP
+    useEffect(() => {
+        if (industries.length > 0) {
+            const currentCategoryIds = selectedCategories
+                .map((cat) => cat.cate_id)
+                .sort();
+            const newCategoryIds = stableCategoryIds.slice().sort();
+
+            if (
+                JSON.stringify(currentCategoryIds) !==
+                JSON.stringify(newCategoryIds)
+            ) {
+                if (stableCategoryIds.length > 0) {
+                    const newSelectedCategories = industries.filter((ind) =>
+                        stableCategoryIds.includes(ind.cate_id)
+                    );
+                    setSelectedCategories(newSelectedCategories);
+                } else {
+                    setSelectedCategories([]);
+                }
+                hasInitializedCategories.current = true;
+            } else if (
+                !hasInitializedCategories.current &&
+                stableCategoryIds.length === 0
+            ) {
+                setSelectedCategories([]);
+                hasInitializedCategories.current = true;
+            }
+        }
+    }, [industries.length > 0 ? industries : [], stableCategoryIds.join(",")]);
+
+    // Memoized filtered locations
+    const filteredLocations = useMemo(() => {
+        if (!debouncedLocation) return locations.slice(0, 8);
+        return locations
+            .filter((location) =>
+                location.toLowerCase().includes(debouncedLocation.toLowerCase())
+            )
+            .slice(0, 8);
+    }, [locations, debouncedLocation]);
+
+    // Memoized filtered industries
+    const filteredIndustries = useMemo(() => {
+        if (!debouncedCategorySearch) return industries.slice(0, 10);
+        return industries
+            .filter((industry) =>
+                industry.cate_name
+                    .toLowerCase()
+                    .includes(debouncedCategorySearch.toLowerCase())
+            )
+            .slice(0, 10);
+    }, [industries, debouncedCategorySearch]);
+
+    // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
-                locationRef.current &&
-                !locationRef.current.contains(event.target)
-            ) {
-                setShowLocationSuggestions(false);
-            }
-            if (
-                companyRef.current &&
-                !companyRef.current.contains(event.target)
+                containerRef.current &&
+                !containerRef.current.contains(event.target)
             ) {
                 setShowCompanySuggestions(false);
-            }
-            if (
-                categoryRef.current &&
-                !categoryRef.current.contains(event.target)
-            ) {
+                setShowLocationSuggestions(false);
                 setShowCategorySuggestions(false);
+                setIsCategoryInputFocused(false);
             }
         };
 
@@ -90,287 +184,388 @@ const SearchBar = ({
         };
     }, []);
 
-    // Sửa lại hàm handleChange để đảm bảo cập nhật state đúng cách
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        console.log(`Input changed: ${name} = ${value}`); // Debug log
+    // Handle input changes with debouncing
+    const handleInputChange = useCallback((field, value) => {
+        setSearchParams((prev) => {
+            const newParams = {
+                ...prev,
+                [field]: value,
+            };
+            return newParams;
+        });
 
-        // Cập nhật state chính
-        setSearchParams((prev) => ({ ...prev, [name]: value }));
-
-        // Cập nhật debug state
-        setDebugInputs((prev) => ({ ...prev, [name]: value }));
-
-        if (name === "location") {
-            const filtered = locations.filter(
-                (loc) => loc && loc.toLowerCase().includes(value.toLowerCase())
-            );
-            setFilteredLocations(filtered);
-            setShowLocationSuggestions(value.length > 0);
-        } else if (name === "company") {
-            setShowCompanySuggestions(value.length > 0);
-        } else if (name === "category") {
-            const filtered =
-                value.trim() === ""
-                    ? industries
-                    : industries.filter((ind) =>
-                          ind.cate_name
-                              .toLowerCase()
-                              .includes(value.toLowerCase())
-                      );
-
-            setFilteredIndustries(filtered);
-            setShowCategorySuggestions(true);
+        if (field === "location") {
+            setShowLocationSuggestions(true);
+            setShowCompanySuggestions(false);
+            setShowCategorySuggestions(false);
+        } else if (field === "company") {
+            setShowCompanySuggestions(true);
+            setShowLocationSuggestions(false);
+            setShowCategorySuggestions(false);
         }
-    };
+    }, []);
 
-    const handleLocationSelect = (location) => {
-        setSearchParams((prev) => ({ ...prev, location }));
-        setDebugInputs((prev) => ({ ...prev, location })); // Cập nhật cả debug
+    // Handle category search
+    const handleCategorySearch = useCallback((value) => {
+        setCategorySearchTerm(value);
+        setShowCategorySuggestions(true);
+        setShowCompanySuggestions(false);
         setShowLocationSuggestions(false);
-    };
+    }, []);
 
-    // Sửa lại hàm handleCategorySelect để chọn 1 ngành và tìm kiếm luôn
-    const handleCategorySelect = (category) => {
-        // Thêm category vào danh sách đã chọn
-        const newSelected = [...selectedCategories, category];
-        const newCategoryIds = newSelected.map((cat) => cat.cate_id);
+    // Handle category input focus
+    const handleCategoryFocus = useCallback(() => {
+        setShowCategorySuggestions(true);
+        setShowCompanySuggestions(false);
+        setShowLocationSuggestions(false);
+        setIsCategoryInputFocused(true);
+    }, []);
 
-        // Cập nhật state với category đã chọn
+    // Handle location selection
+    const handleLocationSelect = useCallback((location) => {
         setSearchParams((prev) => ({
             ...prev,
-            categoryIds: newCategoryIds,
+            location,
         }));
-        setSelectedCategories(newSelected);
+        setShowLocationSuggestions(false);
+    }, []);
 
-        // Đóng dropdown
-        setShowCategorySuggestions(false);
+    // Handle category toggle
+    const handleCategoryToggle = useCallback(
+        (category) => {
+            const isSelected = selectedCategories.some(
+                (cat) => cat.cate_id === category.cate_id
+            );
 
-        // Loại bỏ dòng này để không tự động tìm kiếm
-        // onSearch(newSearchParams);
-    };
+            let newSelectedCategories;
+            if (isSelected) {
+                newSelectedCategories = selectedCategories.filter(
+                    (cat) => cat.cate_id !== category.cate_id
+                );
+            } else {
+                newSelectedCategories = [...selectedCategories, category];
+            }
 
-    const handleRemoveCategory = (categoryId) => {
-        const newSelected = selectedCategories.filter(
-            (cat) => cat.cate_id !== categoryId
-        );
-        setSelectedCategories(newSelected);
+            setSelectedCategories(newSelectedCategories);
 
-        const newCategoryIds = newSelected.map((cat) => cat.cate_id);
-        setSearchParams((prev) => ({ ...prev, categoryIds: newCategoryIds }));
-    };
+            setSearchParams((prev) => ({
+                ...prev,
+                categoryIds: newSelectedCategories.map((cat) => cat.cate_id),
+            }));
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Submitting search with params:", searchParams);
-        onSearch(searchParams);
-    };
+            // Clear search term and close dropdown after selection
+            setCategorySearchTerm("");
+            setShowCategorySuggestions(false);
+        },
+        [selectedCategories]
+    );
 
-    // Hàm reset bộ lọc
-    const handleReset = () => {
-        const cleared = { company: "", location: "", categoryIds: [] };
-        setSearchParams(cleared);
+    // Handle remove category
+    const handleRemoveCategory = useCallback(
+        (categoryId) => {
+            const newSelectedCategories = selectedCategories.filter(
+                (cat) => cat.cate_id !== categoryId
+            );
+            setSelectedCategories(newSelectedCategories);
+            setSearchParams((prev) => ({
+                ...prev,
+                categoryIds: newSelectedCategories.map((cat) => cat.cate_id),
+            }));
+        },
+        [selectedCategories]
+    );
+
+    // Handle form submission
+    const handleSubmit = useCallback(
+        (e) => {
+            e.preventDefault();
+
+            onSearch(searchParams);
+            setShowCompanySuggestions(false);
+            setShowLocationSuggestions(false);
+            setShowCategorySuggestions(false);
+            setIsCategoryInputFocused(false);
+        },
+        [onSearch, searchParams]
+    );
+
+    // Handle clear all
+    const handleClearAll = useCallback(() => {
+        setSearchParams({
+            company: "",
+            location: "",
+            categoryIds: [],
+        });
         setSelectedCategories([]);
-        setDebugInputs({ company: "", location: "" });
-        onSearch?.(cleared);           // Gửi luôn kết quả rỗng (tuỳ nhu cầu)
+        setCategorySearchTerm("");
+        setIsCategoryInputFocused(false);
+    }, []);
+
+    // Get display text for category input
+    const getCategoryDisplayText = () => {
+        if (selectedCategories.length === 0) return "";
+        if (selectedCategories.length === 1)
+            return selectedCategories[0].cate_name;
+        return `${selectedCategories.length} ngành nghề đã chọn`;
     };
 
-    console.log("Current search params:", searchParams); // Debug log
-    console.log("Debug inputs:", debugInputs); // Debug log
+    // Get the actual value to display in category input - SIMPLIFIED LOGIC
+    const getCategoryInputValue = () => {
+        if (isCategoryInputFocused && categorySearchTerm) {
+            return categorySearchTerm;
+        }
+
+        return getCategoryDisplayText();
+    };
 
     return (
-        <form
-            onSubmit={handleSubmit}
-            className="bg-white p-4 rounded-xl shadow-md"
-        >
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                {/* Tên công ty */}
-                <div className="md:col-span-3" ref={companyRef}>
-                    <label
-                        htmlFor="company"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                        Tên công ty
-                    </label>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <Building className="w-5 h-5 text-gray-500" />
-                        </div>
-                        <input
-                            type="text"
-                            id="company"
-                            name="company"
-                            value={searchParams.company}
-                            onChange={handleChange}
-                            onFocus={() =>
-                                setShowCompanySuggestions(
-                                    searchParams.company.length > 0
-                                )
-                            }
-                            className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Tên công ty..."
-                            autoComplete="off"
-                        />
+        <div className="w-full max-w-6xl mx-auto" ref={containerRef}>
+            {/* Main Search Container */}
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 md:p-6 relative">
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-4 md:space-y-6"
+                >
+                    {/* Header */}
+                    <div className="text-center mb-4 md:mb-6">
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                            Search for a company
+                        </h1>
+                        <p className="text-sm md:text-base text-gray-600">
+                            Discover companies that match your interests and
+                            skills. Search by name, location, industry, or size.
+                        </p>
                     </div>
-                </div>
 
-                {/* Ngành nghề */}
-                <div className="md:col-span-3" ref={categoryRef}>
-                    <label
-                        htmlFor="category"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                        Ngành nghề
-                    </label>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <Tag className="w-5 h-5 text-gray-500" />
+                    {/* Search Inputs - All in one row */}
+                    <div className="flex flex-col lg:flex-row gap-3 md:gap-4">
+                        {/* Company Name Input */}
+                        <div className="relative group flex-1">
+                            <div className="absolute inset-y-0 left-0 pl-3 md:pl-4 flex items-center pointer-events-none">
+                                <Building className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                            </div>
+                            <input
+                                ref={companyRef}
+                                type="text"
+                                placeholder="Company name..."
+                                value={searchParams.company}
+                                onChange={(e) => {
+                                    handleInputChange(
+                                        "company",
+                                        e.target.value
+                                    );
+                                }}
+                                onFocus={() => {
+                                    setShowCompanySuggestions(true);
+                                    setShowLocationSuggestions(false);
+                                    setShowCategorySuggestions(false);
+                                }}
+                                className="w-full pl-10 md:pl-12 pr-4 py-3 md:py-4 bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 text-gray-900 placeholder-gray-500 text-sm md:text-base"
+                            />
                         </div>
-                        <input
-                            type="text"
-                            id="category"
-                            name="category"
-                            onChange={handleChange}
-                            onFocus={() => {
-                                setFilteredIndustries(industries);
-                                setShowCategorySuggestions(true);
-                            }}
-                            className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Tìm ngành nghề..."
-                            autoComplete="off"
-                        />
 
-                        {showCategorySuggestions && (
-                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                                <div className="sticky top-0 bg-gray-100 px-4 py-2 font-medium border-b">
-                                    Chọn ngành nghề để tìm kiếm
-                                </div>
-                                {filteredIndustries.length > 0 ? (
-                                    filteredIndustries.map((industry) => (
-                                        <div
-                                            key={industry.cate_id}
-                                            className="px-4 py-3 cursor-pointer hover:bg-blue-50 flex items-center border-b"
-                                            onClick={() =>
-                                                handleCategorySelect(industry)
-                                            }
-                                        >
-                                            <Tag className="w-4 h-4 mr-2 text-blue-500" />
-                                            <span>{industry.cate_name}</span>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="px-4 py-2 text-gray-500">
-                                        Không tìm thấy ngành nghề phù hợp
+                        {/* Location Input */}
+                        <div className="relative group flex-1">
+                            <div className="absolute inset-y-0 left-0 pl-3 md:pl-4 flex items-center pointer-events-none">
+                                <MapPin className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                            </div>
+                            <input
+                                ref={locationRef}
+                                type="text"
+                                placeholder="Location..."
+                                value={searchParams.location}
+                                onChange={(e) => {
+                                    handleInputChange(
+                                        "location",
+                                        e.target.value
+                                    );
+                                }}
+                                onFocus={() => {
+                                    setShowLocationSuggestions(true);
+                                    setShowCompanySuggestions(false);
+                                    setShowCategorySuggestions(false);
+                                }}
+                                className="w-full pl-10 md:pl-12 pr-4 py-3 md:py-4 bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 text-gray-900 placeholder-gray-500 text-sm md:text-base"
+                            />
+
+                            {/* Location Dropdown - Positioned under this input */}
+                            {showLocationSuggestions &&
+                                filteredLocations.length > 0 && (
+                                    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto top-full left-0">
+                                        {filteredLocations.map(
+                                            (location, index) => (
+                                                <button
+                                                    key={index}
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        handleLocationSelect(
+                                                            location
+                                                        );
+                                                    }}
+                                                    className="w-full px-4 py-3 text-left hover:bg-blue-50 flex items-center gap-3 transition-colors first:rounded-t-xl last:rounded-b-xl text-sm md:text-base"
+                                                >
+                                                    <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                                    <span className="text-gray-700 truncate">
+                                                        {location}
+                                                    </span>
+                                                </button>
+                                            )
+                                        )}
                                     </div>
                                 )}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Chỉ hiển thị ngành đã chọn ở bên dưới form thay vì trong input */}
-                </div>
-
-                {/* Địa điểm */}
-                <div className="md:col-span-3" ref={locationRef}>
-                    <label
-                        htmlFor="location"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                        Địa điểm
-                    </label>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <MapPin className="w-5 h-5 text-gray-500" />
                         </div>
-                        <input
-                            type="text"
-                            id="location"
-                            name="location"
-                            value={searchParams.location}
-                            onChange={handleChange}
-                            onFocus={() => {
-                                // luôn hiển thị, đổ toàn bộ danh sách nếu input đang rỗng
-                                setFilteredLocations(locations);
-                                setShowLocationSuggestions(true);
-                            }}
-                            className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Địa điểm..."
-                            autoComplete="off"
-                        />
 
-                        {/* Dropdown cho địa điểm */}
-                        {showLocationSuggestions && (
-                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                                <div className="sticky top-0 bg-gray-100 px-4 py-2 font-medium border-b">
-                                    Chọn địa điểm
-                                </div>
-                                {filteredLocations.length > 0 ? (
-                                    filteredLocations.map((loc, idx) => (
-                                        <div
-                                            key={idx}
-                                            className="px-4 py-3 cursor-pointer hover:bg-blue-50 flex items-center border-b"
-                                            onClick={() => handleLocationSelect(loc)}
-                                        >
-                                            <MapPin className="w-4 h-4 mr-2 text-blue-500" />
-                                            <span>{loc}</span>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="px-4 py-2 text-gray-500">
-                                        Không tìm thấy địa điểm phù hợp
+                        {/* Category Selection */}
+                        <div className="relative group flex-1">
+                            <div className="absolute inset-y-0 left-0 pl-3 md:pl-4 flex items-center pointer-events-none">
+                                <Tag className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                            </div>
+                            <input
+                                ref={categoryRef}
+                                type="text"
+                                placeholder="Select industry..."
+                                value={getCategoryInputValue()}
+                                onChange={(e) => {
+                                    handleCategorySearch(e.target.value);
+                                }}
+                                onFocus={handleCategoryFocus}
+                                onBlur={() => {
+                                    // Delay to allow click on dropdown items
+                                    setTimeout(() => {
+                                        setIsCategoryInputFocused(false);
+                                    }, 200);
+                                }}
+                                className="w-full pl-10 md:pl-12 pr-10 py-3 md:py-4 bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 text-gray-900 placeholder-gray-500 text-sm md:text-base"
+                            />
+                            <div className="absolute inset-y-0 right-0 pr-3 md:pr-4 flex items-center pointer-events-none">
+                                <ChevronDown className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
+                            </div>
+
+                            {/* Category Dropdown - Positioned under this input */}
+                            {showCategorySuggestions &&
+                                filteredIndustries.length > 0 && (
+                                    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto top-full left-0">
+                                        {filteredIndustries.map((industry) => (
+                                            <button
+                                                key={industry.cate_id}
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    handleCategoryToggle(
+                                                        industry
+                                                    );
+                                                }}
+                                                className="w-full px-4 py-3 text-left hover:bg-blue-50 flex items-center gap-3 transition-colors first:rounded-t-xl last:rounded-b-xl text-sm md:text-base"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedCategories.some(
+                                                        (cat) =>
+                                                            cat.cate_id ===
+                                                            industry.cate_id
+                                                    )}
+                                                    onChange={() => {}}
+                                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0"
+                                                />
+                                                <Tag className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                                <span className="text-gray-700 truncate">
+                                                    {industry.cate_name}
+                                                </span>
+                                            </button>
+                                        ))}
                                     </div>
                                 )}
-                            </div>
-                        )}
-                    </div>
-                </div>
+                        </div>
 
-                {/* Nút tìm kiếm + xoá lọc */}
-                <div className="md:col-span-3 flex flex-col sm:flex-row items-stretch gap-2 md:mt-6">
-                    <button
-                        type="submit"
-                        className="w-full sm:w-auto h-[44px] px-6 bg-[#0A66C2] text-white font-medium text-base rounded-lg hover:bg-[#085aab] flex items-center justify-center whitespace-nowrap"
-                    >
-                        <Search className="w-5 h-5 mr-2" />
-                        Tìm kiếm
-                    </button>
-
-                    {/* Nút xoá bộ lọc */}
-                    <button
-                        type="button"
-                        onClick={handleReset}
-                        className="w-full sm:w-auto h-[44px] px-6 bg-red-100 text-red-700 font-medium text-base rounded-lg hover:bg-red-200 flex items-center justify-center whitespace-nowrap"
-                    >
-                        <X className="w-5 h-5 mr-2" />
-                        Xoá lọc
-                    </button>
-                </div>
-            </div>
-
-            {/* Hiển thị ngành nghề đã chọn ở bên ngoài grid */}
-            {selectedCategories.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                    {selectedCategories.map((category) => (
-                        <div
-                            key={category.cate_id}
-                            className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1.5 rounded flex items-center"
-                        >
-                            <Tag className="w-3 h-3 mr-1.5 text-blue-600" />
-                            <span>{category.cate_name}</span>
+                        {/* Action Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-3 lg:flex-col xl:flex-row">
                             <button
                                 type="button"
-                                onClick={() =>
-                                    handleRemoveCategory(category.cate_id)
-                                }
-                                className="ml-1.5 text-blue-800 hover:text-blue-900"
+                                onClick={handleClearAll}
+                                className="px-4 md:px-6 py-2.5 md:py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-4 focus:ring-gray-200 transition-all duration-200 font-semibold text-sm md:text-base whitespace-nowrap"
                             >
-                                ×
+                                Clear all
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="px-6 md:px-8 py-2.5 md:py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 transition-all duration-200 flex items-center justify-center gap-2 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base whitespace-nowrap"
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
+                                ) : (
+                                    <Search className="w-4 h-4 md:w-5 md:h-5" />
+                                )}
+                                {isLoading ? "Searching..." : "Search"}
                             </button>
                         </div>
+                    </div>
+
+                    {/* Selected Categories */}
+                    {selectedCategories.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                            {selectedCategories.map((category) => (
+                                <span
+                                    key={category.cate_id}
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-blue-100 text-blue-800 text-xs md:text-sm rounded-full border border-blue-200"
+                                >
+                                    <Tag className="w-3 h-3 flex-shrink-0" />
+                                    <span className="truncate max-w-32 md:max-w-none">
+                                        {category.cate_name}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            handleRemoveCategory(
+                                                category.cate_id
+                                            )
+                                        }
+                                        className="ml-1 hover:text-blue-600 transition-colors flex-shrink-0"
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                </form>
+            </div>
+
+            {/* Quick Search Tags */}
+            <div className="mt-4 md:mt-6">
+                <h3 className="text-xs md:text-sm font-medium text-gray-700 mb-2 md:mb-3">
+                    Quick search:
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                    {[
+                        "Công nghệ thông tin",
+                        "Marketing",
+                        "Kế toán",
+                        "Nhân sự",
+                        "Kinh doanh",
+                    ].map((tag) => (
+                        <button
+                            key={tag}
+                            type="button"
+                            onClick={() => {
+                                const industry = industries.find(
+                                    (ind) => ind.cate_name === tag
+                                );
+                                if (industry) {
+                                    handleCategoryToggle(industry);
+                                }
+                            }}
+                            className="px-3 md:px-4 py-1.5 md:py-2 bg-gray-100 text-gray-700 rounded-full text-xs md:text-sm hover:bg-blue-100 hover:text-blue-700 transition-colors"
+                        >
+                            {tag}
+                        </button>
                     ))}
                 </div>
-            )}
-        </form>
+            </div>
+        </div>
     );
 };
 

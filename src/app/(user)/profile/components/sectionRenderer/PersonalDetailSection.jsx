@@ -20,7 +20,7 @@ const PersonalDetailSection = ({ data }) => {
                 <div className="relative w-[60px] h-[60px]">
                     <div className="flex items-center justify-center w-full h-full overflow-hidden bg-gray-100 rounded-full">
                         {isValidUrl ? (
-                            <img
+                            <Image
                                 src={displayAvatar}
                                 alt="User Avatar"
                                 className="object-cover object-center w-full h-full rounded-full"
@@ -29,6 +29,8 @@ const PersonalDetailSection = ({ data }) => {
                                     e.currentTarget.parentElement.innerHTML =
                                         '<span class="text-gray-400 text-xs">Update your image</span>';
                                 }}
+                                width={60}
+                                height={60}
                             />
                         ) : (
                             <span className="text-xs text-gray-400">

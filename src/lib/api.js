@@ -49,6 +49,7 @@ api.interceptors.response.use(
         }
 
         refreshPromise = null;
+        config.withCredentials = true;
         return api(config);
     }
 );

@@ -5,8 +5,9 @@ import {useRouter} from "next/navigation";
 import {toast} from "react-toastify";
 import {useDispatch} from "react-redux";
 import {meThunk} from "@/features/auth/authSlice";
+import {API_CONFIG} from "@/lib/config";
 
-export default function GoogleSignIn({role = "CANDIDATE"}) {
+export default function GoogleSignIn({role = "CANDIDATE", onBanned}) {
     const btnRef = useRef(null);
     const router = useRouter();
     const dispatch = useDispatch();
@@ -17,19 +18,15 @@ export default function GoogleSignIn({role = "CANDIDATE"}) {
 
         const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
         if (!clientId) {
-            console.error("Missing NEXT_PUBLIC_GOOGLE_CLIENT_ID");
             return;
         }
 
-        // 1) Init GIS
         window.google.accounts.id.initialize({
             client_id: clientId,
-            // Callback nhận ID Token
             callback: async ({credential}) => {
                 try {
                     const res = await fetch(
-                        // "http://localhost:8080/api/v1/auth/google", 
-                        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google`,
+                        `${API_CONFIG.BASE_URL}/auth/google`,
                         {
                             method: "POST",
                             headers: {"Content-Type": "application/json"},
@@ -38,7 +35,7 @@ export default function GoogleSignIn({role = "CANDIDATE"}) {
                         },
                     );
 
-                    const data = await res.json();
+                    const data = await res.json().catch(() => ({}));
                     if (!res.ok) throw data;
 
                     await dispatch(meThunk()).unwrap();
@@ -48,6 +45,15 @@ export default function GoogleSignIn({role = "CANDIDATE"}) {
                     );
                     router.replace("/");
                 } catch (err) {
+                    if (err?.status === 403 && err?.code === "ACCOUNT_BANNED") {
+                        const contact = err?.extra?.contactEmail || "contact.jobhuntly@gmail.com";
+                        onBanned({
+                            email: err?.extra?.email,
+                            contactEmail: contact,
+                            reason: err?.extra?.reason || "",
+                        });
+                        return;
+                    }
                     const msg =
                         err?.detail ||
                         err?.title ||
@@ -57,13 +63,12 @@ export default function GoogleSignIn({role = "CANDIDATE"}) {
                     toast.error(msg);
                 }
             },
-            // Tùy chọn UX
+
             ux_mode: "popup",
             auto_select: false,
             use_fedcm_for_prompt: true,
         });
 
-        // 2) Render nút "Sign in with Google"
         window.google.accounts.id.renderButton(btnRef.current, {
             type: "standard",
             theme: "outline",
@@ -74,9 +79,8 @@ export default function GoogleSignIn({role = "CANDIDATE"}) {
             width: 360,
         });
 
-        // 3) (Optional) One Tap prompt
         window.google.accounts.id.prompt();
-    }, [role]);
+    }, [role, dispatch, router, onBanned]);
 
     return <div ref={btnRef} className="w-full flex justify-center"/>;
 }

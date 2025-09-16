@@ -148,8 +148,8 @@ export default function DetailJob({ job }) {
     );
 
     return (
-        <div className="w-full py-10 bg-gray-100">
-            <div className="flex flex-col-reverse w-full gap-6 px-4 md:flex-row md:px-10">
+        <div className="w-full px-4 py-10 bg-gray-100 md:px-10">
+            <div className="flex flex-col-reverse w-full gap-6 md:flex-row">
                 <div className="w-full md:w-[78%] flex flex-col gap-6">
                     <div className="p-6 space-y-4 bg-white shadow-lg rounded-xl">
                         <h1 className="text-3xl font-bold text-gray-800">
@@ -307,8 +307,6 @@ export default function DetailJob({ job }) {
                             <p>Location not specified</p>
                         )}
                     </Section>
-
-                    <RelatedJobs category={dj.category} />
                 </div>
 
                 <div className="w-full md:w-[22%] flex flex-col gap-4">
@@ -327,6 +325,7 @@ export default function DetailJob({ job }) {
                     />
                 </div>
             </div>
+            <RelatedJobs category={dj.category} skill={dj.skill} />
         </div>
     );
 }

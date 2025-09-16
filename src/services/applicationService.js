@@ -106,6 +106,15 @@ export const applicationApi = createApi({
             }),
             providesTags: ["Applications"],
         }),
+
+        // [GET] get applications by company (admin or owner recruiter)
+        getApplicationsByCompany: builder.query({
+            query: ({ companyId, page = 0, size = 10 }) => ({
+                url: `/by-company/${companyId}?page=${page}&size=${size}`,
+                method: "GET",
+            }),
+            providesTags: ["Applications"],
+        }),
     }),
 });
 
@@ -117,4 +126,5 @@ export const {
     useLazyGetApplyStatusQuery,
     useGetApplicationDetailByJobQuery,
     useGetApplicationsByJobQuery,
+    useGetApplicationsByCompanyQuery,
 } = applicationApi;

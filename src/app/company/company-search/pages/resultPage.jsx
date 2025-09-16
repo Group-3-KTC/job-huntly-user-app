@@ -10,11 +10,11 @@ import ResultItem from "../components/ResultItem";
 import useCompanyStore from "../store/companyStore";
 
 const companySizes = [
-    { id: "1-10", label: "1-10 nhân viên" },
-    { id: "11-50", label: "11-50 nhân viên" },
-    { id: "51-200", label: "51-200 nhân viên" },
-    { id: "201-500", label: "201-500 nhân viên" },
-    { id: "501+", label: "501+ nhân viên" },
+    { id: "1-10", label: "1-10 employees" },
+    { id: "11-50", label: "11-50 employees" },
+    { id: "51-200", label: "51-200 employees" },
+    { id: "201-500", label: "201-500 employees" },
+    { id: "501+", label: "501+ employees" },
 ];
 const ResultItemSkeleton = () => (
     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 animate-pulse">
@@ -86,11 +86,9 @@ const ResultPage = () => {
             setFilters((prev) => ({ ...prev, categoryIds }));
         }
 
-
         const fetchData = async () => {
             setIsLoadingPage(true);
             await Promise.all([fetchCompanies(), fetchIndustries()]);
-
 
             setTimeout(() => {
                 setIsLoadingPage(false);
@@ -209,12 +207,12 @@ const ResultPage = () => {
                 <div className="lg:w-3/4">
                     <div className="mb-6">
                         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                            Tất cả công ty
+                            All companies
                         </h2>
                         <p className="text-gray-600">
                             {isLoading || isLoadingPage
-                                ? "Đang tải..."
-                                : `Hiển thị ${filteredResults.length} kết quả`}
+                                ? "Loading..."
+                                : `Displaying ${filteredResults.length} results`}
                             {searchTerm.company &&
                                 ` cho "${searchTerm.company}"`}
                             {searchTerm.location &&
@@ -247,13 +245,13 @@ const ResultPage = () => {
                                 />
                             </svg>
                             <p className="text-red-500 text-lg mb-4">
-                                Có lỗi xảy ra: {error}
+                                An error occurred: {error}
                             </p>
                             <button
                                 onClick={fetchCompanies}
                                 className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                             >
-                                Thử lại
+                                Try again
                             </button>
                         </div>
                     ) : filteredResults.length === 0 ? (
@@ -273,11 +271,10 @@ const ResultPage = () => {
                                 />
                             </svg>
                             <p className="text-gray-500 text-lg mb-4">
-                                Không tìm thấy công ty phù hợp với tiêu chí của
-                                bạn.
+                                No companies found that match your criteria.
                             </p>
                             <p className="text-gray-600">
-                                Hãy điều chỉnh tìm kiếm hoặc bộ lọc của bạn.
+                                Please adjust your search or filters.
                             </p>
                         </div>
                     ) : (
@@ -312,7 +309,7 @@ const ResultPage = () => {
                                                 ? "text-gray-400 cursor-not-allowed"
                                                 : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
                                         }`}
-                                        aria-label="Trang trước"
+                                        aria-label="Previous page"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -406,7 +403,7 @@ const ResultPage = () => {
                                                 ? "text-gray-400 cursor-not-allowed"
                                                 : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
                                         }`}
-                                        aria-label="Trang sau"
+                                        aria-label="Next page"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
