@@ -314,7 +314,7 @@ export const Header = () => {
 
     return (
         <header className="h-18 bg-[#0a66c2] relative">
-            <div className="flex items-center justify-between h-full px-4">
+            <div className="flex items-center justify-between h-full px-8">
                 {/* Mobile menu button */}
                 <button
                     className="flex items-center justify-center p-2 mr-2 text-white rounded lg:hidden hover:bg-white/20"

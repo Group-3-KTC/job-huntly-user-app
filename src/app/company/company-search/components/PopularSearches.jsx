@@ -27,7 +27,7 @@ const PopularSearches = () => {
     return (
         <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Tìm kiếm phổ biến
+                Popular searches
             </h2>
 
             <div className="space-y-6">
@@ -35,7 +35,7 @@ const PopularSearches = () => {
                 <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
                         <Building className="mr-2 h-5 w-5 text-[#0A66C2]" />
-                        Ngành nghề
+                        Industry
                     </h3>
                     <div className="flex flex-wrap gap-2">
                         {popularIndustries.map((industry) => (

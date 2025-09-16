@@ -131,10 +131,10 @@ export default function RecruiterSidebar() {
                 </Link>
             </div>
 
-            {/* Post Job Button */}
+            {/* Nút Đăng tin tuyển dụng*/}
             <div className="p-4">
                 <Link href="/recruiter/create-job">
-                    <Button className="flex items-center w-full gap-2 bg-primary hover:bg-primary/90 rounded-lg">
+                    <Button className="flex items-center w-full gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
                         <Plus className="w-4 h-4" />
                         <span>Post a Job</span>
                     </Button>
