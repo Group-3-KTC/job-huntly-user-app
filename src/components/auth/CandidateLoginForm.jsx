@@ -18,12 +18,15 @@ import GoogleSignIn from "@/components/auth/GoogleSignIn";
 import {clearNormalizedProfile} from "@/features/profile/profileSlice";
 import {profileApi} from "@/services/profileService";
 import clsx from "clsx";
+import BannedPanel from "@/components/auth/BannedPanel";
+import {Dialog, DialogContent} from "@/components/ui/dialog";
 
 const CandidateLoginForm = ({role, onGoogleNeedsPassword, onForgot}) => {
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
     const [showSetPwPanel, setShowSetPwPanel] = useState(false);
     const [googleEmail, setGoogleEmail] = useState("");
+    const [bannedInfo, setBannedInfo] = useState(null);
 
     const isAuthLoading = useSelector(selectAuthLoading);
 
@@ -71,8 +74,17 @@ const CandidateLoginForm = ({role, onGoogleNeedsPassword, onForgot}) => {
                 autoClose: 3000,
             });
         } catch (err) {
-            if (err?.status === 409) {
-                onGoogleNeedsPassword?.(payload.email);
+            if (err?.status === 403 && err?.code === "ACCOUNT_BANNED") {
+                const contact = err?.extra?.contactEmail || "contact.jobhuntly@gmail.com";
+                setBannedInfo({
+                    email: payload.email,
+                    contactEmail: contact,
+                    reason: err?.extra?.reason || "",
+                });
+                return;
+            }
+            if (err?.status === 409 && (err?.code === "GOOGLE_ACCOUNT_NEEDS_PASSWORD")) {
+                onGoogleNeedsPassword?.(err?.extra?.email || payload.email);
                 return;
             }
             const msg =
@@ -90,25 +102,53 @@ const CandidateLoginForm = ({role, onGoogleNeedsPassword, onForgot}) => {
     }
 
     return (
-        <div className="w-full">
+        <>
+            <Dialog
+                open={!!bannedInfo}
+                onOpenChange={(open) => {
+                    if (!open) setBannedInfo(null);
+                }}
+            >
+                <DialogContent
+                    className="sm:max-w-md p-0 border-none bg-transparent shadow-none"
+                    // Nếu muốn **chặn** đóng khi click outside / ESC, dùng 2 handler dưới:
+                    // onInteractOutside={(e) => e.preventDefault()}
+                    // onEscapeKeyDown={(e) => e.preventDefault()}
+                >
+                    <BannedPanel
+                        email={bannedInfo?.email}
+                        contactEmail={bannedInfo?.contactEmail}
+                        reason={bannedInfo?.reason}
+                        onDismiss={() => setBannedInfo(null)}
+                    />
+                </DialogContent>
+            </Dialog>
+
+            <div className="w-full">
 
 
-            {/* Social */}
-            <div className="space-y-3">
-                <GoogleSignIn role={role ?? "CANDIDATE"}/>
-            </div>
-
-            {/* Separator */}
-            <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-blue-100"/>
+                {/* Social */}
+                <div className="space-y-3">
+                    <GoogleSignIn role={role ?? "CANDIDATE"} onBanned={(info) => {
+                        setBannedInfo({
+                            email: info.email || "",
+                            contactEmail: info.contactEmail,
+                            reason: info.reason || "",
+                        });
+                    }}/>
                 </div>
-                <div className="relative flex justify-center">
+
+                {/* Separator */}
+                <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-blue-100"/>
+                    </div>
+                    <div className="relative flex justify-center">
           <span className="px-3 text-xs font-medium tracking-wider text-blue-500 bg-white">
             OR
           </span>
+                    </div>
                 </div>
-            </div>
 
             {/* Form Card */}
             <div className="p-5 bg-white border border-blue-100 shadow-sm rounded-2xl">
@@ -177,20 +217,21 @@ const CandidateLoginForm = ({role, onGoogleNeedsPassword, onForgot}) => {
                         )}
                     </div>
 
-                    <Button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className={clsx(
-                            "w-full",
-                            "bg-blue-600 hover:bg-blue-700",
-                            "focus-visible:ring-2 focus-visible:ring-blue-500",
-                        )}
-                    >
-                        {isSubmitting ? "Signing in..." : "Login"}
-                    </Button>
-                </form>
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className={clsx(
+                                "w-full",
+                                "bg-blue-600 hover:bg-blue-700",
+                                "focus-visible:ring-2 focus-visible:ring-blue-500",
+                            )}
+                        >
+                            {isSubmitting ? "Signing in..." : "Login"}
+                        </Button>
+                    </form>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 
