@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 
 function getStatusColor(status) {
     switch (status) {
+        case "APPLIED":
+            return "bg-blue-100 text-blue-700 border border-blue-300";
         case "Applied":
             return "bg-blue-100 text-blue-700 border border-blue-300";
         case "Reviewed":
