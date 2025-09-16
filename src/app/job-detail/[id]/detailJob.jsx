@@ -137,7 +137,7 @@ export default function DetailJob({ job }) {
                         toast.success("Job saved successfully");
                     } else {
                         await unsaveJob(djId).unwrap();
-                        toast.info("Job unsaved");
+                        toast.success("Job unsaved");
                     }
                 } catch (err) {
                     console.error("Toggle save error", err);

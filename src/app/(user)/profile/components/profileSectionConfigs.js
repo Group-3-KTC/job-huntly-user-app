@@ -107,6 +107,23 @@ export const profileSectionConfigs = {
                         file.type
                     );
                 })
+                .test(
+                    "fileSize",
+                    "File size must be less than 5MB",
+                    (value) => {
+                        if (
+                            !value ||
+                            (value.length !== undefined && value.length === 0)
+                        ) {
+                            return true;
+                        }
+                        if (typeof value === "string") {
+                            return true;
+                        }
+                        const file = value[0] || value;
+                        return file.size <= 5 * 1024 * 1024;
+                    }
+                )
                 .nullable(),
         }),
     },
@@ -162,7 +179,7 @@ export const profileSectionConfigs = {
         }),
     },
     candidateSkills: {
-        fields: [], 
+        fields: [],
         validationSchema: yup.object().shape({
             skillId: yup.string().required("Skill is required"),
             levelId: yup.string().required("Level is required"),

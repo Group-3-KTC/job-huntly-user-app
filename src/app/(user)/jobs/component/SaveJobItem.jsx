@@ -22,7 +22,7 @@ export default function SaveJobItem({ job }) {
         try {
             if (status?.saved) {
                 await unsaveJob(job.jobId).unwrap();
-                toast.info("Đã bỏ lưu công việc");
+                toast.success("Đã bỏ lưu công việc");
             } else {
                 await saveJob({ jobId: job.jobId }).unwrap();
                 toast.success("Đã lưu công việc");

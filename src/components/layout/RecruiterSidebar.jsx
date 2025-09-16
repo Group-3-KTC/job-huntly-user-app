@@ -22,6 +22,7 @@ import {
     Search,
     Building,
     ChevronDown,
+    Crown,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutThunk } from "@/features/auth/authSlice";
@@ -93,6 +94,11 @@ export default function RecruiterSidebar() {
             label: "Notifications",
             icon: Bell,
         },
+        {
+            href: "/recruiter/companyVip",
+            label: "Upgrade CompanyVip",
+            icon: Crown,
+        },
         { href: "/recruiter/profile", label: "Profile", icon: User },
         { href: "/recruiter/company", label: "Company", icon: Building },
         { href: "/recruiter/settings", label: "Settings", icon: Settings },
@@ -134,7 +140,7 @@ export default function RecruiterSidebar() {
             {/* Nút Đăng tin tuyển dụng*/}
             <div className="p-4">
                 <Link href="/recruiter/create-job">
-                    <Button className="flex items-center w-full gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                    <Button className="flex items-center w-full gap-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
                         <Plus className="w-4 h-4" />
                         <span>Post a Job</span>
                     </Button>

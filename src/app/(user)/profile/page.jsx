@@ -158,7 +158,7 @@ export default function ProfilePage() {
                         itemId: itemId,
                     }).unwrap();
 
-                    toast.info("Item deleted successfully");
+                    toast.success("Item deleted successfully");
                     await refetchProfile();
                 } else {
                     toast.error("Cannot delete: Item ID not found");
@@ -248,7 +248,7 @@ export default function ProfilePage() {
                 }
 
                 await updateCandidateProfile(formData).unwrap();
-                toast.info("Profile updated successfully");
+                toast.success("Profile updated successfully");
 
                 const updated = await refetchProfile();
                 const normalized = normalizeProfileData(updated.data);
@@ -268,7 +268,7 @@ export default function ProfilePage() {
                             itemId: itemId,
                             data: newData,
                         }).unwrap();
-                        toast.info("Item updated successfully");
+                        toast.success("Item updated successfully");
                     } else {
                         toast.error("Cannot update: Item ID not found");
                         return;
@@ -280,7 +280,7 @@ export default function ProfilePage() {
                             currentSection.id,
                         data: newData,
                     }).unwrap();
-                    toast.info("Item added successfully");
+                    toast.success("Item added successfully");
                 }
 
                 await refetchProfile();
