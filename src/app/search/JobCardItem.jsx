@@ -264,7 +264,9 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
                             )}
                         </button>
                     </div>
-
+                    {isLoggedIn && !isStatusLoading && applyStatus?.applied && (
+                            <ApplicationBadge status="Applied" />
+                    )}
                     {!isGrid && (
                         <button
                             onClick={(e) => {
