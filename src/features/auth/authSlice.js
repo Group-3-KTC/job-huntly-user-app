@@ -1,19 +1,33 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import authService from "@/services/authService";
 
+function toApiError(err, fallbackMessage = "Request failed", extra = {}) {
+    const r = err?.response;
+    if (r?.data) {
+        return {
+            ...r.data,
+            status: r.status ?? r.data.status,
+            ...extra,
+        };
+    }
+    return {
+        status: 0,
+        code: "NETWORK_ERROR",
+        message: err?.message || fallbackMessage,
+        extra: {},
+        ...extra,
+    };
+}
+
 export const loginThunk = createAsyncThunk(
     "auth/login",
     async (credentials, {rejectWithValue}) => {
         try {
             return await authService.login(credentials);
         } catch (err) {
-            const r = err?.response;
-            return rejectWithValue({
-                status: r?.status ?? 0,
-                message: r?.data?.message || err?.message || "Login failed",
-                email: credentials?.email,
-                path: r?.data?.path,
-            });
+            return rejectWithValue(
+                toApiError(err, "Login failed", {email: credentials?.email})
+            );
         }
     }
 );
@@ -24,7 +38,7 @@ export const registerThunk = createAsyncThunk(
         try {
             return await authService.register(payload);
         } catch (err) {
-            return rejectWithValue(err?.response?.data || err.message);
+            return rejectWithValue(toApiError(err, "Register failed"));
         }
     },
 );
@@ -36,7 +50,7 @@ export const meThunk = createAsyncThunk(
             const res = await authService.me();
             return res.user;
         } catch (e) {
-            return rejectWithValue({message: "Not authenticated"});
+            return rejectWithValue(toApiError(err, "Not authenticated"));
         }
     },
 );
@@ -49,17 +63,9 @@ export const logoutThunk = createAsyncThunk(
 
             return true;
         } catch (err) {
-            const data = err?.response?.data;
-            const message =
-                data?.detail ||
-                data?.title ||
-                data?.message ||
-                err?.message ||
-                "Logout failed";
-            return rejectWithValue({message, raw: data});
+            return rejectWithValue(toApiError(err, "Logout failed"));
         } finally {
             try {
-                console.log("remove localStorage");
                 localStorage.removeItem("authState");
             } catch {
             }
@@ -73,13 +79,7 @@ export const activateThunk = createAsyncThunk(
         try {
             return await authService.activate(token);
         } catch (err) {
-            const r = err?.response;
-            return rejectWithValue({
-                status: r?.status,
-                data: r?.data,
-                message:
-                    r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Activation failed",
-            });
+            return rejectWithValue(toApiError(err, "Activation failed"));
         }
     }
 );
@@ -90,13 +90,7 @@ export const resendActivationThunk = createAsyncThunk(
         try {
             return await authService.resendActivation(email);
         } catch (err) {
-            const r = err?.response;
-            return rejectWithValue({
-                status: r?.status,
-                data: r?.data,
-                message:
-                    r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Resend failed",
-            });
+            return rejectWithValue(toApiError(err, "Resend failed"));
         }
     }
 );
@@ -107,12 +101,7 @@ export const forgotPasswordThunk = createAsyncThunk(
         try {
             return await authService.forgotPassword(email);
         } catch (err) {
-            const r = err?.response;
-            return rejectWithValue({
-                status: r?.status,
-                message:
-                    r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Request failed",
-            });
+            return rejectWithValue(toApiError(err, "Request failed"));
         }
     }
 );
@@ -123,12 +112,7 @@ export const resetPasswordThunk = createAsyncThunk(
         try {
             return await authService.resetPassword({token, newPassword});
         } catch (err) {
-            const r = err?.response;
-            return rejectWithValue({
-                status: r?.status,
-                message:
-                    r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Reset failed",
-            });
+            return rejectWithValue(toApiError(err, "Reset failed"));
         }
     }
 );
@@ -140,12 +124,7 @@ export const refreshThunk = createAsyncThunk(
         try {
             return await authService.refresh();
         } catch (err) {
-            const r = err?.response;
-            return rejectWithValue({
-                status: r?.status,
-                message:
-                    r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Refresh failed",
-            });
+            return rejectWithValue(toApiError(err, "Refresh failed"));
         }
     }
 );
@@ -156,11 +135,7 @@ export const sendSetPasswordLinkThunk = createAsyncThunk(
         try {
             return await authService.sendSetPasswordLink(email);
         } catch (err) {
-            const r = err?.response;
-            return rejectWithValue({
-                status: r?.status,
-                message: r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Request failed",
-            });
+            return rejectWithValue(toApiError(err, "Request failed"));
         }
     }
 );
@@ -171,11 +146,7 @@ export const setPasswordThunk = createAsyncThunk(
         try {
             return await authService.setPassword({token, newPassword});
         } catch (err) {
-            const r = err?.response;
-            return rejectWithValue({
-                status: r?.status,
-                message: r?.data?.detail || r?.data?.title || r?.data?.message || err?.message || "Set password failed",
-            });
+            return rejectWithValue(toApiError(err, "Set password failed"));
         }
     }
 );
@@ -198,11 +169,6 @@ const authSlice = createSlice({
         clearError(state) {
             state.error = null;
         },
-        // authHydrated: (state, action) => {
-        //     const user = action.payload || {};
-        //     if (user !== undefined) state.user = user;
-        //     state.hydrated = true;
-        // },
         authHydrated: (state, action) => {
             state.user = action.payload?.user ?? null;
             state.hydrated = true;
