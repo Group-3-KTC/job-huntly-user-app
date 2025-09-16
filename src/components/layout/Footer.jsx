@@ -15,7 +15,7 @@ export const Footer = () => {
     };
 
     return (
-        <footer className="py-12 text-white bg-gray-900">
+        <footer className="w-full py-12 text-white bg-gray-900">
             <div className="container px-4 mx-auto">
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
                     {/* Company Info */}
@@ -36,23 +36,32 @@ export const Footer = () => {
                         <h4 className="mb-4 font-semibold">Quick Link</h4>
                         <ul className="space-y-2 text-gray-400">
                             <li>
-                                <Link href="#" className="hover:text-white">
-                                    About
+                                <Link href="#hero" className="hover:text-white">
+                                    Home
                                 </Link>
                             </li>
                             <li>
-                                <Link href="#" className="hover:text-white">
-                                    Contact
+                                <Link
+                                    href="#stats"
+                                    className="hover:text-white"
+                                >
+                                    Statistics
                                 </Link>
                             </li>
                             <li>
-                                <Link href="#" className="hover:text-white">
-                                    Pricing
+                                <Link
+                                    href="#categories"
+                                    className="hover:text-white"
+                                >
+                                    Categories
                                 </Link>
                             </li>
                             <li>
-                                <Link href="#" className="hover:text-white">
-                                    Blog
+                                <Link
+                                    href="#vacancies"
+                                    className="hover:text-white"
+                                >
+                                    Vacancies
                                 </Link>
                             </li>
                         </ul>
