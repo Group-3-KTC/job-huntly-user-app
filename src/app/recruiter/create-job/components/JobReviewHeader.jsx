@@ -13,17 +13,19 @@ const JobReviewHeader = ({
     salaryMax,
     salaryType,
 }) => {
+    const formatNumber = (num) => {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
+
     const formatSalary = () => {
         if (salaryType === 1) {
             return "Negotiable";
         }
         if (salaryMin && salaryMax) {
-            return `${(salaryMin / 1000000).toFixed(1)}M - ${(
-                salaryMax / 1000000
-            ).toFixed(1)}M VNĐ`;
+            return `${formatNumber(salaryMin)} - ${formatNumber(salaryMax)} VND`;
         }
         if (salaryMin) {
-            return `From ${(salaryMin / 1000000).toFixed(1)}M VNĐ`;
+            return `From ${formatNumber(salaryMin)} VND`;
         }
         return "Not disclosed";
     };
@@ -31,7 +33,7 @@ const JobReviewHeader = ({
     return (
         <div className="flex items-start justify-between mb-6">
             <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-cyan-400 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
+                <div className="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center text-white text-2xl font-bold">
                     {title ? title.charAt(0).toUpperCase() : "J"}
                 </div>
                 <div>
