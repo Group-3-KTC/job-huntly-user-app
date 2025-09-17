@@ -14,33 +14,33 @@ const RecommendedCompanies = () => {
     if (recommendedCompanies.length === 0) return null;
 
     return (
-        <div className="mt-12">
+        <section id="RecommendedCompanies" className="mt-12">
             <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                <h2 className="flex items-center text-2xl font-bold text-gray-800">
                     <Building className="mr-2 h-6 w-6 text-[#0A66C2]" />
                     Recommended companies
                 </h2>
-                <p className="text-gray-600 mt-1">
+                <p className="mt-1 text-gray-600">
                     Based on your profile, interests, and recent activity
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {recommendedCompanies.map((company) => (
                     <Link
                         key={company.id}
                         href={`/company/company-detail/${company.id}`}
-                        className="border rounded-lg p-6 relative hover:shadow-lg transition-shadow bg-white"
+                        className="relative p-6 transition-shadow bg-white border rounded-lg hover:shadow-lg"
                     >
                         {/* Job count */}
                         <div className="absolute top-6 right-6 text-[#0A66C2] font-medium flex items-center">
-                            <Briefcase className="mr-1 h-4 w-4" />
+                            <Briefcase className="w-4 h-4 mr-1" />
                             {company.jobsCount || 0} jobs
                         </div>
 
                         {/* Logo & company name */}
                         <div className="mb-4">
-                            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mb-4">
+                            <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-lg">
                                 <Image
                                     src={getImageUrl(company.avatar)}
                                     alt={company.companyName}
@@ -53,30 +53,30 @@ const RecommendedCompanies = () => {
                                 {company.companyName}
                             </h3>
 
-                            <div className="mt-2 flex items-center text-gray-600 text-sm">
-                                <MapPin className="mr-1 h-4 w-4" />
+                            <div className="flex items-center mt-2 text-sm text-gray-600">
+                                <MapPin className="w-4 h-4 mr-1" />
                                 {company.locationCity},{" "}
                                 {company.locationCountry}
                             </div>
 
-                            <div className="mt-1 flex items-center text-gray-600 text-sm">
-                                <Users className="mr-1 h-4 w-4" />
+                            <div className="flex items-center mt-1 text-sm text-gray-600">
+                                <Users className="w-4 h-4 mr-1" />
                                 {company.quantityEmployee}+ employees
                             </div>
                         </div>
 
                         {/* Description */}
-                        <p className="text-gray-600 mb-4 line-clamp-3 text-sm">
+                        <p className="mb-4 text-sm text-gray-600 line-clamp-3">
                             {company.description}
                         </p>
 
                         {/* Category tags */}
-                        <div className="mt-auto flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 mt-auto">
                             {company.categories &&
                                 company.categories.map((category, index) => (
                                     <span
                                         key={index}
-                                        className="inline-block px-3 py-1 text-xs text-blue-600 bg-blue-50 border border-blue-100 rounded-full"
+                                        className="inline-block px-3 py-1 text-xs text-blue-600 border border-blue-100 rounded-full bg-blue-50"
                                     >
                                         {category}
                                     </span>
@@ -85,7 +85,7 @@ const RecommendedCompanies = () => {
                     </Link>
                 ))}
             </div>
-        </div>
+        </section>
     );
 };
 

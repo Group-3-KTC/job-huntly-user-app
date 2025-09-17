@@ -16,24 +16,22 @@ const PersonalDetailModal = ({
     onSave,
 }) => {
     const [hasChanges, setHasChanges] = useState(false);
+    const [imageError, setImageError] = useState(false); 
     const [previewAvatar, setPreviewAvatar] = useState(
         initialData.avatar || ""
-    );
+    ); 
     const fileInputRef = useRef(null);
 
-    // Transform initial data for date fields
     const transformInitialData = () => {
         const transformed = { ...initialData };
         config.fields.forEach((field) => {
             if (field.type === "date" && transformed[field.key]) {
-                // Try parsing with "yyyy-MM-dd" (API format)
                 let parsed = parse(
                     transformed[field.key],
                     "yyyy-MM-dd",
                     new Date()
                 );
                 if (!isValid(parsed)) {
-                    // Fallback to "dd/MM/yyyy" for older data
                     parsed = parse(
                         transformed[field.key],
                         "dd/MM/yyyy",
@@ -68,7 +66,6 @@ const PersonalDetailModal = ({
             const currentValue = watchedValues[key];
             const initialValue = initialData[key];
 
-            // Check if the field is a date field
             const field = config.fields.find((f) => f.key === key);
             if (field?.type === "date" && currentValue) {
                 const formattedCurrent = currentValue
@@ -78,7 +75,6 @@ const PersonalDetailModal = ({
                 return formattedCurrent !== formattedInitial;
             }
 
-            // Handle file input changes
             if (field?.type === "file") {
                 return currentValue?.[0] !== initialValue;
             }
@@ -105,6 +101,10 @@ const PersonalDetailModal = ({
             const reader = new FileReader();
             reader.onload = (e) => {
                 setPreviewAvatar(e.target.result);
+                setImageError(false); // Reset lỗi khi upload thành công
+            };
+            reader.onerror = () => {
+                setImageError(true); // Đặt lỗi nếu đọc file thất bại
             };
             reader.readAsDataURL(file);
         }
@@ -117,7 +117,6 @@ const PersonalDetailModal = ({
     const onSubmit = (data) => {
         const processedData = { ...data };
 
-        // Convert date fields to YYYY-MM-DD for backend
         config.fields.forEach((field) => {
             if (
                 field.type === "file" &&
@@ -139,6 +138,13 @@ const PersonalDetailModal = ({
     };
 
     if (!config) return null;
+
+    // Debug giá trị (tạm thời để kiểm tra)
+    useEffect(() => {
+        console.log("initialData.avatar:", initialData.avatar);
+        console.log("previewAvatar:", previewAvatar);
+        console.log("imageError:", imageError);
+    }, [initialData.avatar, previewAvatar, imageError]);
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm">
@@ -166,31 +172,29 @@ const PersonalDetailModal = ({
                         <div className="flex gap-6">
                             {/* Avatar Section */}
                             {config.fields.some((f) => f.key === "avatar") && (
-                                <div className="flex flex-col items-center gap-3">
-                                    <div className="relative w-28 h-28">
-                                        <div className="overflow-hidden bg-gray-100 border-4 border-gray-200 rounded-full w-28 h-28">
-                                            {previewAvatar ? (
+                                <div className="flex flex-col items-center w-full gap-3 md:w-auto">
+                                    <div className="w-32 h-32">
+                                        <div className="flex items-center justify-center w-32 h-32 overflow-hidden bg-gray-100 border-4 border-gray-200 rounded-full">
+                                            {previewAvatar && !imageError ? (
                                                 <Image
                                                     src={previewAvatar}
                                                     alt="Avatar preview"
-                                                    width={112}
-                                                    height={112}
+                                                    width={128}
+                                                    height={128}
                                                     className="object-cover w-full h-full"
-                                                    unoptimized={previewAvatar.startsWith(
-                                                        "data:"
-                                                    )}
+                                                    unoptimized={true} // Cho phép tất cả URL, kể cả bên ngoài
+                                                    onError={(e) => {
+                                                        e.currentTarget.style.display =
+                                                            "none";
+                                                        setImageError(true);
+                                                    }}
                                                 />
                                             ) : (
-                                                <div className="flex items-center justify-center w-full h-full text-sm text-gray-400">
-                                                    No Image
-                                                </div>
+                                                <span className="text-xs text-center text-gray-400">
+                                                    No image
+                                                </span>
                                             )}
                                         </div>
-                                        {errors.avatar && (
-                                            <p className="absolute w-full text-xs text-center text-red-500 -bottom-5">
-                                                {errors.avatar.message}
-                                            </p>
-                                        )}
                                     </div>
                                     <button
                                         type="button"
@@ -208,8 +212,30 @@ const PersonalDetailModal = ({
                                         onChange={(e) =>
                                             handleAvatarChange(e, "avatar")
                                         }
-                                        className="absolute hidden"
+                                        className="hidden"
                                     />
+                                    <div className="w-full mt-1 text-xs text-center min-h-[1rem]">
+                                        {errors.avatar ? (
+                                            <span className="block max-w-[8rem] text-red-500 break-words">
+                                                {errors.avatar.message?.includes(
+                                                    "5MB"
+                                                )
+                                                    ? `${
+                                                          errors.avatar.message
+                                                      }. Current size: ${(
+                                                          (watchedValues
+                                                              .avatar?.[0]
+                                                              ?.size || 0) /
+                                                          (1024 * 1024)
+                                                      ).toFixed(2)} MB`
+                                                    : errors.avatar.message}
+                                            </span>
+                                        ) : (
+                                            <span className="opacity-0">
+                                                placeholder
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             )}
 
