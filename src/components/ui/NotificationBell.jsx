@@ -28,6 +28,7 @@ function timeAgo(iso) {
     const d = Math.floor(h / 24);
     return `${d}d`;
 }
+const FORCE_XHR_ONLY = false;
 
 export default function NotificationBell({ className = "" }) {
     const router = useRouter();
@@ -36,9 +37,6 @@ export default function NotificationBell({ className = "" }) {
     const WS_ENDPOINT = process.env.NEXT_PUBLIC_WS_ENDPOINT || "/ws";
     const SUB_DEST_TEMPLATE =
         process.env.NEXT_PUBLIC_SUB_DEST || "/user/queue/noti";
-
-    // Nếu bạn publish theo topic {userId}, bạn có thể truyền userId qua window._appUserId (tuỳ dự án),
-    // còn không thì để nguyên user-dest là /user/queue/noti.
     const userId =
         typeof window !== "undefined" ? window?._appUserId : undefined;
     const SUB_DEST = SUB_DEST_TEMPLATE.includes("{userId}")
@@ -56,7 +54,40 @@ export default function NotificationBell({ className = "" }) {
 
     const stompRef = useRef(null);
     const subRef = useRef(null);
-    const reconnectTimer = useRef(null);
+    const refetchTimerRef = useRef(null);
+    const openRef = useRef(false);
+
+    const knownIdsRef = useRef(new Set());
+    const getKey = (it) =>
+        it?.id ??
+        it?.clientId ??
+        it?.uuid ??
+        it?.notiId ??
+        it?.providerId ??
+        null;
+
+    const mergeUnique = (prev, incoming, prepend = false) => {
+        const next = [...prev];
+        (incoming || []).forEach((it) => {
+            if (!it) return;
+            const rawKey = getKey(it);
+            if (rawKey == null) return;
+            const key = String(rawKey);
+
+            if (!knownIdsRef.current.has(key)) {
+                knownIdsRef.current.add(key);
+                const normalized = { ...it, id: key, _k: key };
+                prepend ? next.unshift(normalized) : next.push(normalized);
+            } else {
+                const idx = next.findIndex(
+                    (x) => (x._k ?? String(x.id)) === key
+                );
+                if (idx >= 0)
+                    next[idx] = { ...next[idx], ...it, id: key, _k: key };
+            }
+        });
+        return next;
+    };
 
     const displayCount = count > 99 ? "99+" : count;
 
@@ -83,14 +114,20 @@ export default function NotificationBell({ className = "" }) {
                 );
                 if (res.ok) {
                     const data = await res.json();
+                    const list = data?.items || [];
+
                     setTotalPages(data?.totalPages ?? 0);
                     setPage(p);
-                    setItems((prev) =>
-                        append
-                            ? [...prev, ...(data?.items || [])]
-                            : data?.items || []
-                    );
-                    // Đồng bộ badge khi mở dropdown lần đầu
+
+                    setItems((prev) => {
+                        if (!append) {
+                            knownIdsRef.current.clear();
+                            return mergeUnique([], list, false);
+                        }
+                        return mergeUnique(prev, list, false);
+                    });
+
+                    // Nếu backend trả kèm unreadCount, đồng bộ lại
                     if (!append && typeof data?.unreadCount === "number") {
                         setCount(data.unreadCount);
                     }
@@ -105,22 +142,24 @@ export default function NotificationBell({ className = "" }) {
 
     const markAllRead = useCallback(async () => {
         try {
-            await fetch(`${API_BASE}/notifications/mark-all-read`, {
+            const res = await fetch(`${API_BASE}/notifications/mark-all-read`, {
                 method: "POST",
                 credentials: "include",
             });
-            setItems((prev) =>
-                prev.map((it) =>
-                    it.isRead
-                        ? it
-                        : {
-                              ...it,
-                              isRead: true,
-                              readAt: new Date().toISOString(),
-                          }
-                )
-            );
-            setCount(0);
+            if (res.ok) {
+                setItems((prev) =>
+                    prev.map((it) =>
+                        it.isRead
+                            ? it
+                            : {
+                                  ...it,
+                                  isRead: true,
+                                  readAt: new Date().toISOString(),
+                              }
+                    )
+                );
+                setCount(0);
+            }
         } catch (_) {}
     }, [API_BASE]);
 
@@ -128,24 +167,26 @@ export default function NotificationBell({ className = "" }) {
         async (ids) => {
             if (!ids?.length) return;
             try {
-                await fetch(`${API_BASE}/notifications/mark-read`, {
+                const res = await fetch(`${API_BASE}/notifications/mark-read`, {
                     method: "POST",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(ids),
                 });
-                setItems((prev) =>
-                    prev.map((it) =>
-                        ids.includes(it.id)
-                            ? {
-                                  ...it,
-                                  isRead: true,
-                                  readAt: new Date().toISOString(),
-                              }
-                            : it
-                    )
-                );
-                setCount((prev) => Math.max(0, prev - ids.length));
+                if (res.ok) {
+                    setItems((prev) =>
+                        prev.map((it) =>
+                            ids.includes(it.id)
+                                ? {
+                                      ...it,
+                                      isRead: true,
+                                      readAt: new Date().toISOString(),
+                                  }
+                                : it
+                        )
+                    );
+                    setCount((prev) => Math.max(0, prev - ids.length));
+                }
             } catch (_) {}
         },
         [API_BASE]
@@ -154,26 +195,14 @@ export default function NotificationBell({ className = "" }) {
     const onItemClick = useCallback(
         async (it) => {
             if (!it) return;
-
-            // 1) Đánh dấu đã đọc trước khi điều hướng
             if (!it.isRead && it.id) await markReadIds([it.id]);
 
-            // 2) Xác định đích điều hướng theo ưu tiên: jobId -> link -> bỏ qua
             let target = null;
-
-            // Ưu tiên điều hướng job nếu có jobId
-            if (it.jobId) {
-                target = `/job-detail/${it.jobId}`;
-            } else if (it.link) {
-                target = it.link.trim();
-            }
-
-            // Đóng popover để tránh "treo" menu khi chuyển trang
+            if (it.jobId) target = `/job-detail/${it.jobId}`;
+            else if (it.link) target = it.link.trim();
             setOpen(false);
 
             if (!target) return;
-
-            // 3) Điều hướng: tuyệt đối -> window.location; tương đối -> router.push
             if (/^https?:\/\//i.test(target)) {
                 window.location.href = target;
             } else {
@@ -192,54 +221,104 @@ export default function NotificationBell({ className = "" }) {
 
     const connectStomp = useCallback(() => {
         if (stompRef.current?.active) return;
-
+        const TRANSPORTS = FORCE_XHR_ONLY
+            ? ["xhr-streaming", "xhr-polling"]
+            : ["xhr-streaming", "xhr-polling", "websocket"];
         const sock = new SockJS(WS_ENDPOINT, null, {
             withCredentials: true,
-            transports: ["xhr-streaming", "xhr-polling", "websocket"],
+            transports: TRANSPORTS,
             transportOptions: {
                 "xhr-streaming": { withCredentials: true },
                 "xhr-polling": { withCredentials: true },
+                websocket: { withCredentials: true },
             },
         });
 
         const client = new StompClient({
             webSocketFactory: () => sock,
+            // DÙNG cơ chế reconnect tích hợp sẵn, KHÔNG thêm setTimeout reconnect thủ công
             reconnectDelay: 4000,
+            heartbeatIncoming: 10000,
+            heartbeatOutgoing: 10000,
             debug: (s) => console.debug("[STOMP]", s),
+
             onConnect: () => {
-                if (SUB_DEST) {
-                    subRef.current = client.subscribe(SUB_DEST, () => {
-                        setCount((prev) => prev + 1);
-                        if (open) {
-                            // đang mở dropdown: refresh trang đầu để thấy item mới
-                            fetchFeed(0, false);
-                        }
-                    });
-                }
-            },
-            onWebSocketClose: () => {
+                if (!SUB_DEST) return;
+
+                // Tránh sub trùng
                 if (subRef.current) {
                     try {
                         subRef.current.unsubscribe();
                     } catch {}
                     subRef.current = null;
                 }
-                if (!reconnectTimer.current) {
-                    reconnectTimer.current = setTimeout(() => {
-                        reconnectTimer.current = null;
-                        connectStomp();
-                    }, 5000);
+
+                subRef.current = client.subscribe(SUB_DEST, (frame) => {
+                    // Luôn tăng badge ngay khi có noti mới
+                    setCount((p) => p + 1);
+
+                    // Parse để prepend “ảo” cho cảm giác realtime
+                    let notif = null;
+                    try {
+                        notif = frame?.body ? JSON.parse(frame.body) : null;
+                    } catch {}
+
+                    if (notif) {
+                        if (!notif.createdAt)
+                            notif.createdAt = new Date().toISOString();
+                        if (notif.isRead == null) notif.isRead = false;
+                        if (getKey(notif) == null) {
+                            notif = {
+                                ...notif,
+                                clientId: `temp:${Date.now()}:${Math.random()}`,
+                            };
+                        }
+                        if (openRef.current) {
+                            setItems((prev) =>
+                                mergeUnique(prev, [notif], true)
+                            );
+                        }
+                    }
+
+                    // Dù parse được hay không, nếu popover đang mở -> debounce refetch trang 1
+                    if (openRef.current) {
+                        if (refetchTimerRef.current)
+                            clearTimeout(refetchTimerRef.current);
+                        refetchTimerRef.current = setTimeout(() => {
+                            fetchFeed(0, false);
+                        }, 200);
+                    }
+                });
+            },
+
+            onWebSocketClose: () => {
+                // Cleanup; để reconnectDelay tự lo reconnect
+                if (subRef.current) {
+                    try {
+                        subRef.current.unsubscribe();
+                    } catch {}
+                    subRef.current = null;
                 }
             },
         });
 
+        // Nếu trong lúc chuẩn bị activate mà đã có client active, hủy client mới
+        if (stompRef.current?.active) {
+            try {
+                client.deactivate();
+            } catch {}
+            return;
+        }
+
         client.activate();
         stompRef.current = client;
-    }, [API_BASE, WS_ENDPOINT, SUB_DEST, open, fetchFeed]);
+    }, [WS_ENDPOINT, SUB_DEST, fetchFeed]);
 
+    // Mount: fetch count + connect stomp
     useEffect(() => {
         fetchUnreadCount();
         connectStomp();
+
         const onVisible = () => {
             if (document.visibilityState === "visible") fetchUnreadCount();
         };
@@ -247,7 +326,9 @@ export default function NotificationBell({ className = "" }) {
 
         return () => {
             document.removeEventListener("visibilitychange", onVisible);
-            if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+
+            if (refetchTimerRef.current) clearTimeout(refetchTimerRef.current);
+
             if (subRef.current) {
                 try {
                     subRef.current.unsubscribe();
@@ -263,8 +344,9 @@ export default function NotificationBell({ className = "" }) {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    /** 9) Mở dropdown => fetch trang đầu */
+    useEffect(() => {
+        openRef.current = open;
+    }, [open]);
     const onOpenChange = async (next) => {
         setOpen(next);
         if (next) {
