@@ -1,6 +1,6 @@
 import CompanyGuard from "@/components/recruiter/CompanyGuard";
 
-export default function NotificationsPage() {
+export default function PaymentHistoryPage() {
     return (
         <CompanyGuard>
             <div className="p-4">

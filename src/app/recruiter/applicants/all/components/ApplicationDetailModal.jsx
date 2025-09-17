@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
     Dialog,
     DialogContent,
@@ -18,6 +18,8 @@ import {
     Building2,
     User2,
 } from "lucide-react";
+import { useUpdateApplicationStatusMutation } from "@/services/applicationService";
+import { toast } from "react-toastify";
 
 export default function ApplicationDetailModal({
     open,
@@ -37,6 +39,34 @@ export default function ApplicationDetailModal({
             application ? new Date(application.createdAt).toLocaleString() : "",
         [application]
     );
+
+    const [selectedStatus, setSelectedStatus] = useState("APPLIED");
+    const [currentStatus, setCurrentStatus] = useState("APPLIED");
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [updateStatus, { isLoading: updating }] =
+        useUpdateApplicationStatusMutation();
+
+    useEffect(() => {
+        const s = application?.status || "APPLIED";
+        setSelectedStatus(s);
+        setCurrentStatus(s);
+    }, [application]);
+
+    const handleConfirm = async () => {
+        if (!application?.id || !selectedStatus) return;
+        try {
+            await updateStatus({
+                applicationId: application.id,
+                status: selectedStatus,
+            }).unwrap();
+            setCurrentStatus(selectedStatus);
+            setConfirmOpen(false);
+            toast.success("Update status successfully");
+        } catch (e) {
+            console.error("Update status failed", e);
+            toast.error("Update status failed");
+        }
+    };
 
     if (!application) return null;
 
@@ -63,7 +93,7 @@ export default function ApplicationDetailModal({
                                         "Candidate"}
                                 </h3>
                                 <span className="px-2.5 py-1 rounded-full text-xs bg-white/15 border border-white/25">
-                                    {application.status}
+                                    {currentStatus}
                                 </span>
                             </div>
                             <p className="text-white/80 mt-0.5 flex items-center gap-2">
@@ -137,6 +167,39 @@ export default function ApplicationDetailModal({
                         </div>
                     </div>
 
+                    {/* Update status */}
+                    <div className="rounded-lg border p-4 bg-gray-50">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                            <label className="text-sm font-medium text-gray-700">
+                                Update Status
+                            </label>
+                            <div className="flex items-center gap-3">
+                                <select
+                                    className="px-3 py-2 border rounded-md text-sm"
+                                    value={selectedStatus}
+                                    onChange={(e) =>
+                                        setSelectedStatus(e.target.value)
+                                    }
+                                >
+                                    {/* <option value="APPLIED">APPLIED</option> */}
+                                    <option value="REVIEWED">REVIEWED</option>
+                                    <option value="REJECTED">REJECTED</option>
+                                </select>
+                                <Button
+                                    variant="secondary"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                                    disabled={
+                                        updating ||
+                                        selectedStatus === currentStatus
+                                    }
+                                    onClick={() => setConfirmOpen(true)}
+                                >
+                                    Update
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Actions */}
                     <div className="flex flex-wrap gap-3">
                         {application.cv && (
@@ -153,7 +216,7 @@ export default function ApplicationDetailModal({
                         {application.cvDownload && (
                             <Button
                                 variant="secondary"
-                                className="bg-blue-600 hover:bg-blue-700"
+                                className="bg-blue-600 hover:bg-blue-700 text-white"
                                 onClick={() =>
                                     window.open(
                                         application.cvDownload,
@@ -172,6 +235,33 @@ export default function ApplicationDetailModal({
                     </div>
                 </div>
             </DialogContent>
+
+            {/* Confirm dialog */}
+            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Confirm status update</DialogTitle>
+                        <DialogDescription>
+                            Set application status to <b>{selectedStatus}</b>?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setConfirmOpen(false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                            onClick={handleConfirm}
+                            disabled={updating}
+                        >
+                            {updating ? "Updating..." : "Confirm"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </Dialog>
     );
 }

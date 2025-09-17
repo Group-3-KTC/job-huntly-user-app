@@ -3,6 +3,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import JoditEditor from 'jodit-react';
 
+export const metadata = { robots: { index: false, follow: false } };
 const JoditDemoPage = () => {
     const editor = useRef(null);
     const [content, setContent] = useState(`

@@ -1,13 +1,22 @@
 import { Mail, Gift, MapPin, Phone, User, Link } from "lucide-react";
 import Image from "next/image";
 import { format, parse, isValid } from "date-fns";
+import { useState } from "react";
 
 const PersonalDetailSection = ({ data }) => {
     const displayAvatar = data?.avatar?.trim() || null;
+    // const isValidUrl =
+    //     typeof displayAvatar === "string" &&
+    //     (displayAvatar.startsWith("http") || displayAvatar.startsWith("https"));
+
     const isValidUrl =
         typeof displayAvatar === "string" &&
         (displayAvatar.startsWith("http") || displayAvatar.startsWith("https"));
-
+    const [imageError, setImageError] = useState(false); 
+    const handleImageError = (e) => {
+        e.currentTarget.style.display = "none"; 
+        setImageError(true); 
+    };
     const formatDateForDisplay = (dateStr) => {
         if (!dateStr) return "Your Date of Birth Here";
         const parsed = parse(dateStr, "yyyy-MM-dd", new Date());
@@ -24,11 +33,7 @@ const PersonalDetailSection = ({ data }) => {
                                 src={displayAvatar}
                                 alt="User Avatar"
                                 className="object-cover object-center w-full h-full rounded-full"
-                                onError={(e) => {
-                                    e.currentTarget.style.display = "none";
-                                    e.currentTarget.parentElement.innerHTML =
-                                        '<span class="text-gray-400 text-xs">Update your image</span>';
-                                }}
+                                onError={handleImageError} 
                                 width={60}
                                 height={60}
                             />

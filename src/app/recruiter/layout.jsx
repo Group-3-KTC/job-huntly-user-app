@@ -11,11 +11,12 @@ import { useSelector } from "react-redux";
 import LoadingScreen from "@/components/ui/loadingScreen";
 import { selectAuthLoading } from "@/features/auth/authSelectors";
 
+export const metadata = { robots: { index: false, follow: false } };
 export default function RecruiterLayout({ children }) {
     const isAuthLoading = useSelector(selectAuthLoading);
 
     if (isAuthLoading) {
-        return <LoadingScreen message="Đang xử lý..." />;
+        return <LoadingScreen message="Loading..." />;
     }
 
     return (

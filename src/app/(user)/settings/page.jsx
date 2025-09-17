@@ -1,9 +1,23 @@
 "use client";
 
-import * as Switch from "@radix-ui/react-switch";
+import SetPasswordEmailSent from "@/components/auth/SetPasswordEmailSent";
 import { Mail, User, Lock, Trash2, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function SettingsPage() {
+    const user = useSelector((state) => state.auth.user);
+    const [showSetPwSent, setShowSetPwSent] = useState(false);
+
+    if (showSetPwSent) {
+        return (
+            <SetPasswordEmailSent
+                email={user.email}
+                onBack={() => setShowSetPwSent(false)}
+            />
+        );
+    }
+
     return (
         <div className="flex flex-col gap-6">
             {/* Account Info */}
@@ -14,7 +28,7 @@ export default function SettingsPage() {
                     <div>
                         <p className="text-sm text-gray-500">Email:</p>
                         <p className="font-medium text-gray-800">
-                            phuc111239@gmail.com
+                            {user.email}
                         </p>
                     </div>
                     <Mail className="w-5 h-5 text-gray-400" />
@@ -24,7 +38,7 @@ export default function SettingsPage() {
                     <div>
                         <p className="text-sm text-gray-500">Full name:</p>
                         <p className="font-medium text-gray-800">
-                            Hoang Phuc Vo
+                            {user.fullName}
                         </p>
                         <p className="text-sm text-gray-500">
                             Your account name is synchronized with profile
@@ -51,10 +65,22 @@ export default function SettingsPage() {
                     You signed up with Google, so your account doesn’t have a
                     password.
                 </div>
+
+                <div className="mt-3 text-sm">
+                    <p className="mb-2 text-gray-600">
+                        If you still want to set a password{"  "}
+                    </p>
+                    <button
+                        onClick={() => setShowSetPwSent(true)}
+                        className="inline-flex items-center px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 "
+                    >
+                        click here
+                    </button>
+                </div>
             </section>
 
             {/* Job Invitation Settings */}
-            <section className="p-6 space-y-4 bg-white border rounded-lg shadow-sm">
+            {/* <section className="p-6 space-y-4 bg-white border rounded-lg shadow-sm">
                 <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold">
                         Job Invitation Settings
@@ -94,10 +120,10 @@ export default function SettingsPage() {
                         <option>No companies selected</option>
                     </select>
                 </div>
-            </section>
+            </section> */}
 
             {/* Delete Account */}
-            <section className="p-6 bg-white border rounded-lg shadow-sm">
+            {/* <section className="p-6 bg-white border rounded-lg shadow-sm">
                 <h2 className="text-lg font-semibold text-red-600">
                     Delete Account
                 </h2>
@@ -114,7 +140,7 @@ export default function SettingsPage() {
                     <Trash2 className="w-4 h-4" />
                     Delete your account
                 </button>
-            </section>
+            </section> */}
         </div>
     );
 }

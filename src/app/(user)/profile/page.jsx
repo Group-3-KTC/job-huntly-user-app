@@ -26,6 +26,7 @@ import LoadingScreen from "@/components/ui/loadingScreen";
 import { normalizeProfileData } from "@/features/profile/normalizeProfileData";
 import { setPersonalDetail } from "@/features/profile/personalDetailSlice";
 import { toast } from "react-toastify";
+import { meThunk } from "@/features/auth/authSlice";
 
 const sectionToEndpointMap = {
     candidateSkills: "candidateSkills",
@@ -253,6 +254,7 @@ export default function ProfilePage() {
                 const updated = await refetchProfile();
                 const normalized = normalizeProfileData(updated.data);
                 dispatch(setPersonalDetail(normalized.personalDetail));
+                await dispatch(meThunk()).unwrap();
             } else if (isArraySection(currentSection.id)) {
                 if (editingItemIndex !== null) {
                     const itemId =
@@ -291,7 +293,9 @@ export default function ProfilePage() {
             setEditingItemIndex(null);
         } catch (error) {
             if (error.status === 401) {
-                toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+                toast.error(
+                    "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+                );
                 window.location.href = "/login";
             } else {
                 toast.error(
