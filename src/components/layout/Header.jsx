@@ -116,16 +116,18 @@ export const Header = () => {
                         Companies
                     </div>
                     <div className="space-y-2">
-                        <Link href="/company/company-search">
+                        <Link href="/company/company-search/results">
                             <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
                                 <Building className="w-4 h-4 text-gray-600" />
                                 <span className="text-sm">Company List</span>
                             </div>
                         </Link>
-                        <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                            <Star className="w-4 h-4 text-gray-600" />
-                            <span className="text-sm">Top Companies</span>
-                        </div>
+                        <Link href="/company/company-search">
+                            <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
+                                <Star className="w-4 h-4 text-gray-600" />
+                                <span className="text-sm">Top Companies</span>
+                            </div>
+                        </Link>
                     </div>
                 </div>
             </div>

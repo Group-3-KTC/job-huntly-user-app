@@ -8,27 +8,29 @@ import FeaturedJobsSection from "@/components/home/FeaturedJobsSection";
 import TopCompaniesSection from "@/components/home/TopCompaniesSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import CallToActionSection from "@/components/home/CallToActionSection";
+import AboutUsSection from "@/components/home/AboutUsSection";
 
 export default function HomePage() {
-  return (
-      <div className="container px-2 py-6 mx-auto sm:px-4 sm:py-8">
-          <section id="hero">
-              <HeroSection />
-          </section>
-          <section id="stats">
-              <StatsSection />
-          </section>
-          <section id="categories">
-              <CategoriesSection />
-          </section>
-          <section id="vacancies">
-              <VacanciesSection />
-          </section>
-          <HowItWorksSection />
-          <FeaturedJobsSection />
-          <TopCompaniesSection />
-          <TestimonialsSection />
-          <CallToActionSection />
-      </div>
-  );
+    return (
+        <div className="container px-2 py-6 mx-auto sm:px-4 sm:py-8">
+            <section id="hero">
+                <HeroSection />
+            </section>
+            <section id="stats">
+                <StatsSection />
+            </section>
+            <section id="categories">
+                <CategoriesSection />
+            </section>
+            <section id="aboutUs">
+                <AboutUsSection />
+            </section>
+            <VacanciesSection />
+            <HowItWorksSection />
+            <FeaturedJobsSection />
+            <TopCompaniesSection />
+            <TestimonialsSection />
+            <CallToActionSection />
+        </div>
+    );
 }

@@ -42,6 +42,14 @@ export const Footer = () => {
                             </li>
                             <li>
                                 <Link
+                                    href="#aboutUs"
+                                    className="hover:text-white"
+                                >
+                                    About Us
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
                                     href="#stats"
                                     className="hover:text-white"
                                 >
@@ -54,14 +62,6 @@ export const Footer = () => {
                                     className="hover:text-white"
                                 >
                                     Categories
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="#vacancies"
-                                    className="hover:text-white"
-                                >
-                                    Vacancies
                                 </Link>
                             </li>
                         </ul>
