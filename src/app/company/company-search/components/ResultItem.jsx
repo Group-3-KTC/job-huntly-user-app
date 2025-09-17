@@ -10,6 +10,7 @@ import {
     Briefcase,
     Star,
     Calendar,
+    FileText,
 } from "lucide-react";
 import { getImageUrl } from "@/lib/utils";
 
@@ -97,9 +98,10 @@ const ResultItem = ({ company }) => {
                         )}
                     </div>
 
-                    <p className="text-sm text-gray-600 line-clamp-2">
-                        {company.description}
-                    </p>
+                    <div className="text-sm text-gray-600 line-clamp-2 flex items-start gap-2">
+                        <FileText className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                        <span>{company.description}</span>
+                    </div>
 
                     {company.parentCategories &&
                         company.parentCategories.length > 0 && (

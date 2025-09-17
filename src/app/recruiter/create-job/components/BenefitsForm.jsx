@@ -5,7 +5,42 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
+import {
+    Heart,
+    Plane,
+    GraduationCap,
+    Coffee,
+    Car,
+    Home,
+    Shield,
+    Zap,
+    Users,
+    Trophy,
+    Clock,
+} from "lucide-react";
+import JoditEditorComponent from "@/components/ui/JoditEditor";
+
+const benefitIcons = [
+    { value: "heart", label: "Healthcare", icon: Heart },
+    { value: "plane", label: "Travel", icon: Plane },
+    { value: "graduation", label: "Education", icon: GraduationCap },
+    { value: "coffee", label: "Perks", icon: Coffee },
+    { value: "car", label: "Transportation", icon: Car },
+    { value: "home", label: "Remote Work", icon: Home },
+    { value: "shield", label: "Insurance", icon: Shield },
+    { value: "zap", label: "Energy", icon: Zap },
+    { value: "users", label: "Team", icon: Users },
+    { value: "trophy", label: "Achievement", icon: Trophy },
+    { value: "clock", label: "Flexible Hours", icon: Clock },
+];
 
 const BenefitsForm = ({ formData, onInputChange }) => {
     const handleBenefitChange = (index, field, value) => {
@@ -23,7 +58,7 @@ const BenefitsForm = ({ formData, onInputChange }) => {
             id: Date.now().toString(),
             title: "",
             description: "",
-            icon: "gift",
+            icon: "heart",
         });
         onInputChange("benefits", newBenefits);
     };
@@ -83,22 +118,55 @@ const BenefitsForm = ({ formData, onInputChange }) => {
                                 </div>
 
                                 <div className="space-y-2">
+                                    <Label htmlFor={`benefit-icon-${index}`}>
+                                        Icon
+                                    </Label>
+                                    <Select
+                                        value={benefit.icon || "heart"}
+                                        onValueChange={(value) =>
+                                            handleBenefitChange(
+                                                index,
+                                                "icon",
+                                                value
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {benefitIcons.map((icon) => (
+                                                <SelectItem
+                                                    key={icon.value}
+                                                    value={icon.value}
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <icon.icon className="w-4 h-4" />
+                                                        {icon.label}
+                                                    </div>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
                                     <Label
                                         htmlFor={`benefit-description-${index}`}
                                     >
                                         Description
                                     </Label>
-                                    <Input
-                                        id={`benefit-description-${index}`}
+                                    <JoditEditorComponent
                                         value={benefit.description || ""}
-                                        onChange={(e) =>
+                                        onChange={(value) =>
                                             handleBenefitChange(
                                                 index,
                                                 "description",
-                                                e.target.value
+                                                value
                                             )
                                         }
-                                        placeholder="Detailed description of this benefit"
+                                        placeholder="Detailed description of this benefit..."
+                                        height="150px"
                                     />
                                 </div>
                             </div>

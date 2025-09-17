@@ -184,6 +184,19 @@ export default function CreateCompanyPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
+        // Bắt buộc upload ảnh trước khi submit
+        const imageErrors = {};
+        if (!avatarFile) {
+            imageErrors.avatar = "Company logo is required";
+        }
+        if (!coverFile) {
+            imageErrors.avatarCover = "Company cover image is required";
+        }
+        if (Object.keys(imageErrors).length > 0) {
+            setErrors(prev => ({ ...prev, ...imageErrors }));
+            return;
+        }
+        
         if (!validateForm()) {
             return;
         }

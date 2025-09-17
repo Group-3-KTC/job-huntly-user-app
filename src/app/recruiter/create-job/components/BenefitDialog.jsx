@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
     Dialog,
     DialogContent,
@@ -33,6 +32,7 @@ import {
     Trophy,
     Clock,
 } from "lucide-react";
+import JoditEditorComponent from "@/components/ui/JoditEditor";
 
 const benefitIcons = [
     { value: "heart", label: "Healthcare", icon: Heart },
@@ -90,7 +90,7 @@ const BenefitDialog = ({ onAddBenefit }) => {
                     Add Benefit
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>Add New Benefit</DialogTitle>
                 </DialogHeader>
@@ -111,17 +111,16 @@ const BenefitDialog = ({ onAddBenefit }) => {
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="benefit-description">Description</Label>
-                        <Textarea
-                            id="benefit-description"
-                            placeholder="Describe this benefit..."
-                            className="min-h-[80px]"
+                        <JoditEditorComponent
                             value={newBenefit.description}
-                            onChange={(e) =>
+                            onChange={(value) =>
                                 setNewBenefit((prev) => ({
                                     ...prev,
-                                    description: e.target.value,
+                                    description: value,
                                 }))
                             }
+                            placeholder="Describe this benefit..."
+                            height="120px"
                         />
                     </div>
                     <div className="space-y-2">

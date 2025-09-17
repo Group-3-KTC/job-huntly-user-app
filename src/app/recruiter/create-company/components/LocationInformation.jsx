@@ -61,7 +61,9 @@ const LocationInformation = ({ formData, errors, onInputChange }) => {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                    <Label htmlFor="address">Address *</Label>
+                    <Label htmlFor="address">
+                        Address <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         id="address"
                         value={formData.address}
@@ -75,7 +77,9 @@ const LocationInformation = ({ formData, errors, onInputChange }) => {
                 </div>
                 
                 <div className="space-y-2">
-                    <Label htmlFor="locationCity">City *</Label>
+                    <Label htmlFor="locationCity">
+                        City <span className="text-red-500">*</span>
+                    </Label>
                     <Select
                         value={formData.locationCity || ""}
                         onValueChange={(value) => onInputChange("locationCity", value)}

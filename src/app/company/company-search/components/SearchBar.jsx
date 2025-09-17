@@ -319,30 +319,30 @@ const SearchBar = ({
     };
 
     return (
-        <div className="w-full max-w-6xl mx-auto" ref={containerRef}>
+        <div className="w-full mx-auto max-w-7xl" ref={containerRef}>
             {/* Main Search Container */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 md:p-6 relative">
+            <div className="relative p-4 bg-white border border-gray-100 shadow-xl rounded-2xl md:p-6">
                 <form
                     onSubmit={handleSubmit}
                     className="space-y-4 md:space-y-6"
                 >
                     {/* Header */}
-                    <div className="text-center mb-4 md:mb-6">
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                    <div className="mb-4 text-center md:mb-6">
+                        <h1 className="mb-2 text-2xl font-bold text-gray-900 md:text-3xl">
                             Search for a company
                         </h1>
-                        <p className="text-sm md:text-base text-gray-600">
+                        <p className="text-sm text-gray-600 md:text-base">
                             Discover companies that match your interests and
                             skills. Search by name, location, industry, or size.
                         </p>
                     </div>
 
                     {/* Search Inputs - All in one row */}
-                    <div className="flex flex-col lg:flex-row gap-3 md:gap-4">
+                    <div className="flex flex-col gap-3 lg:flex-row md:gap-4">
                         {/* Company Name Input */}
-                        <div className="relative group flex-1">
-                            <div className="absolute inset-y-0 left-0 pl-3 md:pl-4 flex items-center pointer-events-none">
-                                <Building className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                        <div className="relative flex-1 group">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none md:pl-4">
+                                <Building className="w-4 h-4 text-gray-400 transition-colors md:h-5 md:w-5 group-focus-within:text-blue-500" />
                             </div>
                             <input
                                 ref={companyRef}
@@ -360,14 +360,14 @@ const SearchBar = ({
                                     setShowLocationSuggestions(false);
                                     setShowCategorySuggestions(false);
                                 }}
-                                className="w-full pl-10 md:pl-12 pr-4 py-3 md:py-4 bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 text-gray-900 placeholder-gray-500 text-sm md:text-base"
+                                className="w-full py-3 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 transition-all duration-200 border-2 border-transparent md:pl-12 md:py-4 bg-gray-50 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 md:text-base"
                             />
                         </div>
 
                         {/* Location Input */}
-                        <div className="relative group flex-1">
-                            <div className="absolute inset-y-0 left-0 pl-3 md:pl-4 flex items-center pointer-events-none">
-                                <MapPin className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                        <div className="relative flex-1 group">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none md:pl-4">
+                                <MapPin className="w-4 h-4 text-gray-400 transition-colors md:h-5 md:w-5 group-focus-within:text-blue-500" />
                             </div>
                             <input
                                 ref={locationRef}
@@ -385,13 +385,13 @@ const SearchBar = ({
                                     setShowCompanySuggestions(false);
                                     setShowCategorySuggestions(false);
                                 }}
-                                className="w-full pl-10 md:pl-12 pr-4 py-3 md:py-4 bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 text-gray-900 placeholder-gray-500 text-sm md:text-base"
+                                className="w-full py-3 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 transition-all duration-200 border-2 border-transparent md:pl-12 md:py-4 bg-gray-50 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 md:text-base"
                             />
 
                             {/* Location Dropdown - Positioned under this input */}
                             {showLocationSuggestions &&
                                 filteredLocations.length > 0 && (
-                                    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto top-full left-0">
+                                    <div className="absolute left-0 z-50 w-full mt-2 overflow-y-auto bg-white border border-gray-200 shadow-xl rounded-xl max-h-60 top-full">
                                         {filteredLocations.map(
                                             (location, index) => (
                                                 <button
@@ -404,9 +404,9 @@ const SearchBar = ({
                                                             location
                                                         );
                                                     }}
-                                                    className="w-full px-4 py-3 text-left hover:bg-blue-50 flex items-center gap-3 transition-colors first:rounded-t-xl last:rounded-b-xl text-sm md:text-base"
+                                                    className="flex items-center w-full gap-3 px-4 py-3 text-sm text-left transition-colors hover:bg-blue-50 first:rounded-t-xl last:rounded-b-xl md:text-base"
                                                 >
-                                                    <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                                    <MapPin className="flex-shrink-0 w-4 h-4 text-gray-400" />
                                                     <span className="text-gray-700 truncate">
                                                         {location}
                                                     </span>
@@ -418,9 +418,9 @@ const SearchBar = ({
                         </div>
 
                         {/* Category Selection */}
-                        <div className="relative group flex-1">
-                            <div className="absolute inset-y-0 left-0 pl-3 md:pl-4 flex items-center pointer-events-none">
-                                <Tag className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                        <div className="relative flex-1 group">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none md:pl-4">
+                                <Tag className="w-4 h-4 text-gray-400 transition-colors md:h-5 md:w-5 group-focus-within:text-blue-500" />
                             </div>
                             <input
                                 ref={categoryRef}
@@ -437,16 +437,16 @@ const SearchBar = ({
                                         setIsCategoryInputFocused(false);
                                     }, 200);
                                 }}
-                                className="w-full pl-10 md:pl-12 pr-10 py-3 md:py-4 bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 text-gray-900 placeholder-gray-500 text-sm md:text-base"
+                                className="w-full py-3 pl-10 pr-10 text-sm text-gray-900 placeholder-gray-500 transition-all duration-200 border-2 border-transparent md:pl-12 md:py-4 bg-gray-50 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 md:text-base"
                             />
-                            <div className="absolute inset-y-0 right-0 pr-3 md:pr-4 flex items-center pointer-events-none">
-                                <ChevronDown className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none md:pr-4">
+                                <ChevronDown className="w-4 h-4 text-gray-400 md:h-5 md:w-5" />
                             </div>
 
                             {/* Category Dropdown - Positioned under this input */}
                             {showCategorySuggestions &&
                                 filteredIndustries.length > 0 && (
-                                    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto top-full left-0">
+                                    <div className="absolute left-0 z-50 w-full mt-2 overflow-y-auto bg-white border border-gray-200 shadow-xl rounded-xl max-h-60 top-full">
                                         {filteredIndustries.map((industry) => (
                                             <button
                                                 key={industry.cate_id}
@@ -458,7 +458,7 @@ const SearchBar = ({
                                                         industry
                                                     );
                                                 }}
-                                                className="w-full px-4 py-3 text-left hover:bg-blue-50 flex items-center gap-3 transition-colors first:rounded-t-xl last:rounded-b-xl text-sm md:text-base"
+                                                className="flex items-center w-full gap-3 px-4 py-3 text-sm text-left transition-colors hover:bg-blue-50 first:rounded-t-xl last:rounded-b-xl md:text-base"
                                             >
                                                 <input
                                                     type="checkbox"
@@ -468,9 +468,9 @@ const SearchBar = ({
                                                             industry.cate_id
                                                     )}
                                                     onChange={() => {}}
-                                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0"
+                                                    className="flex-shrink-0 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                                 />
-                                                <Tag className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                                <Tag className="flex-shrink-0 w-4 h-4 text-gray-400" />
                                                 <span className="text-gray-700 truncate">
                                                     {industry.cate_name}
                                                 </span>
@@ -481,7 +481,7 @@ const SearchBar = ({
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-3 lg:flex-col xl:flex-row">
+                        <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
                             <button
                                 type="button"
                                 onClick={handleClearAll}
@@ -512,7 +512,7 @@ const SearchBar = ({
                                     key={category.cate_id}
                                     className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-blue-100 text-blue-800 text-xs md:text-sm rounded-full border border-blue-200"
                                 >
-                                    <Tag className="w-3 h-3 flex-shrink-0" />
+                                    <Tag className="flex-shrink-0 w-3 h-3" />
                                     <span className="truncate max-w-32 md:max-w-none">
                                         {category.cate_name}
                                     </span>
@@ -523,7 +523,7 @@ const SearchBar = ({
                                                 category.cate_id
                                             )
                                         }
-                                        className="ml-1 hover:text-blue-600 transition-colors flex-shrink-0"
+                                        className="flex-shrink-0 ml-1 transition-colors hover:text-blue-600"
                                     >
                                         <X className="w-3 h-3" />
                                     </button>
@@ -536,7 +536,7 @@ const SearchBar = ({
 
             {/* Quick Search Tags */}
             <div className="mt-4 md:mt-6">
-                <h3 className="text-xs md:text-sm font-medium text-gray-700 mb-2 md:mb-3">
+                <h3 className="mb-2 text-xs font-medium text-gray-700 md:text-sm md:mb-3">
                     Quick search:
                 </h3>
                 <div className="flex flex-wrap gap-2">
