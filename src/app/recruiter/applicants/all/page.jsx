@@ -10,7 +10,7 @@ import { useGetJobByIdQuery } from "@/services/jobService";
 export default function RecruiterApplicantsPage() {
     const [companyId, setCompanyId] = useState(null);
     const [page, setPage] = useState(0);
-    const size = 10;
+    const [size, setSize] = useState(10);
 
     useEffect(() => {
         let mounted = true;
@@ -73,7 +73,9 @@ export default function RecruiterApplicantsPage() {
                 jobNameMap={jobNameMap}
                 page={page}
                 totalPages={data?.totalPages ?? 1}
-                onPageChange={setPage}
+                onPageChange={(p) => setPage(p)}
+                pageSize={size}
+                onPageSizeChange={(s) => { setSize(s); setPage(0); }}
                 onSeeApplication={(item) => {
                     if (item?.cv) {
                         window.open(item.cv, "_blank");
