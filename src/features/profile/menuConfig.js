@@ -26,6 +26,11 @@ export const menuItems = (router) => [
         onClick: () => router.push("/ManageCv"),
     },
     {
+        label: "Companies Follow",
+        icon: Building2,
+        onClick: () => router.push("/companyFollows"),
+    },
+    {
         label: "My Jobs",
         icon: Briefcase,
         onClick: () => router.push("/jobs"),
@@ -34,16 +39,6 @@ export const menuItems = (router) => [
         label: "Saved Jobs",
         icon: Heart,
         onClick: () => router.push("/jobs/saved"),
-    },
-    {
-        label: "Companies Follow",
-        icon: Building2,
-        onClick: () => router.push("/companyFollows"),
-    },
-    {
-        label: "Notifications",
-        icon: Bell,
-        onClick: () => router.push("/notifications"),
     },
     {
         label: "Settings",
