@@ -406,9 +406,11 @@ export default function JobPostingForm() {
                 expired_date: formatDateForAPI(formData.expiredDate),
                 description: formData.jobDescription,
                 requirements: formData.requirements,
-                benefits: formData.benefits
-                    .map((b) => b.description)
-                    .join(", "),
+                benefits: JSON.stringify(formData.benefits.map((benefit) => ({
+                    title: benefit.title,
+                    description: benefit.description
+                    // icon: benefit.icon
+                }))),
                 location: buildLocationString(), // Use the built location string
                 status: "active",
                 salary_min: formData.salaryMin,
@@ -421,10 +423,7 @@ export default function JobPostingForm() {
                 ward_ids: formData.wardIds,
             };
 
-            console.log("Sending job data:", jobData); // Debug log
-
             const response = await createJob(jobData);
-            console.log("API Response:", response); // Debug log
 
             // Always show success toast if we reach here (no exception thrown)
             toast.success("Job created successfully!", {
