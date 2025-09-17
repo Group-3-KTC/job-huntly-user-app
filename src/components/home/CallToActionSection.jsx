@@ -8,57 +8,56 @@ import Image from "next/image";
 
 const CallToActionSection = () => {
     return (
-        <section className="py-16">
-            <div className="container px-4 mx-auto">
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                    <div className="flex items-center p-8 bg-gray-100 rounded-lg bg-gradient-to-bl from-blue-400 to-indigo-50">
+        <section className="py-8 sm:py-12 lg:py-16">
+            <div className="container px-2 mx-auto sm:px-4">
+                <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:gap-8 lg:grid-cols-2">
+                    <div className="flex items-center p-4 bg-gray-100 rounded-lg sm:p-6 lg:p-8 bg-gradient-to-bl from-blue-400 to-indigo-50">
                         <div className="flex-1">
-                            <h3 className="mb-4 text-2xl font-bold text-gray-900">
+                            <h3 className="mb-3 text-lg font-bold text-gray-900 sm:mb-4 sm:text-xl lg:text-2xl">
                                 Become a Candidate
                             </h3>
-                            <p className="mb-6 text-gray-600">
+                            <p className="mb-4 text-xs text-gray-600 sm:mb-6 sm:text-sm lg:text-base">
                                 Lorem ipsum dolor sit amet, consectetur
                                 adipiscing elit. Cras cursus a dolor convallis
                                 efficitur.
                             </p>
                             <Link href="/register">
-                                <Button className="text-white bg-blue-600 hover:bg-blue-700">
+                                <Button className="text-sm text-white bg-blue-600 sm:text-base hover:bg-blue-700">
                                     Register Now{" "}
-                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                    <ArrowRight className="w-3 h-3 ml-2 sm:w-4 sm:h-4" />
                                 </Button>
                             </Link>
                         </div>
-                        <div className="flex-shrink-0 ml-8">
+                        <div className="flex-shrink-0 ml-4 sm:ml-6 lg:ml-8">
                             <Image
                                 src={candidateImg}
                                 alt="Become a Candidate"
-                                className="object-cover w-48 h-48 rounded-lg"
+                                className="object-cover w-24 h-24 rounded-lg sm:w-32 sm:h-32 lg:w-48 lg:h-48"
                             />
                         </div>
                     </div>
-
-                    <div className="flex items-center p-8 text-white bg-blue-600 rounded-lg">
+                    <div className="flex items-center p-4 text-white bg-blue-600 rounded-lg sm:p-6 lg:p-8">
                         <div className="flex-1">
-                            <h3 className="mb-4 text-2xl font-bold">
+                            <h3 className="mb-3 text-lg font-bold sm:mb-4 sm:text-xl lg:text-2xl">
                                 Become a Recruiter
                             </h3>
-                            <p className="mb-6 text-blue-100">
+                            <p className="mb-4 text-xs text-blue-100 sm:mb-6 sm:text-sm lg:text-base">
                                 Cras in massa pellentesque, mollis ligula non,
                                 luctus dui. Morbi sed efficitur dolor. Pelque
                                 augue risus, aliqu.
                             </p>
                             <Link href="/register">
-                                <Button className="text-blue-600 bg-white hover:bg-gray-100">
+                                <Button className="text-sm text-blue-600 bg-white sm:text-base hover:bg-gray-100">
                                     Register Now{" "}
-                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                    <ArrowRight className="w-3 h-3 ml-2 sm:w-4 sm:h-4" />
                                 </Button>
                             </Link>
                         </div>
-                        <div className="flex-shrink-0 ml-8">
+                        <div className="flex-shrink-0 ml-4 sm:ml-6 lg:ml-8">
                             <Image
                                 src={recruiterImg}
-                                alt="Become an Recruiter"
-                                className="object-cover w-48 h-48 rounded-lg"
+                                alt="Become a Recruiter"
+                                className="object-cover w-24 h-24 rounded-lg sm:w-32 sm:h-32 lg:w-48 lg:h-48"
                             />
                         </div>
                     </div>

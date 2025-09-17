@@ -35,7 +35,7 @@ export default function PageWrapper({ children }) {
         <Suspense fallback={<LoadingScreen message="Loading" />}>
             <AppInitializer />
             {!isAuthHydrated ? (
-                <div className="flex items-center justify-center h-screen bg-gray-50">
+                <div className="flex items-center justify-center w-full h-screen bg-gray-50">
                     <LoadingScreen message="Loading" />
                 </div>
             ) : (

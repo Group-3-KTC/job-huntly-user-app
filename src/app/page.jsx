@@ -11,16 +11,24 @@ import CallToActionSection from "@/components/home/CallToActionSection";
 
 export default function HomePage() {
   return (
-    <div className="container px-4 py-8 mx-auto">
-      <HeroSection />
-      <StatsSection />
-      <CategoriesSection />
-      <VacanciesSection />
-      <HowItWorksSection />
-      <FeaturedJobsSection />
-      <TopCompaniesSection />
-      <TestimonialsSection />
-      <CallToActionSection />
-    </div>
+      <div className="container px-2 py-6 mx-auto sm:px-4 sm:py-8">
+          <section id="hero">
+              <HeroSection />
+          </section>
+          <section id="stats">
+              <StatsSection />
+          </section>
+          <section id="categories">
+              <CategoriesSection />
+          </section>
+          <section id="vacancies">
+              <VacanciesSection />
+          </section>
+          <HowItWorksSection />
+          <FeaturedJobsSection />
+          <TopCompaniesSection />
+          <TestimonialsSection />
+          <CallToActionSection />
+      </div>
   );
 }
