@@ -11,25 +11,25 @@ const CompanyDescription = () => {
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-xl">
-            <h2 className="px-4 py-2 text-lg font-semibold text-white rounded bg-[#0A66C2]">
+            <h2 className="px-4 py-2 text-lg font-semibold text-white bg-blue-700 rounded">
                 Giới thiệu công ty
             </h2>
             
             <div className="mt-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="p-3 bg-gray-50 rounded-lg">
+                    <div className="p-3 rounded-lg bg-gray-50">
                         <h3 className="font-medium text-gray-700">Năm thành lập</h3>
                         <p className="mt-1 text-blue-600">{company.foundedYear}</p>
                     </div>
-                    <div className="p-3 bg-gray-50 rounded-lg">
+                    <div className="p-3 rounded-lg bg-gray-50">
                         <h3 className="font-medium text-gray-700">Quy mô nhân sự</h3>
                         <p className="mt-1 text-blue-600">{company.quantityEmployee}+ nhân viên</p>
                     </div>
-                    <div className="p-3 bg-gray-50 rounded-lg">
+                    <div className="p-3 rounded-lg bg-gray-50">
                         <h3 className="font-medium text-gray-700">Việc làm đang đăng</h3>
                         <p className="mt-1 text-blue-600">{company.jobsCount || 0} việc làm</p>
                     </div>
-                    <div className="p-3 bg-gray-50 rounded-lg">
+                    <div className="p-3 rounded-lg bg-gray-50">
                         <h3 className="font-medium text-gray-700">Lĩnh vực hoạt động</h3>
                         <div className="flex flex-wrap gap-2 mt-1">
                             {company.categories?.map((category, index) => (

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -63,34 +64,34 @@ const HeroSection = () => {
     };
 
     return (
-        <section className="py-16 lg:py-24">
-            <div className="container px-4 mx-auto">
-                <div className="flex flex-col items-center gap-12 lg:flex-row">
+        <section className="py-8 sm:py-12 lg:py-24">
+            <div className="container px-2 mx-auto sm:px-4">
+                <div className="flex flex-col items-center gap-4 sm:gap-8 lg:gap-12 lg:flex-row">
                     {/* Left */}
-                    <div className="flex-1 max-w-2xl">
-                        <h1 className="mb-6 text-4xl font-bold text-gray-900 lg:text-5xl">
+                    <div className="flex-1 max-w-full sm:max-w-2xl">
+                        <h1 className="mb-4 text-2xl font-bold text-gray-900 sm:mb-6 sm:text-3xl lg:text-5xl">
                             Find a job that suits your interest & skills.
                         </h1>
-                        <p className="mb-8 text-lg text-gray-600">
+                        <p className="mb-4 text-sm text-gray-600 sm:mb-8 sm:text-base lg:text-lg">
                             Aliquam vitae turpis in diam convallis finibus in at
                             risus. Nullam in scelerisque leo, eget sollicitudin
                             velit bestibulum.
                         </p>
 
                         {/* Search Form */}
-                        <div className="flex flex-col gap-2 p-2 mb-6 bg-white rounded-lg shadow-lg sm:flex-row">
+                        <div className="flex flex-col gap-2 p-2 mb-4 bg-white rounded-lg shadow-lg sm:mb-6 sm:flex-row">
                             {/* Keyword input */}
                             <div className="relative flex-1">
-                                <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                                <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 sm:w-5 sm:h-5 left-2 sm:left-3 top-1/2" />
                                 <Input
                                     placeholder="Job title, Keyword..."
-                                    className="pl-10 border-0 focus-visible:ring-0"
+                                    className="pl-8 text-sm border-0 sm:pl-10 focus-visible:ring-0 sm:text-base"
                                     value={keyword}
                                     onChange={(e) => setKeyword(e.target.value)}
                                 />
                             </div>
 
-                            {/* Province select giống SearchBar */}
+                            {/* Province select */}
                             <Popover
                                 open={openProvince}
                                 onOpenChange={setOpenProvince}
@@ -98,18 +99,18 @@ const HeroSection = () => {
                                 <PopoverTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        className="bg-white border text-gray-700 px-3 py-2 flex items-center justify-between w-full sm:w-[200px]"
+                                        className="flex items-center justify-between w-full px-2 py-2 text-sm text-gray-700 bg-white border sm:px-3 sm:w-auto sm:flex-1 sm:text-base"
                                     >
-                                        <MapPin className="mr-1" size={16} />
+                                        <MapPin className="w-3 h-3 mr-1 sm:w-4 sm:h-4" />
                                         {selectedProvince || "City"}
                                         <ChevronDown className="w-3 h-3 ml-auto opacity-50" />
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-[220px] p-0">
+                                <PopoverContent className="w-[180px] sm:w-[220px] p-0">
                                     <Command>
                                         <CommandInput
                                             placeholder="Search for more ..."
-                                            className="h-9"
+                                            className="h-8 text-sm sm:h-9"
                                             onValueChange={
                                                 setSearchProvinceTerm
                                             }
@@ -133,7 +134,7 @@ const HeroSection = () => {
                                                     {name}
                                                     <Check
                                                         className={cn(
-                                                            "ml-auto",
+                                                            "ml-auto w-4 h-4",
                                                             selectedProvince ===
                                                                 name
                                                                 ? "opacity-100"
@@ -148,7 +149,7 @@ const HeroSection = () => {
                             </Popover>
 
                             <Button
-                                className="px-8 bg-blue-600 hover:bg-blue-700"
+                                className="px-4 text-sm bg-blue-700 sm:px-6 hover:bg-blue-800 sm:text-base"
                                 onClick={handleSearch}
                             >
                                 Find Job
@@ -156,7 +157,7 @@ const HeroSection = () => {
                         </div>
 
                         {/* Suggestions */}
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2 text-sm sm:text-base">
                             <span className="text-gray-600">Suggestion:</span>
                             <Link
                                 href="#"
@@ -192,7 +193,7 @@ const HeroSection = () => {
                     </div>
 
                     {/* Right */}
-                    <div className="flex-1 max-w-lg">
+                    <div className="flex-1 max-w-full sm:max-w-md lg:max-w-lg">
                         <div className="relative">
                             <Image
                                 src={illustration}
