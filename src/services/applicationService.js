@@ -115,6 +115,16 @@ export const applicationApi = createApi({
             }),
             providesTags: ["Applications"],
         }),
+
+        // [PATCH] update application status by staff/recruiter
+        updateApplicationStatus: builder.mutation({
+            query: ({ applicationId, status }) => ({
+                url: `/status`,
+                method: "PATCH",
+                data: { applicationId, status },
+            }),
+            invalidatesTags: ["Applications"],
+        }),
     }),
 });
 
@@ -127,4 +137,5 @@ export const {
     useGetApplicationDetailByJobQuery,
     useGetApplicationsByJobQuery,
     useGetApplicationsByCompanyQuery,
+    useUpdateApplicationStatusMutation,
 } = applicationApi;

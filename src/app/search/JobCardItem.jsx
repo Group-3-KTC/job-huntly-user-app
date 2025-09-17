@@ -121,6 +121,10 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
         [job?.id, liked, saveJob, unsaveJob, onToast, guardOr, triggerGetStatus]
     );
 
+    const avatar = job?.company?.avatar;
+    const imageSrc =
+        typeof avatar === "string" && avatar.trim() !== "" ? avatar : undefined;
+
     return (
         <div
             className={`${
@@ -137,12 +141,20 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
                         : "w-full h-40 md:w-32 md:h-auto"
                 }`}
             >
-                <Image
-                    src={job.company?.avatar}
-                    alt={job.company?.company_name}
-                    fill
-                    className="bg-white object-inherit"
-                />
+                {imageSrc ? (
+                    <Image
+                        src={imageSrc}
+                        alt={job.company?.company_name || "Company Logo"}
+                        fill
+                        className="bg-white object-cover"
+                        sizes="(max-width: 768px) 100vw, 128px"
+                        priority={false}
+                    />
+                ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-50 text-gray-400 text-xs border">
+                        No Logo
+                    </div>
+                )}
             </div>
 
             {/* Nội dung */}
