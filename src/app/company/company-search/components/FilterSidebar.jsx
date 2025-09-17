@@ -111,13 +111,6 @@ const FilterSidebar = ({
                                     <span className="text-sm text-gray-700 flex-1">
                                         {industry.cate_name}
                                     </span>
-                                    <span className="text-xs text-gray-500">
-                                        (
-                                        {filterCounts?.industry?.[
-                                            industry.cate_name
-                                        ] || 0}
-                                        )
-                                    </span>
                                 </label>
                             ))}
                         </div>
@@ -157,12 +150,6 @@ const FilterSidebar = ({
                                     />
                                     <span className="text-sm text-gray-700 flex-1">
                                         {size.label}
-                                    </span>
-                                    <span className="text-xs text-gray-500">
-                                        (
-                                        {filterCounts?.companySize?.[size.id] ||
-                                            0}
-                                        )
                                     </span>
                                 </label>
                             ))}
