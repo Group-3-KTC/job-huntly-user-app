@@ -121,7 +121,7 @@ export default function SearchBar() {
                 </Popover>
 
                 <Button
-                    className="ml-3 bg-[#0a66c2] hover:bg-[#0056a3] text-white px-5 py-2 rounded-full text-sm"
+                    className="px-5 py-2 ml-3 text-sm text-white bg-blue-700 rounded-full hover:bg-blue-800"
                     onClick={handleSearch}
                 >
                     <Search size={16} className="mr-1" /> Search

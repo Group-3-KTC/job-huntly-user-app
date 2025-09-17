@@ -265,7 +265,7 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
                         </button>
                     </div>
                     {isLoggedIn && !isStatusLoading && applyStatus?.applied && (
-                            <ApplicationBadge status="Applied" />
+                        <ApplicationBadge status="Applied" />
                     )}
                     {!isGrid && (
                         <button
@@ -273,7 +273,7 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
                                 e.stopPropagation();
                                 router.push(`/job-detail/${job.id}`);
                             }}
-                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-md bg-[#0a66c2] hover:bg-[#084c90] transition"
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-700 rounded-md hovr:bg-blue-700"
                         >
                             <Eye size={18} className="text-white" />
                             See Detail

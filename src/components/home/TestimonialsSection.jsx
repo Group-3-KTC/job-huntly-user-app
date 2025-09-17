@@ -1,52 +1,44 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {Button} from "@/components/ui/button";
-import {ChevronLeft, ChevronRight, Star} from "lucide-react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 
 export default function TestimonialsSection() {
     const [index, setIndex] = useState(0);
-    const [perView, setPerView] = useState(1); // 1 (mobile) / 3 (desktop)
+    const [perView, setPerView] = useState(1);
 
     const testimonials = [
         {
             rating: 5,
-            text: "JobHuntly có giao diện hiện đại...",
-            name: "Võ Hoàng Phúc",
+            text: "JobHuntly has a modern interface...",
+            name: "Vo Hoang Phuc",
             title: "UI/UX Designer",
-            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEL3C3A-f1db21fda0f9-512"
+            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEL3C3A-f1db21fda0f9-512",
         },
         {
             rating: 5,
-            text: "Việc tìm kiếm và ứng tuyển...",
-            name: "Nguyễn Anh Huy",
+            text: "The job search and application process...",
+            name: "Nguyen Anh Huy",
             title: "Creative Director",
-            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEMP5CG-1fb35ba9101d-512"
+            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEMP5CG-1fb35ba9101d-512",
         },
         {
-            rating: 5,
-            text: "Việc tìm kiếm và ứng tuyển...",
-            name: "Nguyễn Anh Huy",
+            rating: 3,
+            text: "The job search and application process...",
+            name: "Nguyen Thanh Trong",
             title: "Creative Director",
-            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEMP5CG-1fb35ba9101d-512"
+            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092WU8NMGF-44471c1e6caf-72",
         },
         {
-            rating: 5,
-            text: "Việc tìm kiếm và ứng tuyển...",
-            name: "Nguyễn Anh Huy",
+            rating: 4,
+            text: "The job search and application process...",
+            name: "Nguyen Thanh Trong",
             title: "Creative Director",
-            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEMP5CG-1fb35ba9101d-512"
-        },
-        {
-            rating: 5,
-            text: "Việc tìm kiếm và ứng tuyển...",
-            name: "Nguyễn Anh Huy",
-            title: "Creative Director",
-            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEMP5CG-1fb35ba9101d-512"
+            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092WU8NMGF-44471c1e6caf-72",
         },
     ];
 
-    // 1) xác định slidesPerView theo breakpoint
     useEffect(() => {
         const mq = window.matchMedia("(min-width: 768px)");
         const update = () => setPerView(mq.matches ? 3 : 1);
@@ -55,24 +47,18 @@ export default function TestimonialsSection() {
         return () => mq.removeEventListener("change", update);
     }, []);
 
-    // 2) clamp index để không vượt quá
     const lastIndex = Math.max(0, testimonials.length - perView);
     const next = () => setIndex((i) => Math.min(i + 1, lastIndex));
     const prev = () => setIndex((i) => Math.max(i - 1, 0));
-
-    // 3) dịch theo tỉ lệ của 1 item trong khung
     const translatePct = (100 / perView) * index;
-
-    // số trang cho dots
     const pages = lastIndex + 1;
 
     return (
-        <section className="py-16">
-            <div className="container px-4 mx-auto">
-                <h2 className="mb-12 text-3xl font-bold text-center text-gray-900">
+        <section className="py-8 sm:py-12 lg:py-16">
+            <div className="container px-2 mx-auto sm:px-4">
+                <h2 className="mb-8 text-xl font-bold text-center text-gray-900 sm:mb-12 sm:text-2xl lg:text-3xl">
                     Clients Testimonial
                 </h2>
-
                 <div className="relative max-w-6xl mx-auto overflow-hidden">
                     <Button
                         variant="outline"
@@ -80,38 +66,52 @@ export default function TestimonialsSection() {
                         onClick={prev}
                         className="absolute left-0 z-10 transform -translate-y-1/2 bg-white shadow-lg top-1/2"
                     >
-                        <ChevronLeft className="w-4 h-4"/>
+                        <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
-
-                    <div className="w-full px-12">
+                    <div className="w-full px-4 sm:px-8 lg:px-12">
                         <div
                             className="flex transition-transform duration-500 ease-in-out"
-                            style={{transform: `translateX(-${translatePct}%)`}}
+                            style={{
+                                transform: `translateX(-${translatePct}%)`,
+                            }}
                         >
                             {testimonials.map((t, i) => (
                                 <div
                                     key={i}
-                                    className="flex-none basis-full md:basis-1/3 px-2" // quan trọng: flex-none + basis thay vì min-w
+                                    className="flex-none px-2 basis-full md:basis-1/3 sm:px-4"
                                 >
-                                    <div
-                                        className="flex h-full flex-col justify-between rounded-lg bg-white p-6 shadow-sm">
+                                    <div className="flex flex-col justify-between h-full p-3 bg-white rounded-lg shadow-sm sm:p-4 lg:p-6">
                                         <div>
-                                            <div className="mb-4 flex">
-                                                {[...Array(t.rating)].map((_, k) => (
-                                                    <Star key={k} className="h-5 w-5 text-yellow-400 fill-yellow-400"/>
-                                                ))}
+                                            <div className="flex mb-3 sm:mb-4">
+                                                {[...Array(t.rating)].map(
+                                                    (_, k) => (
+                                                        <Star
+                                                            key={k}
+                                                            className="w-3 h-3 text-yellow-400 sm:h-4 sm:w-4 lg:h-5 lg:w-5 fill-yellow-400"
+                                                        />
+                                                    )
+                                                )}
                                             </div>
-                                            <p className="mb-6 italic text-gray-600">"{t.text}"</p>
+                                            <p className="mb-4 text-xs italic text-gray-600 sm:mb-6 sm:text-sm">
+                                                "{t.text}"
+                                            </p>
                                         </div>
                                         <div className="flex items-center">
                                             <img
-                                                src={t.avatar || "/placeholder.svg"}
+                                                src={
+                                                    t.avatar ||
+                                                    "/placeholder.svg"
+                                                }
                                                 alt={t.name}
-                                                className="mr-3 h-10 w-10 rounded-full"
+                                                className="w-6 h-6 mr-2 rounded-full sm:mr-3 sm:h-8 sm:w-8 lg:h-10 lg:w-10"
                                             />
                                             <div>
-                                                <p className="font-semibold text-gray-900">{t.name}</p>
-                                                <p className="text-sm text-gray-600">{t.title}</p>
+                                                <p className="text-sm font-semibold text-gray-900 sm:text-base">
+                                                    {t.name}
+                                                </p>
+                                                <p className="text-xs text-gray-600 sm:text-sm">
+                                                    {t.title}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -119,23 +119,20 @@ export default function TestimonialsSection() {
                             ))}
                         </div>
                     </div>
-
                     <Button
                         variant="outline"
                         size="icon"
                         onClick={next}
                         className="absolute right-0 z-10 transform -translate-y-1/2 bg-white shadow-lg top-1/2"
                     >
-                        <ChevronRight className="w-4 h-4"/>
+                        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
-
-                    {/* Pagination dots theo "trang" */}
-                    <div className="mt-8 flex justify-center space-x-2">
-                        {Array.from({length: pages}).map((_, p) => (
+                    <div className="flex justify-center mt-6 space-x-2 sm:mt-8">
+                        {Array.from({ length: pages }).map((_, p) => (
                             <button
                                 key={p}
                                 onClick={() => setIndex(p)}
-                                className={`h-3 w-3 rounded-full transition-colors ${
+                                className={`h-2 w-2 sm:h-3 sm:w-3 rounded-full transition-colors ${
                                     p === index ? "bg-blue-600" : "bg-gray-300"
                                 }`}
                             />
