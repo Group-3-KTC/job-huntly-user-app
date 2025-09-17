@@ -142,7 +142,7 @@ const ApplicationModal = ({
             onClose();
         } catch (error) {
             toast.error(
-                error?.status === 409
+                error?.status === 500
                     ? error?.data?.message
                     : "An error occurred. Please try again later."
             );

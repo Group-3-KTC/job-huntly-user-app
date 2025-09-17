@@ -43,12 +43,12 @@ const SearchPageContent = () => {
 
     return (
         <div className="py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="mb-16 text-center">
+                    <h1 className="mb-4 text-4xl font-bold text-gray-900">
                         Search for a company
                     </h1>
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                    <p className="max-w-3xl mx-auto text-xl text-gray-600">
                         Discover companies that match your interests and skills.
                         Search by name, location, industry, or size.
                     </p>
@@ -59,12 +59,13 @@ const SearchPageContent = () => {
                 </div>
 
                 <div className="mb-16">
+                    <RecommendedCompanies />
+                </div>
+                
+                <div className="mb-16">
                     <PopularSearches />
                 </div>
 
-                <div className="mb-16">
-                    <RecommendedCompanies />
-                </div>
 
                 <div>
                     <CallToAction />
