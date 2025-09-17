@@ -53,7 +53,7 @@ export default function JobPostingForm() {
     const [categories, setCategories] = useState([]);
     const [skills, setSkills] = useState([]);
     const [workTypes, setWorkTypes] = useState([]);
-    
+
     // Loading states
     const [isLoadingLevels, setIsLoadingLevels] = useState(true);
     const [isLoadingCities, setIsLoadingCities] = useState(true);
@@ -292,11 +292,46 @@ export default function JobPostingForm() {
         const newErrors = {};
 
         if (step === 1) {
-            if (!formData.jobTitle.trim()) newErrors.jobTitle = "Vui lòng nhập tiêu đề công việc";
-            if (!formData.categories || formData.categories.length === 0) newErrors.categories = "Vui lòng chọn danh mục";
-            if (!formData.city) newErrors.city = "Vui lòng chọn thành phố";
-            if (!formData.address.trim()) newErrors.address = "Vui lòng nhập địa chỉ";
-            if (!formData.workType.length) newErrors.workType = "Vui lòng chọn loại hình công việc";
+            if (!formData.jobTitle.trim())
+                newErrors.jobTitle = "Please enter job title";
+            if (!formData.categories || formData.categories.length === 0)
+                newErrors.categories = "Please select categories";
+            if (!formData.city) newErrors.city = "Please select city";
+            if (!formData.address.trim())
+                newErrors.address = "Please enter address";
+            if (!formData.workType.length)
+                newErrors.workType = "Please select work type";
+        }
+
+        if (step === 2) {
+            // Check job description (remove HTML tags to check actual content)
+            const jobDescText = formData.jobDescription
+                ? formData.jobDescription.replace(/<[^>]*>/g, "").trim()
+                : "";
+            if (!jobDescText) {
+                newErrors.jobDescription = "Please enter job description";
+            }
+
+            // Check requirements (remove HTML tags to check actual content)
+            const requirementsText = formData.requirements
+                ? formData.requirements.replace(/<[^>]*>/g, "").trim()
+                : "";
+            if (!requirementsText) {
+                newErrors.requirements = "Please enter job requirements";
+            }
+
+            // Check expired date
+            if (!formData.expiredDate) {
+                newErrors.expiredDate = "Please select expired date";
+            } else {
+                // Check expired date must be after post date
+                const postDate = new Date(formData.datePost);
+                const expiredDate = new Date(formData.expiredDate);
+                if (expiredDate <= postDate) {
+                    newErrors.expiredDate =
+                        "Expired date must be after post date";
+                }
+            }
         }
 
         setErrors(newErrors);
@@ -374,16 +409,20 @@ export default function JobPostingForm() {
 
             // Prepare data according to API spec
             const jobData = {
-                company_id: companyId, // Use actual company ID
+                company_id: companyId,
                 title: formData.jobTitle,
                 date_post: formatDateForAPI(formData.datePost),
                 expired_date: formatDateForAPI(formData.expiredDate),
                 description: formData.jobDescription,
                 requirements: formData.requirements,
-                benefits: formData.benefits
-                    .map((b) => b.description)
-                    .join(", "),
-                location: buildLocationString(), // Use the built location string
+                benefits: JSON.stringify(
+                    formData.benefits.map((benefit) => ({
+                        title: benefit.title,
+                        description: benefit.description,
+                        icon: benefit.icon,
+                    }))
+                ),
+                location: buildLocationString(),
                 status: "active",
                 salary_min: formData.salaryMin,
                 salary_max: formData.salaryMax,
@@ -395,10 +434,7 @@ export default function JobPostingForm() {
                 ward_ids: formData.wardIds,
             };
 
-            console.log("Sending job data:", jobData); // Debug log
-
             const response = await createJob(jobData);
-            console.log("API Response:", response); // Debug log
 
             // Always show success toast if we reach here (no exception thrown)
             toast.success("Job created successfully!", {
@@ -505,6 +541,7 @@ export default function JobPostingForm() {
                             <JobDescriptionForm
                                 formData={formData}
                                 onInputChange={handleInputChange}
+                                errors={errors}
                             />
                         )}
 

@@ -58,9 +58,10 @@ const BenefitItem = ({ benefit, onRemove }) => {
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">
                             {benefit.title}
                         </h3>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            {benefit.description}
-                        </p>
+                        <div 
+                            className="text-gray-600 text-sm leading-relaxed prose prose-sm max-w-none"
+                            dangerouslySetInnerHTML={{ __html: benefit.description }}
+                        />
                     </div>
                 </div>
             </CardContent>
