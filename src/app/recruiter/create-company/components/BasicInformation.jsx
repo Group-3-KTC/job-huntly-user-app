@@ -16,7 +16,9 @@ const BasicInformation = ({ formData, errors, onInputChange }) => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label htmlFor="companyName">Company Name *</Label>
+                    <Label htmlFor="companyName">
+                        Company Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         id="companyName"
                         value={formData.companyName}
@@ -30,7 +32,9 @@ const BasicInformation = ({ formData, errors, onInputChange }) => {
                 </div>
                 
                 <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email">
+                        Email <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         id="email"
                         type="email"
@@ -45,7 +49,9 @@ const BasicInformation = ({ formData, errors, onInputChange }) => {
                 </div>
                 
                 <div className="space-y-2">
-                    <Label htmlFor="phoneNumber">Phone Number *</Label>
+                    <Label htmlFor="phoneNumber">
+                        Phone Number <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         id="phoneNumber"
                         value={formData.phoneNumber}

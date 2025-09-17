@@ -23,7 +23,9 @@ const CompanyImageUpload = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Avatar Upload */}
                 <div className="space-y-4">
-                    <Label>Company Logo *</Label>
+                    <Label>
+                        Company Logo <span className="text-red-500">*</span>
+                    </Label>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                         {avatarPreview || formData.avatar ? (
                             <div className="relative">
@@ -70,7 +72,9 @@ const CompanyImageUpload = ({
 
                 {/* Cover Upload */}
                 <div className="space-y-4">
-                    <Label>Company Cover Image</Label>
+                    <Label>
+                        Company Cover Image <span className="text-red-500">*</span>
+                    </Label>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                         {coverPreview || formData.avatarCover ? (
                             <div className="relative">
