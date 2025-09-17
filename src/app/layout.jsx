@@ -3,25 +3,26 @@ import ClientRootLayout from "./ClientRootLayout";
 import Script from "next/script";
 
 export const metadata = {
-    title: "Job Huntly",
-    description:
-        "JobHuntly là nền tảng tuyển dụng thông minh giúp kết nối nhà tuyển dụng và ứng viên nhanh chóng. Tìm việc làm phù hợp, quản lý hồ sơ, theo dõi lời mời phỏng vấn và nhận thông báo việc làm mới mỗi ngày. Đơn giản – Nhanh chóng – Hiệu quả.",
-    icons: {
-        icon: "/logo.svg",
-    },
-    robots: { index: true, follow: true },
-    openGraph: {
-        title: "Job Huntly",
-        description:
-            "JobHuntly là nền tảng tuyển dụng thông minh giúp kết nối nhà tuyển dụng và ứng viên nhanh chóng. Tìm việc làm phù hợp, quản lý hồ sơ, theo dõi lời mời phỏng vấn và nhận thông báo việc làm mới mỗi ngày. Đơn giản – Nhanh chóng – Hiệu quả.",
-        url: "https://your-website.com", // thay thế sau khi deploy
-        siteName: "Job Huntly",
-        locale: "vi_VN",
-        type: "website",
-    },
-    alternates: {
-        canonical: "https://your-website.com", // thay thế sau khi deploy
-    },
+  metadataBase: new URL('https://jobhuntly.io.vn'),
+  title: {
+    default: 'JobHuntly — Find quality jobs fast',
+    template: '%s | JobHuntly'
+  },
+  description: 'JobHuntly connects candidates and employers with fast, reliable hiring.',
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: 'website',
+    siteName: 'JobHuntly',
+    url: 'https://jobhuntly.io.vn',
+    title: 'JobHuntly — Find quality jobs fast',
+    description: 'JobHuntly connects candidates and employers with fast, reliable hiring.'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'JobHuntly — Find quality jobs fast',
+    description: 'JobHuntly connects candidates and employers with fast, reliable hiring.'
+  },
+  alternates: { canonical: 'https://jobhuntly.io.vn' }
 };
 
 export const viewport = {
@@ -31,7 +32,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="vi">
+        <html lang="en">
             <body data-scrolling-animations="true">
                 <div className="sp-body">
                     <ClientRootLayout>{children}</ClientRootLayout>

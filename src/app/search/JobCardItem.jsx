@@ -1,39 +1,33 @@
 "use client";
 
-import {
-    MapPin,
-    CalendarDays,
-    Clock,
-    Briefcase,
-    Layers,
-    Monitor,
-    Eye,
-    BookmarkCheck,
-    Bookmark,
-    Building2,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import {
-    useLazyGetStatusQuery,
-    useSaveJobMutation,
-    useUnsaveJobMutation,
-} from "@/services/savedJobService";
-import { useGetApplyStatusQuery } from "@/services/applicationService";
-import { useDispatch, useSelector } from "react-redux";
-import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
+import {Bookmark, BookmarkCheck, Building2, CalendarDays, Clock, Eye, MapPin,} from "lucide-react";
+import {useRouter} from "next/navigation";
+import {useCallback, useEffect, useState} from "react";
+import {useSaveJobMutation, useUnsaveJobMutation,} from "@/services/savedJobService";
+import {useDispatch, useSelector} from "react-redux";
+import {showLoginPrompt} from "@/features/auth/loginPromptSlice";
 import ApplicationBadge from "@/components/ui/ApplicationBadge";
-import { selectIsLoggedIn } from "@/features/auth/authSelectors";
+import {selectIsLoggedIn} from "@/features/auth/authSelectors";
 import Image from "next/image";
 
-export default function JobCardItem({ job, onToast, isGrid = false }) {
+export default function JobCardItem({job, onToast, isGrid = false}) {
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const router = useRouter();
     const dispatch = useDispatch();
 
-    const [triggerGetStatus, { data, isFetching }] = useLazyGetStatusQuery();
+    // ✅ Trạng thái đọc từ props (đã batch ở parent), không gọi API để check nữa
+    const [liked, setLiked] = useState(!!job?.liked);
+    const applied = !!job?.applied;
+
+    // Đồng bộ lại khi job thay đổi
+    useEffect(() => {
+        setLiked(!!job?.liked);
+    }, [job?.id, job?.liked]);
+
     const [saveJob] = useSaveJobMutation();
     const [unsaveJob] = useUnsaveJobMutation();
+    const [saving, setSaving] = useState(false);
+
     function parseCustomDate(dateString) {
         if (!dateString) return null;
         const [day, month, year] = dateString.split("-").map(Number);
@@ -46,7 +40,7 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
         if (!postDate || isNaN(postDate)) return null;
 
         const now = new Date();
-        const diffTime = now - postDate; // ms
+        const diffTime = now - postDate;
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
         if (diffDays < 1) return "Posted today";
@@ -60,7 +54,7 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
         if (!expDate || isNaN(expDate)) return null;
 
         const now = new Date();
-        const diffTime = expDate - now; // ms
+        const diffTime = expDate - now;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
         if (diffDays < 0) return "Expired";
@@ -68,23 +62,6 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
         if (diffDays === 1) return "Expires in 1 day";
         return `Expires in ${diffDays} days`;
     }
-
-    const {
-        data: applyStatus,
-        isLoading: isStatusLoading,
-        refetch,
-    } = useGetApplyStatusQuery(job?.id, {
-        skip: !job?.id || !isLoggedIn,
-    });
-
-    useEffect(() => {
-        if (isLoggedIn && job?.id) {
-            triggerGetStatus(job.id);
-            refetch();
-        }
-    }, [isLoggedIn, job?.id, triggerGetStatus, refetch]);
-
-    const liked = isLoggedIn ? data?.saved ?? false : false;
 
     const guardOr = useCallback(
         (action) => {
@@ -97,29 +74,40 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
         [dispatch, isLoggedIn]
     );
 
+    // ✅ Chỉ gọi API khi toggle save; không refetch status
     const toggleSave = useCallback(
         (e) => {
             e.stopPropagation();
-            if (!job?.id) return;
+            if (!job?.id || saving) return;
 
             guardOr(async () => {
                 try {
+                    setSaving(true);
                     if (!liked) {
-                        await saveJob({ jobId: job.id }).unwrap();
+                        // optimistic update
+                        setLiked(true);
+                        await saveJob({jobId: job.id}).unwrap();
                         onToast?.("Job saved successfully", "success");
                     } else {
+                        setLiked(false);
                         await unsaveJob(job.id).unwrap();
                         onToast?.("Job removed from saved list", "neutral");
                     }
-                    triggerGetStatus(job.id);
                 } catch (err) {
+                    // rollback nếu lỗi
+                    setLiked((prev) => !prev);
                     console.error("Toggle save error", err);
                     onToast?.("Something went wrong", "error");
+                } finally {
+                    setSaving(false);
                 }
             });
         },
-        [job?.id, liked, saveJob, unsaveJob, onToast, guardOr, triggerGetStatus]
+        [job?.id, liked, saving, saveJob, unsaveJob, onToast, guardOr]
     );
+
+    const companyAvatar = job?.company?.avatar || "https://www.shutterstock.com/image-vector/no-image-available-picture-coming-600nw-2057829641.jpg";
+    const companyName = job?.company?.company_name || "Unknown Company";
 
     const avatar = job?.company?.avatar;
     const imageSrc =
@@ -183,8 +171,8 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
                             }
                             className="underline underline-offset-2 hover:text-blue-700"
                         >
-                            {job.company?.company_name}
-                        </span>
+              {companyName}
+            </span>
                     </div>
 
                     {/* Grid: chỉ hiện salary */}
@@ -200,8 +188,8 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
                             <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
                                 {job.location && (
                                     <span className="flex items-center gap-1">
-                                        <MapPin size={12} /> {job.location}
-                                    </span>
+                    <MapPin size={12}/> {job.location}
+                  </span>
                                 )}
                                 {job.wards?.length > 0 && (
                                     <span className="flex items-center gap-1">
@@ -263,8 +251,9 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
                         )}
                         <button
                             onClick={toggleSave}
-                            className="flex items-center justify-center rounded-full hover:bg-blue-50"
-                            disabled={isFetching}
+                            className="flex items-center justify-center rounded-full hover:bg-blue-50 disabled:opacity-60"
+                            disabled={saving}
+                            title={liked ? "Unsave" : "Save Job"}
                         >
                             {liked ? (
                                 <BookmarkCheck
@@ -276,9 +265,10 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
                             )}
                         </button>
                     </div>
-                    {isLoggedIn && !isStatusLoading && applyStatus?.applied && (
-                        <ApplicationBadge status="Applied" />
-                    )}
+
+                    {/* ✅ Badge APPLIED chỉ hiển thị khi user đã đăng nhập và backend nói đã applied */}
+                    {isLoggedIn && applied && <ApplicationBadge status="Applied"/>}
+
                     {!isGrid && (
                         <button
                             onClick={(e) => {
