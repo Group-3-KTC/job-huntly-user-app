@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import parse from "react-html-parser";
+import parse from "html-react-parser";
 import {
     Heart,
     Plane,
@@ -96,16 +96,16 @@ const getBenefitIcon = (iconType) => {
 /**
  * Component chính để parse và hiển thị job information
  */
-const ParseInfoJob = ({
-    description,
-    requirements,
-    benefits,
+const ParseInfoJob = ({ 
+    description, 
+    requirements, 
+    benefits, 
     showDescription = true,
     showRequirements = true,
     showBenefits = true,
     className = "",
     descriptionTitle = "Job Description",
-    requirementsTitle = "Requirements",
+    requirementsTitle = "Requirements", 
     benefitsTitle = "Benefits",
 }) => {
     const parsedBenefits = parseBenefits(benefits);
