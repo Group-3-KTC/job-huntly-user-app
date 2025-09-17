@@ -2,7 +2,8 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share2, MapPin, Clock, Users } from "lucide-react";
+import { ArrowLeft, Share2, MapPin, Clock } from "lucide-react";
+import { formatNumber, formatSalary } from "@/lib/utils";
 
 const JobReviewHeader = ({
     title,
@@ -13,23 +14,6 @@ const JobReviewHeader = ({
     salaryMax,
     salaryType,
 }) => {
-    const formatNumber = (num) => {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    };
-
-    const formatSalary = () => {
-        if (salaryType === 1) {
-            return "Negotiable";
-        }
-        if (salaryMin && salaryMax) {
-            return `${formatNumber(salaryMin)} - ${formatNumber(salaryMax)} VND`;
-        }
-        if (salaryMin) {
-            return `From ${formatNumber(salaryMin)} VND`;
-        }
-        return "Not disclosed";
-    };
-
     return (
         <div className="flex items-start justify-between mb-6">
             <div className="flex items-start gap-4">
@@ -55,7 +39,7 @@ const JobReviewHeader = ({
                         </div>
                     </div>
                     <div className="mt-2 text-lg font-semibold text-green-600">
-                        {formatSalary()}
+                        {formatSalary(salaryMin, salaryMax, salaryType)}
                     </div>
                 </div>
             </div>
