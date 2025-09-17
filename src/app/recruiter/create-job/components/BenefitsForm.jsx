@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Trash2 } from "lucide-react";
+import JoditEditorComponent from "@/components/ui/JoditEditor";
 
 const BenefitsForm = ({ formData, onInputChange }) => {
     const handleBenefitChange = (index, field, value) => {
@@ -88,17 +89,17 @@ const BenefitsForm = ({ formData, onInputChange }) => {
                                     >
                                         Description
                                     </Label>
-                                    <Input
-                                        id={`benefit-description-${index}`}
+                                    <JoditEditorComponent
                                         value={benefit.description || ""}
-                                        onChange={(e) =>
+                                        onChange={(value) =>
                                             handleBenefitChange(
                                                 index,
                                                 "description",
-                                                e.target.value
+                                                value
                                             )
                                         }
-                                        placeholder="Detailed description of this benefit"
+                                        placeholder="Detailed description of this benefit..."
+                                        height="150px"
                                     />
                                 </div>
                             </div>
