@@ -97,18 +97,18 @@ export const Header = () => {
                                 <span className="text-sm">Find Jobs</span>
                             </div>
                         </Link>
-                        <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                            <Bookmark className="w-4 h-4 text-gray-600" />
-                            <span className="text-sm">Saved Jobs</span>
-                        </div>
-                        <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                            <ListChecks className="w-4 h-4 text-gray-600" />
-                            <span className="text-sm">Applied Jobs</span>
-                        </div>
-                        <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
-                            <ClipboardCheck className="w-4 h-4 text-gray-600" />
-                            <span className="text-sm">Matched Jobs</span>
-                        </div>
+                        <Link href="/jobs/saved">
+                            <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
+                                <Bookmark className="w-4 h-4 text-gray-600" />
+                                <span className="text-sm">Saved Jobs</span>
+                            </div>
+                        </Link>
+                        <Link href="/jobs/applied">
+                            <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
+                                <ListChecks className="w-4 h-4 text-gray-600" />
+                                <span className="text-sm">Applied Jobs</span>
+                            </div>
+                        </Link>
                     </div>
                 </div>
                 <div>
@@ -122,7 +122,7 @@ export const Header = () => {
                                 <span className="text-sm">Company List</span>
                             </div>
                         </Link>
-                        <Link href="/company/company-search">
+                        <Link href="/company/company-search#RecommendedCompanies">
                             <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
                                 <Star className="w-4 h-4 text-gray-600" />
                                 <span className="text-sm">Top Companies</span>
@@ -482,7 +482,12 @@ export const Header = () => {
                         )}
                         {mobilePage && (
                             <div className="p-4 space-y-4">
-                                {dropdownContent[mobilePage]}
+                                {/* tất cả content con cũng phải đóng khi click */}
+                                <div
+                                    onClick={() => setMobileOpen(false)} // ⬅️ close sidebar khi click bất kỳ chỗ con
+                                >
+                                    {dropdownContent[mobilePage]}
+                                </div>
                             </div>
                         )}
                     </div>
@@ -491,13 +496,19 @@ export const Header = () => {
                             {!isLoggedIn ? (
                                 <>
                                     <button
-                                        onClick={handleRegisterClick}
+                                        onClick={() => {
+                                            handleRegisterClick();
+                                            setMobileOpen(false); // ⬅️ close khi register
+                                        }}
                                         className="block w-full py-3 text-center font-semibold text-[#0a66c2] border border-[#0a66c2] rounded"
                                     >
                                         Register
                                     </button>
                                     <button
-                                        onClick={handleLoginClick}
+                                        onClick={() => {
+                                            handleLoginClick();
+                                            setMobileOpen(false); // ⬅️ close khi login
+                                        }}
                                         className="block w-full py-3 text-center font-semibold text-white bg-[#0a66c2] rounded"
                                     >
                                         Login
@@ -505,7 +516,10 @@ export const Header = () => {
                                 </>
                             ) : (
                                 <button
-                                    onClick={handleLogout}
+                                    onClick={() => {
+                                        handleLogout();
+                                        setMobileOpen(false); // ⬅️ close khi logout
+                                    }}
                                     className="block w-full py-3 font-semibold text-center text-red-600 border border-red-600 rounded"
                                 >
                                     Logout

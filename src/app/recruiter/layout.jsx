@@ -15,7 +15,7 @@ export default function RecruiterLayout({ children }) {
     const isAuthLoading = useSelector(selectAuthLoading);
 
     if (isAuthLoading) {
-        return <LoadingScreen message="Đang xử lý..." />;
+        return <LoadingScreen message="Loading..." />;
     }
 
     return (

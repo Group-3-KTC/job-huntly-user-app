@@ -48,11 +48,6 @@ const navItems = [
         icon: <Briefcase className="w-5 h-5 mr-2" />,
     },
     {
-        href: "/notifications",
-        label: "Notifications",
-        icon: <Bell className="w-5 h-5 mr-2" />,
-    },
-    {
         href: "/settings",
         label: "Settings",
         icon: <Settings className="w-5 h-5 mr-2" />,
