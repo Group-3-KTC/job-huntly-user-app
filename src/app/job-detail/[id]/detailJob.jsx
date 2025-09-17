@@ -39,6 +39,7 @@ import {
 } from "@/services/savedJobService";
 import { useGetApplyStatusQuery } from "@/services/applicationService";
 import ApplicationDetail from "./_components/ApplicationDetail";
+import ParseInfoJob from "@/components/common/ParseInfoJob";
 
 export default function DetailJob({ job }) {
     const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -272,33 +273,15 @@ export default function DetailJob({ job }) {
                         )}
                     </div>
 
-                    <Section icon={FileText} title="Job Description">
-                        <p>{dj.description || "No description available"}</p>
-                    </Section>
-
-                    <Section icon={ListChecks} title="Requirements">
-                        <div className="space-y-1">
-                            {toList(dj.requirements).length ? (
-                                toList(dj.requirements).map((item, idx) => (
-                                    <p key={idx}>- {item}</p>
-                                ))
-                            ) : (
-                                <p>No requirements information available</p>
-                            )}
-                        </div>
-                    </Section>
-
-                    <Section icon={Gift} title="Benefits">
-                        <div className="space-y-1">
-                            {toList(dj.benefits).length ? (
-                                toList(dj.benefits).map((item, idx) => (
-                                    <p key={idx}>- {item}</p>
-                                ))
-                            ) : (
-                                <p>No benefits information available</p>
-                            )}
-                        </div>
-                    </Section>
+                    <ParseInfoJob
+                        description={dj.description}
+                        requirements={dj.requirements}
+                        benefits={dj.benefits}
+                        descriptionTitle="Job Description"
+                        requirementsTitle="Requirements"
+                        benefitsTitle="Benefits"
+                        contentClassName="text-[17px] md:text-[18px] leading-7"
+                    />
 
                     <Section icon={MapPin} title="Work Location">
                         {dj.location ? (

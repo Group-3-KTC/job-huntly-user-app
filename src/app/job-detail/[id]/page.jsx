@@ -10,7 +10,7 @@ export default async function JobDetailPage({ params }) {
     if (!id) {
         return (
             <div className="mt-10 text-center text-red-500">
-                Không tìm thấy ID công việc.
+                No job ID found.
             </div>
         );
     }
