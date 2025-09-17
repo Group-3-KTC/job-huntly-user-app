@@ -313,7 +313,7 @@ export const Header = () => {
     ];
 
     return (
-        <header className="h-18 bg-[#0a66c2] relative">
+        <header className="relative bg-blue-700 h-18">
             <div className="flex items-center justify-between h-full px-8">
                 {/* Mobile menu button */}
                 <button
@@ -341,7 +341,7 @@ export const Header = () => {
                         </div>
                     </Link>
                     {/* Desktop navigation (below header on desktop) */}
-                    <nav className="hidden lg:flex justify-center bg-[#0a66c2] px-4">
+                    <nav className="justify-center hidden px-4 bg-blue-700 lg:flex">
                         <div
                             className="relative"
                             onMouseLeave={handleMouseLeave}

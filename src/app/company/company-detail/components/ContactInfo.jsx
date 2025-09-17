@@ -11,7 +11,7 @@ const ContactInfo = () => {
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-xl">
-            <h2 className="px-4 py-2 text-lg font-semibold text-white rounded bg-[#0A66C2]">
+            <h2 className="px-4 py-2 text-lg font-semibold text-white bg-blue-700 rounded">
                 Thông tin liên hệ
             </h2>
             <div className="mt-4 space-y-3 text-sm">

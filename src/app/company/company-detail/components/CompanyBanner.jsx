@@ -129,7 +129,7 @@ const CompanyBanner = () => {
                         className={`px-4 py-2 text-lg font-semibold text-white transition rounded ${
                             isLoggedIn && followStatus?.followed
                                 ? "bg-gray-600"
-                                : "bg-[#0A66C2]"
+                                : "bg-blue-700"
                         } ${
                             isFollowStatusLoading
                                 ? "opacity-50 cursor-not-allowed"
