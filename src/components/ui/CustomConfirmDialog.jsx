@@ -10,7 +10,7 @@ import {
     AlertDialogDescription,
     AlertDialogAction,
     AlertDialogCancel,
-} from "@/components/ui/alert-dialog"; // chỗ bạn export AlertDialog
+} from "@/components/ui/alert-dialog"; 
 
 let resolveCallback = null;
 
