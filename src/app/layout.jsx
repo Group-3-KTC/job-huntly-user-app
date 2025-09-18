@@ -3,25 +3,26 @@ import ClientRootLayout from "./ClientRootLayout";
 import Script from "next/script";
 
 export const metadata = {
-    title: "Job Huntly",
-    description:
-        "JobHuntly is a smart recruitment platform that connects employers and candidates quickly. Find suitable jobs, manage profiles, track interview invitations, and receive daily job alerts. Simple – Fast – Effective.",
-    icons: {
-        icon: "/logo.svg",
-    },
-    robots: { index: true, follow: true },
-    openGraph: {
-        title: "Job Huntly",
-        description:
-            "JobHuntly is a smart recruitment platform that connects employers and candidates quickly. Find suitable jobs, manage profiles, track interview invitations, and receive daily job alerts. Simple – Fast – Effective.",
-        url: "https://jobhuntly.io.vn/",
-        siteName: "Job Huntly",
-        locale: "en_US",
-        type: "website",
-    },
-    alternates: {
-        canonical: "https://jobhuntly.io.vn/",
-    },
+  metadataBase: new URL('https://jobhuntly.io.vn'),
+  title: {
+    default: 'JobHuntly — Find quality jobs fast',
+    template: '%s | JobHuntly'
+  },
+  description: 'JobHuntly connects candidates and employers with fast, reliable hiring.',
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: 'website',
+    siteName: 'JobHuntly',
+    url: 'https://jobhuntly.io.vn',
+    title: 'JobHuntly — Find quality jobs fast',
+    description: 'JobHuntly connects candidates and employers with fast, reliable hiring.'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'JobHuntly — Find quality jobs fast',
+    description: 'JobHuntly connects candidates and employers with fast, reliable hiring.'
+  },
+  alternates: { canonical: 'https://jobhuntly.io.vn' }
 };
 
 export const viewport = {
