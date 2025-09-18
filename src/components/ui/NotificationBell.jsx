@@ -29,6 +29,9 @@ function timeAgo(iso) {
     return `${d}d`;
 }
 const FORCE_XHR_ONLY = false;
+const WATCHDOG_CHECK_MS = 30_000; // 30s kiểm tra 1 lần
+const WATCHDOG_STALE_MS = 60_000; // >60s không thấy frame/heartbeat => stale
+const HIDDEN_POLL_MS = 60_000; // tab ẩn thì 60s poll API 1 lần
 
 export default function NotificationBell({ className = "" }) {
     const router = useRouter();
@@ -56,7 +59,10 @@ export default function NotificationBell({ className = "" }) {
     const subRef = useRef(null);
     const refetchTimerRef = useRef(null);
     const openRef = useRef(false);
+    const lastBeatRef = useRef(Date.now());
+    const watchdogRef = useRef(null);
 
+    // chống trùng id
     const knownIdsRef = useRef(new Set());
     const getKey = (it) =>
         it?.id ??
@@ -90,7 +96,6 @@ export default function NotificationBell({ className = "" }) {
     };
 
     const displayCount = count > 99 ? "99+" : count;
-
     const fetchUnreadCount = useCallback(async () => {
         try {
             const res = await fetch(`${API_BASE}/notifications/unread-count`, {
@@ -127,7 +132,6 @@ export default function NotificationBell({ className = "" }) {
                         return mergeUnique(prev, list, false);
                     });
 
-                    // Nếu backend trả kèm unreadCount, đồng bộ lại
                     if (!append && typeof data?.unreadCount === "number") {
                         setCount(data.unreadCount);
                     }
@@ -195,11 +199,13 @@ export default function NotificationBell({ className = "" }) {
     const onItemClick = useCallback(
         async (it) => {
             if (!it) return;
+
             if (!it.isRead && it.id) await markReadIds([it.id]);
 
             let target = null;
             if (it.jobId) target = `/job-detail/${it.jobId}`;
             else if (it.link) target = it.link.trim();
+
             setOpen(false);
 
             if (!target) return;
@@ -219,11 +225,14 @@ export default function NotificationBell({ className = "" }) {
         await fetchFeed(page + 1, true);
     }, [fetchFeed, loadingMore, page, totalPages]);
 
+    // ---- WS connect
     const connectStomp = useCallback(() => {
         if (stompRef.current?.active) return;
+
         const TRANSPORTS = FORCE_XHR_ONLY
             ? ["xhr-streaming", "xhr-polling"]
             : ["xhr-streaming", "xhr-polling", "websocket"];
+
         const sock = new SockJS(WS_ENDPOINT, null, {
             withCredentials: true,
             transports: TRANSPORTS,
@@ -236,16 +245,15 @@ export default function NotificationBell({ className = "" }) {
 
         const client = new StompClient({
             webSocketFactory: () => sock,
-            // DÙNG cơ chế reconnect tích hợp sẵn, KHÔNG thêm setTimeout reconnect thủ công
-            reconnectDelay: 4000,
+            reconnectDelay: 4000, // auto-reconnect tích hợp
             heartbeatIncoming: 10000,
             heartbeatOutgoing: 10000,
             debug: (s) => console.debug("[STOMP]", s),
 
             onConnect: () => {
                 if (!SUB_DEST) return;
+                lastBeatRef.current = Date.now();
 
-                // Tránh sub trùng
                 if (subRef.current) {
                     try {
                         subRef.current.unsubscribe();
@@ -254,10 +262,8 @@ export default function NotificationBell({ className = "" }) {
                 }
 
                 subRef.current = client.subscribe(SUB_DEST, (frame) => {
-                    // Luôn tăng badge ngay khi có noti mới
+                    lastBeatRef.current = Date.now();
                     setCount((p) => p + 1);
-
-                    // Parse để prepend “ảo” cho cảm giác realtime
                     let notif = null;
                     try {
                         notif = frame?.body ? JSON.parse(frame.body) : null;
@@ -280,7 +286,7 @@ export default function NotificationBell({ className = "" }) {
                         }
                     }
 
-                    // Dù parse được hay không, nếu popover đang mở -> debounce refetch trang 1
+                    // Khi đang mở popover: luôn đồng bộ lại nguồn chân lý (debounce)
                     if (openRef.current) {
                         if (refetchTimerRef.current)
                             clearTimeout(refetchTimerRef.current);
@@ -292,7 +298,6 @@ export default function NotificationBell({ className = "" }) {
             },
 
             onWebSocketClose: () => {
-                // Cleanup; để reconnectDelay tự lo reconnect
                 if (subRef.current) {
                     try {
                         subRef.current.unsubscribe();
@@ -302,7 +307,6 @@ export default function NotificationBell({ className = "" }) {
             },
         });
 
-        // Nếu trong lúc chuẩn bị activate mà đã có client active, hủy client mới
         if (stompRef.current?.active) {
             try {
                 client.deactivate();
@@ -314,19 +318,75 @@ export default function NotificationBell({ className = "" }) {
         stompRef.current = client;
     }, [WS_ENDPOINT, SUB_DEST, fetchFeed]);
 
-    // Mount: fetch count + connect stomp
+    // ---- auto-heal (force reconnect + refetch) dùng cho watchdog & awaken events
+    const forceReconnectNow = useCallback(() => {
+        try {
+            stompRef.current?.deactivate?.();
+        } catch {}
+        stompRef.current = null;
+
+        connectStomp(); 
+        fetchUnreadCount();
+        if (openRef.current) fetchFeed(0, false);
+    }, [connectStomp, fetchUnreadCount, fetchFeed]);
+
     useEffect(() => {
         fetchUnreadCount();
         connectStomp();
 
+        // ---- Awaken events — khi tab quay lại hoạt động, tự heal
         const onVisible = () => {
-            if (document.visibilityState === "visible") fetchUnreadCount();
+            if (document.visibilityState === "visible") forceReconnectNow();
         };
+        const onFocus = () => forceReconnectNow();
+        const onOnline = () => forceReconnectNow();
+        const onPageShow = () => forceReconnectNow(); // quay lại từ bfcache
+
         document.addEventListener("visibilitychange", onVisible);
+        window.addEventListener("focus", onFocus);
+        window.addEventListener("online", onOnline);
+        window.addEventListener("pageshow", onPageShow);
+
+        // ---- Watchdog — kiểm tra định kỳ
+        watchdogRef.current = setInterval(() => {
+            const stale = Date.now() - lastBeatRef.current > WATCHDOG_STALE_MS;
+            const connected = !!stompRef.current?.connected;
+            if (!connected || stale) {
+                forceReconnectNow();
+            }
+        }, WATCHDOG_CHECK_MS);
+
+        // ---- Hidden fallback polling — khi tab ẩn, poll nhẹ để UI không "đóng băng"
+        let hiddenTimer = null;
+        const startHiddenPolling = () => {
+            if (hiddenTimer) return;
+            hiddenTimer = setInterval(() => {
+                fetchUnreadCount();
+                if (openRef.current) fetchFeed(0, false);
+            }, HIDDEN_POLL_MS);
+        };
+        const stopHiddenPolling = () => {
+            if (hiddenTimer) {
+                clearInterval(hiddenTimer);
+                hiddenTimer = null;
+            }
+        };
+        const onHiddenSwitch = () => {
+            if (document.visibilityState === "hidden") startHiddenPolling();
+            else stopHiddenPolling();
+        };
+        document.addEventListener("visibilitychange", onHiddenSwitch);
+        onHiddenSwitch(); // init theo trạng thái hiện tại
 
         return () => {
             document.removeEventListener("visibilitychange", onVisible);
+            window.removeEventListener("focus", onFocus);
+            window.removeEventListener("online", onOnline);
+            window.removeEventListener("pageshow", onPageShow);
+            document.removeEventListener("visibilitychange", onHiddenSwitch);
 
+            if (watchdogRef.current) clearInterval(watchdogRef.current);
+            if (hiddenTimer) clearInterval(hiddenTimer);
             if (refetchTimerRef.current) clearTimeout(refetchTimerRef.current);
 
             if (subRef.current) {
@@ -344,9 +404,11 @@ export default function NotificationBell({ className = "" }) {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
     useEffect(() => {
         openRef.current = open;
     }, [open]);
+
     const onOpenChange = async (next) => {
         setOpen(next);
         if (next) {
