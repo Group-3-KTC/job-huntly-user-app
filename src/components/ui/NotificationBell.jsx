@@ -28,11 +28,7 @@ function timeAgo(iso) {
     const d = Math.floor(h / 24);
     return `${d}d`;
 }
-
-// KHÔNG thay đổi kiến trúc, chỉ thêm 2 kỹ thuật theo yêu cầu
 const FORCE_XHR_ONLY = false;
-
-// Tham số cho Watchdog/Hidden Polling
 const WATCHDOG_CHECK_MS = 30_000; // 30s kiểm tra 1 lần
 const WATCHDOG_STALE_MS = 60_000; // >60s không thấy frame/heartbeat => stale
 const HIDDEN_POLL_MS = 60_000; // tab ẩn thì 60s poll API 1 lần
@@ -266,7 +262,6 @@ export default function NotificationBell({ className = "" }) {
                 }
 
                 subRef.current = client.subscribe(SUB_DEST, (frame) => {
-                    // ---- mỗi khi nhận frame => còn sống
                     lastBeatRef.current = Date.now();
                     setCount((p) => p + 1);
                     let notif = null;
