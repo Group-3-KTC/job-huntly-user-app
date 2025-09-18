@@ -5,7 +5,7 @@ import Script from "next/script";
 export const metadata = {
     title: "Job Huntly",
     description:
-        "JobHuntly là nền tảng tuyển dụng thông minh giúp kết nối nhà tuyển dụng và ứng viên nhanh chóng. Tìm việc làm phù hợp, quản lý hồ sơ, theo dõi lời mời phỏng vấn và nhận thông báo việc làm mới mỗi ngày. Đơn giản – Nhanh chóng – Hiệu quả.",
+        "JobHuntly is a smart recruitment platform that connects employers and candidates quickly. Find suitable jobs, manage profiles, track interview invitations, and receive daily job alerts. Simple – Fast – Effective.",
     icons: {
         icon: "/logo.svg",
     },
@@ -13,14 +13,14 @@ export const metadata = {
     openGraph: {
         title: "Job Huntly",
         description:
-            "JobHuntly là nền tảng tuyển dụng thông minh giúp kết nối nhà tuyển dụng và ứng viên nhanh chóng. Tìm việc làm phù hợp, quản lý hồ sơ, theo dõi lời mời phỏng vấn và nhận thông báo việc làm mới mỗi ngày. Đơn giản – Nhanh chóng – Hiệu quả.",
-        url: "https://your-website.com", // thay thế sau khi deploy
+            "JobHuntly is a smart recruitment platform that connects employers and candidates quickly. Find suitable jobs, manage profiles, track interview invitations, and receive daily job alerts. Simple – Fast – Effective.",
+        url: "https://jobhuntly.io.vn/",
         siteName: "Job Huntly",
-        locale: "vi_VN",
+        locale: "en_US",
         type: "website",
     },
     alternates: {
-        canonical: "https://your-website.com", // thay thế sau khi deploy
+        canonical: "https://jobhuntly.io.vn/",
     },
 };
 
@@ -31,7 +31,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="vi">
+        <html lang="en">
             <body data-scrolling-animations="true">
                 <div className="sp-body">
                     <ClientRootLayout>{children}</ClientRootLayout>
