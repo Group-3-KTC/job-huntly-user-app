@@ -19,7 +19,14 @@ export default function ListCompanyFollowed() {
     const [unfollowCompany] = useUnfollowCompanyMutation();
 
     const handleUnfollow = async (companyId) => {
-        if (window.confirm("Are you sure you want to unfollow this company?")) {
+        if (
+            await window.customConfirm({
+                title: "Unfollow Company",
+                description: "Are you sure you want to unfollow this company?",
+                confirmText: "Unfollow",
+                cancelText: "Cancel",
+            })
+        ) {
             try {
                 await unfollowCompany(companyId).unwrap();
             } catch (err) {

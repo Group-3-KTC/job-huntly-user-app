@@ -1,8 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
-
+import ReportModal from "@/components/ui/report";
+import { MessageSquareWarning } from "lucide-react";
+import { selectIsLoggedIn } from "@/features/auth/authSelectors";
+import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
+import { useDispatch, useSelector } from "react-redux";
 export default function ApplicantsTable({
     data,
     loading,
@@ -15,6 +19,12 @@ export default function ApplicantsTable({
     pageSize = 10,
     onPageSizeChange,
 }) {
+    const [openReport, setOpenReport] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState(null);
+
+    const isLoggedIn = useSelector(selectIsLoggedIn);
+    const dispatch = useDispatch();
+
     const renderStatusPill = (status) => {
         const base = "px-2.5 py-1 rounded-full text-xs border ";
         switch (status) {
@@ -62,15 +72,38 @@ export default function ApplicantsTable({
         }
     };
 
+    const guardOr = useCallback(
+        (action) => {
+            if (!isLoggedIn) {
+                dispatch(showLoginPrompt());
+                setOpenReport(false);
+                return;
+            }
+            action?.();
+        },
+        [isLoggedIn, dispatch]
+    );
+
+    const handleReport = (userId) => {
+        guardOr(() => {
+            setSelectedUserId(userId);
+            setOpenReport(true);
+        });
+    };
+
+    const handleReportSuccess = () => {
+        toast.success("Report submitted successfully");
+        setOpenReport(false);
+    };
     return (
-        <div className="bg-white rounded-xl border">
-            <div className="px-4 py-3 border-b flex items-center justify-between">
-                <h3 className="font-semibold text-lg">
+        <div className="bg-white border rounded-xl">
+            <div className="flex items-center justify-between px-4 py-3 border-b">
+                <h3 className="text-lg font-semibold">
                     Total Applicants : {data?.totalElements ?? 0}
                 </h3>
                 <div className="flex items-center gap-2">
                     <input
-                        className="px-3 py-2 border rounded-md w-64"
+                        className="w-64 px-3 py-2 border rounded-md"
                         placeholder="Search Applicants"
                     />
                     <Button variant="outline" size="sm">
@@ -88,22 +121,22 @@ export default function ApplicantsTable({
                 <table className="min-w-full text-sm">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th className="text-left px-6 py-4 w-12 align-middle">
+                            <th className="w-12 px-6 py-4 text-left align-middle">
                                 <input type="checkbox" />
                             </th>
-                            <th className="text-left px-6 py-4 align-middle">
+                            <th className="px-6 py-4 text-left align-middle">
                                 Full Name
                             </th>
-                            <th className="text-left px-6 py-4 align-middle">
+                            <th className="px-6 py-4 text-left align-middle">
                                 Hiring Stage
                             </th>
-                            <th className="text-left px-6 py-4 align-middle">
+                            <th className="px-6 py-4 text-left align-middle">
                                 Applied Date
                             </th>
-                            <th className="text-left px-6 py-4 align-middle">
+                            <th className="px-6 py-4 text-left align-middle">
                                 Job Name
                             </th>
-                            <th className="text-left px-6 py-4 align-middle">
+                            <th className="px-6 py-4 text-left align-middle">
                                 Action
                             </th>
                         </tr>
@@ -172,6 +205,15 @@ export default function ApplicantsTable({
                                             >
                                                 Details
                                             </Button>
+                                            <button
+                                                onClick={() =>
+                                                    handleReport(item.userId)
+                                                }
+                                                className="p-2 text-red-600 transition bg-white border rounded hover:bg-red-50"
+                                                title="Report Company"
+                                            >
+                                                <MessageSquareWarning className="w-5 h-5" />
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -190,11 +232,11 @@ export default function ApplicantsTable({
                     </tbody>
                 </table>
             </div>
-            <div className="px-4 py-3 border-t flex items-center justify-between">
+            <div className="flex items-center justify-between px-4 py-3 border-t">
                 <div className="flex items-center gap-3 text-sm text-gray-600">
                     <span>
                         View
-                        <span className="font-medium ml-1 mr-1">
+                        <span className="ml-1 mr-1 font-medium">
                             {data?.size ?? pageSize}
                         </span>
                         per page
@@ -221,7 +263,7 @@ export default function ApplicantsTable({
                     >
                         {"<"}
                     </Button>
-                    <div className="w-9 h-9 rounded-md bg-blue-600 text-white flex items-center justify-center">
+                    <div className="flex items-center justify-center text-white bg-blue-600 rounded-md w-9 h-9">
                         {(page ?? 0) + 1}
                     </div>
                     <Button
@@ -234,6 +276,13 @@ export default function ApplicantsTable({
                     </Button>
                 </div>
             </div>
+            <ReportModal
+                open={openReport}
+                onClose={() => setOpenReport(false)}
+                type={1}
+                contentId={selectedUserId}
+                onSuccess={handleReportSuccess}
+            />
         </div>
     );
 }
