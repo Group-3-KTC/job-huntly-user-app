@@ -144,9 +144,12 @@ export default function ProfilePage() {
 
     const handleDeleteItem = async (section, itemIndex) => {
         if (
-            window.confirm(
-                `Are you sure you want to delete this ${section.title} item?`
-            )
+            await window.customConfirm({
+                title: "Delete Item",
+                description: `Are you sure you want to delete this ${section.title} item?`,
+                confirmText: "Yes",
+                cancelText: "No",
+            })
         ) {
             setIsDeleting(true);
             try {
