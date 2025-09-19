@@ -24,19 +24,19 @@ export default function TestimonialsSection() {
             avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEMP5CG-1fb35ba9101d-512",
         },
         {
-            rating: 3,
+            rating: 5,
             text: "The job search and application process...",
             name: "Nguyen Thanh Trong",
-            title: "Creative Director",
+            title: "Internship",
             avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092WU8NMGF-44471c1e6caf-72",
         },
         {
-            rating: 4,
-            text: "The job search and application process...",
-            name: "Nguyen Thanh Trong",
-            title: "Creative Director",
-            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092WU8NMGF-44471c1e6caf-72",
-        },
+            rating: 5,
+            text: "More than 1000+ users have used JobHuntly to find their dream job",
+            name: "Do Phi Lau",
+            title: "Software Engineer",
+            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U093TVABR3R-48c4f710a858-72",
+        }
     ];
 
     useEffect(() => {
