@@ -64,7 +64,22 @@ export default function DetailJob({ job }) {
             skip: !djId || !isLoggedIn,
         });
     const applied = applyStatus?.applied ?? false;
+     const attemptCount = applyStatus?.attemptCount ?? 0;
+     const lastUserActionAt = applyStatus?.lastUserActionAt
+         ? new Date(applyStatus.lastUserActionAt)
+         : null;
 
+     const REAPPLY_INTERVAL = 30 * 60 * 1000; // 30 phút (ms)
+
+     // Tính thời gian còn lại để có thể reapply
+     const getRemainingTime = () => {
+         if (!lastUserActionAt) return 0;
+         const now = new Date();
+         const nextAvailable = new Date(
+             lastUserActionAt.getTime() + REAPPLY_INTERVAL
+         );
+         return Math.max(0, nextAvailable.getTime() - now.getTime());
+     };
     const guardOr = useCallback(
         (action) => {
             if (!isLoggedIn) {
@@ -92,11 +107,31 @@ export default function DetailJob({ job }) {
     const handleReapply = useCallback(
         () =>
             guardOr(() => {
+                if (attemptCount >= 2) {
+                    toast.error(
+                        "You have exceeded the allowed number of re-applications."
+                    );
+                    return;
+                }
+
+                const remaining = getRemainingTime();
+
+                if (remaining > 0) {
+                    const minutes = Math.floor(remaining / 60000);
+                    const seconds = Math.floor((remaining % 60000) / 1000);
+
+                    toast.success(
+                        `You can re-apply in ${minutes} minutes and ${seconds} seconds.`
+                    );
+                    return;
+                }
+
+                // Nếu đã qua 30p → cho reapply
                 setShowReportModal(false);
                 setShowDetailModal(false);
                 setShowApplyModal(true);
             }),
-        [guardOr]
+        [guardOr, attemptCount, lastUserActionAt]
     );
 
     const handleShowDetail = useCallback(
@@ -195,25 +230,32 @@ export default function DetailJob({ job }) {
                                         Apply
                                     </Button>
                                 ) : (
-                                    <div className="flex gap-2">
-                                        <Button
-                                            disabled={isExpired}
-                                            className={`flex-1 text-white ${
-                                                isExpired
-                                                    ? "bg-gray-400 cursor-not-allowed"
-                                                    : "bg-green-600 hover:bg-green-700"
-                                            }`}
-                                            onClick={handleReapply}
-                                        >
-                                            Reapply
-                                        </Button>
-                                        <Button
-                                            className="flex-1 font-medium text-blue-600 bg-white border-2 border-blue-600 hover:bg-blue-600 hover:text-white"
-                                            onClick={handleShowDetail}
-                                        >
-                                            View Details
-                                        </Button>
-                                    </div>
+                                    applied && (
+                                        <div className="flex gap-2">
+                                            <Button
+                                                disabled={
+                                                    isExpired ||
+                                                    attemptCount >= 3
+                                                }
+                                                className={`flex-1 text-white ${
+                                                    isExpired ||
+                                                    attemptCount >= 3
+                                                        ? "bg-gray-400 cursor-not-allowed"
+                                                        : "bg-green-600 hover:bg-green-700"
+                                                }`}
+                                                onClick={handleReapply}
+                                            >
+                                                Re-Applications
+                                            </Button>
+
+                                            <Button
+                                                className="flex-1 font-medium text-blue-600 bg-white border-2 border-blue-600 hover:bg-blue-600 hover:text-white"
+                                                onClick={handleShowDetail}
+                                            >
+                                                View Details
+                                            </Button>
+                                        </div>
+                                    )
                                 )}
 
                                 {showApplyModal && (
