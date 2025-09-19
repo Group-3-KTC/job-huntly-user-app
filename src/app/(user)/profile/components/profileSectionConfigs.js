@@ -206,7 +206,7 @@ export const profileSectionConfigs = {
                 options: [
                     { value: "High", label: "High" },
                     { value: "Medium", label: "Medium" },
-                    { value: "Normal", label: "Normal" },
+                    { value: "Low", label: "Low" },
                 ],
             },
         ],
