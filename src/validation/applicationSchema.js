@@ -1,26 +1,34 @@
 import * as yup from "yup";
 
 const applicationSchema = yup.object().shape({
-    fullName: yup.string().required("Vui lòng điền tên của bạn"),
+    fullName: yup.string().required("Please enter your full name"),
     email: yup
         .string()
-        .required("Vui lòng nhập email")
-        .email("Email không hợp lệ"),
+        .required("Please enter your email")
+        .email("Invalid email address"),
     phoneNumber: yup
         .string()
-        .required("Vui lòng điền số điện thoại")
-        .matches(/^[0-9]+$/, "Số điện thoại chỉ được chứa số")
-        .min(10, "Số điện thoại phải có ít nhất 10 số")
-        .max(11, "Số điện thoại không được quá 11 số"),
+        .required("Please enter your phone number")
+        .matches(/^[0-9]+$/, "Phone number must contain only digits")
+        .min(10, "Phone number must be at least 10 digits")
+        .max(11, "Phone number cannot exceed 11 digits"),
 
     cvFile: yup
         .mixed()
-        .when(["$isReapply", "$keepCurrentCV"], (isReapply, keepCurrentCV) => {
-            if (isReapply && keepCurrentCV) {
-                return yup.mixed().nullable(true).notRequired();
+        .when(
+            ["$isReapply", "$keepCurrentCV"],
+            ([isReapply, keepCurrentCV], schema) => {
+                if (isReapply && keepCurrentCV) {
+                    return schema.nullable(true).notRequired();
+                }
+                return schema
+                    .required("Please upload your CV")
+                    .test("fileType", "Only PDF files are allowed", (value) => {
+                        if (!value) return false;
+                        return value.type === "application/pdf";
+                    });
             }
-            return yup.mixed().required("Vui lòng chọn một file CV");
-        }),
+        ),
 });
 
 export default applicationSchema;
