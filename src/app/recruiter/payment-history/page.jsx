@@ -7,17 +7,14 @@ import { getMyCompany } from "@/services/companyService";
 import { Button } from "@/components/ui/button";
 import { Loader2, Search, Filter, RefreshCcw } from "lucide-react";
 
-/** API base giống file CompanyVip */
 const NEXT_PUBLIC_API_BASE = `${process.env.NEXT_PUBLIC_API_PROXY_TARGET}${process.env.NEXT_PUBLIC_API_BASE_URL}/`;
 const API_BASE_URL = (NEXT_PUBLIC_API_BASE || "").replace(/\/+$/, "");
 
-/** Format VND */
 const VND = new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
 });
 
-/** Date -> VN timezone, ngắn gọn */
 function formatVNDate(iso) {
     if (!iso) return "—";
     const d = new Date(iso);
@@ -32,7 +29,6 @@ function formatVNDate(iso) {
     });
 }
 
-/** Nhãn trạng thái thanh toán */
 function StatusPill({ status }) {
     const base = "px-2.5 py-1 rounded-full text-xs border ";
     switch (status) {
@@ -88,7 +84,6 @@ function StatusPill({ status }) {
     }
 }
 
-/** Bảng lịch sử thanh toán */
 function PaymentsTable({
     data,
     loading,
@@ -106,7 +101,6 @@ function PaymentsTable({
     const headerCell = "px-6 py-4 text-left align-middle";
     const cell = "px-6 py-4 align-middle";
 
-    // Lọc client-side theo query + status trên data.content trang hiện tại
     const filteredContent = useMemo(() => {
         let items = data?.content || [];
         if (localQuery?.trim()) {
@@ -310,9 +304,7 @@ function PaymentsTable({
     );
 }
 
-/** Trang PaymentHistoryPage */
 export default function PaymentHistoryPage() {
-    // Lấy companyId theo đúng pattern bạn đang dùng
     const user = useSelector((s) => s.auth?.user);
     const userCompanyId =
         user?.companyId || user?.company?.id || user?.company_id || null;
@@ -329,11 +321,9 @@ export default function PaymentHistoryPage() {
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
 
-    // client-side filter/search
     const [localQuery, setLocalQuery] = useState("");
     const [localStatus, setLocalStatus] = useState("ALL");
 
-    // Resolve company id nếu chưa có
     useEffect(() => {
         let mounted = true;
         const ensureCompanyId = async () => {
@@ -386,12 +376,10 @@ export default function PaymentHistoryPage() {
         [resolvedCompanyId, page, pageSize]
     );
 
-    // Load khi có companyId hoặc page/pageSize đổi
     useEffect(() => {
         if (resolvedCompanyId != null) {
             fetchPage();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resolvedCompanyId, page, pageSize]);
 
     const totalPages = data?.totalPages ?? 1;
