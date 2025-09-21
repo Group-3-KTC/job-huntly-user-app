@@ -90,13 +90,13 @@ export default function RecruiterSidebar() {
         },
         { href: "/recruiter/analytics", label: "Analytics", icon: BarChart3 },
         {
-            href: "/recruiter/notifications",
-            label: "Notifications",
+            href: "/recruiter/payment-history",
+            label: "Payment History",
             icon: Bell,
         },
         {
             href: "/recruiter/companyVip",
-            label: "Upgrade CompanyVip",
+            label: "Upgrade Vip",
             icon: Crown,
         },
         { href: "/recruiter/profile", label: "Profile", icon: User },
