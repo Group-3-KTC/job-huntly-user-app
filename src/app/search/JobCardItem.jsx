@@ -1,21 +1,31 @@
 "use client";
 
-import {Bookmark, BookmarkCheck, Building2, CalendarDays, Clock, Eye, MapPin,} from "lucide-react";
-import {useRouter} from "next/navigation";
-import {useCallback, useEffect, useState} from "react";
-import {useSaveJobMutation, useUnsaveJobMutation,} from "@/services/savedJobService";
-import {useDispatch, useSelector} from "react-redux";
-import {showLoginPrompt} from "@/features/auth/loginPromptSlice";
+import {
+    Bookmark,
+    BookmarkCheck,
+    Building2,
+    CalendarDays,
+    Clock,
+    Eye,
+    MapPin,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import {
+    useSaveJobMutation,
+    useUnsaveJobMutation,
+} from "@/services/savedJobService";
+import { useDispatch, useSelector } from "react-redux";
+import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
 import ApplicationBadge from "@/components/ui/ApplicationBadge";
-import {selectIsLoggedIn} from "@/features/auth/authSelectors";
+import { selectIsLoggedIn } from "@/features/auth/authSelectors";
 import Image from "next/image";
 
-export default function JobCardItem({job, onToast, isGrid = false}) {
+export default function JobCardItem({ job, onToast, isGrid = false }) {
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const router = useRouter();
     const dispatch = useDispatch();
 
-    // ✅ Trạng thái đọc từ props (đã batch ở parent), không gọi API để check nữa
     const [liked, setLiked] = useState(!!job?.liked);
     const applied = !!job?.applied;
 
@@ -73,8 +83,6 @@ export default function JobCardItem({job, onToast, isGrid = false}) {
         },
         [dispatch, isLoggedIn]
     );
-
-    // ✅ Chỉ gọi API khi toggle save; không refetch status
     const toggleSave = useCallback(
         (e) => {
             e.stopPropagation();
@@ -86,7 +94,7 @@ export default function JobCardItem({job, onToast, isGrid = false}) {
                     if (!liked) {
                         // optimistic update
                         setLiked(true);
-                        await saveJob({jobId: job.id}).unwrap();
+                        await saveJob({ jobId: job.id }).unwrap();
                         onToast?.("Job saved successfully", "success");
                     } else {
                         setLiked(false);
@@ -106,7 +114,9 @@ export default function JobCardItem({job, onToast, isGrid = false}) {
         [job?.id, liked, saving, saveJob, unsaveJob, onToast, guardOr]
     );
 
-    const companyAvatar = job?.company?.avatar || "https://www.shutterstock.com/image-vector/no-image-available-picture-coming-600nw-2057829641.jpg";
+    const companyAvatar =
+        job?.company?.avatar ||
+        "https://www.shutterstock.com/image-vector/no-image-available-picture-coming-600nw-2057829641.jpg";
     const companyName = job?.company?.company_name || "Unknown Company";
 
     const avatar = job?.company?.avatar;
@@ -171,8 +181,8 @@ export default function JobCardItem({job, onToast, isGrid = false}) {
                             }
                             className="underline underline-offset-2 hover:text-blue-700"
                         >
-              {companyName}
-            </span>
+                            {companyName}
+                        </span>
                     </div>
 
                     {/* Grid: chỉ hiện salary */}
@@ -185,16 +195,24 @@ export default function JobCardItem({job, onToast, isGrid = false}) {
                     ) : (
                         <>
                             {/* Normal full info */}
-                            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                            <div className="flex flex-col items-start gap-1 text-xs text-gray-500">
                                 {job.location && (
                                     <span className="flex items-center gap-1">
-                    <MapPin size={12}/> {job.location}
-                  </span>
+                                        <MapPin size={12} />
+                                        {job.location
+                                            .split(", ")
+                                            .find((part) =>
+                                                part
+                                                    .trim()
+                                                    .startsWith("Thành phố")
+                                            ) || job.location}
+                                    </span>
                                 )}
-                                {job.wards?.length > 0 && (
+
+                                {job.work_type_names?.length > 0 && (
                                     <span className="flex items-center gap-1">
-                                        <MapPin size={12} />{" "}
-                                        {job.wards[0].ward_name}
+                                        <MapPin size={12} />
+                                        {job.work_type_names.join(", ")}
                                     </span>
                                 )}
                             </div>
@@ -267,7 +285,9 @@ export default function JobCardItem({job, onToast, isGrid = false}) {
                     </div>
 
                     {/* ✅ Badge APPLIED chỉ hiển thị khi user đã đăng nhập và backend nói đã applied */}
-                    {isLoggedIn && applied && <ApplicationBadge status="Applied"/>}
+                    {isLoggedIn && applied && (
+                        <ApplicationBadge status="Applied" />
+                    )}
 
                     {!isGrid && (
                         <button
