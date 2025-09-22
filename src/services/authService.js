@@ -5,7 +5,7 @@ const authService = {
         const {data} = await api.post("/auth/login", credentials);
         return {
             user: data,
-            message: "Đăng nhập thành công",
+            message: "Login successful",
         };
     },
 

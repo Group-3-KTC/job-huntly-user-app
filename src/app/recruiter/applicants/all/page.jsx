@@ -6,12 +6,13 @@ import { getMyCompany } from "@/services/companyService";
 import ApplicantsTable from "./components/ApplicantsTable";
 import ApplicationDetailModal from "./components/ApplicationDetailModal";
 import { useGetJobByIdQuery } from "@/services/jobService";
+import CreateInterviewModal from "@/components/ui/CreateInterviewModal";
 
 export default function RecruiterApplicantsPage() {
     const [companyId, setCompanyId] = useState(null);
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(10);
-
+    const [createPayload, setCreatePayload] = useState(null);
     useEffect(() => {
         let mounted = true;
         const fetchCompany = async () => {
@@ -75,7 +76,10 @@ export default function RecruiterApplicantsPage() {
                 totalPages={data?.totalPages ?? 1}
                 onPageChange={(p) => setPage(p)}
                 pageSize={size}
-                onPageSizeChange={(s) => { setSize(s); setPage(0); }}
+                onPageSizeChange={(s) => {
+                    setSize(s);
+                    setPage(0);
+                }}
                 onSeeApplication={(item) => {
                     if (item?.cv) {
                         window.open(item.cv, "_blank");
@@ -87,13 +91,28 @@ export default function RecruiterApplicantsPage() {
                     setSelectedApp(item);
                     setDetailOpen(true);
                 }}
+                companyId={companyId}
+                onCreateInterviewClick={(payload) => setCreatePayload(payload)}
             />
 
             <ApplicationDetailModal
                 open={detailOpen}
                 onOpenChange={setDetailOpen}
                 application={selectedApp}
-                jobName={selectedApp ? jobNameMap?.[selectedApp.jobId] : undefined}
+                jobName={
+                    selectedApp ? jobNameMap?.[selectedApp.jobId] : undefined
+                }
+            />
+
+            <CreateInterviewModal
+                open={!!createPayload}
+                onOpenChange={(v) => !v && setCreatePayload(null)}
+                defaultCompanyId={createPayload?.companyId}
+                defaultJobId={createPayload?.jobId}
+                candidateId={createPayload?.candidateId}
+                jobTitle={createPayload?.jobTitle}
+                candidateName={createPayload?.candidateName}
+                candidateEmail={createPayload?.candidateEmail}
             />
         </div>
     );

@@ -7,6 +7,7 @@ import {
     Bell,
     Settings,
     Building2,
+    CalendarRange,
 } from "lucide-react";
 
 export const menuItems = (router) => [
@@ -24,6 +25,11 @@ export const menuItems = (router) => [
         label: "Manage CV",
         icon: FileText,
         onClick: () => router.push("/ManageCv"),
+    },
+    {
+        label: "My Interviews",
+        icon: CalendarRange,
+        onClick: () => router.push("/Interviews"),
     },
     {
         label: "Companies Follow",

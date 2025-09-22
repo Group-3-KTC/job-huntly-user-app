@@ -18,10 +18,11 @@ export default function ApplicantsTable({
     onPageChange,
     pageSize = 10,
     onPageSizeChange,
+    companyId, 
+    onCreateInterviewClick,
 }) {
     const [openReport, setOpenReport] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState(null);
-
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const dispatch = useDispatch();
 
@@ -204,6 +205,26 @@ export default function ApplicantsTable({
                                                 }
                                             >
                                                 Details
+                                            </Button>
+                                            <Button
+                                                variant="default"
+                                                size="sm"
+                                                onClick={() =>
+                                                    onCreateInterviewClick?.({
+                                                        companyId,
+                                                        jobId: item.jobId,
+                                                        jobTitle:
+                                                            jobNameMap?.[
+                                                                item.jobId
+                                                            ],
+                                                        candidateId:
+                                                            item.userId,
+                                                        candidateEmail:
+                                                            item.email,
+                                                    })
+                                                }
+                                            >
+                                                Create Interview
                                             </Button>
                                             <button
                                                 onClick={() =>
