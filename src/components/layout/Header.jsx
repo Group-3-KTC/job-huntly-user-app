@@ -108,12 +108,11 @@ export const Header = () => {
 
     const navItems = [
         { key: "home", label: "Home", href: "/" },
-        { key: "about", label: "About", href: "/about" }, // TODO: tạo trang nếu chưa có
-        { key: "guide", label: "Guide", href: "/guide" }, // TODO: tạo trang nếu chưa có
+        { key: "about", label: "About", href: "/#aboutUs" },
         { key: "jobs", label: "Jobs", hasDropdown: true },
         { key: "companies", label: "Companies", hasDropdown: true },
-        { key: "resume", label: "Resume", href: "/manage-cv" },
-        { key: "dashboard", label: "Dashboard", href: "/dashboard" }, // TODO: map route thực tế nếu khác
+        { key: "categories", label: "Categories", href: "/#categories" },
+        { key: "dashboard", label: "Dashboard", href: "/dashboard" },
     ];
 
     return (
@@ -146,23 +145,42 @@ export const Header = () => {
                         </div>
                     </Link>
                     <nav className="hidden lg:flex text-white">
-                        <div className="relative ml-6" onMouseLeave={handleMouseLeave}>
+                        <div
+                            className="relative ml-6"
+                            onMouseLeave={handleMouseLeave}
+                        >
                             <ul className="flex items-center space-x-2 text-white">
                                 {navItems.map((item) => (
-                                    <li key={item.key} className={item.hasDropdown ? "relative" : undefined}>
+                                    <li
+                                        key={item.key}
+                                        className={
+                                            item.hasDropdown
+                                                ? "relative"
+                                                : undefined
+                                        }
+                                    >
                                         {item.hasDropdown ? (
                                             <>
                                                 <div
                                                     className="group flex items-center gap-1 text-white font-medium px-3 py-2 rounded-lg cursor-pointer hover:bg-[#d0e5f9] hover:text-[#0a66c2] transition-colors"
-                                                    onMouseEnter={() => handleMouseEnter(item.key)}
+                                                    onMouseEnter={() =>
+                                                        handleMouseEnter(
+                                                            item.key
+                                                        )
+                                                    }
                                                 >
                                                     <span>{item.label}</span>
                                                     <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
                                                 </div>
-                                                {activeDropdown === item.key && (
+                                                {activeDropdown ===
+                                                    item.key && (
                                                     <div className="absolute left-0 top-full mt-2 bg-white rounded-xl shadow-lg p-2 z-50 min-w-[240px] text-gray-800">
                                                         <div className="absolute left-0 w-full h-3 -top-3"></div>
-                                                        {dropdownContent[item.key]}
+                                                        {
+                                                            dropdownContent[
+                                                                item.key
+                                                            ]
+                                                        }
                                                     </div>
                                                 )}
                                             </>
@@ -188,7 +206,13 @@ export const Header = () => {
                                 <NotificationBell onClick={() => {}} />
                             </li>
                             <li>
-                                <ProfileDropdown user={user} onLogout={handleLogout} getUserInitials={(n)=>n?.[0]?.toUpperCase()||"U"} />
+                                <ProfileDropdown
+                                    user={user}
+                                    onLogout={handleLogout}
+                                    getUserInitials={(n) =>
+                                        n?.[0]?.toUpperCase() || "U"
+                                    }
+                                />
                             </li>
                         </>
                     )}
@@ -208,7 +232,9 @@ export const Header = () => {
                                 <Button
                                     variant="outline"
                                     className="text-white bg-transparent border-white hover:bg-white/20 hover:text-white"
-                                    onClick={() => router.push("/login?view=login")}
+                                    onClick={() =>
+                                        router.push("/login?view=login")
+                                    }
                                     disabled={isAuthLoading}
                                 >
                                     {isAuthLoading ? "Processing..." : "Login"}
@@ -224,18 +250,30 @@ export const Header = () => {
                 <div className="fixed inset-0 z-50 flex flex-col bg-white lg:hidden">
                     <div className="flex items-center justify-between px-4 border-b h-14">
                         {mobilePage ? (
-                            <button onClick={() => setMobilePage(null)} className="p-2 -ml-2">
+                            <button
+                                onClick={() => setMobilePage(null)}
+                                className="p-2 -ml-2"
+                            >
                                 <ChevronLeft className="w-5 h-5" />
                             </button>
                         ) : (
                             <Link href="/" onClick={() => setMobileOpen(false)}>
-                                <Image src={logo} alt="logo" height={32} className="w-auto h-8" />
+                                <Image
+                                    src={logo}
+                                    alt="logo"
+                                    height={32}
+                                    className="w-auto h-8"
+                                />
                             </Link>
                         )}
                         <span className="text-base font-semibold truncate">
-                            {navItems.find((i) => i.key === mobilePage)?.label || ""}
+                            {navItems.find((i) => i.key === mobilePage)
+                                ?.label || ""}
                         </span>
-                        <button onClick={() => setMobileOpen(false)} className="p-2 -mr-2">
+                        <button
+                            onClick={() => setMobileOpen(false)}
+                            className="p-2 -mr-2"
+                        >
                             <X className="w-6 h-6" />
                         </button>
                     </div>
@@ -247,13 +285,20 @@ export const Header = () => {
                                         {item.hasDropdown ? (
                                             <button
                                                 className="w-full flex items-center justify-between px-4 py-4 text-[17px] font-medium"
-                                                onClick={() => setMobilePage(item.key)}
+                                                onClick={() =>
+                                                    setMobilePage(item.key)
+                                                }
                                             >
                                                 <span>{item.label}</span>
                                                 <ChevronRight className="w-5 h-5 text-gray-500" />
                                             </button>
                                         ) : (
-                                            <Link href={item.href || "#"} onClick={() => setMobileOpen(false)}>
+                                            <Link
+                                                href={item.href || "#"}
+                                                onClick={() =>
+                                                    setMobileOpen(false)
+                                                }
+                                            >
                                                 <div className="px-4 py-4 text-[17px] font-medium">
                                                     {item.label}
                                                 </div>
@@ -264,7 +309,10 @@ export const Header = () => {
                             </ul>
                         )}
                         {mobilePage && (
-                            <div className="p-2" onClick={() => setMobileOpen(false)}>
+                            <div
+                                className="p-2"
+                                onClick={() => setMobileOpen(false)}
+                            >
                                 {dropdownContent[mobilePage]}
                             </div>
                         )}
