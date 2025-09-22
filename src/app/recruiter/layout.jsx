@@ -55,7 +55,7 @@ export default function RecruiterLayout({ children }) {
                 <aside className="hidden lg:block w-[260px] shrink-0 sticky top-0 left-0 h-screen overflow-y-auto bg-white border-r border-gray-200">
                     <RecruiterSidebar />
                 </aside>
-                <main className="flex-1 min-h-screen px-6 py-8 mx-auto max-w-7xl">
+                <main className="flex-1 min-h-screen px-6 py-8 mx-auto max-w-8xl">
                     {children}
                 </main>
             </div>
