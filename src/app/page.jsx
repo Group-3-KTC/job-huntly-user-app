@@ -16,21 +16,29 @@ export default function HomePage() {
             <section id="hero">
                 <HeroSection />
             </section>
-            <section id="stats">
-                <StatsSection />
+            <section id="featured-jobs">
+                <FeaturedJobsSection />
             </section>
+            <section id="top-companies">
+                <TopCompaniesSection />
+            </section>
+            <section id="how-it-works">
+                <HowItWorksSection />
+            </section>
+            <section id="call-to-action">
+                <CallToActionSection />
+            </section>
+            {/* <section id="stats">
+                <StatsSection />
+            </section> */}
             <section id="categories">
                 <CategoriesSection />
             </section>
+            {/* <VacanciesSection /> */}
+            <TestimonialsSection />
             <section id="aboutUs">
                 <AboutUsSection />
             </section>
-            <VacanciesSection />
-            <HowItWorksSection />
-            <FeaturedJobsSection />
-            <TopCompaniesSection />
-            <TestimonialsSection />
-            <CallToActionSection />
         </div>
     );
 }
