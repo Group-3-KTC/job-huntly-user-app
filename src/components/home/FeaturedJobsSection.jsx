@@ -1,14 +1,17 @@
 "use client";
 
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {ArrowRight, Bookmark, BookmarkCheck, MapPin} from "lucide-react";
-import {toast} from "react-toastify";
-import {useDispatch, useSelector} from "react-redux";
-import {selectIsLoggedIn} from "@/features/auth/authSelectors";
-import {showLoginPrompt} from "@/features/auth/loginPromptSlice";
-import {useSaveJobMutation, useUnsaveJobMutation} from "@/services/savedJobService";
-import {useGetJobsWithStatusQuery} from "@/services/jobService";
+import { ArrowRight, Bookmark, BookmarkCheck, MapPin } from "lucide-react";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { selectIsLoggedIn } from "@/features/auth/authSelectors";
+import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
+import {
+    useSaveJobMutation,
+    useUnsaveJobMutation,
+} from "@/services/savedJobService";
+import { useGetJobsWithStatusQuery } from "@/services/jobService";
 
 function typeColorClass(type) {
     switch ((type || "").toUpperCase()) {
@@ -73,7 +76,7 @@ const FeaturedJobsSection = () => {
     const [savingMap, setSavingMap] = useState({});
 
     // ✅ Gọi 1 API duy nhất qua jobService
-    const {data, isFetching, isLoading, error} = useGetJobsWithStatusQuery({
+    const { data, isFetching, isLoading, error } = useGetJobsWithStatusQuery({
         page: 0,
         size: 12,
         sort: "id,desc",
@@ -118,32 +121,31 @@ const FeaturedJobsSection = () => {
 
     // Toggle Save/Unsave (giống DetailJob)
     const makeHandleSave = useCallback(
-        (jobId) =>
-            () =>
-                guardOr(async () => {
-                    try {
-                        if (!jobId) return;
-                        if (savingMap[jobId]) return;
+        (jobId) => () =>
+            guardOr(async () => {
+                try {
+                    if (!jobId) return;
+                    if (savingMap[jobId]) return;
 
-                        const currentlyLiked = !!likedMap[jobId];
-                        setSavingMap((m) => ({...m, [jobId]: true}));
+                    const currentlyLiked = !!likedMap[jobId];
+                    setSavingMap((m) => ({ ...m, [jobId]: true }));
 
-                        if (!currentlyLiked) {
-                            await saveJob({jobId}).unwrap();
-                            setLikedMap((m) => ({...m, [jobId]: true}));
-                            toast.success("Job saved successfully");
-                        } else {
-                            await unsaveJob(jobId).unwrap();
-                            setLikedMap((m) => ({...m, [jobId]: false}));
-                            toast.info("Job unsaved");
-                        }
-                    } catch (err) {
-                        console.error("Toggle save error", err);
-                        toast.error("Error while saving/unsaving job");
-                    } finally {
-                        setSavingMap((m) => ({...m, [jobId]: false}));
+                    if (!currentlyLiked) {
+                        await saveJob({ jobId }).unwrap();
+                        setLikedMap((m) => ({ ...m, [jobId]: true }));
+                        toast.success("Job saved successfully");
+                    } else {
+                        await unsaveJob(jobId).unwrap();
+                        setLikedMap((m) => ({ ...m, [jobId]: false }));
+                        toast.info("Job unsaved");
                     }
-                }),
+                } catch (err) {
+                    console.error("Toggle save error", err);
+                    toast.error("Error while saving/unsaving job");
+                } finally {
+                    setSavingMap((m) => ({ ...m, [jobId]: false }));
+                }
+            }),
         [guardOr, likedMap, savingMap, saveJob, unsaveJob]
     );
 
@@ -157,20 +159,22 @@ const FeaturedJobsSection = () => {
         if (loading) {
             return (
                 <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {Array.from({length: 6}).map((_, i) => (
-                        <div key={i}
-                             className="p-3 bg-white border border-gray-200 rounded-lg sm:p-4 lg:p-6 animate-pulse">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="p-3 bg-white border border-gray-200 rounded-lg sm:p-4 lg:p-6 animate-pulse"
+                        >
                             <div className="flex items-start justify-between mb-3 sm:mb-4">
-                                <div className="w-40 h-4 bg-gray-200 rounded"/>
-                                <div className="w-5 h-5 bg-gray-200 rounded-full sm:w-6 sm:h-6"/>
+                                <div className="w-40 h-4 bg-gray-200 rounded" />
+                                <div className="w-5 h-5 bg-gray-200 rounded-full sm:w-6 sm:h-6" />
                             </div>
-                            <div className="w-24 h-4 mb-2 bg-gray-200 rounded sm:h-5"/>
-                            <div className="h-3 mb-3 bg-gray-200 rounded w-36 sm:mb-4"/>
+                            <div className="w-24 h-4 mb-2 bg-gray-200 rounded sm:h-5" />
+                            <div className="h-3 mb-3 bg-gray-200 rounded w-36 sm:mb-4" />
                             <div className="flex items-center">
-                                <div className="w-8 h-8 mr-2 bg-gray-200 rounded-full sm:w-10 sm:h-10 sm:mr-3"/>
+                                <div className="w-8 h-8 mr-2 bg-gray-200 rounded-full sm:w-10 sm:h-10 sm:mr-3" />
                                 <div className="flex-1">
-                                    <div className="w-32 h-4 mb-2 bg-gray-200 rounded"/>
-                                    <div className="w-24 h-3 bg-gray-200 rounded"/>
+                                    <div className="w-32 h-4 mb-2 bg-gray-200 rounded" />
+                                    <div className="w-24 h-3 bg-gray-200 rounded" />
                                 </div>
                             </div>
                         </div>
@@ -181,8 +185,7 @@ const FeaturedJobsSection = () => {
 
         if (errMsg) {
             return (
-                <div
-                    className="p-3 text-xs text-red-700 border border-red-200 rounded sm:p-4 lg:p-6 sm:text-sm bg-red-50">
+                <div className="p-3 text-xs text-red-700 border border-red-200 rounded sm:p-4 lg:p-6 sm:text-sm bg-red-50">
                     Failed to load job listings. {errMsg}
                 </div>
             );
@@ -190,8 +193,7 @@ const FeaturedJobsSection = () => {
 
         if (jobs.length === 0) {
             return (
-                <div
-                    className="p-3 text-xs text-gray-600 bg-white border border-gray-200 rounded sm:p-4 lg:p-6 sm:text-sm">
+                <div className="p-3 text-xs text-gray-600 bg-white border border-gray-200 rounded sm:p-4 lg:p-6 sm:text-sm">
                     No suitable jobs are currently available.
                 </div>
             );
@@ -211,26 +213,31 @@ const FeaturedJobsSection = () => {
                             className="relative p-3 transition-shadow bg-white border border-gray-200 rounded-lg sm:p-4 lg:p-6 hover:shadow-lg"
                         >
                             {job.boosted && (
-                                <span
-                                    className="absolute top-2 sm:top-3 right-2 sm:right-3 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-200">
-                  BOOSTED
-                </span>
+                                <span className="absolute top-2 sm:top-3 right-2 sm:right-3 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                    BOOSTED
+                                </span>
                             )}
 
                             <div className="flex items-start justify-between mb-3 sm:mb-4">
                                 <div className="pr-3 sm:pr-4">
                                     <h3 className="mb-2 text-sm font-semibold text-gray-900 sm:text-base line-clamp-2">
-                                        <Link href={`/job-detail/${job.id}`} className="hover:underline">
+                                        <Link
+                                            href={`/job-detail/${job.id}`}
+                                            className="hover:underline"
+                                        >
                                             {job.title}
                                         </Link>
                                     </h3>
 
                                     <section
-                                        className={`${job.typeColor} inline-block px-2 py-1 rounded-full text-xs font-semibold`}>
+                                        className={`${job.typeColor} inline-block px-2 py-1 rounded-full text-xs font-semibold`}
+                                    >
                                         {job.type}
                                     </section>
 
-                                    <p className="mt-2 text-xs text-gray-600 sm:text-sm">Salary: {job.salary}</p>
+                                    <p className="mt-2 text-xs text-gray-600 sm:text-sm">
+                                        Salary: {job.salary}
+                                    </p>
                                 </div>
 
                                 {/* APPLIED đặt cạnh nút Save */}
@@ -240,15 +247,17 @@ const FeaturedJobsSection = () => {
                                             className="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold rounded-full bg-green-50 text-green-700 ring-1 ring-inset ring-green-200 whitespace-nowrap"
                                             title="You have applied"
                                         >
-                      APPLIED
-                    </span>
+                                            APPLIED
+                                        </span>
                                     )}
                                     {liked ? (
                                         <BookmarkCheck
                                             onClick={handleSave}
                                             size={16}
                                             className={`cursor-pointer hover:scale-110 transition text-blue-700 fill-blue-700 ${
-                                                saving ? "opacity-60 pointer-events-none" : ""
+                                                saving
+                                                    ? "opacity-60 pointer-events-none"
+                                                    : ""
                                             }`}
                                             title="Unsave"
                                         />
@@ -257,7 +266,9 @@ const FeaturedJobsSection = () => {
                                             onClick={handleSave}
                                             size={16}
                                             className={`cursor-pointer hover:scale-110 transition text-gray-400 ${
-                                                saving ? "opacity-60 pointer-events-none" : ""
+                                                saving
+                                                    ? "opacity-60 pointer-events-none"
+                                                    : ""
                                             }`}
                                             title="Save Job"
                                         />
@@ -266,15 +277,33 @@ const FeaturedJobsSection = () => {
                             </div>
 
                             <div className="flex items-center">
-                                <div
-                                    className="flex items-center justify-center w-6 h-6 mr-2 overflow-hidden bg-white rounded-full shadow-sm sm:w-8 sm:h-8 lg:w-10 lg:h-10 sm:mr-3 ring-1 ring-gray-100">
-                                    <img src={job.logo} alt={job.company} className="object-contain w-full h-full"/>
+                                <div className="flex items-center justify-center w-6 h-6 mr-2 overflow-hidden bg-white rounded-full shadow-sm sm:w-8 sm:h-8 lg:w-10 lg:h-10 sm:mr-3 ring-1 ring-gray-100">
+                                    <img
+                                        src={job.logo}
+                                        alt={job.company}
+                                        className="object-contain w-full h-full"
+                                    />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-900 sm:text-base">{job.company}</p>
+                                    <p className="text-sm font-medium text-gray-900 sm:text-base">
+                                        {job.company}
+                                    </p>
                                     <div className="flex items-center text-xs text-gray-600 sm:text-sm">
-                                        <MapPin className="w-3 h-3 mr-1 sm:w-4 sm:h-4"/>
-                                        {job.location}
+                                        <MapPin className="w-3 h-3 mr-1 sm:w-4 sm:h-4" />
+                                        {job.location &&
+                                            (job.location
+                                                .split(", ")
+                                                .reverse()
+                                                .find(
+                                                    (part) =>
+                                                        /^(Thành phố|TP\.?|Tỉnh)\b/i.test(
+                                                            part
+                                                        ) || 
+                                                        !/(phường|xã|thị trấn|thị xã|quận|huyện)/i.test(
+                                                            part
+                                                        )
+                                                ) ||
+                                                job.location)}
                                     </div>
                                 </div>
                             </div>
@@ -283,16 +312,29 @@ const FeaturedJobsSection = () => {
                 })}
             </div>
         );
-    }, [jobs, loading, errMsg, likedMap, savingMap, appliedMap, makeHandleSave]);
+    }, [
+        jobs,
+        loading,
+        errMsg,
+        likedMap,
+        savingMap,
+        appliedMap,
+        makeHandleSave,
+    ]);
 
     return (
         <section className="py-8 sm:py-12 lg:py-16">
             <div className="container px-2 mx-auto sm:px-4">
                 <div className="flex items-center justify-between mb-8 sm:mb-12">
-                    <h2 className="text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">Featured job</h2>
-                    <Link href="/search"
-                          className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 sm:text-base">
-                        View All <ArrowRight className="w-3 h-3 ml-2 sm:w-4 sm:h-4"/>
+                    <h2 className="text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">
+                        Featured job
+                    </h2>
+                    <Link
+                        href="/search"
+                        className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 sm:text-base"
+                    >
+                        View All{" "}
+                        <ArrowRight className="w-3 h-3 ml-2 sm:w-4 sm:h-4" />
                     </Link>
                 </div>
                 {body}

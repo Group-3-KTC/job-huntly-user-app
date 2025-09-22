@@ -197,7 +197,7 @@ export default function DetailJob({ job }) {
                                 icon={MapPin}
                                 className="text-blue-800 bg-blue-100"
                             >
-                                {dj.location || formatList(dj.city)}
+                                {formatList(dj.workType)}
                             </Pill>
                             <Pill
                                 icon={Layers}
