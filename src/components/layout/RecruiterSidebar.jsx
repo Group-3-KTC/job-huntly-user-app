@@ -71,21 +71,21 @@ export default function RecruiterSidebar() {
                     label: "All Applicants",
                     icon: Users,
                 },
-                {
-                    href: "/recruiter/applicants/shortlisted",
-                    label: "Shortlisted",
-                    icon: User,
-                },
+                // {
+                //     href: "/recruiter/applicants/shortlisted",
+                //     label: "Shortlisted",
+                //     icon: User,
+                // },
                 {
                     href: "/recruiter/applicants/interviewed",
                     label: "Interviewed",
                     icon: MessageSquare,
                 },
-                {
-                    href: "/recruiter/talent-pool",
-                    label: "Talent Pool",
-                    icon: Search,
-                },
+                // {
+                //     href: "/recruiter/talent-pool",
+                //     label: "Talent Pool",
+                //     icon: Search,
+                // },
             ],
         },
         { href: "/recruiter/analytics", label: "Analytics", icon: BarChart3 },

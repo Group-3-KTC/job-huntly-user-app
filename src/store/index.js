@@ -16,6 +16,7 @@ import loginPromptReducer from "@/features/auth/loginPromptSlice";
 import { locationApi } from "@/services/locationService";
 import { filterApi } from "@/services/filterService";
 import { followCompanyApi } from "@/services/followCompanyService";
+import { interviewApi } from "@/services/interviewService";
 
 export const store = configureStore({
     reducer: {
@@ -36,6 +37,7 @@ export const store = configureStore({
         [locationApi.reducerPath]: locationApi.reducer,
         [filterApi.reducerPath]: filterApi.reducer,
         [followCompanyApi.reducerPath]: followCompanyApi.reducer,
+        [interviewApi.reducerPath]: interviewApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
@@ -64,7 +66,8 @@ export const store = configureStore({
             savedJobApi.middleware,
             locationApi.middleware,
             filterApi.middleware,
-            followCompanyApi.middleware
+            followCompanyApi.middleware,
+            interviewApi.middleware
         ),
 });
 

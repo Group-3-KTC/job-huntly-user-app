@@ -10,6 +10,7 @@ import {
     Settings,
     LayoutDashboard,
     Briefcase,
+    CalendarRange,
 } from "lucide-react";
 import { selectAuthUser } from "@/features/auth/authSelectors";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,6 +36,11 @@ const navItems = [
     {
         href: "/ManageCv",
         label: "Manage CV",
+        icon: <CalendarRange className="w-5 h-5 mr-2" />,
+    },
+    {
+        href: "/Interviews",
+        label: "My Interviews",
         icon: <FileText className="w-5 h-5 mr-2" />,
     },
     {
