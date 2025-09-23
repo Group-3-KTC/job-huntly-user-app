@@ -26,7 +26,7 @@ export const mapJobToView = (job) => {
     skill: job?.skill_names ?? job?.skill ?? [],
     city: job?.wards ?? job?.city ?? [],
 
-    salaryDisplay: job?.salaryDisplay ?? job?.salary_display ?? "Thỏa thuận",
+    salaryDisplay: job?.salaryDisplay ?? job?.salary_display ?? "Negotiable",
     datePost: job?.date_post ?? job?.datePost ?? null,
     expiredDate: job?.expired_date ?? job?.expiredDate ?? null,
   };
