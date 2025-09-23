@@ -77,7 +77,10 @@ export default function CreateInterviewModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent
+                className="sm:max-w-md"
+                key={`${defaultCompanyId}-${defaultJobId}-${candidateId}-${open}`}
+            >
                 <DialogHeader>
                     <DialogTitle>Create interview</DialogTitle>
                     <DialogDescription>
@@ -98,8 +101,7 @@ export default function CreateInterviewModal({
                         <div>
                             <Label className="text-gray-600">Candidate</Label>
                             <div className="mt-1 font-medium">
-                                {candidateName ||
-                                    `User #${form.candidateId || "-"}`}
+                                {candidateName || "—"}
                             </div>
                         </div>
                     </div>
