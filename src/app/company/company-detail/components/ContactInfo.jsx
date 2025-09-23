@@ -12,12 +12,12 @@ const ContactInfo = () => {
     return (
         <div className="p-6 bg-white rounded-lg shadow-xl">
             <h2 className="px-4 py-2 text-lg font-semibold text-white bg-blue-700 rounded">
-                Thông tin liên hệ
+                Contact information
             </h2>
             <div className="mt-4 space-y-3 text-sm">
                 <p className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-[#0A66C2]" />
-                    <strong>Địa chỉ:</strong> {company.address},{" "}
+                    <strong>Address:</strong> {company.address},{" "}
                     {company.locationCity}, {company.locationCountry}
                 </p>
                 <p className="flex items-center gap-2">
@@ -32,7 +32,7 @@ const ContactInfo = () => {
                 </p>
                 <p className="flex items-center gap-2">
                     <Phone className="w-4 h-4 text-[#0A66C2]" />
-                    <strong>Điện thoại:</strong>{" "}
+                    <strong>Phone:</strong>{" "}
                     <a
                         href={`tel:${company.phoneNumber}`}
                         className="text-blue-600 hover:underline"
@@ -109,7 +109,7 @@ const ContactInfo = () => {
 
                 <div className="flex items-center gap-2 mt-4">
                     <Map className="w-4 h-4 text-[#0A66C2]" />
-                    <strong>Xem bản đồ</strong>
+                    <strong>View map</strong>
                 </div>
             </div>
             <iframe

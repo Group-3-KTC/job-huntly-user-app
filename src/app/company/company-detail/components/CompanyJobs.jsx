@@ -87,7 +87,7 @@ const CompanyJobs = () => {
                                     >
                                         {job.title}
                                     </Link>
-                                    {company.isProCompany && (
+                                    {company.proCompany && (
                                         <span className="ml-1 text-[#1F2937]">
                                             ✔
                                         </span>

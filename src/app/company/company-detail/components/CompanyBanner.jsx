@@ -101,7 +101,7 @@ const CompanyBanner = () => {
                             {company.companyName}
                         </h1>
                         <div className="mt-2 text-sm text-white-600">
-                            {company.isProCompany && (
+                            {company.proCompany && (
                                 <span className="px-2 py-0.5 mr-2 text-yellow-800 bg-yellow-100 rounded">
                                     Pro Company
                                 </span>

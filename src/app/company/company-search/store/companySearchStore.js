@@ -386,7 +386,7 @@ const useCompanySearchStore = create((set, get) => ({
     // Lấy các công ty được đề xuất
     getRecommendedCompanies: () => {
         const { companies } = get();
-        return companies.filter((company) => company.isProCompany).slice(0, 6);
+        return companies.filter((company) => company.proCompany).slice(0, 6);
     },
 
     // Tính toán số lượng cho bộ lọc
