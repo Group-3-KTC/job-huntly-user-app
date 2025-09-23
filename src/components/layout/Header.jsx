@@ -115,6 +115,16 @@ export const Header = () => {
         { key: "dashboard", label: "Dashboard", href: "/dashboard" },
     ];
 
+    // take 2 initials from user name if no avatar (align with HeaderBackup)
+    const getUserInitials = (name) => {
+        if (!name) return "U";
+        return name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase();
+    };
+
     return (
         <header className="relative bg-blue-700 h-18">
             <div className="flex items-center justify-between h-full px-8">
@@ -199,7 +209,7 @@ export const Header = () => {
                 </div>
 
                 {/* Right actions */}
-                <ul className="flex items-center space-x-2 text-white">
+                <ul className="flex items-center space-x-2">
                     {isLoggedIn && (
                         <>
                             <li>
@@ -209,9 +219,7 @@ export const Header = () => {
                                 <ProfileDropdown
                                     user={user}
                                     onLogout={handleLogout}
-                                    getUserInitials={(n) =>
-                                        n?.[0]?.toUpperCase() || "U"
-                                    }
+                                    getUserInitials={getUserInitials}
                                 />
                             </li>
                         </>
