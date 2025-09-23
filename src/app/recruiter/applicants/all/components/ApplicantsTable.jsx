@@ -213,12 +213,22 @@ export default function ApplicantsTable({
                                                     onCreateInterviewClick?.({
                                                         companyId,
                                                         jobId: item.jobId,
+                                                        // gửi sẵn text hiển thị để tránh chờ fetch map
                                                         jobTitle:
                                                             jobNameMap?.[
                                                                 item.jobId
-                                                            ],
+                                                            ] ||
+                                                            item.jobTitle ||
+                                                            `Job #${item.jobId}`,
+                                                        // lưu ý: dùng đúng candidateId của item (đừng lẫn userId nếu API có field riêng)
                                                         candidateId:
+                                                            item.candidateId ??
                                                             item.userId,
+                                                        candidateName:
+                                                            item.candidateName ||
+                                                            item.fullName ||
+                                                            item.email ||
+                                                            "Unknown",
                                                         candidateEmail:
                                                             item.email,
                                                     })

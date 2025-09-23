@@ -13,6 +13,7 @@ export default function RecruiterApplicantsPage() {
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(10);
     const [createPayload, setCreatePayload] = useState(null);
+
     useEffect(() => {
         let mounted = true;
         const fetchCompany = async () => {
@@ -110,7 +111,11 @@ export default function RecruiterApplicantsPage() {
                 defaultCompanyId={createPayload?.companyId}
                 defaultJobId={createPayload?.jobId}
                 candidateId={createPayload?.candidateId}
-                jobTitle={createPayload?.jobTitle}
+                jobTitle={
+                    createPayload?.jobTitle ??
+                    jobNameMap?.[createPayload?.jobId] ??
+                    (createPayload?.jobId ? `Job #${createPayload.jobId}` : "")
+                }
                 candidateName={createPayload?.candidateName}
                 candidateEmail={createPayload?.candidateEmail}
             />
