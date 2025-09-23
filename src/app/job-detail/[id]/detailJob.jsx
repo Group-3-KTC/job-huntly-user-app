@@ -190,11 +190,10 @@ export default function DetailJob({ job }) {
         [guardOr]
     );
 
-    // Nút Re-apply: logic mới (NEW/CHANGED)
     const handleReapply = useCallback(
         async () =>
             guardOr(async () => {
-                // 1) nếu đã đạt 2 lần re-apply -> chặn vĩnh viễn
+                // giới hạn 2 lần reapply
                 if (attemptCount >= MAX_REAPPLY) {
                     toast.error(
                         "You have reached the re-application limit (2 times)."
@@ -202,7 +201,7 @@ export default function DetailJob({ job }) {
                     return;
                 }
 
-                // 2) luôn refetch status để lấy lastAction mới nhất ngay lúc bấm
+                // luôn gọi lại API để lấy status mới nhất
                 let latest;
                 try {
                     latest = await fetchStatus(djId).unwrap();
@@ -214,41 +213,35 @@ export default function DetailJob({ job }) {
                     return;
                 }
 
-                const lastIso =
-                    latest?.lastUserActionAt ?? lastUserActionAtIso ?? null;
+                const appliedNow = latest?.applied ?? false;
+                const attempts = latest?.attemptCount ?? 0;
+                const lastIso = latest?.lastUserActionAt ?? null;
+
+                if (!appliedNow) {
+                    toast.error("You haven't applied this job yet.");
+                    return;
+                }
+
+                // tính thời gian còn lại
                 const remain = computeRemainingFrom(lastIso);
-                setRemainingMs(remain);
-
-                const isFirstClick = !firstReapplyClickRef.current;
-
-                if (isFirstClick) {
-                    // Lần đầu bấm Re-apply: KHÔNG toast, mở modal (kể cả đang cooldown)
-                    firstReapplyClickRef.current = true;
-                    setShowReportModal(false);
-                    setShowDetailModal(false);
-                    setShowApplyModal(true);
-                    return;
-                }
-
-                // Từ lần 2 trở đi: nếu còn cooldown -> chỉ toast thời gian còn lại
                 if (remain > 0) {
-                    toast.info(`You can re-apply in ${msToMinSec(remain)}.`);
+                    const elapsed = REAPPLY_INTERVAL - remain;
+                    const mins = Math.floor(elapsed / 60000);
+                    const secs = Math.floor((elapsed % 60000) / 1000);
+                    toast.info(
+                        `You re-applied ${mins}m ${secs}s ago. Please wait ${msToMinSec(
+                            remain
+                        )} to try again.`
+                    );
                     return;
                 }
 
-                // Hết cooldown -> mở modal
+                // qua cooldown => mở modal reapply
                 setShowReportModal(false);
                 setShowDetailModal(false);
                 setShowApplyModal(true);
             }),
-        [
-            guardOr,
-            attemptCount,
-            fetchStatus,
-            djId,
-            lastUserActionAtIso,
-            computeRemainingFrom,
-        ]
+        [guardOr, attemptCount, fetchStatus, djId, computeRemainingFrom]
     );
 
     // điều kiện disable nút Re-apply (NEW/CHANGED)
@@ -329,7 +322,9 @@ export default function DetailJob({ job }) {
                                             {reachedLimit
                                                 ? "Re-apply (Limit reached)"
                                                 : remainingMs > 0
-                                                ? `Re-apply`
+                                                ? `Re-apply in ${msToMinSec(
+                                                      remainingMs
+                                                  )}`
                                                 : "Re-Applications"}
                                         </Button>
 
