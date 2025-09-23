@@ -534,18 +534,18 @@ const SearchBar = ({
                 </form>
             </div>
 
-            {/* Quick Search Tags */}
+            {/* Quick Search Tags
             <div className="mt-4 md:mt-6">
                 <h3 className="mb-2 text-xs font-medium text-gray-700 md:text-sm md:mb-3">
                     Quick search:
                 </h3>
                 <div className="flex flex-wrap gap-2">
                     {[
-                        "Công nghệ thông tin",
+                        "International Technology",
                         "Marketing",
-                        "Kế toán",
-                        "Nhân sự",
-                        "Kinh doanh",
+                        "Accounting",
+                        "Human Resources",
+                        "Business",
                     ].map((tag) => (
                         <button
                             key={tag}
@@ -564,7 +564,7 @@ const SearchBar = ({
                         </button>
                     ))}
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };

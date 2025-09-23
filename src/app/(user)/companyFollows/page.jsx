@@ -64,9 +64,9 @@ export default function ListCompanyFollowed() {
     return (
         <div className="container">
             {/* Header Section */}
-            <div className="px-6 py-4 mb-4 border-b border-gray-100 bg-gradient-to-r from-blue-200 to-indigo-50 rounded-xl">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 mb-4 border-b border-gray-100 bg-gradient-to-r from-blue-200 to-indigo-50 rounded-xl">
                 <div className="max-w-6xl mx-auto">
-                    <h1 className="pl-4 text-2xl font-bold text-gray-900 border-l-4 border-blue-800">
+                    <h1 className="pl-3 sm:pl-4 text-xl sm:text-2xl font-bold text-gray-900 border-l-4 border-blue-800">
                         Follow the companies you care about
                     </h1>
                 </div>
@@ -87,34 +87,34 @@ export default function ListCompanyFollowed() {
                     </p>
                 </div>
             ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                     {companies.map((company) => (
                         <div
                             key={company.companyId}
-                            className="relative flex items-center px-4 py-6 transition-all duration-300 bg-white border border-gray-200 shadow-sm z-2 group rounded-2xl hover:shadow-lg hover:border-blue-200"
+                            className="relative flex flex-col md:flex-row md:items-center px-4 sm:px-5 py-4 sm:py-6 transition-all duration-300 bg-white border border-gray-200 shadow-sm z-2 group rounded-2xl hover:shadow-lg hover:border-blue-200 gap-4"
                         >
-                            <div className="flex-shrink-0 mr-6">
+                            <div className="flex-shrink-0 md:mr-6">
                                 <Image
-                                    width={80}
-                                    height={80}
+                                    width={72}
+                                    height={72}
                                     src={
                                         company.companyAvatar ||
                                         "https://static.topcv.vn/company_logos/default-logo.png"
                                     }
                                     alt={`${company.companyName} logo`}
-                                    className="transition-shadow duration-300 object-inhertit rounded-xl group-hover:shadow-md"
+                                    className="transition-shadow duration-300 object-cover rounded-xl group-hover:shadow-md"
                                 />
                             </div>
 
                             <div className="justify-start flex-1 min-w-0">
-                                <h3 className="mb-2 text-lg font-semibold text-gray-900 truncate">
+                                <h3 className="mb-1 sm:mb-2 text-base sm:text-lg font-semibold text-gray-900 truncate">
                                     {company.companyName}
                                 </h3>
 
                                 <div className="space-y-1">
                                     <div className="flex items-center text-sm text-gray-600">
                                         <Users className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0 text-gray-400" />
-                                        <span className="text-lg">
+                                        <span className="text-base sm:text-lg">
                                             {company.quantityEmployee} employees
                                         </span>
                                     </div>
@@ -128,10 +128,10 @@ export default function ListCompanyFollowed() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center flex-shrink-0 ml-6 space-x-3">
+                            <div className="flex w-full md:w-auto items-center md:items-center md:flex-shrink-0 md:ml-6 gap-2 sm:gap-3 mt-1 md:mt-0">
                                 <Link
                                     href={`/company/company-detail/${company.companyId}`}
-                                    className="flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors duration-200 shadow-sm hover:shadow-md"
+                                    className="flex-1 md:flex-none inline-flex items-center justify-center px-4 sm:px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors duration-200 shadow-sm hover:shadow-md"
                                     aria-label={`View details of ${company.companyName}`}
                                 >
                                     <Eye className="w-4 h-4 mr-2" />

@@ -34,7 +34,7 @@ const CompanyDetailContent = () => {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
                 <div className="p-8 text-center text-red-500 rounded-lg bg-red-50">
-                    <h2 className="mb-2 text-xl font-bold">Đã xảy ra lỗi</h2>
+                    <h2 className="mb-2 text-xl font-bold">An error occurred</h2>
                     <p>{error}</p>
                 </div>
             </div>
@@ -46,9 +46,9 @@ const CompanyDetailContent = () => {
             <div className="flex flex-col items-center justify-center min-h-screen">
                 <div className="p-8 text-center text-gray-500 rounded-lg bg-gray-50">
                     <h2 className="mb-2 text-xl font-bold">
-                        Không tìm thấy công ty
+                        Company not found
                     </h2>
-                    <p>Công ty này không tồn tại hoặc đã bị xóa</p>
+                    <p>This company does not exist or has been deleted</p>
                 </div>
             </div>
         );

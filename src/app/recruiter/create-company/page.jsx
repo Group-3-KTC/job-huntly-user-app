@@ -35,7 +35,7 @@ export default function CreateCompanyPage() {
         foundedYear: new Date().getFullYear(),
         quantityEmployee: 1,
         status: "active",
-        isProCompany: false,
+        proCompany: false,
         facebookUrl: "",
         twitterUrl: "",
         linkedinUrl: "",

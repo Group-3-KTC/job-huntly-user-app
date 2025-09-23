@@ -348,7 +348,7 @@ const ResultPageContent = () => {
                     className="w-full py-2 px-4 flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >
                     <Filter className="w-4 h-4" />
-                    {showFilterOnMobile ? "Ẩn bộ lọc" : "Hiển thị bộ lọc"}
+                    {showFilterOnMobile ? "Hide filter" : "Show filter"}
                 </button>
             </div>
 
