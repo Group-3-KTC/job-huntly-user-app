@@ -50,7 +50,7 @@ const ResultItem = ({ company }) => {
                             >
                                 {company.companyName}
                             </Link>
-                            {company.isProCompany && (
+                            {company.proCompany && (
                                 <Star className="ml-2 h-4 w-4 text-yellow-500 fill-yellow-500" />
                             )}
                         </h3>

@@ -25,9 +25,9 @@ const ShareCompany = () => {
   return (
       <div className="p-6 bg-white rounded-lg shadow-xl">
           <h2 className="px-4 py-2 text-lg font-semibold text-white bg-blue-700 rounded">
-              Chia sẻ công ty với bạn bè
+              Share company with friends
           </h2>
-          <p className="mt-4 mb-2 text-sm font-medium">Sao chép đường dẫn</p>
+          <p className="mt-4 mb-2 text-sm font-medium">Copy link</p>
 
           <div
               onClick={handleCopyLink}
@@ -39,12 +39,12 @@ const ShareCompany = () => {
 
               {copied && (
                   <div className="absolute inset-0 flex items-center justify-center text-white bg-blue-700 bg-opacity-90">
-                      Đã sao chép!
+                      Copied!
                   </div>
               )}
           </div>
 
-          <p className="mt-4 text-sm font-medium">Chia sẻ qua mạng xã hội</p>
+          <p className="mt-4 text-sm font-medium">Share on social media</p>
           <div className="flex gap-3 mt-2">
               <a
                   href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
