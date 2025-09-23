@@ -1,3 +1,9 @@
+// import { redirect } from "next/navigation";
+
+
+// export default function CandidatePage() {
+//   return redirect("/dashboard");
+// }
 "use client";
 import Link from "next/link";
 import Image from "next/image";

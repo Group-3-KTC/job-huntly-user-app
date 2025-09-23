@@ -1,13 +1,16 @@
 "use client";
 
-import React, { useMemo, useCallback, useState } from "react";
+import React, {
+    useMemo,
+    useCallback,
+    useState,
+    useEffect, 
+    useRef, 
+} from "react";
 import {
     MapPin,
     Briefcase,
     Layers,
-    FileText,
-    ListChecks,
-    Gift,
     BookmarkCheck,
     Bookmark,
     MessageSquareWarning,
@@ -29,7 +32,7 @@ import CompanyCard from "./_components/CompanyCard";
 import GeneralCard from "./_components/GeneralCard";
 import SkillsChips from "./_components/SkillsChips";
 
-import { formatList, toList } from "./_utils/formatters";
+import { formatList } from "./_utils/formatters";
 import { mapJobToView } from "./_utils/jobMapper";
 
 import {
@@ -37,7 +40,13 @@ import {
     useSaveJobMutation,
     useUnsaveJobMutation,
 } from "@/services/savedJobService";
-import { useGetApplyStatusQuery } from "@/services/applicationService";
+
+// CHANGED: import thêm lazy query để refetch status ngay lúc bấm
+import {
+    useGetApplyStatusQuery,
+    useLazyGetApplyStatusQuery, // NEW
+} from "@/services/applicationService";
+
 import ApplicationDetail from "./_components/ApplicationDetail";
 import ParseInfoJob from "@/components/common/ParseInfoJob";
 
@@ -47,6 +56,7 @@ export default function DetailJob({ job }) {
     const dispatch = useDispatch();
     const dj = useMemo(() => mapJobToView(job), [job]);
     const djId = dj?.id;
+
     const [showApplyModal, setShowApplyModal] = useState(false);
     const [showReportModal, setShowReportModal] = useState(false);
     const [showDetailModal, setShowDetailModal] = useState(false);
@@ -59,27 +69,51 @@ export default function DetailJob({ job }) {
     const [unsaveJob, { isLoading: savingUnsave }] = useUnsaveJobMutation();
     const saving = savingSave || savingUnsave || isFetching;
 
+    // APPLY STATUS
     const { data: applyStatus, isLoading: isLoadingApply } =
         useGetApplyStatusQuery(djId, {
             skip: !djId || !isLoggedIn,
         });
+
     const applied = applyStatus?.applied ?? false;
-     const attemptCount = applyStatus?.attemptCount ?? 0;
-     const lastUserActionAt = applyStatus?.lastUserActionAt
-         ? new Date(applyStatus.lastUserActionAt)
-         : null;
+    const attemptCount = applyStatus?.attemptCount ?? 0; // số lần Re-apply đã thực hiện (server)
+    const lastUserActionAtIso = applyStatus?.lastUserActionAt ?? null;
 
-     const REAPPLY_INTERVAL = 30 * 60 * 1000; // 30 phút (ms)
+    // RULE MỚI: tối đa 2 lần re-apply
+    const MAX_REAPPLY = 2; // NEW
 
-     // Tính thời gian còn lại để có thể reapply
-     const getRemainingTime = () => {
-         if (!lastUserActionAt) return 0;
-         const now = new Date();
-         const nextAvailable = new Date(
-             lastUserActionAt.getTime() + REAPPLY_INTERVAL
-         );
-         return Math.max(0, nextAvailable.getTime() - now.getTime());
-     };
+    // Cooldown 30 phút
+    const REAPPLY_INTERVAL = 30 * 60 * 1000;
+
+    // --- Helpers (NEW) ---
+    const msToMinSec = (ms) => {
+        const sec = Math.max(0, Math.floor(ms / 1000));
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    };
+
+    const computeRemainingFrom = useCallback((lastIso) => {
+        if (!lastIso) return 0;
+        const last = new Date(lastIso);
+        const nextAllowed = new Date(last.getTime() + REAPPLY_INTERVAL);
+        return Math.max(0, nextAllowed.getTime() - Date.now());
+    }, []);
+
+    // state/refs cho UX re-apply (NEW)
+    const [remainingMs, setRemainingMs] = useState(0);
+    const firstReapplyClickRef = useRef(false); // lần đầu bấm sẽ không toast
+
+    // lazy fetch status mỗi lần bấm Re-apply để lấy lastAction mới nhất (NEW)
+    const [fetchStatus, { isFetching: refreshingStatus }] =
+        useLazyGetApplyStatusQuery();
+
+    // cập nhật remaining mỗi khi BE trả về giá trị mới (NEW)
+    useEffect(() => {
+        setRemainingMs(computeRemainingFrom(lastUserActionAtIso));
+    }, [lastUserActionAtIso, computeRemainingFrom]);
+
+    // guard login giữ nguyên
     const guardOr = useCallback(
         (action) => {
             if (!isLoggedIn) {
@@ -94,75 +128,15 @@ export default function DetailJob({ job }) {
         [dispatch, isLoggedIn]
     );
 
-    const handleApply = useCallback(
-        () =>
-            guardOr(() => {
-                setShowReportModal(false);
-                setShowDetailModal(false);
-                setShowApplyModal(true);
-            }),
-        [guardOr]
-    );
-
-    const handleReapply = useCallback(
-        () =>
-            guardOr(() => {
-                if (attemptCount >= 2) {
-                    toast.error(
-                        "You have exceeded the allowed number of re-applications."
-                    );
-                    return;
-                }
-
-                const remaining = getRemainingTime();
-
-                if (remaining > 0) {
-                    const minutes = Math.floor(remaining / 60000);
-                    const seconds = Math.floor((remaining % 60000) / 1000);
-
-                    toast.success(
-                        `You can re-apply in ${minutes} minutes and ${seconds} seconds.`
-                    );
-                    return;
-                }
-
-                // Nếu đã qua 30p → cho reapply
-                setShowReportModal(false);
-                setShowDetailModal(false);
-                setShowApplyModal(true);
-            }),
-        [guardOr, attemptCount, lastUserActionAt]
-    );
-
-    const handleShowDetail = useCallback(
-        () =>
-            guardOr(() => {
-                setShowApplyModal(false);
-                setShowReportModal(false);
-                setShowDetailModal(true);
-            }),
-        [guardOr]
-    );
-
-    const handleFlagClick = useCallback(
-        () =>
-            guardOr(() => {
-                setShowApplyModal(false);
-                setShowDetailModal(false);
-                setShowReportModal(true);
-            }),
-        [guardOr]
-    );
-
+    // hết hạn job?
     const isExpired = useMemo(() => {
         if (!dj?.expiredDate) return false;
-
         const [day, month, year] = dj.expiredDate.split("-").map(Number);
         const expiredDate = new Date(year, month - 1, day);
-
         return expiredDate < new Date();
     }, [dj?.expiredDate]);
 
+    // SAVE/UNSAVE giữ nguyên
     const handleSave = useCallback(
         () =>
             guardOr(async () => {
@@ -182,6 +156,105 @@ export default function DetailJob({ job }) {
             }),
         [djId, liked, saveJob, unsaveJob, guardOr]
     );
+
+    // OPEN APPLY lần đầu
+    const handleApply = useCallback(
+        () =>
+            guardOr(() => {
+                setShowReportModal(false);
+                setShowDetailModal(false);
+                setShowApplyModal(true);
+            }),
+        [guardOr]
+    );
+
+    // View detail
+    const handleShowDetail = useCallback(
+        () =>
+            guardOr(() => {
+                setShowApplyModal(false);
+                setShowReportModal(false);
+                setShowDetailModal(true);
+            }),
+        [guardOr]
+    );
+
+    // Report
+    const handleFlagClick = useCallback(
+        () =>
+            guardOr(() => {
+                setShowApplyModal(false);
+                setShowDetailModal(false);
+                setShowReportModal(true);
+            }),
+        [guardOr]
+    );
+
+    // Nút Re-apply: logic mới (NEW/CHANGED)
+    const handleReapply = useCallback(
+        async () =>
+            guardOr(async () => {
+                // 1) nếu đã đạt 2 lần re-apply -> chặn vĩnh viễn
+                if (attemptCount >= MAX_REAPPLY) {
+                    toast.error(
+                        "You have reached the re-application limit (2 times)."
+                    );
+                    return;
+                }
+
+                // 2) luôn refetch status để lấy lastAction mới nhất ngay lúc bấm
+                let latest;
+                try {
+                    latest = await fetchStatus(djId).unwrap();
+                } catch (e) {
+                    console.error("Fetch status failed:", e);
+                    toast.error(
+                        "Failed to refresh application status. Please try again."
+                    );
+                    return;
+                }
+
+                const lastIso =
+                    latest?.lastUserActionAt ?? lastUserActionAtIso ?? null;
+                const remain = computeRemainingFrom(lastIso);
+                setRemainingMs(remain);
+
+                const isFirstClick = !firstReapplyClickRef.current;
+
+                if (isFirstClick) {
+                    // Lần đầu bấm Re-apply: KHÔNG toast, mở modal (kể cả đang cooldown)
+                    firstReapplyClickRef.current = true;
+                    setShowReportModal(false);
+                    setShowDetailModal(false);
+                    setShowApplyModal(true);
+                    return;
+                }
+
+                // Từ lần 2 trở đi: nếu còn cooldown -> chỉ toast thời gian còn lại
+                if (remain > 0) {
+                    toast.info(`You can re-apply in ${msToMinSec(remain)}.`);
+                    return;
+                }
+
+                // Hết cooldown -> mở modal
+                setShowReportModal(false);
+                setShowDetailModal(false);
+                setShowApplyModal(true);
+            }),
+        [
+            guardOr,
+            attemptCount,
+            fetchStatus,
+            djId,
+            lastUserActionAtIso,
+            computeRemainingFrom,
+        ]
+    );
+
+    // điều kiện disable nút Re-apply (NEW/CHANGED)
+    const reachedLimit = attemptCount >= MAX_REAPPLY; // đủ 2 lần → disable vĩnh viễn
+    const canReapplyNow =
+        applied && !isExpired && !reachedLimit && remainingMs === 0;
 
     return (
         <div className="w-full px-4 py-10 bg-gray-100 md:px-10">
@@ -230,32 +303,43 @@ export default function DetailJob({ job }) {
                                         Apply
                                     </Button>
                                 ) : (
-                                    applied && (
-                                        <div className="flex gap-2">
-                                            <Button
-                                                disabled={
-                                                    isExpired ||
-                                                    attemptCount >= 3
-                                                }
-                                                className={`flex-1 text-white ${
-                                                    isExpired ||
-                                                    attemptCount >= 3
-                                                        ? "bg-gray-400 cursor-not-allowed"
-                                                        : "bg-green-600 hover:bg-green-700"
-                                                }`}
-                                                onClick={handleReapply}
-                                            >
-                                                Re-Applications
-                                            </Button>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            disabled={
+                                                isExpired ||
+                                                reachedLimit ||
+                                                refreshingStatus
+                                            } // disable khi hết hạn, đạt limit 2 lần, hoặc đang refetch
+                                            className={`flex-1 text-white ${
+                                                isExpired || reachedLimit
+                                                    ? "bg-gray-400 cursor-not-allowed"
+                                                    : "bg-green-600 hover:bg-green-700"
+                                            }`}
+                                            onClick={handleReapply}
+                                            title={
+                                                reachedLimit
+                                                    ? "You have reached the re-application limit (2 times)."
+                                                    : remainingMs > 0
+                                                    ? `You can re-apply in ${msToMinSec(
+                                                          remainingMs
+                                                      )}.`
+                                                    : "Re-apply"
+                                            }
+                                        >
+                                            {reachedLimit
+                                                ? "Re-apply (Limit reached)"
+                                                : remainingMs > 0
+                                                ? `Re-apply`
+                                                : "Re-Applications"}
+                                        </Button>
 
-                                            <Button
-                                                className="flex-1 font-medium text-blue-600 bg-white border-2 border-blue-600 hover:bg-blue-600 hover:text-white"
-                                                onClick={handleShowDetail}
-                                            >
-                                                View Details
-                                            </Button>
-                                        </div>
-                                    )
+                                        <Button
+                                            className="flex-1 font-medium text-blue-600 bg-white border-2 border-blue-600 hover:bg-blue-600 hover:text-white"
+                                            onClick={handleShowDetail}
+                                        >
+                                            View Details
+                                        </Button>
+                                    </div>
                                 )}
 
                                 {showApplyModal && (
@@ -350,8 +434,8 @@ export default function DetailJob({ job }) {
                     />
                 </div>
             </div>
+
             <RelatedJobs category={dj.category} skill={dj.skill} />
         </div>
     );
 }
-
