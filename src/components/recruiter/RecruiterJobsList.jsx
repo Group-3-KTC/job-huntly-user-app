@@ -128,7 +128,7 @@ export default function RecruiterJobsList({ tab = "all" }) {
                         <div className="mt-2 flex flex-wrap gap-4 text-sm">
                             <div className="flex items-center gap-1">
                                 <DollarSign className="w-4 h-4 text-muted-foreground" />
-                                <span>{job.salaryDisplay || (job.salary_min && job.salary_max ? `${job.salary_min} - ${job.salary_max}` : "Thỏa thuận")}</span>
+                                <span>{job.salaryDisplay || (job.salary_min && job.salary_max ? `${job.salary_min} - ${job.salary_max}` : "Negotiable")}</span>
                             </div>
                             {job.location && (
                                 <div className="flex items-center gap-1 text-muted-foreground">

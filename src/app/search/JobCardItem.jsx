@@ -8,6 +8,7 @@ import {
     Clock,
     Eye,
     MapPin,
+    Crown,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -123,13 +124,19 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
     const imageSrc =
         typeof avatar === "string" && avatar.trim() !== "" ? avatar : undefined;
 
+    const isProCompany = !!job?.company?.isProCompany;
+
     return (
         <div
             className={`${
                 isGrid
                     ? "flex flex-col w-full p-4 bg-white border rounded-xl shadow-sm hover:shadow-md"
                     : "flex flex-col md:flex-row items-stretch w-full mb-4 overflow-hidden bg-white border shadow-sm rounded-xl hover:shadow-md"
-            }`}
+            } ${
+                isProCompany
+                    ? "border-blue-500 shadow-blue-200/60"
+                    : "border-gray-200"
+            } relative`}
         >
             {/* Avatar */}
             <div
@@ -151,6 +158,13 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
                 ) : (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-50 text-gray-400 text-xs border">
                         No Logo
+                    </div>
+                )}
+
+                {isProCompany && (
+                    <div className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-blue-600 to-sky-500 shadow">
+                        <Crown size={12} className="text-white" />
+                        VIP
                     </div>
                 )}
             </div>
@@ -183,6 +197,12 @@ export default function JobCardItem({ job, onToast, isGrid = false }) {
                         >
                             {companyName}
                         </span>
+                        {isProCompany && (
+                            <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-blue-700 bg-blue-50 border border-blue-200">
+                                <Crown size={12} className="text-blue-600" />
+                                VIP COMPANY
+                            </span>
+                        )}
                     </div>
 
                     {/* Grid: chỉ hiện salary */}

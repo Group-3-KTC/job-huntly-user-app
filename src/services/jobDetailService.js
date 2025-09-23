@@ -26,7 +26,7 @@ export const getJobDetail = async (id) => {
             workType: data.work_type_names || [],
             skill: data.skill_names || [],
             city: data.wards || [],
-            salaryDisplay: data.salaryDisplay || "Thỏa thuận",
+            salaryDisplay: data.salaryDisplay || "Negotiable",
             datePost: data.date_post,
             expiredDate: data.expired_date,
         };
