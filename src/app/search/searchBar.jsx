@@ -26,7 +26,8 @@ export default function SearchBar() {
     const [openProvince, setOpenProvince] = useState(false);
     const [searchProvinceTerm, setSearchProvinceTerm] = useState("");
 
-    const setSearchTerm = useJobSearchStore((state) => state.setSearchTerm);
+    const setSearchTerm = useJobSearchStore((s) => s.setSearchTerm);
+    const setFilters = useJobSearchStore((s) => s.setFilters);
 
     const { data: provinces = [] } = useGetCitiesQuery();
 
@@ -55,10 +56,24 @@ export default function SearchBar() {
         });
     };
 
+    // ✅ Reset cả search term + toàn bộ filters trong store
     const handleReset = () => {
+        // reset local UI
         setKeyword("");
         setSelectedProvince("");
+        setSearchProvinceTerm("");
+        setOpenProvince(false);
+
+        // reset global search term
         setSearchTerm({ keyword: "", province: "" });
+
+        // reset global filters (đồng bộ với FilterBar)
+        setFilters({
+            workTypes: [],
+            levels: [],
+            categories: [],
+            skills: [],
+        });
     };
 
     return (
