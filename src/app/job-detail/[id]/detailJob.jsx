@@ -41,10 +41,9 @@ import {
     useUnsaveJobMutation,
 } from "@/services/savedJobService";
 
-// CHANGED: import thêm lazy query để refetch status ngay lúc bấm
 import {
     useGetApplyStatusQuery,
-    useLazyGetApplyStatusQuery, // NEW
+    useLazyGetApplyStatusQuery, 
 } from "@/services/applicationService";
 
 import ApplicationDetail from "./_components/ApplicationDetail";
@@ -69,34 +68,23 @@ export default function DetailJob({ job }) {
     const [unsaveJob, { isLoading: savingUnsave }] = useUnsaveJobMutation();
     const saving = savingSave || savingUnsave || isFetching;
 
-    // APPLY STATUS
     const { data: applyStatus, isLoading: isLoadingApply } =
         useGetApplyStatusQuery(djId, {
             skip: !djId || !isLoggedIn,
         });
 
     const applied = applyStatus?.applied ?? false;
-    const attemptCount = applyStatus?.attemptCount ?? 0; // số lần Re-apply đã thực hiện (server)
+    const attemptCount = applyStatus?.attemptCount ?? 0; 
     const lastUserActionAtIso = applyStatus?.lastUserActionAt ?? null;
 
-    // RULE MỚI: tối đa 2 lần re-apply
-    const MAX_REAPPLY = 2; // NEW
+    const MAX_REAPPLY = 2; 
 
-    // Cooldown 30 phút
     const REAPPLY_INTERVAL = 30 * 60 * 1000;
 
-    // --- Helpers (NEW) ---
-    const msToMinSec = (ms) => {
-        const sec = Math.max(0, Math.floor(ms / 1000));
-        const m = Math.floor(sec / 60);
-        const s = sec % 60;
-        return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-    };
 
     const computeRemainingFrom = useCallback((lastIso) => {
         if (!lastIso) return 0;
 
-        // Nếu chuỗi KHÔNG có timezone (không Z, không +hh:mm) -> coi như UTC
         const hasTz = /([zZ]|[+-]\d{2}:\d{2})$/.test(lastIso);
         const safeIso = hasTz ? lastIso : `${lastIso}Z`;
 
@@ -107,20 +95,16 @@ export default function DetailJob({ job }) {
         return Math.max(0, nextAllowed - Date.now());
     }, []);
 
-    // state/refs cho UX re-apply (NEW)
     const [remainingMs, setRemainingMs] = useState(0);
-    const firstReapplyClickRef = useRef(false); // lần đầu bấm sẽ không toast
-
-    // lazy fetch status mỗi lần bấm Re-apply để lấy lastAction mới nhất (NEW)
+    const firstReapplyClickRef = useRef(false);
+    
     const [fetchStatus, { isFetching: refreshingStatus }] =
         useLazyGetApplyStatusQuery();
 
-    // cập nhật remaining mỗi khi BE trả về giá trị mới (NEW)
     useEffect(() => {
         setRemainingMs(computeRemainingFrom(lastUserActionAtIso));
     }, [lastUserActionAtIso, computeRemainingFrom]);
 
-    // guard login giữ nguyên
     const guardOr = useCallback(
         (action) => {
             if (!isLoggedIn) {
@@ -135,7 +119,6 @@ export default function DetailJob({ job }) {
         [dispatch, isLoggedIn]
     );
 
-    // hết hạn job?
     const isExpired = useMemo(() => {
         if (!dj?.expiredDate) return false;
         const [day, month, year] = dj.expiredDate.split("-").map(Number);
@@ -143,7 +126,6 @@ export default function DetailJob({ job }) {
         return expiredDate < new Date();
     }, [dj?.expiredDate]);
 
-    // SAVE/UNSAVE giữ nguyên
     const handleSave = useCallback(
         () =>
             guardOr(async () => {
@@ -164,7 +146,6 @@ export default function DetailJob({ job }) {
         [djId, liked, saveJob, unsaveJob, guardOr]
     );
 
-    // OPEN APPLY lần đầu
     const handleApply = useCallback(
         () =>
             guardOr(() => {
@@ -175,7 +156,6 @@ export default function DetailJob({ job }) {
         [guardOr]
     );
 
-    // View detail
     const handleShowDetail = useCallback(
         () =>
             guardOr(() => {
@@ -186,7 +166,6 @@ export default function DetailJob({ job }) {
         [guardOr]
     );
 
-    // Report
     const handleFlagClick = useCallback(
         () =>
             guardOr(() => {
@@ -200,7 +179,6 @@ export default function DetailJob({ job }) {
     const handleReapply = useCallback(
         async () =>
             guardOr(async () => {
-                // giới hạn 2 lần reapply
                 if (attemptCount >= MAX_REAPPLY) {
                     toast.error(
                         "You have reached the re-application limit (2 times)."
@@ -208,7 +186,6 @@ export default function DetailJob({ job }) {
                     return;
                 }
 
-                // luôn gọi lại API để lấy status mới nhất
                 let latest;
                 try {
                     latest = await fetchStatus(djId).unwrap();
@@ -229,16 +206,11 @@ export default function DetailJob({ job }) {
                     return;
                 }
 
-                // tính thời gian còn lại
                 const remain = computeRemainingFrom(lastIso);
                 if (remain > 0) {
                     const elapsed = REAPPLY_INTERVAL - remain;
-                    const mins = Math.floor(elapsed / 60000);
-                    const secs = Math.floor((elapsed % 60000) / 1000);
                     toast.info(
-                        `You re-applied ${mins}m ${secs}s ago. Please wait ${msToMinSec(
-                            remain
-                        )} to try again.`
+                        `You re-applied 30 minutes ago. Please wait to try again.`
                     );
                     return;
                 }
@@ -320,18 +292,14 @@ export default function DetailJob({ job }) {
                                                 reachedLimit
                                                     ? "You have reached the re-application limit (2 times)."
                                                     : remainingMs > 0
-                                                    ? `You can re-apply in ${msToMinSec(
-                                                          remainingMs
-                                                      )}.`
+                                                    ? `You can re-apply in 30 minutes`
                                                     : "Re-apply"
                                             }
                                         >
                                             {reachedLimit
                                                 ? "Re-apply (Limit reached)"
                                                 : remainingMs > 0
-                                                ? `Re-apply in ${msToMinSec(
-                                                      remainingMs
-                                                  )}`
+                                                ? `Re-apply in 30 minutes please`
                                                 : "Re-Applications"}
                                         </Button>
 
