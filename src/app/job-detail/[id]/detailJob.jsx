@@ -4,8 +4,8 @@ import React, {
     useMemo,
     useCallback,
     useState,
-    useEffect, 
-    useRef, 
+    useEffect,
+    useRef,
 } from "react";
 import {
     MapPin,
@@ -43,11 +43,13 @@ import {
 
 import {
     useGetApplyStatusQuery,
-    useLazyGetApplyStatusQuery, 
+    useLazyGetApplyStatusQuery,
 } from "@/services/applicationService";
 
 import ApplicationDetail from "./_components/ApplicationDetail";
 import ParseInfoJob from "@/components/common/ParseInfoJob";
+
+import AiMatchModal from "./AiMatchModal";
 
 export default function DetailJob({ job }) {
     const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -59,6 +61,7 @@ export default function DetailJob({ job }) {
     const [showApplyModal, setShowApplyModal] = useState(false);
     const [showReportModal, setShowReportModal] = useState(false);
     const [showDetailModal, setShowDetailModal] = useState(false);
+    const [showAiMatch, setShowAiMatch] = useState(false);
 
     const { data: status, isFetching } = useGetStatusQuery(djId, {
         skip: !djId || !isLoggedIn,
@@ -74,13 +77,12 @@ export default function DetailJob({ job }) {
         });
 
     const applied = applyStatus?.applied ?? false;
-    const attemptCount = applyStatus?.attemptCount ?? 0; 
+    const attemptCount = applyStatus?.attemptCount ?? 0;
     const lastUserActionAtIso = applyStatus?.lastUserActionAt ?? null;
 
-    const MAX_REAPPLY = 2; 
+    const MAX_REAPPLY = 2;
 
     const REAPPLY_INTERVAL = 30 * 60 * 1000;
-
 
     const computeRemainingFrom = useCallback((lastIso) => {
         if (!lastIso) return 0;
@@ -97,7 +99,7 @@ export default function DetailJob({ job }) {
 
     const [remainingMs, setRemainingMs] = useState(0);
     const firstReapplyClickRef = useRef(false);
-    
+
     const [fetchStatus, { isFetching: refreshingStatus }] =
         useLazyGetApplyStatusQuery();
 
@@ -402,10 +404,24 @@ export default function DetailJob({ job }) {
                     <SkillsChips
                         skills={Array.isArray(dj.skill) ? dj.skill : []}
                     />
+                    <button
+                        className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
+                        onClick={() => setShowAiMatch(true)}
+                    >
+                        Are you suitable for this job?
+                    </button>
                 </div>
             </div>
 
             <RelatedJobs category={dj.category} skill={dj.skill} />
+            {showAiMatch && (
+                <AiMatchModal
+                    jobId={djId}
+                    defaultResumeFileId={null} // Assuming no default resume file for now
+                    onClose={() => setShowAiMatch(false)}
+                />
+            )}
         </div>
     );
 }
+
