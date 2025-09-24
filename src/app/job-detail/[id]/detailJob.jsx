@@ -405,10 +405,12 @@ export default function DetailJob({ job }) {
                         skills={Array.isArray(dj.skill) ? dj.skill : []}
                     />
                     <button
-                        className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
+                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:from-indigo-500 hover:via-blue-600 hover:to-cyan-500 text-white transition transform hover:scale-[1.01] shadow-lg hover:shadow-2xl ring-2 ring-white/20 flex items-center gap-3 disabled:opacity-50 group relative overflow-hidden"
                         onClick={() => setShowAiMatch(true)}
                     >
-                        Are you suitable for this job?
+                        <img src="https://img.icons8.com/ios/50/ai-robot--v7.png" alt="AI" className="w-10 h-10 transition-transform duration-200 group-hover:scale-110 drop-shadow-[0_2px_6px_rgba(59,130,246,0.6)]" />
+                        <span className="font-semibold tracking-wide">Are you suitable?</span>
+                        <span className="ml-1 text-xs font-bold bg-white/20 text-white px-2 py-0.5 rounded-full border border-white/30">AI</span>
                     </button>
                 </div>
             </div>
