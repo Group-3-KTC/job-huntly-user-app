@@ -55,19 +55,12 @@ export default function SearchBar() {
             province: selectedProvince,
         });
     };
-
-    // ✅ Reset cả search term + toàn bộ filters trong store
     const handleReset = () => {
-        // reset local UI
         setKeyword("");
         setSelectedProvince("");
         setSearchProvinceTerm("");
         setOpenProvince(false);
-
-        // reset global search term
         setSearchTerm({ keyword: "", province: "" });
-
-        // reset global filters (đồng bộ với FilterBar)
         setFilters({
             workTypes: [],
             levels: [],
