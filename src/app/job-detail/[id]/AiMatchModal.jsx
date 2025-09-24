@@ -100,7 +100,7 @@ const AiMatchModal = ({ onClose, jobId }) => {
         <Dialog open={true} onClose={onCloseModal} className="relative z-50">
             <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
             <div className="fixed inset-0 flex items-center justify-center p-4">
-                <Dialog.Panel className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl space-y-5">
+                <Dialog.Panel className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl space-y-5 max-h-[85vh] overflow-y-auto">
                     <div className="flex items-center justify-between">
                         <Dialog.Title className="text-lg font-semibold text-blue-600">
                             CV suitability assessment
@@ -197,11 +197,13 @@ const AiMatchModal = ({ onClose, jobId }) => {
                             </div>
                             {Array.isArray(result.reasons) &&
                                 result.reasons.length > 0 && (
-                                    <ul className="list-disc ml-5 mt-2 text-sm text-gray-700">
-                                        {result.reasons.map((r, i) => (
-                                            <li key={i}>{r}</li>
-                                        ))}
-                                    </ul>
+                                    <div className="max-h-64 md:max-h-80 overflow-y-auto pr-2 mt-2">
+                                        <ul className="list-disc ml-5 text-sm text-gray-700">
+                                            {result.reasons.map((r, i) => (
+                                                <li key={i}>{r}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 )}
                         </div>
                     )}

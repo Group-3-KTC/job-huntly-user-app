@@ -5,7 +5,7 @@ export async function getJobMatchScore({
     resumeFileId,
     useFileApi = false,
 }) {
-    const { data } = await api.post("/api/ai/match", {
+    const { data } = await api.post("/ai/match", {
         jobId,
         resumeFileId: resumeFileId || null,
         resumeText: null, // để backend tự lấy khi không có file
@@ -19,7 +19,7 @@ export async function uploadAndGetMatchScore({ jobId, file, useFileApi = false }
   form.append("jobId", jobId);
   form.append("file", file);
   form.append("useFileApi", String(useFileApi));
-  const { data } = await api.post("/api/ai/match/upload", form, {
+  const { data } = await api.post("/ai/match/upload", form, {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return data; // { score, reasons }
