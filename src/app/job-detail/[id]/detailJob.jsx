@@ -95,9 +95,16 @@ export default function DetailJob({ job }) {
 
     const computeRemainingFrom = useCallback((lastIso) => {
         if (!lastIso) return 0;
-        const last = new Date(lastIso);
-        const nextAllowed = new Date(last.getTime() + REAPPLY_INTERVAL);
-        return Math.max(0, nextAllowed.getTime() - Date.now());
+
+        // Nếu chuỗi KHÔNG có timezone (không Z, không +hh:mm) -> coi như UTC
+        const hasTz = /([zZ]|[+-]\d{2}:\d{2})$/.test(lastIso);
+        const safeIso = hasTz ? lastIso : `${lastIso}Z`;
+
+        const last = new Date(safeIso);
+        if (isNaN(last.getTime())) return 0;
+
+        const nextAllowed = last.getTime() + REAPPLY_INTERVAL;
+        return Math.max(0, nextAllowed - Date.now());
     }, []);
 
     // state/refs cho UX re-apply (NEW)
