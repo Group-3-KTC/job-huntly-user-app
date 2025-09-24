@@ -11,6 +11,7 @@ import {
     Star,
     Calendar,
     FileText,
+    Crown,
 } from "lucide-react";
 import { getImageUrl } from "@/lib/utils";
 
@@ -26,17 +27,27 @@ const ResultItem = ({ company }) => {
     };
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+        <div className={`bg-white p-4 rounded-lg shadow-sm border hover:shadow-md transition-shadow ${
+            company?.proCompany 
+                ? "border-blue-500 shadow-blue-200/60" 
+                : "border-gray-100"
+        }`}>
             <div className="flex items-start">
                 {/* Logo */}
-                <div className="w-16 h-16 flex-shrink-0 mr-4 overflow-hidden rounded-md bg-gray-50 p-1">
+                <div className="relative w-20 h-20 flex-shrink-0 mr-4 overflow-hidden rounded-md bg-white border">
+                    {company?.proCompany && (
+                        <div className="absolute top-1 left-1 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-blue-600 to-sky-500 shadow">
+                            <Crown size={12} className="text-white" />
+                            VIP
+                        </div>
+                    )}
                     <Link href={`/company/company-detail/${company.id}`}>
                         <Image
                             src={getImageUrl(company.avatar)}
                             alt={company.companyName || "Company logo"}
-                            width={64}
-                            height={64}
-                            className="object-contain"
+                            fill
+                            className="object-contain p-1"
+                            sizes="80px"
                         />
                     </Link>
                 </div>
@@ -51,7 +62,10 @@ const ResultItem = ({ company }) => {
                                 {company.companyName}
                             </Link>
                             {company.proCompany && (
-                                <Star className="ml-2 h-4 w-4 text-yellow-500 fill-yellow-500" />
+                                <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-blue-700 bg-blue-50 border border-blue-200">
+                                    <Crown size={12} className="text-blue-600" />
+                                    VIP COMPANY
+                                </span>
                             )}
                         </h3>
 
@@ -72,7 +86,7 @@ const ResultItem = ({ company }) => {
                             </div>
                         )}
 
-                        {company.categories &&
+                        {/* {company.categories &&
                             company.categories.length > 0 && (
                                 <div className="flex items-center">
                                     <Building className="h-4 w-4 mr-1 text-gray-400" />
@@ -81,7 +95,7 @@ const ResultItem = ({ company }) => {
                                         ? ` +${company.categories.length - 1}`
                                         : ""}
                                 </div>
-                            )}
+                            )} */}
 
                         {company.quantityEmployee && (
                             <div className="flex items-center">
