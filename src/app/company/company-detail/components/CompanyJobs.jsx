@@ -34,7 +34,7 @@ const CompanyJobs = () => {
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-xl">
-            <h2 className="px-4 py-2 text-lg font-semibold text-white rounded bg-[#0A66C2]">
+            <h2 className="px-4 py-2 text-lg font-semibold text-white bg-blue-700 rounded">
                 {t`Job Openings`}
             </h2>
             <div className="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -55,7 +55,7 @@ const CompanyJobs = () => {
                     <option value="TP.HCM">Ho Chi Minh City</option>
                     <option value="Đà Nẵng">Da Nang</option>
                 </select>
-                <button className="w-full h-10 text-white rounded bg-[#0A66C2] hover:bg-[#085aab]">
+                <button className="w-full h-10 text-white rounded bg-blue-700 hover:bg-[#085aab]">
                     Search
                 </button>
             </div>
@@ -116,7 +116,7 @@ const CompanyJobs = () => {
                                 <Link
                                     href={`/job-detail/${job.id}/applicationJob`}
                                 >
-                                    <button className="px-4 py-1 text-sm text-white rounded bg-[#0A66C2] hover:bg-[#085aab]">
+                                    <button className="px-4 py-1 text-sm text-white rounded bg-blue-700 hover:bg-[#085aab]">
                                         Apply Now
                                     </button>
                                 </Link>

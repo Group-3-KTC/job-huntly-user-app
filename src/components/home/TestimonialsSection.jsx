@@ -15,7 +15,7 @@ export default function TestimonialsSection() {
             text: "JobHuntly has a clean, modern interface that makes job searching feel effortless. I found exactly what I was looking for in just a few days!",
             name: "Vo Hoang Phuc",
             title: "UI/UX Designer",
-            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEL3C3A-f1db21fda0f9-512",
+            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEL3C3A-65ccc92316e4-512",
         },
         {
             rating: 5,

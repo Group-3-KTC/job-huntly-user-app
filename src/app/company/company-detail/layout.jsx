@@ -1,10 +1,9 @@
 import React from 'react';
 
 export const metadata = {
-  title: 'Chi tiết công ty | JobHuntly',
-  description: 'Thông tin chi tiết về công ty và cơ hội việc làm',
+  title: "Company Details | JobHuntly",
+  description: "Detailed information about the company and job opportunities",
 };
-
 export default function CompanyDetailLayout({ children }) {
   return (
     <div className="min-h-screen bg-gray-100">

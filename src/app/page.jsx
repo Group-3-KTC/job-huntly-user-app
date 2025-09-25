@@ -9,6 +9,7 @@ import TopCompaniesSection from "@/components/home/TopCompaniesSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import CallToActionSection from "@/components/home/CallToActionSection";
 import AboutUsSection from "@/components/home/AboutUsSection";
+import EventsSection from "@/components/home/EventsSection";
 
 export default function HomePage() {
     return (
@@ -21,6 +22,9 @@ export default function HomePage() {
             </section>
             <section id="top-companies">
                 <TopCompaniesSection />
+            </section>
+            <section id="events">
+                <EventsSection />
             </section>
             <section id="how-it-works">
                 <HowItWorksSection />
