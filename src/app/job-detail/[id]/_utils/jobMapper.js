@@ -8,6 +8,14 @@ export const mapJobToView = (job) => {
     job?.company_id ??
     null;
 
+  const isPro =
+    (company.isProCompany !== undefined && company.isProCompany !== null
+      ? company.isProCompany
+      : undefined) ??
+    company.proCompany ??
+    job?.isProCompany ??
+    false;
+
   return {
     id: job?.id,
     title: job?.title ?? "",
@@ -19,6 +27,7 @@ export const mapJobToView = (job) => {
     companyId: companyIdRaw != null ? String(companyIdRaw) : null,
     companyName: company?.company_name ?? job?.companyName ?? "",
     avatar: company?.avatar ?? job?.avatar ?? "",
+    isProCompany: Boolean(isPro),
 
     category: job?.category_names ?? job?.category ?? [],
     level: job?.level_names ?? job?.level ?? [],
