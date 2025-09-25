@@ -14,7 +14,7 @@ export default function TestimonialsSection() {
             text: "JobHuntly has a modern interface...",
             name: "Vo Hoang Phuc",
             title: "UI/UX Designer",
-            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEL3C3A-f1db21fda0f9-512",
+            avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEL3C3A-65ccc92316e4-512",
         },
         {
             rating: 5,
@@ -36,7 +36,7 @@ export default function TestimonialsSection() {
             name: "Do Phi Lau",
             title: "Software Engineer",
             avatar: "https://ca.slack-edge.com/T092B4T8XTN-U093TVABR3R-48c4f710a858-72",
-        }
+        },
     ];
 
     useEffect(() => {
