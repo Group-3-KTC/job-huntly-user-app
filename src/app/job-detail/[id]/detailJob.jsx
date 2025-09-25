@@ -230,6 +230,14 @@ export default function DetailJob({ job }) {
     const canReapplyNow =
         applied && !isExpired && !reachedLimit && remainingMs === 0;
 
+    const handleOpenAiMatch = useCallback(
+        () =>
+            guardOr(() => {
+                setShowAiMatch(true);
+            }),
+        [guardOr]
+    );
+
     return (
         <div className="w-full px-4 py-10 bg-gray-100 md:px-10">
             <div className="flex flex-col-reverse w-full gap-6 md:flex-row">
@@ -404,6 +412,7 @@ export default function DetailJob({ job }) {
                         avatar={dj.avatar}
                         companyName={dj.companyName}
                         companyId={dj.companyId}
+                        isProCompany={dj.isProCompany}
                     />
                     <GeneralCard
                         salary={dj.salaryDisplay}
@@ -415,7 +424,8 @@ export default function DetailJob({ job }) {
                     />
                     <button
                         className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:from-indigo-500 hover:via-blue-600 hover:to-cyan-500 text-white transition transform hover:scale-[1.01] shadow-lg hover:shadow-2xl ring-2 ring-white/20 flex items-center gap-3 disabled:opacity-50 group relative overflow-hidden"
-                        onClick={() => setShowAiMatch(true)}
+                        onClick={handleOpenAiMatch}
+                        title={isLoggedIn ? "Check suitability with AI" : "Please log in to use AI"}
                     >
                         <span className="pointer-events-none absolute inset-0 rounded-xl animate-pulse bg-cyan-400/0 group-hover:bg-cyan-400/0" />
                         <span className="pointer-events-none absolute inset-0 opacity-70">
