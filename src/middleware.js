@@ -24,7 +24,7 @@ const protectedPrefixes = [
     /^\/notifications/,
     /^\/saved-jobs/,
     /^\/companyFollows/,
-    /^\/ManagecV/,
+    /^\/managecV/,
     /^\/interviews(\/|$)/,
     /^\/jobs(\/|$)/,
     /^\/applications/,
