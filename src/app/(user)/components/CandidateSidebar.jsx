@@ -34,7 +34,7 @@ const navItems = [
         icon: <User className="w-5 h-5 mr-2" />,
     },
     {
-        href: "/ManageCv",
+        href: "/manageCv",
         label: "Manage CV",
         icon: <CalendarRange className="w-5 h-5 mr-2" />,
     },
