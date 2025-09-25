@@ -25,12 +25,12 @@ export const menuItems = (router) => [
     {
         label: "Manage CV",
         icon: FileText,
-        onClick: () => router.push("/ManageCv"),
+        onClick: () => router.push("/manageCv"),
     },
     {
         label: "My Interviews",
         icon: CalendarRange,
-        onClick: () => router.push("/Interviews"),
+        onClick: () => router.push("/interviews"),
     },
     {
         label: "Companies Follow",

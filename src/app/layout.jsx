@@ -23,7 +23,11 @@ export const metadata = {
     title: 'JobHuntly — Find quality jobs fast',
     description: 'JobHuntly connects candidates and employers with fast, reliable hiring.'
   },
-  alternates: { canonical: 'https://jobhuntly.io.vn' }
+  alternates: { canonical: 'https://jobhuntly.io.vn' },
+  
+  icons: {
+    icon: '/logo.svg',
+  }
 };
 
 export const viewport = {

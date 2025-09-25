@@ -4,8 +4,8 @@ import React, {
     useMemo,
     useCallback,
     useState,
-    useEffect, 
-    useRef, 
+    useEffect,
+    useRef,
 } from "react";
 import {
     MapPin,
@@ -44,11 +44,13 @@ import {
 
 import {
     useGetApplyStatusQuery,
-    useLazyGetApplyStatusQuery, 
+    useLazyGetApplyStatusQuery,
 } from "@/services/applicationService";
 
 import ApplicationDetail from "./_components/ApplicationDetail";
 import ParseInfoJob from "@/components/common/ParseInfoJob";
+
+import AiMatchModal from "./AiMatchModal";
 
 export default function DetailJob({ job }) {
     const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -60,6 +62,7 @@ export default function DetailJob({ job }) {
     const [showApplyModal, setShowApplyModal] = useState(false);
     const [showReportModal, setShowReportModal] = useState(false);
     const [showDetailModal, setShowDetailModal] = useState(false);
+    const [showAiMatch, setShowAiMatch] = useState(false);
 
     const { data: status, isFetching } = useGetStatusQuery(djId, {
         skip: !djId || !isLoggedIn,
@@ -75,13 +78,12 @@ export default function DetailJob({ job }) {
         });
 
     const applied = applyStatus?.applied ?? false;
-    const attemptCount = applyStatus?.attemptCount ?? 0; 
+    const attemptCount = applyStatus?.attemptCount ?? 0;
     const lastUserActionAtIso = applyStatus?.lastUserActionAt ?? null;
 
-    const MAX_REAPPLY = 2; 
+    const MAX_REAPPLY = 2;
 
     const REAPPLY_INTERVAL = 30 * 60 * 1000;
-
 
     const computeRemainingFrom = useCallback((lastIso) => {
         if (!lastIso) return 0;
@@ -98,7 +100,7 @@ export default function DetailJob({ job }) {
 
     const [remainingMs, setRemainingMs] = useState(0);
     const firstReapplyClickRef = useRef(false);
-    
+
     const [fetchStatus, { isFetching: refreshingStatus }] =
         useLazyGetApplyStatusQuery();
 
@@ -259,7 +261,7 @@ export default function DetailJob({ job }) {
                             </Pill>
                         </div>
 
-                        <div className="grid items-center grid-cols-10 gap-2 mt-4">
+                        <div className="grid items-center grid-cols-1 md:grid-cols-10 gap-2 mt-4">
                             <div className="col-span-8">
                                 {isLoadingApply ? (
                                     <p>Loading application status...</p>
@@ -323,38 +325,47 @@ export default function DetailJob({ job }) {
                                 )}
                             </div>
 
-                            <div className="relative flex items-start justify-center col-span-1">
-                                {liked ? (
-                                    <BookmarkCheck
-                                        onClick={handleSave}
-                                        size={22}
-                                        className={`cursor-pointer hover:scale-110 transition text-blue-700 fill-blue-700 ${
-                                            saving
-                                                ? "opacity-60 pointer-events-none"
-                                                : ""
-                                        }`}
-                                        title="Unsave"
-                                    />
-                                ) : (
-                                    <Bookmark
-                                        onClick={handleSave}
-                                        size={22}
-                                        className={`cursor-pointer hover:scale-110 transition text-gray-400 ${
-                                            saving
-                                                ? "opacity-60 pointer-events-none"
-                                                : ""
-                                        }`}
-                                        title="Save Job"
-                                    />
-                                )}
+                            <div className="relative flex items-center justify-center col-span-1">
+                                <button
+                                    onClick={handleSave}
+                                    disabled={saving}
+                                    className={`group inline-flex items-center justify-center rounded-full px-3 py-2 transition-all border w-full md:w-auto ${
+                                        liked
+                                            ? "bg-blue-50 border-blue-200 hover:bg-blue-100"
+                                            : "bg-white border-blue-200 hover:bg-blue-50"
+                                    } ${
+                                        saving
+                                            ? "opacity-60 cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    aria-label={
+                                        liked ? "Unsave job" : "Save job"
+                                    }
+                                    title={liked ? "Unsave" : "Save job"}
+                                >
+                                    {liked ? (
+                                        <BookmarkCheck className="w-5 h-5 text-blue-600" />
+                                    ) : (
+                                        <Bookmark className="w-5 h-5 text-blue-600" />
+                                    )}
+                                    <span className="ml-2 text-xs font-medium text-blue-700">
+                                        {liked ? "Saved" : "Save"}
+                                    </span>
+                                </button>
                             </div>
 
                             <div className="flex justify-center col-span-1">
-                                <MessageSquareWarning
-                                    size={22}
-                                    className="text-gray-600 transition cursor-pointer hover:scale-110"
+                                <button
                                     onClick={handleFlagClick}
-                                />
+                                    className="group inline-flex items-center justify-center rounded-full px-3 py-2 transition-all border w-full md:w-auto bg-white border-red-200 hover:bg-red-50"
+                                    aria-label="Report job"
+                                    title="Report this job"
+                                >
+                                    <MessageSquareWarning className="w-5 h-5 text-red-600" />
+                                    <span className="ml-2 text-xs font-medium text-red-700">
+                                        Report
+                                    </span>
+                                </button>
                             </div>
 
                             <ReportModal
@@ -403,10 +414,62 @@ export default function DetailJob({ job }) {
                     <SkillsChips
                         skills={Array.isArray(dj.skill) ? dj.skill : []}
                     />
+                    <button
+                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:from-indigo-500 hover:via-blue-600 hover:to-cyan-500 text-white transition transform hover:scale-[1.01] shadow-lg hover:shadow-2xl ring-2 ring-white/20 flex items-center gap-3 disabled:opacity-50 group relative overflow-hidden"
+                        onClick={() => setShowAiMatch(true)}
+                    >
+                        <span className="pointer-events-none absolute inset-0 rounded-xl animate-pulse bg-cyan-400/0 group-hover:bg-cyan-400/0" />
+                        <span className="pointer-events-none absolute inset-0 opacity-70">
+                            <span className="shine" />
+                        </span>
+                        <img
+                            src="https://img.icons8.com/ios/50/ai-robot--v7.png"
+                            alt="AI"
+                            className="w-10 h-10 transition-transform duration-200 group-hover:scale-110 drop-shadow-[0_2px_6px_rgba(59,130,246,0.6)]"
+                        />
+                        <span className="font-semibold tracking-wide">
+                            Are you suitable?
+                        </span>
+                        <span className="ml-1 text-xs font-bold bg-white/20 text-white px-2 py-0.5 rounded-full border border-white/30">
+                            AI
+                        </span>
+                    </button>
+                    <style jsx>{`
+                        .shine {
+                            position: absolute;
+                            inset: -2px;
+                            pointer-events: none;
+                            background: repeating-linear-gradient(
+                                120deg,
+                                rgba(255, 255, 255, 0) 0px,
+                                rgba(255, 255, 255, 0) 40px,
+                                rgba(255, 255, 255, 0.28) 60px,
+                                rgba(255, 255, 255, 0) 80px
+                            );
+                            background-size: 200% 200%;
+                            animation: banner-shine 5.6s linear infinite;
+                        }
+                        @keyframes banner-shine {
+                            0% {
+                                background-position: 0% 0%;
+                            }
+                            100% {
+                                background-position: 200% 0%;
+                            }
+                        }
+                    `}</style>
                 </div>
             </div>
 
             <RelatedJobs category={dj.category} skill={dj.skill} />
+            {showAiMatch && (
+                <AiMatchModal
+                    jobId={djId}
+                    defaultResumeFileId={null} // Assuming no default resume file for now
+                    onClose={() => setShowAiMatch(false)}
+                />
+            )}
         </div>
     );
 }
+
