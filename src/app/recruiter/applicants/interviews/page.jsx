@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import InterviewApplicationModal from "./components/InterviewApplicationModal";
+import { useRouter } from "next/navigation";
 
 function formatDT(s) {
     if (!s) return "—";
@@ -81,6 +82,7 @@ function StatusPill({ status }) {
 }
 
 export default function RecruiterInterviewsPage() {
+    const router = useRouter();
     const [companyId, setCompanyId] = useState(null);
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(20);
@@ -206,9 +208,8 @@ export default function RecruiterInterviewsPage() {
                                                         variant="outline"
                                                         size="sm"
                                                         onClick={() =>
-                                                            window.open(
-                                                                row.meetingUrl,
-                                                                "_blank"
+                                                            router.push(
+                                                                `/recruiter/applicants/interviews/${row.interviewId}/join`
                                                             )
                                                         }
                                                     >

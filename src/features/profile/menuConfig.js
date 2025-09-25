@@ -29,7 +29,7 @@ export const menuItems = (router) => [
     {
         label: "My Interviews",
         icon: CalendarRange,
-        onClick: () => router.push("/Interviews"),
+        onClick: () => router.push("/interviews"),
     },
     {
         label: "Companies Follow",
