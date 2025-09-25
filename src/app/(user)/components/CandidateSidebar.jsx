@@ -39,7 +39,7 @@ const navItems = [
         icon: <CalendarRange className="w-5 h-5 mr-2" />,
     },
     {
-        href: "/Interviews",
+        href: "/interviews",
         label: "My Interviews",
         icon: <FileText className="w-5 h-5 mr-2" />,
     },

@@ -1,3 +1,4 @@
+// src/services/interviewService.js
 import { createApi } from "@reduxjs/toolkit/query/react";
 import api from "@/lib/api";
 
@@ -9,7 +10,7 @@ const axiosBaseQuery =
     ) => {
         try {
             const config = {
-                url: `/interviews${url || ""}`, // 👈 đổi prefix sang interviews
+                url: `/interviews${url || ""}`, // prefix interviews
                 method,
                 data,
                 signal,
@@ -52,7 +53,6 @@ export const interviewApi = createApi({
                 method: "POST",
                 data: payload,
             }),
-            // sau khi tạo thì refetch 2 list
             invalidatesTags: ["InterviewsCompany", "InterviewsCandidate"],
         }),
 
@@ -96,6 +96,17 @@ export const interviewApi = createApi({
             }),
             invalidatesTags: ["InterviewsCompany", "InterviewsCandidate"],
         }),
+
+        // [GET] metadata cho page join/embed
+        getMeta: builder.query({
+            query: (interviewId) => ({
+                url: `/${interviewId}/meta`,
+                method: "GET",
+            }),
+            // không nên cache quá lâu vì có thể cập nhật status/meetingUrl
+            providesTags: (result, error, id) =>
+                result ? [{ type: "InterviewsCandidate", id }] : [],
+        }),
     }),
 });
 
@@ -104,4 +115,5 @@ export const {
     useGetInterviewsByCompanyQuery,
     useGetInterviewsForCandidateQuery,
     useUpdateInterviewStatusMutation,
+    useGetMetaQuery,
 } = interviewApi;
