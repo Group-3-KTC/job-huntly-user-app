@@ -145,11 +145,8 @@ export default function CandidateInterviewsPage() {
             {list.map((iv) => (
                 <div key={iv.interviewId} className="space-y-2">
                     <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl hover:shadow-md hover:border-blue-300">
-                        {/* Card body: 2 cột (nội dung | hành động), footer ở hàng dưới */}
                         <div className="grid md:grid-cols-[1fr,200px]">
-                            {/* LEFT: content */}
                             <div className="p-4">
-                                {/* Tiêu đề + company (KHÔNG có status ở đây nữa) */}
                                 <div className="space-y-1">
                                     <p
                                         onClick={() =>
@@ -167,7 +164,6 @@ export default function CandidateInterviewsPage() {
                                     </div>
                                 </div>
 
-                                {/* Thời gian + duration */}
                                 <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-gray-700">
                                     <div className="flex items-center gap-2">
                                         <CalendarDays className="w-4 h-4 text-blue-600" />
@@ -184,17 +180,19 @@ export default function CandidateInterviewsPage() {
                                     </div>
                                 </div>
 
-                                {/* Link join + Application toggle */}
                                 <div className="flex flex-wrap gap-2 mt-3">
                                     {iv.meetingUrl ? (
-                                        <Link
-                                            href={iv.meetingUrl}
-                                            target="_blank"
+                                        <button
+                                            onClick={() =>
+                                                router.push(
+                                                    `/interviews/${iv.interviewId}/join`
+                                                )
+                                            }
                                             className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
                                         >
                                             <Video className="w-4 h-4" />
-                                            Join meeting
-                                        </Link>
+                                            Open interview
+                                        </button>
                                     ) : (
                                         <span className="text-sm text-gray-500">
                                             The meeting link is not available
@@ -221,7 +219,6 @@ export default function CandidateInterviewsPage() {
                                 </div>
                             </div>
 
-                            {/* RIGHT: action column (Accept/Decline) — tách biệt với status */}
                             <div className="flex items-start justify-start p-4 border-t border-gray-100 md:border-t-0 md:border-l md:items-center md:justify-end">
                                 {iv.status === "PENDING" && (
                                     <div className="flex gap-2">
@@ -255,7 +252,6 @@ export default function CandidateInterviewsPage() {
                                 )}
                             </div>
 
-                            {/* FOOTER: Status badge ở đáy, full width */}
                             <div className="border-t border-gray-100 md:col-span-2 bg-gray-50">
                                 <div className="flex items-center justify-end px-4 py-2">
                                     <StatusBadge status={iv.status} />

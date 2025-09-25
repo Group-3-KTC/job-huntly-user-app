@@ -77,7 +77,7 @@ export default function RecruiterSidebar() {
                 //     icon: User,
                 // },
                 {
-                    href: "/recruiter/applicants/interviewed",
+                    href: "/recruiter/applicants/interviews",   
                     label: "Interviewed",
                     icon: MessageSquare,
                 },
@@ -88,7 +88,7 @@ export default function RecruiterSidebar() {
                 // },
             ],
         },
-        { href: "/recruiter/analytics", label: "Analytics", icon: BarChart3 },
+        // { href: "/recruiter/analytics", label: "Analytics", icon: BarChart3 },
         {
             href: "/recruiter/payment-history",
             label: "Payment History",
