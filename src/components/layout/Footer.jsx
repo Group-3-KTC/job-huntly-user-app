@@ -153,7 +153,9 @@ export const Footer = () => {
 
                     <div className="flex mt-4 space-x-4 md:mt-0">
                         <Link
-                            href="#"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://www.facebook.com/profile.php?id=61581031504719"
                             className="text-gray-400 hover:text-white"
                         >
                             <Facebook className="w-5 h-5" />
