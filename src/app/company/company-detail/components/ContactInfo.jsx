@@ -3,6 +3,7 @@
 import React from "react";
 import useCompanyDetailStore from "../store/companyDetailStore";
 import { MapPin, Mail, Phone, Globe, Facebook, Linkedin, Twitter, Map } from "lucide-react";
+import { t } from "@/i18n/i18n";
 
 const ContactInfo = () => {
     const { company } = useCompanyDetailStore();
@@ -12,7 +13,7 @@ const ContactInfo = () => {
     return (
         <div className="p-6 bg-white rounded-lg shadow-xl">
             <h2 className="px-4 py-2 text-lg font-semibold text-white bg-blue-700 rounded">
-                Contact information
+                {t`Contact Information`}
             </h2>
             <div className="mt-4 space-y-3 text-sm">
                 <p className="flex items-center gap-2">

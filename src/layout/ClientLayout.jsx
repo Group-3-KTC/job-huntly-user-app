@@ -5,11 +5,14 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { hideLoginPrompt } from "@/features/auth/loginPromptSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useI18nLang } from "@/i18n/i18n";
+
 
 export default function ClientLayout({ children }) {
     const router = useRouter();
     const dispatch = useDispatch();
    const { open } = useSelector((state) => state.loginPrompt); 
+   const lang = useI18nLang();
 
    const openLogin = useCallback(() => {
        dispatch(hideLoginPrompt());
@@ -26,7 +29,9 @@ export default function ClientLayout({ children }) {
                 onClose={() => dispatch(hideLoginPrompt())}
                 onLogin={openLogin}
             />
-                {children}
+                <div key={lang}>
+                    {children}
+                </div>
             </main>
             <Footer />
         </div>

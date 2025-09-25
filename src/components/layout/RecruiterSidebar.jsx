@@ -228,7 +228,7 @@ export default function RecruiterSidebar() {
                     onClick={handleLogout}
                 >
                     <LogOut className="w-5 h-5 mr-2" />
-                    Logout
+                    {t`Logout`}
                 </Button>
             </div>
         </div>

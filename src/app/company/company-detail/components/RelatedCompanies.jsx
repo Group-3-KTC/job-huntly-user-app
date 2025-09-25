@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import useCompanyDetailStore from "../store/companyDetailStore";
 import { getImageUrl } from "@/lib/utils";
+import { t } from "@/i18n/i18n";
 
 const RelatedCompanies = () => {
     const { relatedCompanies } = useCompanyDetailStore();
@@ -16,15 +17,14 @@ const RelatedCompanies = () => {
             <div className="p-6 mt-4 text-white rounded-t-lg bg-gradient-to-r from-[#0A66C2] to-[#1F2937]">
                 <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold">
-                        Representative brands in the same field
+                        {t`Representative brands in the same field`}
                     </h2>
                     <span className="px-2 py-1 text-xs font-bold text-[#FF8A00] bg-[#FFFAF0] rounded">
                         Pro Company
                     </span>
                 </div>
                 <p className="mt-1 text-sm text-white/80">
-                    The brands that have established their position on the
-                    market.
+                    {t`The brands that have established their position on the market.`}
                 </p>
             </div>
 

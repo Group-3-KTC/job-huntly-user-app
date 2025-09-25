@@ -1,31 +1,30 @@
+"use client";
+
 import React from "react";
 import { Search, Send, Upload, UserPlus } from "lucide-react";
+import { t } from "@/i18n/i18n";
 
 const HowItWorksSection = () => {
     const steps = [
         {
             icon: UserPlus,
-            title: "Create account",
-            description:
-                "Aliquam facilisis egestas sapien, nec tempor leo tristique at.",
+            title: t`Create account`,
+            description: t`Sign up in just a few steps and start your journey toward a brighter career.`,
         },
         {
             icon: Upload,
-            title: "Upload CV/Resume",
-            description:
-                "Curabitur sit amet maximus ligula. Nam a nulla ante. Nam sodales",
+            title: t`Upload CV/Resume`,
+            description: t`Add your resume to help employers understand your skills and experience.`,
         },
         {
             icon: Search,
-            title: "Find suitable job",
-            description:
-                "Phasellus quis eleifend ex. Morbi nec fringilla nibh.",
+            title: t`Find suitable job`,
+            description: t`Browse through thousands of job listings tailored to your profile and interests.`,
         },
         {
             icon: Send,
-            title: "Apply job",
-            description:
-                "Curabitur sit amet maximus ligula. Nam a nulla ante. Nam sodales purus.",
+            title: t`Apply job`,
+            description: t`Submit your application with one click and get ready for new opportunities.`,
         },
     ];
 
@@ -34,7 +33,7 @@ const HowItWorksSection = () => {
             <div className="container px-2 mx-auto sm:px-4">
                 <div className="mb-8 text-center sm:mb-12">
                     <h2 className="text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">
-                        How JobHuntly work
+                        {t`How JobHuntly work`}
                     </h2>
                 </div>
 

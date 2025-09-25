@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { t } from "@/i18n/i18n";
 
 export default function TestimonialsSection() {
     const [index, setIndex] = useState(0);
@@ -11,32 +12,32 @@ export default function TestimonialsSection() {
     const testimonials = [
         {
             rating: 5,
-            text: "JobHuntly has a modern interface...",
+            text: "JobHuntly has a clean, modern interface that makes job searching feel effortless. I found exactly what I was looking for in just a few days!",
             name: "Vo Hoang Phuc",
             title: "UI/UX Designer",
             avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEL3C3A-f1db21fda0f9-512",
         },
         {
             rating: 5,
-            text: "The job search and application process...",
+            text: "The job search and application process is incredibly smooth. JobHuntly helped me connect with companies that truly match my creative vision.",
             name: "Nguyen Anh Huy",
             title: "Creative Director",
             avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092ZEMP5CG-1fb35ba9101d-512",
         },
         {
             rating: 5,
-            text: "The job search and application process...",
+            text: "As an intern looking for my first opportunity, JobHuntly gave me access to real openings and helpful tips. I landed my first internship thanks to this platform!",
             name: "Nguyen Thanh Trong",
-            title: "Internship",
+            title: "Intern",
             avatar: "https://ca.slack-edge.com/T092B4T8XTN-U092WU8NMGF-44471c1e6caf-72",
         },
         {
             rating: 5,
-            text: "More than 1000+ users have used JobHuntly to find their dream job",
+            text: "Over 1,000 users – including myself – have found jobs through JobHuntly. It's not just a platform; it's a launchpad for your career.",
             name: "Do Phi Lau",
             title: "Software Engineer",
             avatar: "https://ca.slack-edge.com/T092B4T8XTN-U093TVABR3R-48c4f710a858-72",
-        }
+        },
     ];
 
     useEffect(() => {
@@ -57,7 +58,7 @@ export default function TestimonialsSection() {
         <section className="py-8 sm:py-12 lg:py-16">
             <div className="container px-2 mx-auto sm:px-4">
                 <h2 className="mb-8 text-xl font-bold text-center text-gray-900 sm:mb-12 sm:text-2xl lg:text-3xl">
-                    Clients Testimonial
+                    {t`Clients Testimonial`}
                 </h2>
                 <div className="relative max-w-6xl mx-auto overflow-hidden">
                     <Button

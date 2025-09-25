@@ -12,7 +12,7 @@ const MyCompanyContactInfo = () => {
     return (
         <div className="p-6 bg-white rounded-lg shadow-xl">
             <h2 className="px-4 py-2 text-lg font-semibold text-white rounded bg-[#0A66C2]">
-                Contact Information
+                {t`Contact Information`}
             </h2>
             <div className="mt-4 space-y-3 text-sm">
                 <p className="flex items-center gap-2">

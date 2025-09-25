@@ -20,7 +20,7 @@ const JobSidebar = ({ categories, skills, levels, workTypes }) => {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                         <span className="text-gray-600">Category</span>
                         <span className="font-medium">
                             {safeCategories.length > 0
@@ -28,7 +28,7 @@ const JobSidebar = ({ categories, skills, levels, workTypes }) => {
                                 : "Not selected"}
                         </span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                         <span className="text-gray-600">Job Type</span>
                         <span className="font-medium">
                             {safeWorkTypes.length > 0
@@ -43,7 +43,7 @@ const JobSidebar = ({ categories, skills, levels, workTypes }) => {
             {safeSkills.length > 0 && (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-lg">Skills</CardTitle>
+                        <CardTitle className="text-lg">{t`Skills`}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex flex-wrap gap-2">

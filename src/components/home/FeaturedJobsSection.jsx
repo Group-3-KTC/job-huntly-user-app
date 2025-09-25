@@ -12,6 +12,7 @@ import {
     useUnsaveJobMutation,
 } from "@/services/savedJobService";
 import { useGetJobsWithStatusQuery } from "@/services/jobService";
+import { t } from "@/i18n/i18n";
 
 function typeColorClass(type) {
     switch ((type || "").toUpperCase()) {
@@ -75,14 +76,12 @@ const FeaturedJobsSection = () => {
     const [appliedMap, setAppliedMap] = useState({});
     const [savingMap, setSavingMap] = useState({});
 
-    // ✅ Gọi 1 API duy nhất qua jobService
     const { data, isFetching, isLoading, error } = useGetJobsWithStatusQuery({
         page: 0,
         size: 12,
         sort: "id,desc",
     });
 
-    // đồng bộ state khi data mới về
     useEffect(() => {
         const items = data?.items ?? [];
         if (!Array.isArray(items) || items.length === 0) {
@@ -119,7 +118,6 @@ const FeaturedJobsSection = () => {
         [dispatch, isLoggedIn]
     );
 
-    // Toggle Save/Unsave (giống DetailJob)
     const makeHandleSave = useCallback(
         (jobId) => () =>
             guardOr(async () => {
@@ -327,13 +325,13 @@ const FeaturedJobsSection = () => {
             <div className="container px-2 mx-auto sm:px-4">
                 <div className="flex items-center justify-between mb-8 sm:mb-12">
                     <h2 className="text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">
-                        Featured job
+                        {t`Featured job`}
                     </h2>
                     <Link
                         href="/search"
                         className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 sm:text-base"
                     >
-                        View All{" "}
+                        {t`View All`}{" "}
                         <ArrowRight className="w-3 h-3 ml-2 sm:w-4 sm:h-4" />
                     </Link>
                 </div>

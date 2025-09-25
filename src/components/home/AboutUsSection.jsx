@@ -3,61 +3,59 @@
 import React from "react";
 import Image from "next/image";
 import frontendDevImage from "@/assets/images/frontend-dev-job-match.png"; // bạn có thể thay bằng ảnh mới bạn vừa upload
+import { t } from "@/i18n/i18n";
 
 export default function AboutUsSection() {
     return (
-        <section id="about-us" className="py-12 mx-4 bg-white rounded-lg sm:py-16 lg:py-20">
+        <section
+            id="about-us"
+            className="py-12 mx-4 bg-white rounded-lg sm:py-16 lg:py-20"
+        >
             <div className="grid items-center grid-cols-1 lg:grid-cols-2 lg:gap-0">
                 {/* Text Content */}
                 <div className="container px-6 py-8 mx-auto sm:px-8 lg:px-12">
                     <h2 className="mb-6 text-3xl font-bold text-gray-900 sm:text-4xl">
-                        About JobHuntly
+                        {t`About JobHuntly: from First job to Big future`}
                     </h2>
                     <p className="mb-4 text-base leading-relaxed text-gray-600 sm:text-lg">
-                        JobHuntly is an intelligent recruitment platform that
-                        bridges the gap between talented candidates and leading
-                        companies. We simplify the hiring process by providing
-                        powerful tools for job seekers to showcase their skills
-                        and for employers to find the right talent quickly.
+                        {t`JobHuntly was born from a simple idea: to create a job search platform that is honest, effective, and easy to use. We know that finding the right first job can feel overwhelming, so our focus is on building a clean, straightforward space where new job seekers and growing companies can connect. We're on a mission to help you find more than just a job—we're here to help you build a career.`}
                     </p>
                     <p className="mb-6 text-base leading-relaxed text-gray-600 sm:text-lg">
-                        With JobHuntly, you can explore tailored job
-                        opportunities, manage your profile seamlessly, and stay
-                        updated with the latest career insights. Our mission is
-                        to create meaningful connections that empower both
-                        candidates and businesses to grow together.
+                        {t`As a new platform, we're building this community one connection at a time. Our mission is to foster a space where meaningful careers can begin. Your feedback and participation are the most important part of our growth. We are here to evolve with you and for you, helping turn your first step into a great future.`}
                     </p>
 
-                    {/* Stats / Highlights */}
+                    {/* Replacing stats with core values */}
                     <div className="grid grid-cols-2 gap-6 sm:gap-8">
                         <div>
                             <p className="text-2xl font-bold text-indigo-600">
-                                10K+
+                                {t`Honesty & Quality`}
                             </p>
                             <p className="text-sm text-gray-600">
-                                Active Job Listings
+                                {t`We focus on a curated selection of verified and high-quality job listings.`}
                             </p>
                         </div>
                         <div>
                             <p className="text-2xl font-bold text-indigo-600">
-                                500+
+                                {t`Simplicity`}
                             </p>
                             <p className="text-sm text-gray-600">
-                                Top Companies
+                                {t`A streamlined, minimalist interface to make your search fast and stress-free.`}
                             </p>
                         </div>
                         <div>
                             <p className="text-2xl font-bold text-indigo-600">
-                                50K+
+                                {t`Community-Driven`}
                             </p>
-                            <p className="text-sm text-gray-600">Job Seekers</p>
+                            <p className="text-sm text-gray-600">
+                                {t`We're building a valuable recruitment community with you.`}
+                            </p>
                         </div>
                         <div>
                             <p className="text-2xl font-bold text-indigo-600">
-                                24/7
+                                {t`Feedback Matters`}
                             </p>
                             <p className="text-sm text-gray-600">
-                                Smart Support
+                                {t`Our platform evolves based on the insights you share.`}
                             </p>
                         </div>
                     </div>

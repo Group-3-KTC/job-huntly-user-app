@@ -10,6 +10,7 @@ import { getImageUrl } from "@/lib/utils";
 import { toast } from "react-toastify";
 import { selectIsLoggedIn } from "@/features/auth/authSelectors";
 import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
+import { t } from "@/i18n/i18n";
 
 import {
     useGetFollowStatusQuery,
@@ -139,8 +140,8 @@ const CompanyBanner = () => {
                         {isFollowStatusLoading
                             ? "Loading..."
                             : isLoggedIn && followStatus?.followed
-                            ? "✓ Unfollow"
-                            : "+ Follow Company"}
+                            ? t`Unfollow`
+                            : t`Follow Company`}
                     </button>
 
                     <button

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import useCompanyDetailStore from "../store/companyDetailStore";
+import { t } from "@/i18n/i18n";
 
 const CompanyDescription = () => {
     const { company } = useCompanyDetailStore();
@@ -12,7 +13,7 @@ const CompanyDescription = () => {
     return (
         <div className="p-6 bg-white rounded-lg shadow-xl">
             <h2 className="px-4 py-2 text-lg font-semibold text-white bg-blue-700 rounded">
-                Company introduction
+                {t`Company Introduction`}
             </h2>
             
             <div className="mt-4 space-y-4">

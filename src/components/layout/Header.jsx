@@ -25,6 +25,9 @@ import {
 import { logoutThunk } from "@/features/auth/authSlice";
 import ProfileDropdown from "../ui/ProfileDropdown";
 import NotificationBell from "@/components/ui/NotificationBell";
+import LanguageSelector from "@/components/ui/LanguageSelector";
+import { t } from "@/i18n/i18n";
+
 
 export const Header = () => {
     const dispatch = useDispatch();
@@ -71,13 +74,13 @@ export const Header = () => {
             <Link href="/search">
                 <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
                     <Search className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm">Find Jobs</span>
+                    <span className="text-sm">{t`Find Jobs`}</span>
                 </div>
             </Link>
             <Link href="/jobs/saved">
                 <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
                     <Bookmark className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm">Favorite Jobs</span>
+                    <span className="text-sm">{t`Favorite Jobs`}</span>
                 </div>
             </Link>
         </div>
@@ -89,13 +92,13 @@ export const Header = () => {
             <Link href="/company/company-search/results">
                 <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
                     <Building className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm">Companies</span>
+                    <span className="text-sm">{t`Companies`}</span>
                 </div>
             </Link>
             <Link href="/company/company-search">
                 <div className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
                     <Search className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm">Find Companies</span>
+                    <span className="text-sm">{t`Find Companies`}</span>
                 </div>
             </Link>
         </div>
@@ -107,12 +110,12 @@ export const Header = () => {
     };
 
     const navItems = [
-        { key: "home", label: "Home", href: "/" },
-        { key: "about", label: "About", href: "/#aboutUs" },
-        { key: "jobs", label: "Jobs", hasDropdown: true },
-        { key: "companies", label: "Companies", hasDropdown: true },
-        { key: "categories", label: "Categories", href: "/#categories" },
-        { key: "dashboard", label: "Dashboard", href: "/dashboard" },
+        { key: "home",       label: t`Home`,       href: "/" },
+        { key: "about",      label: t`About`,      href: "/#aboutUs" },
+        { key: "jobs",       label: t`Jobs`,       hasDropdown: true },
+        { key: "companies",  label: t`Companies`,  hasDropdown: true },
+        { key: "categories", label: t`Categories`, href: "/#categories" },
+        { key: "dashboard",  label: t`Dashboard`,  href: "/dashboard" },
     ];
 
     // take 2 initials from user name if no avatar (align with HeaderBackup)
@@ -154,7 +157,7 @@ export const Header = () => {
                             />
                         </div>
                     </Link>
-                    <nav className="hidden lg:flex text-white">
+                    <nav className="hidden text-white lg:flex">
                         <div
                             className="relative ml-6"
                             onMouseLeave={handleMouseLeave}
@@ -210,6 +213,9 @@ export const Header = () => {
 
                 {/* Right actions */}
                 <ul className="flex items-center space-x-2">
+                    <li className="hidden lg:block">
+                         <LanguageSelector />
+                    </li>
                     {isLoggedIn && (
                         <>
                             <li>
@@ -233,7 +239,7 @@ export const Header = () => {
                                     onClick={() => router.push("/register")}
                                     disabled={isAuthLoading}
                                 >
-                                    Register
+                                    {t`Register`}
                                 </Button>
                             </li>
                             <li>
@@ -245,7 +251,7 @@ export const Header = () => {
                                     }
                                     disabled={isAuthLoading}
                                 >
-                                    {isAuthLoading ? "Processing..." : "Login"}
+                                    {isAuthLoading ? "Processing..." : t`Login`}
                                 </Button>
                             </li>
                         </>
@@ -327,6 +333,9 @@ export const Header = () => {
                     </div>
                     {!mobilePage && (
                         <div className="p-4 space-y-2 border-t">
+                            <div className="flex justify-end">
+                                <LanguageSelector />
+                            </div>
                             {!isLoggedIn ? (
                                 <>
                                     <button
@@ -336,7 +345,7 @@ export const Header = () => {
                                         }}
                                         className="block w-full py-3 text-center font-semibold text-[#0a66c2] border border-[#0a66c2] rounded"
                                     >
-                                        Register
+                                        {t`Register`}
                                     </button>
                                     <button
                                         onClick={() => {
@@ -345,7 +354,7 @@ export const Header = () => {
                                         }}
                                         className="block w-full py-3 text-center font-semibold text-white bg-[#0a66c2] rounded"
                                     >
-                                        Login
+                                        {t`Login`}
                                     </button>
                                 </>
                             ) : (
@@ -356,7 +365,7 @@ export const Header = () => {
                                     }}
                                     className="block w-full py-3 font-semibold text-center text-red-600 border border-red-600 rounded"
                                 >
-                                    Logout
+                                   {t`Logout`}
                                 </button>
                             )}
                         </div>

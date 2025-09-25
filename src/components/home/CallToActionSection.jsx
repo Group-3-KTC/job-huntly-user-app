@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -5,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import recruiterImg from "@/assets/images/cta-recruiter.jpg";
 import candidateImg from "@/assets/images/cta-candidate.jpg";
 import Image from "next/image";
+import { t } from "@/i18n/i18n";
 
 const CallToActionSection = () => {
     return (
@@ -14,16 +17,14 @@ const CallToActionSection = () => {
                     <div className="flex items-center p-4 bg-gray-100 rounded-lg sm:p-6 lg:p-8 bg-gradient-to-bl from-blue-400 to-indigo-50">
                         <div className="flex-1">
                             <h3 className="mb-3 text-lg font-bold text-gray-900 sm:mb-4 sm:text-xl lg:text-2xl">
-                                Become a Candidate
+                                {t`Become a Candidate`}
                             </h3>
                             <p className="mb-4 text-xs text-gray-600 sm:mb-6 sm:text-sm lg:text-base">
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit. Cras cursus a dolor convallis
-                                efficitur.
+                                {t`Join thousands of job seekers building their careers. Discover the right opportunities, apply with ease, and grow your future.`}
                             </p>
                             <Link href="/register">
                                 <Button className="text-sm text-white bg-blue-600 sm:text-base hover:bg-blue-700">
-                                    Register Now{" "}
+                                    {t`Register Now`}{" "}
                                     <ArrowRight className="w-3 h-3 ml-2 sm:w-4 sm:h-4" />
                                 </Button>
                             </Link>
@@ -39,16 +40,14 @@ const CallToActionSection = () => {
                     <div className="flex items-center p-4 text-white bg-blue-600 rounded-lg sm:p-6 lg:p-8">
                         <div className="flex-1">
                             <h3 className="mb-3 text-lg font-bold sm:mb-4 sm:text-xl lg:text-2xl">
-                                Become a Recruiter
+                                {t`Become a Recruiter`}
                             </h3>
                             <p className="mb-4 text-xs text-blue-100 sm:mb-6 sm:text-sm lg:text-base">
-                                Cras in massa pellentesque, mollis ligula non,
-                                luctus dui. Morbi sed efficitur dolor. Pelque
-                                augue risus, aliqu.
+                                {t`Find the talent that drives your business forward. Post jobs, manage applications, and connect with the right candidates faster.`}
                             </p>
                             <Link href="/register">
                                 <Button className="text-sm text-blue-600 bg-white sm:text-base hover:bg-gray-100">
-                                    Register Now{" "}
+                                    {t`Register Now`}{" "}
                                     <ArrowRight className="w-3 h-3 ml-2 sm:w-4 sm:h-4" />
                                 </Button>
                             </Link>

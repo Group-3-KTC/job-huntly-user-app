@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useGetJobsQuery } from "@/services/jobService";
 import LoadingScreen from "@/components/ui/loadingScreen";
 import JobCardItem from "@/app/search/JobCardItem";
+import { t } from "@/i18n/i18n";
 
 export default function RelatedJobs({ category = [] }) {
     const { data, isLoading, error } = useGetJobsQuery();
@@ -43,7 +44,7 @@ export default function RelatedJobs({ category = [] }) {
     return (
         <div className="mt-8">
             <h2 className="mb-4 text-2xl font-semibold text-gray-800">
-                Similar Jobs
+                {t`Similar Jobs`}
             </h2>
 
             {relatedJobs.length === 0 ? (
@@ -69,14 +70,14 @@ export default function RelatedJobs({ category = [] }) {
                                 onClick={handleLoadMore}
                                 className="px-4 py-2 text-white transition bg-blue-700 rounded hover:bg-primary/80"
                             >
-                                See More
+                                {t`See More`}
                             </button>
                         ) : relatedJobs.length > 5 ? (
                             <button
                                 onClick={handleCollapse}
                                 className="px-4 py-2 text-gray-800 transition bg-blue-200 rounded hover:bg-gray-300"
                             >
-                                Show less
+                                {t`Show less`}
                             </button>
                         ) : null}
                     </div>
