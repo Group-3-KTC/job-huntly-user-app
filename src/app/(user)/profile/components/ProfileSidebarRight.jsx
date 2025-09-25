@@ -7,7 +7,7 @@ export default function ProfileSidebarRight() {
       const router = useRouter();
 
       const handleClick = () => {
-          router.push("/ManageCv");
+          router.push("/manageCv");
       };
 
     const completion = useSelector(selectProfileCompletion);

@@ -24,7 +24,7 @@ export const menuItems = (router) => [
     {
         label: "Manage CV",
         icon: FileText,
-        onClick: () => router.push("/ManageCv"),
+        onClick: () => router.push("/manageCv"),
     },
     {
         label: "My Interviews",
