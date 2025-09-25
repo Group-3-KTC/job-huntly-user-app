@@ -26,7 +26,8 @@ export default function SearchBar() {
     const [openProvince, setOpenProvince] = useState(false);
     const [searchProvinceTerm, setSearchProvinceTerm] = useState("");
 
-    const setSearchTerm = useJobSearchStore((state) => state.setSearchTerm);
+    const setSearchTerm = useJobSearchStore((s) => s.setSearchTerm);
+    const setFilters = useJobSearchStore((s) => s.setFilters);
 
     const { data: provinces = [] } = useGetCitiesQuery();
 
@@ -54,11 +55,18 @@ export default function SearchBar() {
             province: selectedProvince,
         });
     };
-
     const handleReset = () => {
         setKeyword("");
         setSelectedProvince("");
+        setSearchProvinceTerm("");
+        setOpenProvince(false);
         setSearchTerm({ keyword: "", province: "" });
+        setFilters({
+            workTypes: [],
+            levels: [],
+            categories: [],
+            skills: [],
+        });
     };
 
     return (
