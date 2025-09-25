@@ -11,6 +11,12 @@ export const getJobDetail = async (id) => {
             }
         );
 
+        const company = data.company || {};
+        const isPro =
+            (company.isProCompany !== undefined && company.isProCompany !== null
+                ? company.isProCompany
+                : undefined) ?? company.proCompany ?? false;
+
         return {
             id: data.id,
             title: data.title || "",
@@ -18,9 +24,10 @@ export const getJobDetail = async (id) => {
             requirements: data.requirements,
             benefits: data.benefits,
             location: data.location,
-            companyId: data.company?.company_id ?? null,
-            companyName: data.company?.company_name || "",
-            avatar: data.company?.avatar || "",
+            companyId: company?.company_id ?? null,
+            companyName: company?.company_name || "",
+            isProCompany: Boolean(isPro),
+            avatar: company?.avatar || "",
             category: data.category_names || [],
             level: data.level_names || [],
             workType: data.work_type_names || [],
