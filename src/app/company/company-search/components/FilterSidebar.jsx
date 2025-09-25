@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Filter, X, ChevronDown, ChevronUp } from "lucide-react";
+import { t } from "@/i18n/i18n";
 
 const FilterSidebar = ({
     filters,
@@ -57,19 +58,19 @@ const FilterSidebar = ({
         filters.foundingYear !== "any";
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
                     <Filter className="w-5 h-5" />
-                    Filter
+                    {t`Filter`}
                 </h3>
                 {hasActiveFilters && (
                     <button
                         onClick={clearAllFilters}
-                        className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                        className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
                     >
                         <X className="w-4 h-4" />
-                        Clear all
+                        {t`Clear all`}
                     </button>
                 )}
             </div>
@@ -79,9 +80,9 @@ const FilterSidebar = ({
                 <div>
                     <button
                         onClick={() => toggleSection("industry")}
-                        className="w-full flex items-center justify-between text-left font-medium text-gray-900 mb-3"
+                        className="flex items-center justify-between w-full mb-3 font-medium text-left text-gray-900"
                     >
-                        Industry
+                        {t`Industry`}
                         {expandedSections.industry ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -90,11 +91,11 @@ const FilterSidebar = ({
                     </button>
 
                     {expandedSections.industry && (
-                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                        <div className="space-y-2 overflow-y-auto max-h-60">
                             {industries.map((industry) => (
                                 <label
                                     key={industry.cate_id}
-                                    className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                                    className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50"
                                 >
                                     <input
                                         type="checkbox"
@@ -106,9 +107,9 @@ const FilterSidebar = ({
                                                 industry.cate_id
                                             )
                                         }
-                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        className="text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                     />
-                                    <span className="text-sm text-gray-700 flex-1">
+                                    <span className="flex-1 text-sm text-gray-700">
                                         {industry.cate_name}
                                     </span>
                                 </label>
@@ -121,9 +122,9 @@ const FilterSidebar = ({
                 <div>
                     <button
                         onClick={() => toggleSection("companySize")}
-                        className="w-full flex items-center justify-between text-left font-medium text-gray-900 mb-3"
+                        className="flex items-center justify-between w-full mb-3 font-medium text-left text-gray-900"
                     >
-                        Company size
+                        {t`Company size`}
                         {expandedSections.companySize ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -136,7 +137,7 @@ const FilterSidebar = ({
                             {companySizes.map((size) => (
                                 <label
                                     key={size.id}
-                                    className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                                    className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50"
                                 >
                                     <input
                                         type="checkbox"
@@ -146,9 +147,9 @@ const FilterSidebar = ({
                                         onChange={() =>
                                             handleCompanySizeChange(size.id)
                                         }
-                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        className="text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                     />
-                                    <span className="text-sm text-gray-700 flex-1">
+                                    <span className="flex-1 text-sm text-gray-700">
                                         {size.label}
                                     </span>
                                 </label>
@@ -161,9 +162,9 @@ const FilterSidebar = ({
                 <div>
                     <button
                         onClick={() => toggleSection("foundingYear")}
-                        className="w-full flex items-center justify-between text-left font-medium text-gray-900 mb-3"
+                        className="flex items-center justify-between w-full mb-3 font-medium text-left text-gray-900"
                     >
-                        Founded year
+                        {t`Founded year`}
                         {expandedSections.foundingYear ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -173,7 +174,7 @@ const FilterSidebar = ({
 
                     {expandedSections.foundingYear && (
                         <div className="space-y-2">
-                            <label className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                            <label className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50">
                                 <input
                                     type="radio"
                                     name="foundingYear"
@@ -182,7 +183,7 @@ const FilterSidebar = ({
                                     onChange={(e) =>
                                         handleFoundingYearChange(e.target.value)
                                     }
-                                    className="border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    className="text-blue-600 border-gray-300 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-700">
                                     All
@@ -195,7 +196,7 @@ const FilterSidebar = ({
                             ].map((year) => (
                                 <label
                                     key={year}
-                                    className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                                    className="flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-gray-50"
                                 >
                                     <input
                                         type="radio"
@@ -210,7 +211,7 @@ const FilterSidebar = ({
                                                 e.target.value
                                             )
                                         }
-                                        className="border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        className="text-blue-600 border-gray-300 focus:ring-blue-500"
                                     />
                                     <span className="text-sm text-gray-700">
                                         {year}

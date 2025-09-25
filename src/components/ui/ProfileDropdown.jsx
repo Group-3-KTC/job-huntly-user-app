@@ -14,6 +14,7 @@ import { ChevronDown, LogOut, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { menuItems } from "@/features/profile/menuConfig";
+import { t } from "@/i18n/i18n";
 
 export default function ProfileDropdown({ user, onLogout, getUserInitials }) {
     const router = useRouter();
@@ -102,7 +103,7 @@ export default function ProfileDropdown({ user, onLogout, getUserInitials }) {
                                     }}
                                 >
                                     <LogOut className="w-4 h-4" />
-                                    <span>Logout</span>
+                                    <span>{t`Logout`}</span>
                                 </button>
                             </div>
                         </div>
@@ -166,7 +167,7 @@ export default function ProfileDropdown({ user, onLogout, getUserInitials }) {
                     onClick={onLogout}
                 >
                     <LogOut className="w-4 h-4 mr-2" />
-                    <span>Logout</span>
+                    <span>{t`Logout`}</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

@@ -11,6 +11,7 @@ import SetPasswordEmailSent from "@/components/auth/SetPasswordEmailSent";
 import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 import {useRouter, useSearchParams} from "next/navigation";
 import RightPanel from "@/components/auth/RightPanel";
+import { t } from "@/i18n/i18n";
 
 const LoginPage = () => {
     const router = useRouter();
@@ -86,17 +87,17 @@ const LoginPage = () => {
                                     <h1
                                         className={`text-2xl font-bold tracking-tight ${theme[activeTab].primary}`}
                                     >
-                                        {view === "login" && "Log In"}
+                                        {view === "login" && t`Login`}
                                         {view === "ask_setpw" && "Google account detected"}
                                         {view === "setpw_email_sent" && "Check your email"}
                                     </h1>
                                     <p className={`mt-1 text-sm ${theme[activeTab].secondary}`}>
                                         {view === "login" &&
-                                            "Link your account to continue using Job Huntly's services."}
+                                            t`Link your account to continue using Job Huntly's services.`}
                                         {view === "ask_setpw" &&
-                                            "This account uses Google Sign-In. Do you want to set a password so you can log in with email/password too?"}
+                                            t`This account uses Google Sign-In. Do you want to set a password so you can log in with email/password too?`}
                                         {view === "setpw_email_sent" &&
-                                            "We sent a set-password link to your email. Click the link to continue here."}
+                                            t`We sent a set-password link to your email. Click the link to continue here.`}
 
                                     </p>
                                 </div>
@@ -111,13 +112,13 @@ const LoginPage = () => {
                                                     value="CANDIDATE"
                                                     className="data-[state=active]:border-blue-500 data-[state=active]:text-blue-500"
                                                 >
-                                                    Candidate
+                                                    {t`Candidate`}
                                                 </TabsTrigger>
                                                 <TabsTrigger
                                                     value="RECRUITER"
                                                     className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
                                                 >
-                                                    Recruiter
+                                                    {t`Recruiter`}
                                                 </TabsTrigger>
                                             </TabsList>
 
@@ -148,7 +149,7 @@ const LoginPage = () => {
                                                         } hover:underline`}
                                                         onClick={() => onForgot?.()}
                                                     >
-                                                        Forgot password?
+                                                        {t`Forgot password?`}
                                                     </button>
                                                 </div>
                                             </div>
@@ -156,7 +157,7 @@ const LoginPage = () => {
 
                                         <div className="mt-6 text-center">
                                             <p className="text-sm text-gray-600">
-                                                Don't have an account yet?{" "}
+                                                {t`Don't have an account yet?`}{" "}
                                                 <Link
                                                     href={`/register?role=${activeTab}`}
                                                     className={`font-medium ${
@@ -167,7 +168,7 @@ const LoginPage = () => {
                                                                 : " text-gray-500"
                                                     } hover:underline`}
                                                 >
-                                                    Create one
+                                                    {t`Create one`}
                                                 </Link>
                                             </p>
                                         </div>

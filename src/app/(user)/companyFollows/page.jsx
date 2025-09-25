@@ -64,9 +64,9 @@ export default function ListCompanyFollowed() {
     return (
         <div className="container">
             {/* Header Section */}
-            <div className="px-4 sm:px-6 py-3 sm:py-4 mb-4 border-b border-gray-100 bg-gradient-to-r from-blue-200 to-indigo-50 rounded-xl">
+            <div className="px-4 py-3 mb-4 border-b border-gray-100 sm:px-6 sm:py-4 bg-gradient-to-r from-blue-200 to-indigo-50 rounded-xl">
                 <div className="max-w-6xl mx-auto">
-                    <h1 className="pl-3 sm:pl-4 text-xl sm:text-2xl font-bold text-gray-900 border-l-4 border-blue-800">
+                    <h1 className="pl-3 text-xl font-bold text-gray-900 border-l-4 border-blue-800 sm:pl-4 sm:text-2xl">
                         Follow the companies you care about
                     </h1>
                 </div>
@@ -91,7 +91,7 @@ export default function ListCompanyFollowed() {
                     {companies.map((company) => (
                         <div
                             key={company.companyId}
-                            className="relative flex flex-col md:flex-row md:items-center px-4 sm:px-5 py-4 sm:py-6 transition-all duration-300 bg-white border border-gray-200 shadow-sm z-2 group rounded-2xl hover:shadow-lg hover:border-blue-200 gap-4"
+                            className="relative flex flex-col gap-4 px-4 py-4 transition-all duration-300 bg-white border border-gray-200 shadow-sm md:flex-row md:items-center sm:px-5 sm:py-6 z-2 group rounded-2xl hover:shadow-lg hover:border-blue-200"
                         >
                             <div className="flex-shrink-0 md:mr-6">
                                 <Image
@@ -102,12 +102,12 @@ export default function ListCompanyFollowed() {
                                         "https://static.topcv.vn/company_logos/default-logo.png"
                                     }
                                     alt={`${company.companyName} logo`}
-                                    className="transition-shadow duration-300 object-cover rounded-xl group-hover:shadow-md"
+                                    className="object-cover transition-shadow duration-300 rounded-xl group-hover:shadow-md"
                                 />
                             </div>
 
                             <div className="justify-start flex-1 min-w-0">
-                                <h3 className="mb-1 sm:mb-2 text-base sm:text-lg font-semibold text-gray-900 truncate">
+                                <h3 className="mb-1 text-base font-semibold text-gray-900 truncate sm:mb-2 sm:text-lg">
                                     {company.companyName}
                                 </h3>
 
@@ -128,7 +128,7 @@ export default function ListCompanyFollowed() {
                                 </div>
                             </div>
 
-                            <div className="flex w-full md:w-auto items-center md:items-center md:flex-shrink-0 md:ml-6 gap-2 sm:gap-3 mt-1 md:mt-0">
+                            <div className="flex items-center w-full gap-2 mt-1 md:w-auto md:items-center md:flex-shrink-0 md:ml-6 sm:gap-3 md:mt-0">
                                 <Link
                                     href={`/company/company-detail/${company.companyId}`}
                                     className="flex-1 md:flex-none inline-flex items-center justify-center px-4 sm:px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors duration-200 shadow-sm hover:shadow-md"

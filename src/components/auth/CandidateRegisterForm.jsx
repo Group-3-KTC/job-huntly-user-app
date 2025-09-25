@@ -19,7 +19,7 @@ import {registerThunk} from "@/features/auth/authSlice";
 import GoogleSignIn from "@/components/auth/GoogleSignIn";
 import clsx from "clsx";
 import AfterRegisterPanel from "@/components/auth/AfterRegisterPanel";
-
+import { t } from "@/i18n/i18n";
 
 const TTL_SEC = 300;
 const RESEND_COOLDOWN_FALLBACK_SEC = 120;
@@ -140,16 +140,16 @@ export default function CandidateRegisterForm({role, onRegistered}) {
             </div>
 
             {/* Register form */}
-            <div className="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm">
+            <div className="p-5 bg-white border border-blue-100 shadow-sm rounded-2xl">
                 <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
                     {/* Full Name */}
                     <div>
-                        <Label htmlFor="fullName" className="text-blue-900/80 font-medium">
+                        <Label htmlFor="fullName" className="font-medium text-blue-900/80">
                             Full Name
                         </Label>
                         <div className="relative mt-1">
                             <User
-                                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-300"/>
+                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
                             <Input
                                 id="fullName"
                                 type="text"
@@ -166,12 +166,12 @@ export default function CandidateRegisterForm({role, onRegistered}) {
 
                     {/* Email */}
                     <div>
-                        <Label htmlFor="email" className="text-blue-900/80 font-medium">
+                        <Label htmlFor="email" className="font-medium text-blue-900/80">
                             Email
                         </Label>
                         <div className="relative mt-1">
                             <Mail
-                                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-300"/>
+                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
                             <Input
                                 id="email"
                                 type="email"
@@ -188,12 +188,12 @@ export default function CandidateRegisterForm({role, onRegistered}) {
 
                     {/* Phone */}
                     <div>
-                        <Label htmlFor="phone" className="text-blue-900/80 font-medium">
+                        <Label htmlFor="phone" className="font-medium text-blue-900/80">
                             Phone Number
                         </Label>
                         <div className="relative mt-1">
                             <Phone
-                                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-300"/>
+                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
                             <Input
                                 id="phone"
                                 type="tel"
@@ -210,12 +210,12 @@ export default function CandidateRegisterForm({role, onRegistered}) {
 
                     {/* Password */}
                     <div>
-                        <Label htmlFor="password" className="text-blue-900/80 font-medium">
+                        <Label htmlFor="password" className="font-medium text-blue-900/80">
                             Password
                         </Label>
                         <div className="relative mt-1">
                             <Lock
-                                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-300"/>
+                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
                             <Input
                                 id="password"
                                 type={showPassword ? "text" : "password"}
@@ -229,9 +229,9 @@ export default function CandidateRegisterForm({role, onRegistered}) {
                                 type="button"
                                 aria-label={showPassword ? "Hide password" : "Show password"}
                                 onClick={() => setShowPassword((s) => !s)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-600 transition"
+                                className="absolute text-blue-400 transition -translate-y-1/2 right-3 top-1/2 hover:text-blue-600"
                             >
-                                {showPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                                {showPassword ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
                             </button>
                         </div>
                         {errors.password && (
@@ -257,7 +257,7 @@ export default function CandidateRegisterForm({role, onRegistered}) {
                                     Strength: {strengthLabel}
                                 </div>
 
-                                <ul className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+                                <ul className="grid grid-cols-2 mt-2 text-xs gap-x-3 gap-y-1">
                                     <Rule ok={rules.len} label="At least 8 characters"/>
                                     <Rule ok={rules.digit} label="Contains a number"/>
                                     <Rule ok={rules.upper} label="Uppercase letter"/>
@@ -271,12 +271,12 @@ export default function CandidateRegisterForm({role, onRegistered}) {
 
                     {/* Confirm Password */}
                     <div>
-                        <Label htmlFor="confirmPassword" className="text-blue-900/80 font-medium">
+                        <Label htmlFor="confirmPassword" className="font-medium text-blue-900/80">
                             Confirm Password
                         </Label>
                         <div className="relative mt-1">
                             <Lock
-                                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-300"/>
+                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
                             <Input
                                 id="confirmPassword"
                                 type={showConfirmPassword ? "text" : "password"}
@@ -289,9 +289,9 @@ export default function CandidateRegisterForm({role, onRegistered}) {
                                 type="button"
                                 aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                                 onClick={() => setShowConfirmPassword((s) => !s)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-600 transition"
+                                className="absolute text-blue-400 transition -translate-y-1/2 right-3 top-1/2 hover:text-blue-600"
                             >
-                                {showConfirmPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                                {showConfirmPassword ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
                             </button>
                         </div>
                         {errors.confirmPassword && (
@@ -312,19 +312,19 @@ export default function CandidateRegisterForm({role, onRegistered}) {
                         <div className="flex-1">
                             <Label
                                 htmlFor="recruiter-terms"
-                                className="text-sm text-blue-900/80 leading-6 cursor-pointer block"
+                                className="block text-sm leading-6 cursor-pointer text-blue-900/80"
                             >
-                                I have read and agree to the{" "}
+                                {t`I have read and agree to the`}{" "}
                                 <Link href="#"
-                                      className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
-                                    Terms of Service
+                                      className="font-medium text-blue-600 hover:text-blue-700 hover:underline">
+                                    {t`Terms of Service`}
                                 </Link>{" "}
-                                and{" "}
+                                {t`and`}{" "}
                                 <Link href="#"
-                                      className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
-                                    Privacy Policy
+                                      className="font-medium text-blue-600 hover:text-blue-700 hover:underline">
+                                    {t`Privacy Policy`}
                                 </Link>{" "}
-                                of JobHuntly
+                                {t`of JobHuntly`}
                             </Label>
                         </div>
                     </div>
@@ -357,7 +357,7 @@ export default function CandidateRegisterForm({role, onRegistered}) {
                     <Button
                         type="button"
                         variant="outline"
-                        className="mt-4 rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50"
+                        className="mt-4 text-blue-700 border-blue-200 rounded-xl hover:bg-blue-50"
                         onClick={() => router.push("/login")}
                     >
                         Go to Login

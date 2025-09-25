@@ -48,7 +48,7 @@ const JobDetailCard = ({
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="prose prose-sm max-w-none prose-gray job-detail-content">
+                            <div className="prose-sm prose max-w-none prose-gray job-detail-content">
                                 {parse(description)}
                             </div>
                         </CardContent>
@@ -62,7 +62,7 @@ const JobDetailCard = ({
                             <CardTitle className="text-xl">Requirements</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="prose prose-sm max-w-none prose-gray job-detail-content">
+                            <div className="prose-sm prose max-w-none prose-gray job-detail-content">
                                 {parse(safeRequirements)}
                             </div>
                         </CardContent>
@@ -73,7 +73,7 @@ const JobDetailCard = ({
                 {safeSkills.length > 0 && (
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-xl">Skills</CardTitle>
+                            <CardTitle className="text-xl">{t`Skills`}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="flex flex-wrap gap-2">
@@ -124,11 +124,11 @@ const JobDetailCard = ({
                         <CardContent>
                             <div className="grid gap-4">
                                 {safeBenefits.map((benefit, index) => (
-                                    <div key={benefit.id || index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                                        <h4 className="font-semibold text-lg text-gray-900 mb-3">
+                                    <div key={benefit.id || index} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                                        <h4 className="mb-3 text-lg font-semibold text-gray-900">
                                             {benefit.title}
                                         </h4>
-                                        <div className="prose prose-sm max-w-none prose-gray job-detail-content">
+                                        <div className="prose-sm prose max-w-none prose-gray job-detail-content">
                                             {parse(benefit.description)}
                                         </div>
                                     </div>

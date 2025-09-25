@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { t } from "@/i18n/i18n";
 
 export const Footer = () => {
     const role = useSelector((state) => state.auth.user?.role);
@@ -22,22 +23,21 @@ export const Footer = () => {
                     <div>
                         <h3 className="mb-4 text-xl font-bold">JobHuntly</h3>
                         <p className="mb-4 text-gray-400">
-                            Call now:{" "}
+                            {t`Call now`}:{" "}
                             <span className="text-white">(012) 345-6789</span>
                         </p>
                         <p className="text-sm text-gray-400">
-                            475A Điện Biên Phủ, Phường 25, Bình Thạnh, Hồ Chí
-                            Minh, Việt Nam
+                            475A Dien Bien Phu Street, Ward 25, Binh Thanh District, Ho Chi Minh City, Vietnam
                         </p>
                     </div>
 
                     {/* Quick Links */}
                     <div>
-                        <h4 className="mb-4 font-semibold">Quick Link</h4>
+                        <h4 className="mb-4 font-semibold">{t`Quick Link`}</h4>
                         <ul className="space-y-2 text-gray-400">
                             <li>
                                 <Link href="#hero" className="hover:text-white">
-                                    Home
+                                    {t`Home`}
                                 </Link>
                             </li>
                             <li>
@@ -45,7 +45,7 @@ export const Footer = () => {
                                     href="#aboutUs"
                                     className="hover:text-white"
                                 >
-                                    About Us
+                                    {t`About Us`}
                                 </Link>
                             </li>
                             <li>
@@ -53,7 +53,7 @@ export const Footer = () => {
                                     href="#stats"
                                     className="hover:text-white"
                                 >
-                                    Statistics
+                                    {t`Statistics`}
                                 </Link>
                             </li>
                             <li>
@@ -61,7 +61,7 @@ export const Footer = () => {
                                     href="#categories"
                                     className="hover:text-white"
                                 >
-                                    Categories
+                                    {t`Categories`}
                                 </Link>
                             </li>
                         </ul>
@@ -69,14 +69,14 @@ export const Footer = () => {
 
                     {/* Candidate */}
                     <div>
-                        <h4 className="mb-4 font-semibold">Candidate</h4>
+                        <h4 className="mb-4 font-semibold">{t`Candidate`}</h4>
                         <ul className="space-y-2 text-gray-400">
                             <li>
                                 <Link
                                     href="/company/company-search"
                                     className="hover:text-white"
                                 >
-                                    Browse Companies
+                                    {t`Browse Companies`}
                                 </Link>
                             </li>
                             <li>
@@ -84,7 +84,7 @@ export const Footer = () => {
                                     href="/search"
                                     className="hover:text-white"
                                 >
-                                    Browse Jobs
+                                    {t`Browse Jobs`}
                                 </Link>
                             </li>
                             <li>
@@ -92,19 +92,19 @@ export const Footer = () => {
                                     href="/dashboard"
                                     className="hover:text-white"
                                 >
-                                    Candidate Dashboard
+                                    {t`Candidate Dashboard`}
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/jobs" className="hover:text-white">
-                                    Saved Jobs
+                                    {t`Saved Jobs`}
                                 </Link>
                             </li>
                         </ul>
                     </div>
                     {/* Recruiter */}
                     <div>
-                        <h4 className="mb-4 font-semibold">Recruiter</h4>
+                        <h4 className="mb-4 font-semibold">{t`Recruiter`}</h4>
                         <ul className="space-y-2 text-gray-400">
                             <li>
                                 <Link
@@ -112,7 +112,7 @@ export const Footer = () => {
                                     className="hover:text-white"
                                     onClick={handleRecruiterClick}
                                 >
-                                    Post a Job
+                                    {t`Post a Job`}
                                 </Link>
                             </li>
                             <li>
@@ -121,7 +121,7 @@ export const Footer = () => {
                                     className="hover:text-white"
                                     onClick={handleRecruiterClick}
                                 >
-                                    Recruiter Dashboard
+                                    {t`Recruiter Dashboard`}
                                 </Link>
                             </li>
                             <li>
@@ -130,7 +130,7 @@ export const Footer = () => {
                                     className="hover:text-white"
                                     onClick={handleRecruiterClick}
                                 >
-                                    Applications
+                                    {t`Applications`}
                                 </Link>
                             </li>
                             <li>
@@ -139,7 +139,7 @@ export const Footer = () => {
                                     className="hover:text-white"
                                     onClick={handleRecruiterClick}
                                 >
-                                    Company Profile
+                                    {t`Company Profile`}
                                 </Link>
                             </li>
                         </ul>
@@ -148,7 +148,7 @@ export const Footer = () => {
 
                 <div className="flex flex-col items-center justify-between pt-8 mt-8 border-t border-gray-800 md:flex-row">
                     <p className="text-sm text-gray-400">
-                        © 2025 JobHuntly. All rights Reserved
+                        © {t`2025 JobHuntly. All rights Reserved`}
                     </p>
 
                     <div className="flex mt-4 space-x-4 md:mt-0">

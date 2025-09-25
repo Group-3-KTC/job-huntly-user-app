@@ -502,7 +502,7 @@ export const Header = () => {
                                         }}
                                         className="block w-full py-3 text-center font-semibold text-[#0a66c2] border border-[#0a66c2] rounded"
                                     >
-                                        Register
+                                        {t`Register`}
                                     </button>
                                     <button
                                         onClick={() => {
@@ -511,7 +511,7 @@ export const Header = () => {
                                         }}
                                         className="block w-full py-3 text-center font-semibold text-white bg-[#0a66c2] rounded"
                                     >
-                                        Login
+                                        {t`Login`}
                                     </button>
                                 </>
                             ) : (
@@ -522,7 +522,7 @@ export const Header = () => {
                                     }}
                                     className="block w-full py-3 font-semibold text-center text-red-600 border border-red-600 rounded"
                                 >
-                                    Logout
+                                    {t`Logout`}
                                 </button>
                             )}
                         </div>

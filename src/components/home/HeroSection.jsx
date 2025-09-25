@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -25,6 +24,7 @@ import { useRouter } from "next/navigation";
 
 import { useJobSearchStore } from "@/store/jobSearchStore";
 import { useGetCitiesQuery } from "@/services/locationService";
+import { t } from "@/i18n/i18n";
 
 const HeroSection = () => {
     const [keyword, setKeyword] = useState("");
@@ -70,12 +70,10 @@ const HeroSection = () => {
                     {/* Left */}
                     <div className="flex-1 max-w-full sm:max-w-2xl">
                         <h1 className="mb-4 text-2xl font-bold text-gray-900 sm:mb-6 sm:text-3xl lg:text-5xl">
-                            Find a job that suits your interest & skills.
+                            {t`Your First Step to a Big Future: Find a Job That Matches Your Passion & Skills.`}
                         </h1>
                         <p className="mb-4 text-sm text-gray-600 sm:mb-8 sm:text-base lg:text-lg">
-                            Aliquam vitae turpis in diam convallis finibus in at
-                            risus. Nullam in scelerisque leo, eget sollicitudin
-                            velit bestibulum.
+                            {t`Discover opportunities that fit you perfectly—from your first job to a successful career ahead.`}
                         </p>
 
                         {/* Search Form */}
@@ -176,12 +174,6 @@ const HeroSection = () => {
                                 className="text-gray-700 hover:text-blue-700"
                             >
                                 Digital Marketing,
-                            </Link>
-                            <Link
-                                href="#"
-                                className="text-gray-700 hover:text-blue-600"
-                            >
-                                Video,
                             </Link>
                             <Link
                                 href="#"

@@ -6,6 +6,7 @@ import useCompanyDetailStore from "../store/companyDetailStore";
 import Link from "next/link";
 import { parse } from "date-fns";
 import { getImageUrl } from "@/lib/utils";
+import { t } from "@/i18n/i18n";
 
 const CompanyJobs = () => {
     const { company, jobs } = useCompanyDetailStore();
@@ -34,7 +35,7 @@ const CompanyJobs = () => {
     return (
         <div className="p-6 bg-white rounded-lg shadow-xl">
             <h2 className="px-4 py-2 text-lg font-semibold text-white bg-blue-700 rounded">
-                Job Openings
+                {t`Job Openings`}
             </h2>
             <div className="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3">
                 <input

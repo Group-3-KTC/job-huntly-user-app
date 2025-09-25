@@ -34,6 +34,7 @@ import SkillsChips from "./_components/SkillsChips";
 
 import { formatList } from "./_utils/formatters";
 import { mapJobToView } from "./_utils/jobMapper";
+import { t } from "@/i18n/i18n";
 
 import {
     useGetStatusQuery,
@@ -392,13 +393,13 @@ export default function DetailJob({ job }) {
                         description={dj.description}
                         requirements={dj.requirements}
                         benefits={dj.benefits}
-                        descriptionTitle="Job Description"
-                        requirementsTitle="Requirements"
-                        benefitsTitle="Benefits"
+                        descriptionTitle={t`Job Description`}
+                        requirementsTitle={t`Requirements`}
+                        benefitsTitle={t`Benefits`}
                         contentClassName="text-[17px] md:text-[18px] leading-7"
                     />
 
-                    <Section icon={MapPin} title="Work Location">
+                    <Section icon={MapPin} title={t`Work Location`}>
                         {dj.location ? (
                             <p>- {dj.location}</p>
                         ) : (

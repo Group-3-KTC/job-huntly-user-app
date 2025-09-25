@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import useCompanyDetailStore from '../store/companyDetailStore';
+import { t } from "@/i18n/i18n";
 
 const ShareCompany = () => {
   const { company } = useCompanyDetailStore();
@@ -25,7 +26,7 @@ const ShareCompany = () => {
   return (
       <div className="p-6 bg-white rounded-lg shadow-xl">
           <h2 className="px-4 py-2 text-lg font-semibold text-white bg-blue-700 rounded">
-              Share company with friends
+              {t`Share company with friends`}
           </h2>
           <p className="mt-4 mb-2 text-sm font-medium">Copy link</p>
 
@@ -44,7 +45,7 @@ const ShareCompany = () => {
               )}
           </div>
 
-          <p className="mt-4 text-sm font-medium">Share on social media</p>
+          <p className="mt-4 text-sm font-medium">{t`Share on social media`}</p>
           <div className="flex gap-3 mt-2">
               <a
                   href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(

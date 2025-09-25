@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { t } from "@/i18n/i18n";
 
 const NEXT_PUBLIC_API_PROXY_TARGET = process.env.NEXT_PUBLIC_API_PROXY_TARGET;
 const NEXT_PUBLIC_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -153,13 +154,13 @@ const TopCompaniesSection = () => {
             <div className="container px-2 mx-auto sm:px-4">
                 <div className="flex items-center justify-between mb-8 sm:mb-12">
                     <h2 className="text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">
-                        Top companies
+                        {t`Top companies`}
                     </h2>
                     <Link
                         href="/company/company-search/results"
                         className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 sm:text-base"
                     >
-                        View All{" "}
+                        {t`View All`}{" "}
                         <ArrowRight className="w-3 h-3 ml-2 sm:w-4 sm:h-4" />
                     </Link>
                 </div>

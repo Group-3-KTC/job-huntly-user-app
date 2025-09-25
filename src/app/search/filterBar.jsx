@@ -11,6 +11,7 @@ import {
     useGetWorkTypesQuery,
     useLazyGetSkillsByCategoryQuery,
 } from "@/services/filterService";
+import { t } from "@/i18n/i18n";
 
 export default function FilterBar() {
     const [showCategories, setShowCategories] = useState(false);
@@ -100,7 +101,7 @@ export default function FilterBar() {
                     onClick={() => setShowWorkTypes(!showWorkTypes)}
                     className="flex items-center justify-between mb-2 font-semibold cursor-pointer"
                 >
-                    <span>Work Type</span>
+                    <span>{t`Work Type`}</span>
                     {showWorkTypes ? (
                         <ChevronUp size={18} />
                     ) : (
@@ -123,7 +124,7 @@ export default function FilterBar() {
                     onClick={() => setShowLevels(!showLevels)}
                     className="flex items-center justify-between mb-2 font-semibold cursor-pointer"
                 >
-                    <span>Levels</span>
+                    <span>{t`Levels`}</span>
                     {showLevels ? (
                         <ChevronUp size={18} />
                     ) : (
@@ -146,7 +147,7 @@ export default function FilterBar() {
                     onClick={() => setShowCategories(!showCategories)}
                     className="flex items-center justify-between mb-2 font-semibold cursor-pointer"
                 >
-                    <span>Categories</span>
+                    <span>{t`Categories`}</span>
                     {showCategories ? (
                         <ChevronUp size={18} />
                     ) : (
@@ -169,7 +170,7 @@ export default function FilterBar() {
                     onClick={() => setShowSkills(!showSkills)}
                     className="flex items-center justify-between mb-2 font-semibold cursor-pointer"
                 >
-                    <span>Skills</span>
+                    <span>{t`Skills`}</span>
                     {showSkills ? (
                         <ChevronUp size={18} />
                     ) : (
@@ -178,7 +179,7 @@ export default function FilterBar() {
                 </div>
                 {shouldShowPickCategoryHint ? (
                     <p className="text-sm text-gray-500">
-                        Vui lòng chọn ít nhất 1 Category để hiển thị danh sách
+                        Please select at least 1 Category to display the list
                         Skills.
                     </p>
                 ) : (

@@ -9,10 +9,11 @@ import {
     Building2,
     CalendarRange,
 } from "lucide-react";
+import { t } from "@/i18n/i18n";
 
 export const menuItems = (router) => [
     {
-        label: "Dashboard",
+        label: t`Dashboard`,
         icon: LayoutDashboard,
         onClick: () => router.push("/dashboard"),
     },
