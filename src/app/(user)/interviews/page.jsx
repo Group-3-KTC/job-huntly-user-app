@@ -188,7 +188,7 @@ export default function CandidateInterviewsPage() {
                                                     `/interviews/${iv.interviewId}/join`
                                                 )
                                             }
-                                            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                                            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-md hover:bg-blue-700"
                                         >
                                             <Video className="w-4 h-4" />
                                             Open interview
