@@ -4,6 +4,7 @@ import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import parse from "html-react-parser";
+import { t } from "@/i18n/i18n";
 
 const JobDetailCard = ({
     description,

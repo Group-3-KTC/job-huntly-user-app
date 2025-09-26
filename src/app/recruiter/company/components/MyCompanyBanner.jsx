@@ -38,11 +38,11 @@ const MyCompanyBanner = () => {
                         </h1>
                         <div className="mt-2 text-sm text-white drop-shadow-md">
                             <span className={`px-2 py-0.5 mr-2 rounded ${
-                                company.isVip 
+                                company.proCompany 
                                     ? "text-yellow-800 bg-yellow-100" 
                                     : "text-gray-800 bg-gray-100"
                             }`}>
-                                {company.isVip ? "VIP Company" : "Normal"}
+                                {company.proCompany ? "VIP Company" : "Normal"}
                             </span>
                             <a
                                 href={company.website}
