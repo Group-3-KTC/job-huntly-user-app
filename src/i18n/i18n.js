@@ -1,5 +1,6 @@
 "use client";
-import { addLocale, t, useLocale } from "ttag";
+import { addLocale, useLocale } from "ttag";
+import { t } from "ttag";
 import { useSyncExternalStore } from "react";
 
 export const SUPPORTED = ["en", "vi", "ko"];
@@ -50,4 +51,5 @@ export const setLanguage = async (lang) => {
   emit(); // thông báo để UI re-render
 };
 
+// Export t function
 export { t };
