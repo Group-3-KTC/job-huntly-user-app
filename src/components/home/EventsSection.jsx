@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, MapPin, Users } from "lucide-react";
+import {useEffect, useRef, useState} from "react";
+import {Card, CardContent} from "@/components/ui/card";
+import {Calendar, MapPin, Users} from "lucide-react";
+import {t} from "@/i18n/i18n";
 
 const COMPANY = {
     name: "Like Lion",
@@ -31,59 +32,58 @@ function cloudinaryPosterFromVideo(url) {
 const events = [
     {
         id: 1,
-        title: "Recap Korean Insight Trip 2025 ✈️🌏",
+        title: t`Recap Korean Insight Trip 2025` + " ✈️🌏",
         description:
-            "A special journey bringing K-Tech College 2025 candidates closer to Korean enterprises and global work culture. Memorable experiences and clearer views of a global career path.",
-        date: "August 2025",
-        location: "Korea",
+            t`A special journey bringing K-Tech College 2025 candidates closer to Korean enterprises and global work culture. Memorable experiences and clearer views of a global career path.`,
+        date: t`August` + "2025",
+        location: t`Korea`,
         attendees: "100+",
         videoSrc:
             "https://res.cloudinary.com/dvgp7ezzc/video/upload/v1758794035/FSave.com_Facebook_Media_002_1289109009583421v_rn1t9y.mp4",
-        highlight: "Event Highlight",
+        highlight: t`Event Highlight`
     },
     {
         id: 2,
-        title: "Mentoring Day — What Korean Mentors Think",
+        title: t`Mentoring Day — What Korean Mentors Think`,
         description:
-            "Honest sharing from mentors about working with Vietnamese candidates and what stands out in the eyes of employers. Don’t miss K-Tech Fest 2025 for more 1:1 mentor sessions!",
-        date: "July 2025",
-        location: "Ho Chi Minh City",
+            t`Honest sharing from mentors about working with Vietnamese candidates and what stands out in the eyes of employers. Don’t miss K-Tech Fest 2025 for more 1:1 mentor sessions!`,
+        date: t`July` + "2025",
+        location: t`Ho Chi Minh City`,
         attendees: "300+",
         videoSrc:
             "https://res.cloudinary.com/dvgp7ezzc/video/upload/v1758793904/FSave.com_Facebook_Media_001_1141616037935553v_dead11.mp4",
-        highlight: "Mentoring Day",
+        highlight: t`Mentoring Day`,
     },
     {
         id: 3,
-        title: "Recap Offline Interview 💫",
+        title: t`Recap Offline Interview` + "💫",
         description:
-            "Korean tech companies praised the potential of Vietnamese candidates and the role of K-Tech College in global talent matching. Hear their reflections from the on-site interviews.",
-        date: "June 2025",
-        location: "Ho Chi Minh City",
+            t`Korean tech companies praised the potential of Vietnamese candidates and the role of K-Tech College in global talent matching. Hear their reflections from the on-site interviews.`,
+        date: t`June` + "2025",
+        location: t`Ho Chi Minh City`,
         attendees: "200+",
         videoSrc:
             "https://res.cloudinary.com/dvgp7ezzc/video/upload/v1758793968/FSave.com_Facebook_Media_002_664351916233092v_nghvl9.mp4",
-        highlight: "Interview Series",
+        highlight: t`Interview Series`,
     },
     {
         id: 4,
-        title: "Customer Success Stories",
+        title: t`Customer Success Stories`,
         description:
-            "Direct stories from clients about their transformation journeys and results achieved with our programs and partners.",
-        date: "May 2025",
-        location: "Virtual Event",
+            t`Direct stories from clients about their transformation journeys and results achieved with our programs and partners.`,
+        date: t`May` + "2025",
+        location: t`Virtual Event`,
         attendees: "1000+",
         videoSrc:
             "https://res.cloudinary.com/dvgp7ezzc/video/upload/v1758794000/FSave.com_Facebook_Media_002_741709925536104v_i2hiay.mp4",
-        highlight: "Success Stories",
+        highlight: t`Success Stories`,
     },
 ];
 
 export default function EventsSection() {
     const [inView, setInView] = useState({});
-    const cardsRef = useRef({}); // id -> card element
+    const cardsRef = useRef({});
 
-    // Lazy-load: chỉ set src khi card gần vào viewport
     useEffect(() => {
         const io = new IntersectionObserver(
             (entries) => {
@@ -92,9 +92,9 @@ export default function EventsSection() {
                     const id = Number(e.target.getAttribute("data-id"));
                     next[id] = e.isIntersecting;
                 }
-                setInView((prev) => ({ ...prev, ...next }));
+                setInView((prev) => ({...prev, ...next}));
             },
-            { rootMargin: "200px" }
+            {rootMargin: "200px"}
         );
         Object.values(cardsRef.current).forEach((el) => el && io.observe(el));
         return () => io.disconnect();
@@ -102,14 +102,15 @@ export default function EventsSection() {
 
     const handleEnter = (id) => {
         const v = cardsRef.current[id]?.querySelector("video");
-        if (v) v.play().catch(() => {});
+        if (v) v.play().catch(() => {
+        });
     };
 
     const handleLeave = (id) => {
         const v = cardsRef.current[id]?.querySelector("video");
         if (v) {
             v.pause();
-            v.currentTime = 0; // trở về poster
+            v.currentTime = 0;
         }
     };
 
@@ -118,12 +119,10 @@ export default function EventsSection() {
             <div className="container px-4 mx-auto sm:px-6 lg:px-8">
                 <div className="mb-16 text-center">
                     <h2 className="mb-4 text-3xl font-bold sm:text-4xl text-balance">
-                        Company <span className="text-blue-700">Events</span>
+                        {t`Company Events`}
                     </h2>
                     <p className="max-w-2xl mx-auto text-lg text-muted-foreground text-pretty">
-                        Experience highlights from recent events, conferences,
-                        and workshops — where we bring innovation to life and
-                        connect with community.
+                        {t`Experience highlights from recent events, conferences, and workshops — where we bring innovation to life and connect with community.`}
                     </p>
                 </div>
 
@@ -141,7 +140,6 @@ export default function EventsSection() {
                                 onMouseEnter={() => handleEnter(event.id)}
                                 onMouseLeave={() => handleLeave(event.id)}
                             >
-                                {/* MEDIA: chiều cao cố định, không overlay, video object-contain */}
                                 <div className="relative h-56 overflow-hidden bg-black sm:h-64 lg:h-72 rounded-t-xl">
                                     <video
                                         className="absolute inset-0 object-contain w-full h-full"
@@ -159,7 +157,6 @@ export default function EventsSection() {
                                 </div>
 
                                 <CardContent className="p-6">
-                                    {/* Header: logo + company + title | badge */}
                                     <div className="flex items-center justify-between w-full gap-3">
                                         <div className="flex items-center min-w-0 gap-3">
                                             <img
@@ -177,7 +174,8 @@ export default function EventsSection() {
                                             </div>
                                         </div>
 
-                                        <div className="px-3 py-1 text-sm font-medium text-white bg-blue-700 rounded-full whitespace-nowrap">
+                                        <div
+                                            className="px-3 py-1 text-sm font-medium text-white bg-blue-700 rounded-full whitespace-nowrap">
                                             {event.highlight ||
                                                 "Event Highlight"}
                                         </div>
@@ -189,15 +187,15 @@ export default function EventsSection() {
 
                                     <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                                         <div className="flex items-center gap-1">
-                                            <Calendar className="w-4 h-4" />
+                                            <Calendar className="w-4 h-4"/>
                                             {event.date}
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <MapPin className="w-4 h-4" />
+                                            <MapPin className="w-4 h-4"/>
                                             {event.location}
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <Users className="w-4 h-4" />
+                                            <Users className="w-4 h-4"/>
                                             {event.attendees} attendees
                                         </div>
                                     </div>

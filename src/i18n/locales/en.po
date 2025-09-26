@@ -340,3 +340,207 @@ msgstr "Already have an account?"
 
 msgid "Login Now"
 msgstr "Login Now"
+
+msgid "Job title, Keyword..."
+msgstr "Job title, Keyword..."
+
+msgid "Find Job"
+msgstr "Find Job"
+
+msgid "Company Events"
+msgstr "Company Events"
+
+msgid "Experience highlights from recent events, conferences, and workshops — where we bring innovation to life and connect with community."
+msgstr "Experience highlights from recent events, conferences, and workshops — where we bring innovation to life and connect with community."
+
+msgid "Recap Korean Insight Trip 2025"
+msgstr "Recap Korean Insight Trip 2025"
+
+msgid "A special journey bringing K-Tech College 2025 candidates closer to Korean enterprises and global work culture. Memorable experiences and clearer views of a global career path."
+msgstr "A special journey bringing K-Tech College 2025 candidates closer to Korean enterprises and global work culture. Memorable experiences and clearer views of a global career path."
+
+msgid "August"
+msgstr "August"
+
+msgid "July"
+msgstr "July"
+
+msgid "June"
+msgstr "June"
+
+msgid "May"
+msgstr "May"
+
+msgid "Korea"
+msgstr "Korea"
+
+msgid "Event Highlight"
+msgstr "Event Highlight"
+
+msgid "Mentoring Day — What Korean Mentors Think"
+msgstr "Mentoring Day — What Korean Mentors Think"
+
+msgid "Honest sharing from mentors about working with Vietnamese candidates and what stands out in the eyes of employers. Don’t miss K-Tech Fest 2025 for more 1:1 mentor sessions!"
+msgstr "Honest sharing from mentors about working with Vietnamese candidates and what stands out in the eyes of employers. Don’t miss K-Tech Fest 2025 for more 1:1 mentor sessions!"
+
+msgid "Ho Chi Minh City"
+msgstr "Ho Chi Minh City"
+
+msgid "Mentoring Day"
+msgstr "Mentoring Day"
+
+msgid "Recap Offline Interview"
+msgstr "Recap Offline Interview"
+
+msgid "Korean tech companies praised the potential of Vietnamese candidates and the role of K-Tech College in global talent matching. Hear their reflections from the on-site interviews."
+msgstr "Korean tech companies praised the potential of Vietnamese candidates and the role of K-Tech College in global talent matching. Hear their reflections from the on-site interviews."
+
+msgid "Interview Series"
+msgstr "Interview Series"
+
+msgid "Customer Success Stories"
+msgstr "Customer Success Stories"
+
+msgid "Direct stories from clients about their transformation journeys and results achieved with our programs and partners."
+msgstr "Direct stories from clients about their transformation journeys and results achieved with our programs and partners."
+
+msgid "Virtual Event"
+msgstr "Virtual Event"
+
+msgid "Success Stories"
+msgstr "Success Stories"
+
+msgid "Open Positions"
+msgstr "Open Positions"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Not found"
+msgstr "Not found"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "See Detail"
+msgstr "See Detail"
+
+msgid "Please select at least 1 Category to display the list Skills."
+msgstr "Please select at least 1 Category to display the list Skills."
+
+msgid "City"
+msgstr "City"
+
+msgid "Re-applying"
+msgstr "Re-applying"
+
+msgid "Submitting"
+msgstr "Submitting"
+
+msgid "Re-apply"
+msgstr "Re-apply"
+
+msgid "Apply"
+msgstr "Apply"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Cover Letter"
+msgstr "Cover Letter"
+
+msgid "Phone Number"
+msgstr "Phone Number"
+
+msgid "Full Name"
+msgstr "Full Name"
+
+msgid "Selected File"
+msgstr "Selected File"
+
+msgid "Change CV"
+msgstr "Change CV"
+
+msgid "Upload CV"
+msgstr "Upload CV"
+
+msgid "Upload New CV"
+msgstr "Upload New CV"
+
+msgid "Keep Current CV"
+msgstr "Keep Current CV"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "View"
+msgstr "View"
+
+msgid "Previously Submitted CV"
+msgstr "Previously Submitted CV"
+
+msgid "Your previous information has been filled in. You can edit if needed."
+msgstr "Your previous information has been filled in. You can edit if needed."
+
+msgid "Loading application details"
+msgstr "Loading application details"
+
+msgid "Re-application submitted successfully!"
+msgstr "Re-application submitted successfully!"
+
+msgid "Application submitted successfully!"
+msgstr "Application submitted successfully!"
+
+msgid "Please upload a new CV."
+msgstr "Please upload a new CV."
+
+msgid "Please upload your CV."
+msgstr "Please upload your CV."
+
+msgid "Job saved successfully"
+msgstr "Job saved successfully"
+
+msgid "Job unsaved"
+msgstr "Job unsaved"
+
+msgid "You have reached the re-application limit (2 times)."
+msgstr "You have reached the re-application limit (2 times)."
+
+msgid "You re-applied 30 minutes ago. Please wait to try again."
+msgstr "You re-applied 30 minutes ago. Please wait to try again."
+
+msgid "View Details"
+msgstr "View Details"
+
+msgid "Loading"
+msgstr "Loading"
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Manage CV"
+msgstr "Manage CV"
+
+msgid "My Interviews"
+msgstr "My Interviews"
+
+msgid "Company Follows"
+msgstr "Company Follows"
+
+msgid "My Jobs"
+msgstr "My Jobs"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Manage Jobs"
+msgstr "Manage Jobs"
+
+msgid "Candidates"
+msgstr "Candidates"
+
+msgid "Payment History"
+msgstr "Payment History"
+
+msgid "Upgrade Vip"
+msgstr "Upgrade Vip"

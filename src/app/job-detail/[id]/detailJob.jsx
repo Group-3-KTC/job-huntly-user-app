@@ -1,30 +1,17 @@
 "use client";
 
-import React, {
-    useMemo,
-    useCallback,
-    useState,
-    useEffect,
-    useRef,
-} from "react";
-import {
-    MapPin,
-    Briefcase,
-    Layers,
-    BookmarkCheck,
-    Bookmark,
-    MessageSquareWarning,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React, {useCallback, useEffect, useMemo, useRef, useState,} from "react";
+import {Bookmark, BookmarkCheck, Briefcase, Layers, MapPin, MessageSquareWarning,} from "lucide-react";
+import {Button} from "@/components/ui/button";
 import RelatedJobs from "./relatedJobs";
 import ApplicationModal from "./applicationJob";
 import ReportModal from "@/components/ui/report";
-import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import {useRouter} from "next/navigation";
+import {useDispatch, useSelector} from "react-redux";
 
-import { selectIsLoggedIn } from "@/features/auth/authSelectors";
-import { showLoginPrompt } from "@/features/auth/loginPromptSlice";
-import { toast } from "react-toastify";
+import {selectIsLoggedIn} from "@/features/auth/authSelectors";
+import {showLoginPrompt} from "@/features/auth/loginPromptSlice";
+import {toast} from "react-toastify";
 
 import Pill from "./_components/Pill";
 import Section from "./_components/Section";
@@ -32,27 +19,20 @@ import CompanyCard from "./_components/CompanyCard";
 import GeneralCard from "./_components/GeneralCard";
 import SkillsChips from "./_components/SkillsChips";
 
-import { formatList } from "./_utils/formatters";
-import { mapJobToView } from "./_utils/jobMapper";
-import { t } from "@/i18n/i18n";
+import {formatList} from "./_utils/formatters";
+import {mapJobToView} from "./_utils/jobMapper";
+import {t} from "@/i18n/i18n";
 
-import {
-    useGetStatusQuery,
-    useSaveJobMutation,
-    useUnsaveJobMutation,
-} from "@/services/savedJobService";
+import {useGetStatusQuery, useSaveJobMutation, useUnsaveJobMutation,} from "@/services/savedJobService";
 
-import {
-    useGetApplyStatusQuery,
-    useLazyGetApplyStatusQuery,
-} from "@/services/applicationService";
+import {useGetApplyStatusQuery, useLazyGetApplyStatusQuery,} from "@/services/applicationService";
 
 import ApplicationDetail from "./_components/ApplicationDetail";
 import ParseInfoJob from "@/components/common/ParseInfoJob";
 
 import AiMatchModal from "./AiMatchModal";
 
-export default function DetailJob({ job }) {
+export default function DetailJob({job}) {
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const router = useRouter();
     const dispatch = useDispatch();
@@ -64,15 +44,15 @@ export default function DetailJob({ job }) {
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showAiMatch, setShowAiMatch] = useState(false);
 
-    const { data: status, isFetching } = useGetStatusQuery(djId, {
+    const {data: status, isFetching} = useGetStatusQuery(djId, {
         skip: !djId || !isLoggedIn,
     });
     const liked = status?.saved ?? false;
-    const [saveJob, { isLoading: savingSave }] = useSaveJobMutation();
-    const [unsaveJob, { isLoading: savingUnsave }] = useUnsaveJobMutation();
+    const [saveJob, {isLoading: savingSave}] = useSaveJobMutation();
+    const [unsaveJob, {isLoading: savingUnsave}] = useUnsaveJobMutation();
     const saving = savingSave || savingUnsave || isFetching;
 
-    const { data: applyStatus, isLoading: isLoadingApply } =
+    const {data: applyStatus, isLoading: isLoadingApply} =
         useGetApplyStatusQuery(djId, {
             skip: !djId || !isLoggedIn,
         });
@@ -101,7 +81,7 @@ export default function DetailJob({ job }) {
     const [remainingMs, setRemainingMs] = useState(0);
     const firstReapplyClickRef = useRef(false);
 
-    const [fetchStatus, { isFetching: refreshingStatus }] =
+    const [fetchStatus, {isFetching: refreshingStatus}] =
         useLazyGetApplyStatusQuery();
 
     useEffect(() => {
@@ -135,11 +115,11 @@ export default function DetailJob({ job }) {
                 try {
                     if (!djId) return;
                     if (!liked) {
-                        await saveJob({ jobId: djId }).unwrap();
-                        toast.success("Job saved successfully");
+                        await saveJob({jobId: djId}).unwrap();
+                        toast.success(t`Job saved successfully`);
                     } else {
                         await unsaveJob(djId).unwrap();
-                        toast.success("Job unsaved");
+                        toast.success(t`Job unsaved`);
                     }
                 } catch (err) {
                     console.error("Toggle save error", err);
@@ -184,7 +164,7 @@ export default function DetailJob({ job }) {
             guardOr(async () => {
                 if (attemptCount >= MAX_REAPPLY) {
                     toast.error(
-                        "You have reached the re-application limit (2 times)."
+                        t`You have reached the re-application limit (2 times).`
                     );
                     return;
                 }
@@ -213,7 +193,7 @@ export default function DetailJob({ job }) {
                 if (remain > 0) {
                     const elapsed = REAPPLY_INTERVAL - remain;
                     toast.info(
-                        `You re-applied 30 minutes ago. Please wait to try again.`
+                        t`You re-applied 30 minutes ago. Please wait to try again.`
                     );
                     return;
                 }
@@ -272,7 +252,7 @@ export default function DetailJob({ job }) {
                         <div className="grid items-center grid-cols-1 md:grid-cols-10 gap-2 mt-4">
                             <div className="col-span-8">
                                 {isLoadingApply ? (
-                                    <p>Loading application status...</p>
+                                    <p>Loading...</p>
                                 ) : !applied ? (
                                     <Button
                                         disabled={isExpired}
@@ -301,24 +281,24 @@ export default function DetailJob({ job }) {
                                             onClick={handleReapply}
                                             title={
                                                 reachedLimit
-                                                    ? "You have reached the re-application limit (2 times)."
+                                                    ? t`You have reached the re-application limit (2 times).`
                                                     : remainingMs > 0
-                                                    ? `You can re-apply in 30 minutes`
-                                                    : "Re-apply"
+                                                        ? `You can re-apply in 30 minutes`
+                                                        : t`Re-apply`
                                             }
                                         >
                                             {reachedLimit
                                                 ? "Re-apply (Limit reached)"
                                                 : remainingMs > 0
-                                                ? `Re-apply in 30 minutes please`
-                                                : "Re-Applications"}
+                                                    ? `Re-apply in 30 minutes please`
+                                                    : "Re-Applications"}
                                         </Button>
 
                                         <Button
                                             className="flex-1 font-medium text-blue-600 bg-white border-2 border-blue-600 hover:bg-blue-600 hover:text-white"
                                             onClick={handleShowDetail}
                                         >
-                                            View Details
+                                            {t`View Details`}
                                         </Button>
                                     </div>
                                 )}
@@ -352,9 +332,9 @@ export default function DetailJob({ job }) {
                                     title={liked ? "Unsave" : "Save job"}
                                 >
                                     {liked ? (
-                                        <BookmarkCheck className="w-5 h-5 text-blue-600" />
+                                        <BookmarkCheck className="w-5 h-5 text-blue-600"/>
                                     ) : (
-                                        <Bookmark className="w-5 h-5 text-blue-600" />
+                                        <Bookmark className="w-5 h-5 text-blue-600"/>
                                     )}
                                     <span className="ml-2 text-xs font-medium text-blue-700">
                                         {liked ? "Saved" : "Save"}
@@ -369,7 +349,7 @@ export default function DetailJob({ job }) {
                                     aria-label="Report job"
                                     title="Report this job"
                                 >
-                                    <MessageSquareWarning className="w-5 h-5 text-red-600" />
+                                    <MessageSquareWarning className="w-5 h-5 text-red-600"/>
                                     <span className="ml-2 text-xs font-medium text-red-700">
                                         Report
                                     </span>
@@ -385,7 +365,7 @@ export default function DetailJob({ job }) {
                         </div>
 
                         {applied && showDetailModal && (
-                            <ApplicationDetail jobId={dj.id} />
+                            <ApplicationDetail jobId={dj.id}/>
                         )}
                     </div>
 
@@ -428,9 +408,10 @@ export default function DetailJob({ job }) {
                         onClick={handleOpenAiMatch}
                         title={isLoggedIn ? "Check suitability with AI" : "Please log in to use AI"}
                     >
-                        <span className="pointer-events-none absolute inset-0 rounded-xl animate-pulse bg-cyan-400/0 group-hover:bg-cyan-400/0" />
+                        <span
+                            className="pointer-events-none absolute inset-0 rounded-xl animate-pulse bg-cyan-400/0 group-hover:bg-cyan-400/0"/>
                         <span className="pointer-events-none absolute inset-0 opacity-70">
-                            <span className="shine" />
+                            <span className="shine"/>
                         </span>
                         <img
                             src="https://img.icons8.com/ios/50/ai-robot--v7.png"
@@ -440,7 +421,8 @@ export default function DetailJob({ job }) {
                         <span className="font-semibold tracking-wide">
                             Are you suitable?
                         </span>
-                        <span className="ml-1 text-xs font-bold bg-white/20 text-white px-2 py-0.5 rounded-full border border-white/30">
+                        <span
+                            className="ml-1 text-xs font-bold bg-white/20 text-white px-2 py-0.5 rounded-full border border-white/30">
                             AI
                         </span>
                     </button>
@@ -459,6 +441,7 @@ export default function DetailJob({ job }) {
                             background-size: 200% 200%;
                             animation: banner-shine 5.6s linear infinite;
                         }
+
                         @keyframes banner-shine {
                             0% {
                                 background-position: 0% 0%;
@@ -471,7 +454,7 @@ export default function DetailJob({ job }) {
                 </div>
             </div>
 
-            <RelatedJobs category={dj.category} skill={dj.skill} />
+            <RelatedJobs category={dj.category} skill={dj.skill}/>
             {showAiMatch && (
                 <AiMatchModal
                     jobId={djId}

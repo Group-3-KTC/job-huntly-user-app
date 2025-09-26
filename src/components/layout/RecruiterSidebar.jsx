@@ -1,32 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import {usePathname, useRouter} from "next/navigation";
+import {Button} from "@/components/ui/button";
+import {Badge} from "@/components/ui/badge";
 import logo from "@/assets/images/logo-title.png";
 import {
     BarChart3,
-    Briefcase,
-    Users,
     Bell,
-    User,
-    Settings,
-    LogOut,
-    Plus,
-    FileText,
-    Calendar,
-    MessageSquare,
-    Search,
+    Briefcase,
     Building,
+    Calendar,
     ChevronDown,
     Crown,
+    FileText,
+    LogOut,
+    MessageSquare,
+    Plus,
+    Settings,
+    User,
+    Users,
 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { logoutThunk } from "@/features/auth/authSlice";
-import { t } from "@/i18n/i18n";
+import {useDispatch} from "react-redux";
+import {logoutThunk} from "@/features/auth/authSlice";
+import {t} from "@/i18n/i18n";
 
 export default function RecruiterSidebar() {
     const dispatch = useDispatch();
@@ -36,9 +35,9 @@ export default function RecruiterSidebar() {
     const [expandedSections, setExpandedSections] = useState({});
 
     const navItems = [
-        { href: "/recruiter/dashboard", label: "Dashboard", icon: BarChart3 },
+        {href: "/recruiter/dashboard", label: "Dashboard", icon: BarChart3},
         {
-            label: "Manage Jobs",
+            label: t`Manage Jobs`,
             icon: Briefcase,
             children: [
                 {
@@ -64,7 +63,7 @@ export default function RecruiterSidebar() {
             ],
         },
         {
-            label: "Candidates",
+            label: t`Candidates`,
             icon: Users,
             children: [
                 {
@@ -78,7 +77,7 @@ export default function RecruiterSidebar() {
                 //     icon: User,
                 // },
                 {
-                    href: "/recruiter/applicants/interviews",   
+                    href: "/recruiter/applicants/interviews",
                     label: "Interviewed",
                     icon: MessageSquare,
                 },
@@ -92,17 +91,17 @@ export default function RecruiterSidebar() {
         // { href: "/recruiter/analytics", label: "Analytics", icon: BarChart3 },
         {
             href: "/recruiter/payment-history",
-            label: "Payment History",
+            label: t`Payment History`,
             icon: Bell,
         },
         {
             href: "/recruiter/companyVip",
-            label: "Upgrade Vip",
+            label: t`Upgrade Vip`,
             icon: Crown,
         },
-        { href: "/recruiter/profile", label: "Profile", icon: User },
-        { href: "/recruiter/company", label: "Company", icon: Building },
-        { href: "/recruiter/settings", label: "Settings", icon: Settings },
+        {href: "/recruiter/profile", label: t`Profile`, icon: User},
+        {href: "/recruiter/company", label: "Company", icon: Building},
+        {href: "/recruiter/settings", label: t`Settings`, icon: Settings},
     ];
 
     const handleLogout = async () => {
@@ -138,12 +137,12 @@ export default function RecruiterSidebar() {
                 </Link>
             </div>
 
-            {/* Nút Đăng tin tuyển dụng*/}
             <div className="p-4">
                 <Link href="/recruiter/create-job">
-                    <Button className="flex items-center w-full gap-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-                        <Plus className="w-4 h-4" />
-                        <span>Post a Job</span>
+                    <Button
+                        className="flex items-center w-full gap-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                        <Plus className="w-4 h-4"/>
+                        <span>{t`Post a Job`}</span>
                     </Button>
                 </Link>
             </div>
@@ -160,7 +159,7 @@ export default function RecruiterSidebar() {
                                     className="flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-muted"
                                 >
                                     <div className="flex items-center gap-2">
-                                        <item.icon className="w-5 h-5" />
+                                        <item.icon className="w-5 h-5"/>
                                         {item.label}
                                     </div>
                                     <ChevronDown
@@ -185,7 +184,7 @@ export default function RecruiterSidebar() {
                                                     }`}
                                                 >
                                                     {sub.icon && (
-                                                        <sub.icon className="w-4 h-4" />
+                                                        <sub.icon className="w-4 h-4"/>
                                                     )}
                                                     {sub.label}
                                                 </Link>
@@ -205,7 +204,7 @@ export default function RecruiterSidebar() {
                                     isActive ? "bg-muted" : ""
                                 }`}
                             >
-                                <item.icon className="w-5 h-5" />
+                                <item.icon className="w-5 h-5"/>
                                 {item.label}
                                 {item.label === "Notifications" &&
                                     notificationCount > 0 && (
@@ -228,7 +227,7 @@ export default function RecruiterSidebar() {
                     className="justify-start w-full text-red-600 hover:text-red-600 hover:bg-red-50"
                     onClick={handleLogout}
                 >
-                    <LogOut className="w-5 h-5 mr-2" />
+                    <LogOut className="w-5 h-5 mr-2"/>
                     {t`Logout`}
                 </Button>
             </div>

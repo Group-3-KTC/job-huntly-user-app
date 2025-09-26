@@ -1,17 +1,16 @@
-
 "use client";
 
-import React, { useCallback, useMemo, useState, useEffect } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
+import {ChevronDown, ChevronUp} from "lucide-react";
 import clsx from "clsx";
-import { useJobSearchStore } from "@/store/jobSearchStore";
+import {useJobSearchStore} from "@/store/jobSearchStore";
 import {
     useGetCategoriesQuery,
     useGetLevelsQuery,
     useGetWorkTypesQuery,
     useLazyGetSkillsByCategoryQuery,
 } from "@/services/filterService";
-import { t } from "@/i18n/i18n";
+import {t} from "@/i18n/i18n";
 
 export default function FilterBar() {
     const [showCategories, setShowCategories] = useState(false);
@@ -19,12 +18,12 @@ export default function FilterBar() {
     const [showWorkTypes, setShowWorkTypes] = useState(false);
     const [showSkills, setShowSkills] = useState(false);
 
-    const { filters, setFilters } = useJobSearchStore();
+    const {filters, setFilters} = useJobSearchStore();
 
-    const { data: categoriesRes } = useGetCategoriesQuery();
-    const { data: levelsRes } = useGetLevelsQuery();
-    const { data: workTypesRes } = useGetWorkTypesQuery();
-    const [getSkillsByCategory, { data: skillsRes }] =
+    const {data: categoriesRes} = useGetCategoriesQuery();
+    const {data: levelsRes} = useGetLevelsQuery();
+    const {data: workTypesRes} = useGetWorkTypesQuery();
+    const [getSkillsByCategory, {data: skillsRes}] =
         useLazyGetSkillsByCategoryQuery();
 
     const [allSkills, setAllSkills] = useState([]);
@@ -103,9 +102,9 @@ export default function FilterBar() {
                 >
                     <span>{t`Work Type`}</span>
                     {showWorkTypes ? (
-                        <ChevronUp size={18} />
+                        <ChevronUp size={18}/>
                     ) : (
-                        <ChevronDown size={18} />
+                        <ChevronDown size={18}/>
                     )}
                 </div>
                 {showWorkTypes &&
@@ -126,9 +125,9 @@ export default function FilterBar() {
                 >
                     <span>{t`Levels`}</span>
                     {showLevels ? (
-                        <ChevronUp size={18} />
+                        <ChevronUp size={18}/>
                     ) : (
-                        <ChevronDown size={18} />
+                        <ChevronDown size={18}/>
                     )}
                 </div>
                 {showLevels &&
@@ -149,9 +148,9 @@ export default function FilterBar() {
                 >
                     <span>{t`Categories`}</span>
                     {showCategories ? (
-                        <ChevronUp size={18} />
+                        <ChevronUp size={18}/>
                     ) : (
-                        <ChevronDown size={18} />
+                        <ChevronDown size={18}/>
                     )}
                 </div>
                 {showCategories &&
@@ -172,15 +171,14 @@ export default function FilterBar() {
                 >
                     <span>{t`Skills`}</span>
                     {showSkills ? (
-                        <ChevronUp size={18} />
+                        <ChevronUp size={18}/>
                     ) : (
-                        <ChevronDown size={18} />
+                        <ChevronDown size={18}/>
                     )}
                 </div>
                 {shouldShowPickCategoryHint ? (
                     <p className="text-sm text-gray-500">
-                        Please select at least 1 Category to display the list
-                        Skills.
+                        {t`Please select at least 1 Category to display the list Skills.`}
                     </p>
                 ) : (
                     showSkills &&

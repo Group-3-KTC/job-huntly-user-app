@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {useState} from "react";
 import Image from "next/image";
 import useCompanyDetailStore from "../store/companyDetailStore";
 import Link from "next/link";
-import { parse } from "date-fns";
-import { getImageUrl } from "@/lib/utils";
-import { t } from "@/i18n/i18n";
+import {parse} from "date-fns";
+import {getImageUrl} from "@/lib/utils";
+import {t} from "@/i18n/i18n";
 
 const CompanyJobs = () => {
-    const { company, jobs } = useCompanyDetailStore();
+    const {company, jobs} = useCompanyDetailStore();
     const [searchTerm, setSearchTerm] = useState("");
     const [location, setLocation] = useState("");
 
@@ -56,7 +56,7 @@ const CompanyJobs = () => {
                     <option value="Đà Nẵng">Da Nang</option>
                 </select>
                 <button className="w-full h-10 text-white rounded bg-blue-700 hover:bg-[#085aab]">
-                    Search
+                    {t`Search`}
                 </button>
             </div>
 
@@ -116,7 +116,8 @@ const CompanyJobs = () => {
                                 <Link
                                     href={`/job-detail/${job.id}/applicationJob`}
                                 >
-                                    <button className="px-4 py-1 text-sm text-white rounded bg-blue-700 hover:bg-[#085aab]">
+                                    <button
+                                        className="px-4 py-1 text-sm text-white rounded bg-blue-700 hover:bg-[#085aab]">
                                         Apply Now
                                     </button>
                                 </Link>

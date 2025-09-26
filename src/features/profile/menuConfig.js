@@ -1,15 +1,5 @@
-import {
-    LayoutDashboard,
-    User,
-    FileText,
-    Briefcase,
-    Heart,
-    Bell,
-    Settings,
-    Building2,
-    CalendarRange,
-} from "lucide-react";
-import { t } from "@/i18n/i18n";
+import {Briefcase, Building2, CalendarRange, FileText, Heart, LayoutDashboard, Settings, User,} from "lucide-react";
+import {t} from "@/i18n/i18n";
 
 export const menuItems = (router) => [
     {
@@ -18,37 +8,37 @@ export const menuItems = (router) => [
         onClick: () => router.push("/dashboard"),
     },
     {
-        label: "Profile",
+        label: t`Profile`,
         icon: User,
         onClick: () => router.push("/profile"),
     },
     {
-        label: "Manage CV",
+        label: t`Manage CV`,
         icon: FileText,
         onClick: () => router.push("/manageCv"),
     },
     {
-        label: "My Interviews",
+        label: t`My Interviews`,
         icon: CalendarRange,
         onClick: () => router.push("/interviews"),
     },
     {
-        label: "Companies Follow",
+        label: t`Companies Follow`,
         icon: Building2,
         onClick: () => router.push("/companyFollows"),
     },
     {
-        label: "My Jobs",
+        label: t`My Jobs`,
         icon: Briefcase,
         onClick: () => router.push("/jobs"),
     },
     {
-        label: "Saved Jobs",
+        label: t`Saved Jobs`,
         icon: Heart,
         onClick: () => router.push("/jobs/saved"),
     },
     {
-        label: "Settings",
+        label: t`Settings`,
         icon: Settings,
         onClick: () => router.push("/settings"),
     },
