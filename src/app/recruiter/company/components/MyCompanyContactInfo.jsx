@@ -3,6 +3,7 @@
 import React from "react";
 import useMyCompanyStore from "../store/myCompanyStore";
 import { MapPin, Mail, Phone, Globe, Facebook, Linkedin, Twitter, Map } from "lucide-react";
+import { t } from "@/i18n/i18n";
 
 const MyCompanyContactInfo = () => {
     const { company } = useMyCompanyStore();
