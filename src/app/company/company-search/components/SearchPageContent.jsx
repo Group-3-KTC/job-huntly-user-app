@@ -7,6 +7,7 @@ import PopularSearches from "../components/PopularSearches";
 import RecommendedCompanies from "../components/RecommendedCompanies";
 import CallToAction from "../components/CallToAction";
 import useCompanySearchStore from "../store/companySearchStore";
+import { t } from "@/i18n/i18n";
 
 const SearchPageContent = () => {
     const router = useRouter();
