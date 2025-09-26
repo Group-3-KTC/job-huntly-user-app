@@ -50,7 +50,8 @@ const UI_PLANS = [
         features: [
             "Tag VIP Company",
             "Your company will be recommended by JobHuntly",
-            "Your job will be suggested at the top",
+            "Your job will stand out more on search page",
+            "Get more jobs posted than normal companies every month",
             "24/7 Support",
         ],
     },
@@ -62,7 +63,8 @@ const UI_PLANS = [
         features: [
             "Tag VIP Company",
             "Your company will be recommended by JobHuntly",
-            "Your job will be suggested at the top",
+            "Your job will stand out more on search page",
+            "Get more jobs posted than normal companies every month",
             "24/7 Support",
         ],
     },
@@ -73,7 +75,8 @@ const UI_PLANS = [
         features: [
             "Tag VIP Company",
             "Your company will be recommended by JobHuntly",
-            "Your job will be suggested at the top",
+            "Your job will stand out more on search page",
+            "Get more jobs posted than normal companies every month",
             "24/7 Support",
         ],
     },
