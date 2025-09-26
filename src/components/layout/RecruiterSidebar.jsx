@@ -151,7 +151,10 @@ export default function RecruiterSidebar() {
 
             {/* Navigation */}
             <div className="flex flex-col justify-around h-full px-2 py-4">
-                <nav className="flex-1 space-y-3 overflow-y-auto scrollbar-thin">
+                <nav
+                    className="flex-1 space-y-3 overflow-y-auto scrollbar-thin"
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
                     {navItems.map((item, index) => {
                         if (item.children) {
                             const isExpanded = expandedSections[item.label];

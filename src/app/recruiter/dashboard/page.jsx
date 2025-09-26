@@ -22,6 +22,21 @@ const RecruiterDashboard = () => {
     const [kpi, setKpi] = useState(null);
     const [trend, setTrend] = useState([]);
     const [loading, setLoading] = useState(true);
+    const fmtDM = useMemo(
+        () =>
+            new Intl.DateTimeFormat("vi-VN", {
+                day: "numeric",
+                month: "numeric",
+            }),
+        []
+    );
+
+    const labelStep = useMemo(() => {
+        const n = trend.length;
+        if (n >= 28) return 3; // 30 ngày: hiện 1 nhãn mỗi 3 cột
+        if (n >= 22) return 2; // 22–27 ngày: 1 nhãn mỗi 2 cột
+        return 1; // ít ngày: hiện tất cả
+    }, [trend]);
 
     useEffect(() => {
         let mounted = true;
@@ -58,21 +73,27 @@ const RecruiterDashboard = () => {
     // THÊM: tính ticks đẹp cho trục Y và niceMax dùng chung
     const yMeta = useMemo(() => {
         const max = Math.max(0, ...(trend || []).map((p) => p.count));
-        const mag = Math.pow(10, Math.floor(Math.log10(Math.max(1, max))));
-        const norm = max / mag;
-        let niceUnit = 1;
-        if (norm <= 1) niceUnit = 1;
-        else if (norm <= 2) niceUnit = 2;
-        else if (norm <= 5) niceUnit = 5;
-        else niceUnit = 10;
-        const niceMax = Math.max(1, niceUnit * mag); // tối thiểu 1
+        const targetTicks = 5; // 0..max chia thành 5 mốc
 
-        const desiredTicks = 5; // 0, 1/4, 1/2, 3/4, 1
-        const step = niceMax / (desiredTicks - 1);
-        const ticks = Array.from({ length: desiredTicks }, (_, i) =>
-            Math.round(i * step)
+        // bước thô: đủ lớn để phủ max với targetTicks-1 khoảng
+        const roughStep = max > 0 ? Math.ceil(max / (targetTicks - 1)) : 1;
+        // làm "nice" theo 1-2-5
+        const pow10 = Math.pow(10, Math.floor(Math.log10(roughStep)));
+        const candidates = [1, 2, 5, 10].map((m) => m * pow10);
+        const step =
+            candidates.find((c) => c >= roughStep) ||
+            candidates[candidates.length - 1];
+
+        // trần lên bội số của step
+        const niceMax = Math.max(
+            step * (targetTicks - 1),
+            step * Math.ceil(max / step)
         );
-        return { niceMax, ticks };
+        const ticks = Array.from(
+            { length: Math.floor(niceMax / step) + 1 },
+            (_, i) => i * step
+        );
+        return { niceMax, step, ticks };
     }, [trend]);
 
     const stats = useMemo(
@@ -212,31 +233,18 @@ const RecruiterDashboard = () => {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="h-[300px] relative">
-                                {/* Y-axis labels (nice ticks) */}
-                                <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-400 pr-2">
-                                    {yMeta.ticks
-                                        .slice()
-                                        .reverse()
-                                        .map((v) => (
-                                            <div
-                                                key={v}
-                                                className="text-right font-medium"
-                                            >
-                                                {v}
-                                            </div>
-                                        ))}
-                                </div>
+                            <div className="h-[300px] relative pb-6">
+                                {/* Baseline đáy cho dễ canh mắt */}
+                                <div className="absolute left-0 right-0 bottom-0 border-t border-gray-200 pointer-events-none" />
 
-                                {/* Chart area */}
-                                <div className="ml-8 h-full flex items-end justify-between gap-1">
+                                {/* Chart area (không còn Y axis) */}
+                                <div className="h-full flex items-end justify-between gap-1">
                                     {chartData.map((point, i) => (
                                         <div
                                             key={i}
-                                            className="flex flex-col items-center flex-1 group relative h-full" // <-- thêm h-full ở đây
+                                            className="flex flex-col items-center flex-1 group relative h-full"
                                         >
-                                            {/* Wrapper đảm bảo % height dựa vào 300px */}
-                                            <div className="w-full h-full flex items-end">
+                                            <div className="w-full h-full flex items-end relative">
                                                 <div
                                                     className={barClass(point)}
                                                     style={{
@@ -251,37 +259,61 @@ const RecruiterDashboard = () => {
                                                                 ? "20px"
                                                                 : "0px",
                                                     }}
-                                                    title={`${point.date}: ${point.count} applications`}
+                                                    title={`${fmtDM.format(
+                                                        new Date(point.date)
+                                                    )}: ${
+                                                        point.count
+                                                    } applications`}
                                                 >
-                                                    <div className="w-full h-full rounded-t-lg bg-gradient-to-r from-transparent via-white to-transparent opacity-20"></div>
+                                                    <div className="w-full h-full rounded-t-lg bg-gradient-to-r from-transparent via-white to-transparent opacity-20" />
                                                 </div>
+
+                                                {/* Số trên đầu cột */}
+                                                {point.count > 0 && (
+                                                    <span
+                                                        className="absolute left-1/2 -translate-x-1/2 -translate-y-1 text-[11px] font-semibold text-gray-700 bg-white/80 px-1 rounded"
+                                                        style={{
+                                                            bottom: `calc(${Math.min(
+                                                                point.height,
+                                                                95
+                                                            )}% + 4px)`,
+                                                        }}
+                                                    >
+                                                        {point.count}
+                                                    </span>
+                                                )}
                                             </div>
 
-                                            {/* Tooltip */}
-                                            <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-10">
+                                            {/* Tooltip (hover) */}
+                                            <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-10">
                                                 <div className="font-semibold">
                                                     {point.count}
                                                 </div>
                                                 <div className="text-xs opacity-75">
                                                     applications
                                                 </div>
-                                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                                <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
                                             </div>
 
-                                            {/* Date label */}
-                                            <div className="text-xs text-gray-500 mt-2 transform -rotate-45 origin-left whitespace-nowrap">
-                                                {new Date(
-                                                    point.date
-                                                ).toLocaleDateString("vi-VN", {
-                                                    month: "short",
-                                                    day: "numeric",
-                                                })}
+                                            {/* Nhãn ngày */}
+                                            <div
+                                                className={`mt-2 text-xs leading-none text-gray-500 text-center whitespace-nowrap ${
+                                                    i % labelStep !== 0
+                                                        ? "invisible"
+                                                        : ""
+                                                }`}
+                                                /* invisible: giữ bố cục, không hiển thị */
+                                            >
+                                                {fmtDM.format(
+                                                    new Date(point.date)
+                                                )}{" "}
+                                                {/* ví dụ 8/9 */}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
 
-                                {/* Legend với màu sắc cổ điển */}
+                                {/* Legend giữ nguyên */}
                                 <div className="flex items-center gap-6 mt-6 text-xs">
                                     <div className="flex items-center gap-2">
                                         <div className="w-4 h-4 bg-blue-500 rounded-lg shadow-sm"></div>
