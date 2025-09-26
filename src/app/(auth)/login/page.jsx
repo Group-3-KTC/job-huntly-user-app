@@ -31,8 +31,10 @@ const LoginPage = () => {
             secondary: "text-blue-900/70",
         },
         RECRUITER: {
-            primary: "text-orange-700",
-            secondary: "text-orange-900/70",
+            // primary: "text-orange-700",
+            // secondary: "text-orange-900/70",
+            primary: "text-blue-700",
+            secondary: "text-blue-900/70",
         },
     };
 
@@ -116,7 +118,7 @@ const LoginPage = () => {
                                                 </TabsTrigger>
                                                 <TabsTrigger
                                                     value="RECRUITER"
-                                                    className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
+                                                    className="data-[state=active]:border-blue-500 data-[state=active]:text-blue-500"
                                                 >
                                                     {t`Recruiter`}
                                                 </TabsTrigger>
@@ -142,7 +144,7 @@ const LoginPage = () => {
                                                         type="button"
                                                         className={`text-sm font-medium ${
                                                             activeTab === "RECRUITER"
-                                                                ? " text-orange-600"
+                                                                ? " text-blue-600"
                                                                 : activeTab === "CANDIDATE"
                                                                     ? " text-blue-600"
                                                                     : " text-gray-600"
@@ -162,7 +164,7 @@ const LoginPage = () => {
                                                     href={`/register?role=${activeTab}`}
                                                     className={`font-medium ${
                                                         activeTab === "RECRUITER"
-                                                            ? " text-orange-600"
+                                                            ? " text-blue-600"
                                                             : activeTab === "CANDIDATE"
                                                                 ? " text-blue-600"
                                                                 : " text-gray-500"
