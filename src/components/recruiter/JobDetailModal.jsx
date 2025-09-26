@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import api from "@/lib/api";
 import ParseInfoJob from "@/components/common/ParseInfoJob";
+import { t } from "@/i18n/i18n";
 
 export default function JobDetailModal({ open, onOpenChange, job, jobId }) {
     const [fullJob, setFullJob] = useState(job || null);

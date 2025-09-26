@@ -3,6 +3,7 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { t } from "@/i18n/i18n";
 
 const JobSidebar = ({ categories, skills, levels, workTypes }) => {
     const safeWorkTypes = Array.isArray(workTypes) ? workTypes : [];
