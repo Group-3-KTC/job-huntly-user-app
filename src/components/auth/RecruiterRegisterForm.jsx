@@ -104,25 +104,25 @@ export default function RecruiterRegisterForm({role, onRegistered}) {
         }
     };
 
-    if (isAuthLoading) return <LoadingScreen message="Registering..." loaderClassName="loader--orange"/>;
+    if (isAuthLoading) return <LoadingScreen message="Registering..." loaderClassName="loader--blue"/>;
 
     return (
         <div className="w-full">
-            <div className="p-5 bg-white border border-orange-100 shadow-sm rounded-2xl">
+            <div className="p-5 bg-white border border-blue-100 shadow-sm rounded-2xl">
                 <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
                     {/* Full Name */}
                     <div>
-                        <Label htmlFor="fullName" className="font-medium text-orange-900/80">
+                        <Label htmlFor="fullName" className="font-medium text-blue-900/80">
                             Full Name
                         </Label>
                         <div className="relative mt-1">
                             <User
-                                className="absolute w-4 h-4 text-orange-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
+                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
                             <Input
                                 id="fullName"
                                 type="text"
                                 placeholder="Enter your full name"
-                                className="pl-10 focus-visible:ring-2 focus-visible:ring-orange-500"
+                                className="pl-10 focus-visible:ring-2 focus-visible:ring-blue-500"
                                 {...register("fullName")}
                                 autoComplete="name"
                             />
@@ -134,17 +134,17 @@ export default function RecruiterRegisterForm({role, onRegistered}) {
 
                     {/* Email */}
                     <div>
-                        <Label htmlFor="email" className="font-medium text-orange-900/80">
+                        <Label htmlFor="email" className="font-medium text-blue-900/80">
                             Email
                         </Label>
                         <div className="relative mt-1">
                             <Mail
-                                className="absolute w-4 h-4 text-orange-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
+                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
                             <Input
                                 id="email"
                                 type="email"
                                 placeholder="you@company.com"
-                                className="pl-10 focus-visible:ring-2 focus-visible:ring-orange-500"
+                                className="pl-10 focus-visible:ring-2 focus-visible:ring-blue-500"
                                 {...register("email")}
                                 autoComplete="email"
                             />
@@ -156,17 +156,17 @@ export default function RecruiterRegisterForm({role, onRegistered}) {
 
                     {/* Phone */}
                     <div>
-                        <Label htmlFor="phone" className="font-medium text-orange-900/80">
+                        <Label htmlFor="phone" className="font-medium text-blue-900/80">
                             Phone Number
                         </Label>
                         <div className="relative mt-1">
                             <Phone
-                                className="absolute w-4 h-4 text-orange-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
+                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
                             <Input
                                 id="phone"
                                 type="tel"
                                 placeholder="Enter your phone number"
-                                className="pl-10 focus-visible:ring-2 focus-visible:ring-orange-500"
+                                className="pl-10 focus-visible:ring-2 focus-visible:ring-blue-500"
                                 {...register("phone")}
                                 autoComplete="tel"
                             />
@@ -178,17 +178,17 @@ export default function RecruiterRegisterForm({role, onRegistered}) {
 
                     {/* Password */}
                     <div>
-                        <Label htmlFor="password" className="font-medium text-orange-900/80">
+                        <Label htmlFor="password" className="font-medium text-blue-900/80">
                             Password
                         </Label>
                         <div className="relative mt-1">
                             <Lock
-                                className="absolute w-4 h-4 text-orange-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
+                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
                             <Input
                                 id="password"
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Enter password"
-                                className="pl-10 pr-10 focus-visible:ring-2 focus-visible:ring-orange-500"
+                                className="pl-10 pr-10 focus-visible:ring-2 focus-visible:ring-blue-500"
                                 {...register("password")}
                                 autoComplete="new-password"
                                 aria-describedby="pw-strength"
@@ -197,7 +197,7 @@ export default function RecruiterRegisterForm({role, onRegistered}) {
                                 type="button"
                                 aria-label={showPassword ? "Hide password" : "Show password"}
                                 onClick={() => setShowPassword((s) => !s)}
-                                className="absolute text-orange-400 transition -translate-y-1/2 right-3 top-1/2 hover:text-orange-600"
+                                className="absolute text-blue-400 transition -translate-y-1/2 right-3 top-1/2 hover:text-blue-600"
                             >
                                 {showPassword ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
                             </button>
@@ -210,7 +210,7 @@ export default function RecruiterRegisterForm({role, onRegistered}) {
                         {pwd.length > 0 && (
                             <div className="mt-2" aria-live="polite" id="pw-strength">
                                 <div
-                                    className="h-1.5 w-full rounded bg-orange-100 overflow-hidden"
+                                    className="h-1.5 w-full rounded bg-blue-100 overflow-hidden"
                                     role="progressbar"
                                     aria-valuemin={0}
                                     aria-valuemax={5}
@@ -221,7 +221,7 @@ export default function RecruiterRegisterForm({role, onRegistered}) {
                                         style={{width: `${meterPct}%`}}
                                     />
                                 </div>
-                                <div className="mt-1 text-[11px] font-medium text-orange-700">
+                                <div className="mt-1 text-[11px] font-medium text-blue-700">
                                     Strength: {strengthLabel}
                                 </div>
 
@@ -239,17 +239,17 @@ export default function RecruiterRegisterForm({role, onRegistered}) {
 
                     {/* Confirm Password */}
                     <div>
-                        <Label htmlFor="confirmPassword" className="font-medium text-orange-900/80">
+                        <Label htmlFor="confirmPassword" className="font-medium text-blue-900/80">
                             Confirm Password
                         </Label>
                         <div className="relative mt-1">
                             <Lock
-                                className="absolute w-4 h-4 text-orange-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
+                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
                             <Input
                                 id="confirmPassword"
                                 type={showConfirmPassword ? "text" : "password"}
                                 placeholder="Re-enter your password"
-                                className="pl-10 pr-10 focus-visible:ring-2 focus-visible:ring-orange-500"
+                                className="pl-10 pr-10 focus-visible:ring-2 focus-visible:ring-blue-500"
                                 {...register("confirmPassword")}
                                 autoComplete="new-password"
                             />
@@ -257,7 +257,7 @@ export default function RecruiterRegisterForm({role, onRegistered}) {
                                 type="button"
                                 aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                                 onClick={() => setShowConfirmPassword((s) => !s)}
-                                className="absolute text-orange-400 transition -translate-y-1/2 right-3 top-1/2 hover:text-orange-600"
+                                className="absolute text-blue-400 transition -translate-y-1/2 right-3 top-1/2 hover:text-blue-600"
                             >
                                 {showConfirmPassword ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
                             </button>
@@ -275,21 +275,21 @@ export default function RecruiterRegisterForm({role, onRegistered}) {
                             onCheckedChange={(checked) =>
                                 setValue("terms", !!checked, {shouldValidate: true})
                             }
-                            className="mt-0.5 flex-shrink-0 border-gray-300 hover:border-orange-500 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                            className="mt-0.5 flex-shrink-0 border-gray-300 hover:border-blue-500 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
                         />
                         <div className="flex-1">
                             <Label
                                 htmlFor="recruiter-terms"
-                                className="block text-sm leading-6 cursor-pointer text-orange-900/80"
+                                className="block text-sm leading-6 cursor-pointer text-blue-900/80"
                             >
                                 {t`I have read and agree to the`}{" "}
                                 <Link href="#"
-                                      className="font-medium text-orange-600 hover:text-orange-700 hover:underline">
+                                      className="font-medium text-blue-600 hover:text-blue-700 hover:underline">
                                     {t`Terms of Service`}
                                 </Link>{" "}
                                 {t`and`}{" "}
                                 <Link href="#"
-                                      className="font-medium text-orange-600 hover:text-orange-700 hover:underline">
+                                      className="font-medium text-blue-600 hover:text-blue-700 hover:underline">
                                     {t`Privacy Policy`}
                                 </Link>{" "}
                                 {t`of JobHuntly`}
@@ -304,8 +304,8 @@ export default function RecruiterRegisterForm({role, onRegistered}) {
                         disabled={!isValid || isSubmitting}
                         className={clsx(
                             "w-full",
-                            "bg-orange-600 hover:bg-orange-700",
-                            "focus-visible:ring-2 focus-visible:ring-orange-500",
+                            "bg-blue-600 hover:bg-blue-700",
+                            "focus-visible:ring-2 focus-visible:ring-blue-500",
                             "disabled:opacity-50 disabled:cursor-not-allowed",
                         )}
                     >

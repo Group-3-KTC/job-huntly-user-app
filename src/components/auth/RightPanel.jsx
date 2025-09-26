@@ -12,7 +12,7 @@ export default function RightPanel({ activeTab }) {
     const isCandidate = tab === "CANDIDATE";
     const jobHuntlyColorClass = isCandidate
         ? "text-blue-600"
-        : "text-orange-500";
+        : "text-blue-600";
 
     return (
         <div className="w-full lg:w-1/2">

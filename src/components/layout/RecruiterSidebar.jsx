@@ -27,6 +27,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { logoutThunk } from "@/features/auth/authSlice";
 import { t } from "@/i18n/i18n";
+import LanguageSelector from "@/components/ui/LanguageSelector";
 
 export default function RecruiterSidebar() {
     const dispatch = useDispatch();
@@ -78,7 +79,7 @@ export default function RecruiterSidebar() {
                 //     icon: User,
                 // },
                 {
-                    href: "/recruiter/applicants/interviews",   
+                    href: "/recruiter/applicants/interviews",
                     label: "Interviewed",
                     icon: MessageSquare,
                 },
@@ -149,88 +150,96 @@ export default function RecruiterSidebar() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-2 py-4 space-y-3 overflow-y-auto scrollbar-thin">
-                {navItems.map((item, index) => {
-                    if (item.children) {
-                        const isExpanded = expandedSections[item.label];
-                        return (
-                            <div key={index}>
-                                <button
-                                    onClick={() => toggleSection(item.label)}
-                                    className="flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-muted"
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <item.icon className="w-5 h-5" />
-                                        {item.label}
-                                    </div>
-                                    <ChevronDown
-                                        className={`h-4 w-4 transition-transform ${
-                                            isExpanded ? "rotate-180" : ""
-                                        }`}
-                                    />
-                                </button>
-                                {isExpanded && (
-                                    <div className="mt-1 ml-6 space-y-1">
-                                        {item.children.map((sub, subIndex) => {
-                                            const isSubActive =
-                                                pathname === sub.href;
-                                            return (
-                                                <Link
-                                                    key={subIndex}
-                                                    href={sub.href}
-                                                    className={`flex items-center gap-2 py-2 px-4 rounded-md hover:bg-muted text-sm ${
-                                                        isSubActive
-                                                            ? "bg-muted"
-                                                            : ""
-                                                    }`}
-                                                >
-                                                    {sub.icon && (
-                                                        <sub.icon className="w-4 h-4" />
-                                                    )}
-                                                    {sub.label}
-                                                </Link>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    } else {
-                        const isActive = pathname === item.href;
-                        return (
-                            <Link
-                                key={index}
-                                href={item.href}
-                                className={`flex items-center gap-2 py-2 px-4 rounded-md hover:bg-muted ${
-                                    isActive ? "bg-muted" : ""
-                                }`}
-                            >
-                                <item.icon className="w-5 h-5" />
-                                {item.label}
-                                {item.label === "Notifications" &&
-                                    notificationCount > 0 && (
-                                        <Badge className="ml-auto bg-red-500">
-                                            {notificationCount > 9
-                                                ? "9+"
-                                                : notificationCount}
-                                        </Badge>
+            <div className="flex flex-col justify-around h-full px-2 py-4">
+                <nav className="flex-1 space-y-3 overflow-y-auto scrollbar-thin">
+                    {navItems.map((item, index) => {
+                        if (item.children) {
+                            const isExpanded = expandedSections[item.label];
+                            return (
+                                <div key={index}>
+                                    <button
+                                        onClick={() =>
+                                            toggleSection(item.label)
+                                        }
+                                        className="flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-muted"
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <item.icon className="w-5 h-5" />
+                                            {item.label}
+                                        </div>
+                                        <ChevronDown
+                                            className={`h-4 w-4 transition-transform ${
+                                                isExpanded ? "rotate-180" : ""
+                                            }`}
+                                        />
+                                    </button>
+                                    {isExpanded && (
+                                        <div className="mt-1 ml-6 space-y-1">
+                                            {item.children.map(
+                                                (sub, subIndex) => {
+                                                    const isSubActive =
+                                                        pathname === sub.href;
+                                                    return (
+                                                        <Link
+                                                            key={subIndex}
+                                                            href={sub.href}
+                                                            className={`flex items-center gap-2 py-2 px-4 rounded-md hover:bg-muted text-sm ${
+                                                                isSubActive
+                                                                    ? "bg-muted"
+                                                                    : ""
+                                                            }`}
+                                                        >
+                                                            {sub.icon && (
+                                                                <sub.icon className="w-4 h-4" />
+                                                            )}
+                                                            {sub.label}
+                                                        </Link>
+                                                    );
+                                                }
+                                            )}
+                                        </div>
                                     )}
-                            </Link>
-                        );
-                    }
-                })}
-            </nav>
-
-            {/* Logout */}
-            <div className="p-4 mt-auto border-t">
-                <Button
-                    variant="ghost"
-                    className="justify-start w-full text-red-600 hover:text-red-600 hover:bg-red-50"
-                    onClick={handleLogout}
-                >
-                    <LogOut className="w-5 h-5 mr-2" />
-                    {t`Logout`}
-                </Button>
+                                </div>
+                            );
+                        } else {
+                            const isActive = pathname === item.href;
+                            return (
+                                <Link
+                                    key={index}
+                                    href={item.href}
+                                    className={`flex items-center gap-2 py-2 px-4 rounded-md hover:bg-muted ${
+                                        isActive ? "bg-muted" : ""
+                                    }`}
+                                >
+                                    <item.icon className="w-5 h-5" />
+                                    {item.label}
+                                    {item.label === "Notifications" &&
+                                        notificationCount > 0 && (
+                                            <Badge className="ml-auto bg-red-500">
+                                                {notificationCount > 9
+                                                    ? "9+"
+                                                    : notificationCount}
+                                            </Badge>
+                                        )}
+                                </Link>
+                            );
+                        }
+                    })}
+                </nav>
+                <div className="w-full py-4">
+                    <LanguageSelector isRecruiter />
+                </div>
+                {/* Logout */}
+                <div className="py-2 mt-auto border-t-2">
+                    <Button
+                        variant="ghost"
+                        className="justify-start w-full px-8 text-red-600 hover:text-red-600 hover:bg-red-50"
+                        onClick={handleLogout}
+                    >
+                        <LogOut className="w-5 h-5 mr-2" />
+                        {t`Logout`}
+                    </Button>
+                </div>
             </div>
         </div>
     );
