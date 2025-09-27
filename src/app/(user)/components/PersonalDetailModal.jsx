@@ -331,6 +331,12 @@ const PersonalDetailModal = ({
                                                 <input
                                                     type={field.type || "text"}
                                                     {...register(field.key)}
+                                                    readOnly={
+                                                        field.key === "email"
+                                                    }
+                                                    aria-readonly={
+                                                        field.key === "email"
+                                                    }
                                                     placeholder={
                                                         field.placeholder
                                                     }
@@ -338,7 +344,13 @@ const PersonalDetailModal = ({
                                                         errors[field.key]
                                                             ? "border-red-500 focus:border-red-500"
                                                             : "border-gray-300 focus:border-blue-500"
-                                                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                                                    }
+                                                    ${
+                                                        field.key === "email"
+                                                            ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                                            : ""
+                                                    }
+                                                    focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
                                                 />
                                             )}
 
