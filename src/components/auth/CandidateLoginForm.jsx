@@ -75,7 +75,7 @@ const CandidateLoginForm = ({role, onGoogleNeedsPassword, onForgot}) => {
             });
         } catch (err) {
             if (err?.status === 403 && err?.code === "ACCOUNT_BANNED") {
-                const contact = err?.extra?.contactEmail || "contact.jobhuntly@gmail.com";
+                const contact = err?.extra?.contactEmail || "help.jobhuntly@gmail.com";
                 setBannedInfo({
                     email: payload.email,
                     contactEmail: contact,
@@ -150,72 +150,72 @@ const CandidateLoginForm = ({role, onGoogleNeedsPassword, onForgot}) => {
                     </div>
                 </div>
 
-            {/* Form Card */}
-            <div className="p-5 bg-white border border-blue-100 shadow-sm rounded-2xl">
-                <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-                    {/* Email */}
-                    <div>
-                        <Label
-                            htmlFor="email"
-                            className="font-medium text-blue-900/80"
-                        >
-                            Email
-                        </Label>
-                        <div className="relative mt-1">
-                            <Mail
-                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="you@example.com"
-                                autoComplete="email"
-                                className={clsx(
-                                    "pl-10",
-                                    "focus-visible:ring-blue-500 focus-visible:ring-2",
-                                )}
-                                {...register("email")}
-                            />
-                        </div>
-                        {errors.email && (
-                            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
-                        )}
-                    </div>
-
-                    {/* Password */}
-                    <div>
-                        <Label
-                            htmlFor="password"
-                            className="font-medium text-blue-900/80"
-                        >
-                            Password
-                        </Label>
-                        <div className="relative mt-1">
-                            <Lock
-                                className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
-                            <Input
-                                id="password"
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Enter your password"
-                                autoComplete="current-password"
-                                className={clsx(
-                                    "pl-10 pr-10",
-                                    "focus-visible:ring-blue-500 focus-visible:ring-2",
-                                )}
-                                {...register("password")}
-                            />
-                            <button
-                                type="button"
-                                aria-label={showPassword ? "Hide password" : "Show password"}
-                                onClick={() => setShowPassword((s) => !s)}
-                                className="absolute text-blue-400 transition -translate-y-1/2 right-3 top-1/2 hover:text-blue-600"
+                {/* Form Card */}
+                <div className="p-5 bg-white border border-blue-100 shadow-sm rounded-2xl">
+                    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+                        {/* Email */}
+                        <div>
+                            <Label
+                                htmlFor="email"
+                                className="font-medium text-blue-900/80"
                             >
-                                {showPassword ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
-                            </button>
+                                Email
+                            </Label>
+                            <div className="relative mt-1">
+                                <Mail
+                                    className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="you@example.com"
+                                    autoComplete="email"
+                                    className={clsx(
+                                        "pl-10",
+                                        "focus-visible:ring-blue-500 focus-visible:ring-2",
+                                    )}
+                                    {...register("email")}
+                                />
+                            </div>
+                            {errors.email && (
+                                <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
+                            )}
                         </div>
-                        {errors.password && (
-                            <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
-                        )}
-                    </div>
+
+                        {/* Password */}
+                        <div>
+                            <Label
+                                htmlFor="password"
+                                className="font-medium text-blue-900/80"
+                            >
+                                Password
+                            </Label>
+                            <div className="relative mt-1">
+                                <Lock
+                                    className="absolute w-4 h-4 text-blue-300 -translate-y-1/2 pointer-events-none left-3 top-1/2"/>
+                                <Input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Enter your password"
+                                    autoComplete="current-password"
+                                    className={clsx(
+                                        "pl-10 pr-10",
+                                        "focus-visible:ring-blue-500 focus-visible:ring-2",
+                                    )}
+                                    {...register("password")}
+                                />
+                                <button
+                                    type="button"
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                    onClick={() => setShowPassword((s) => !s)}
+                                    className="absolute text-blue-400 transition -translate-y-1/2 right-3 top-1/2 hover:text-blue-600"
+                                >
+                                    {showPassword ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
+                                </button>
+                            </div>
+                            {errors.password && (
+                                <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
+                            )}
+                        </div>
 
                         <Button
                             type="submit"

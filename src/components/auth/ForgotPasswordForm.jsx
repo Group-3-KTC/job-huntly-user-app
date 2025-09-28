@@ -31,16 +31,16 @@ export default function ForgotPasswordForm({onBack, activeTab = "CANDIDATE"}) {
         () =>
             activeTab === "RECRUITER"
                 ? {
-                    textPrimary: "text-orange-700",
-                    textSecondary: "text-orange-900/70",
-                    ring: "focus-visible:ring-orange-500",
-                    icon: "text-orange-300",
-                    btnSolid: "bg-orange-600 hover:bg-orange-700 focus-visible:ring-orange-500",
+                    textPrimary: "text-blue-700",
+                    textSecondary: "text-blue-900/70",
+                    ring: "focus-visible:ring-blue-500",
+                    icon: "text-blue-300",
+                    btnSolid: "bg-blue-600 hover:bg-blue-700 focus-visible:ring-blue-500",
                     btnOutline:
-                        "border-orange-200 text-orange-700 hover:bg-orange-50 focus-visible:ring-orange-500",
-                    border: "border-orange-100",
-                    gradient: "from-orange-50 to-orange-100",
-                    spinner: "text-orange-600",
+                        "border-blue-200 text-blue-700 hover:bg-blue-50 focus-visible:ring-blue-500",
+                    border: "border-blue-100",
+                    gradient: "from-blue-50 to-blue-100",
+                    spinner: "text-blue-600",
                 }
                 : {
                     textPrimary: "text-blue-700",
@@ -103,7 +103,7 @@ export default function ForgotPasswordForm({onBack, activeTab = "CANDIDATE"}) {
                 </p>
                 {justSent && (
                     <div
-                        className="mt-3 inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm shadow-sm border">
+                        className="inline-flex items-center gap-2 px-3 py-2 mt-3 text-sm bg-white border rounded-lg shadow-sm">
                         <CheckCircle2 className={clsx("h-4 w-4", theme.textPrimary)}/>
                         <span className="text-gray-700">Reset email sent. Please check your inbox.</span>
                     </div>
@@ -148,7 +148,7 @@ export default function ForgotPasswordForm({onBack, activeTab = "CANDIDATE"}) {
                                 onClick={onBack}
                                 className={clsx("rounded-xl", theme.btnOutline, "border")}
                             >
-                                <ArrowLeft className="mr-2 h-4 w-4"/>
+                                <ArrowLeft className="w-4 h-4 mr-2"/>
                                 Back
                             </Button>
                         )}
@@ -169,8 +169,8 @@ export default function ForgotPasswordForm({onBack, activeTab = "CANDIDATE"}) {
                         {/* COOLDOWN: chỉ hiện sau khi gửi thành công */}
                         {phase === "cooldown" && (
                             <span
-                                className="text-sm text-gray-600 rounded-xl border px-4 py-2 inline-flex items-center gap-2">
-                <Clock className="h-4 w-4"/>
+                                className="inline-flex items-center gap-2 px-4 py-2 text-sm text-gray-600 border rounded-xl">
+                <Clock className="w-4 h-4"/>
                 You can resend in {formatMMSS(cooldown)}
               </span>
                         )}

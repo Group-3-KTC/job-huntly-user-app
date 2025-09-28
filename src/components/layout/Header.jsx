@@ -333,8 +333,8 @@ export const Header = () => {
                     </div>
                     {!mobilePage && (
                         <div className="p-4 space-y-2 border-t">
-                            <div className="flex justify-end">
-                                <LanguageSelector />
+                            <div className="min-w-full ">
+                                <LanguageSelector isRecruiter />
                             </div>
                             {!isLoggedIn ? (
                                 <>

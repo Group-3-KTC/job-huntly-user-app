@@ -1,18 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
+import {Card, CardContent} from "@/components/ui/card";
 import logoTitle from "@/assets/images/logo-title.png";
 import banner from "@/assets/images/login-banner.png";
 import recruiterBanner from "@/assets/images/recruiter-banner.jpg";
-import { t } from "@/i18n/i18n";
+import {t} from "@/i18n/i18n";
 
-export default function RightPanel({ activeTab }) {
+export default function RightPanel({activeTab}) {
     const tab = String(activeTab).toUpperCase();
     const isCandidate = tab === "CANDIDATE";
     const jobHuntlyColorClass = isCandidate
         ? "text-blue-600"
-        : "text-orange-500";
+        : "text-blue-600";
 
     return (
         <div className="w-full lg:w-1/2">
@@ -122,10 +122,10 @@ export default function RightPanel({ activeTab }) {
                     <p className="text-sm text-gray-500">
                         {t`If you have trouble logging in or creating an account, please contact Job Huntly via`}{" "}
                         <a
-                            href={`mailto:${"contact.jobhuntly@gmail.com"}`}
+                            href={`mailto:${"help.jobhuntly@gmail.com"}`}
                             className="text-blue-500 underline"
                         >
-                            contact.jobhuntly@gmail.com
+                            help.jobhuntly@gmail.com
                         </a>
                     </p>
                 </CardContent>

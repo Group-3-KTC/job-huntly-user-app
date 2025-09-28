@@ -29,8 +29,8 @@ export default function RegisterPage() {
                     t`Find jobs, track applications, and connect with recruiters.`,
             },
             RECRUITER: {
-                primary: "text-orange-700",
-                secondary: "text-orange-900/70",
+                primary: "text-blue-700",
+                secondary: "text-blue-900/70",
                 title: t`Create your Recruiter account`,
                 description: t`Post jobs, manage applicants, and hire faster.`,
             },
@@ -83,7 +83,7 @@ export default function RegisterPage() {
                                     ) : (
                                         <AfterRegisterPanel
                                             email={recruiterEmail}
-                                            color="orange"
+                                            color="blue"
                                             onBack={() => setRecruiterEmail("")}
                                         />
                                     )
@@ -103,7 +103,7 @@ export default function RegisterPage() {
                                             </TabsTrigger>
                                             <TabsTrigger
                                                 value="RECRUITER"
-                                                className="data-[state=active]:border-orange-500 data-[state=active]:text-orange-500"
+                                                className="data-[state=active]:border-blue-500 data-[state=active]:text-blue-500"
                                             >
                                                 {t`Recruiter`}
                                             </TabsTrigger>
@@ -139,7 +139,7 @@ export default function RegisterPage() {
                                                 href={`/login?role=${activeTab}`}
                                                 className={`font-medium ${
                                                     activeTab === "RECRUITER"
-                                                        ? " text-orange-500"
+                                                        ? " text-blue-500"
                                                         : activeTab ===
                                                           "CANDIDATE"
                                                         ? " text-blue-500"
