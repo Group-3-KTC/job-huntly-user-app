@@ -108,7 +108,7 @@ export default function PreviewCv({
                 <div className="text-center">
                     <div className="mb-4 text-6xl opacity-30">📄</div>
                     <p className="text-lg text-gray-500">
-                        Chọn một CV template để xem preview
+                        Choosee template to reviews
                     </p>
                 </div>
             </div>
@@ -166,17 +166,17 @@ export default function PreviewCv({
 
                     <button
                         onClick={handleDownload}
-                        disabled={completionPercent < 50 || isDownloading}
+                        disabled={completionPercent < 70 || isDownloading}
                         className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors 
                             ${
-                                completionPercent >= 50
+                                completionPercent >= 70
                                     ? "bg-blue-600 text-white hover:bg-blue-700"
                                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                             }`}
                         aria-label="Download CV as PDF"
                     >
                         <FileDown />
-                        {completionPercent >= 50
+                        {completionPercent >= 70
                             ? "Download PDF"
                             : "Complete your profile"}
                     </button>
