@@ -1,75 +1,65 @@
 "use client";
 
 import React from "react";
-import {
-    ArrowRight,
-    Calculator,
-    Code,
-    Database,
-    Heart,
-    Megaphone,
-    Music,
-    Palette,
-    Video,
-} from "lucide-react";
+import {ArrowRight, Calculator, Code, Database, Heart, Megaphone, Music, Palette, Video,} from "lucide-react";
 import Link from "next/link";
-import { t } from "@/i18n/i18n";
+import {t} from "@/i18n/i18n";
 
 const CategoriesSection = () => {
     const categories = [
         {
             icon: Palette,
             title: "Graphics & Design",
-            positions: "357 Open position",
+            positions: "357" + t`Open Positions`,
             bgColor: "bg-sky-100",
             iconColor: "text-sky-600",
         },
         {
             icon: Code,
             title: "Code & Programming",
-            positions: "312 Open position",
+            positions: "312" + t`Open Positions`,
             bgColor: "bg-slate-200",
             iconColor: "text-slate-600",
         },
         {
             icon: Megaphone,
             title: "Digital Marketing",
-            positions: "297 Open position",
+            positions: "297" + t`Open Positions`,
             bgColor: "bg-yellow-50",
             iconColor: "text-yellow-600",
         },
         {
             icon: Video,
             title: "Video & Animation",
-            positions: "247 Open position",
+            positions: "247" + t`Open Positions`,
             bgColor: "bg-purple-100",
             iconColor: "text-purple-600",
         },
         {
             icon: Music,
             title: "Music & Audio",
-            positions: "204 Open position",
+            positions: "204" + t`Open Positions`,
             bgColor: "bg-teal-100",
             iconColor: "text-teal-600",
         },
         {
             icon: Calculator,
             title: "Account & Finance",
-            positions: "167 Open position",
+            positions: "167" + t`Open Positions`,
             bgColor: "bg-indigo-100",
             iconColor: "text-indigo-600",
         },
         {
             icon: Heart,
             title: "Health & Care",
-            positions: "125 Open position",
+            positions: "125" + t`Open Positions`,
             bgColor: "bg-rose-50",
             iconColor: "text-rose-600",
         },
         {
             icon: Database,
             title: "Data & Science",
-            positions: "57 Open position",
+            positions: "57" + t`Open Positions`,
             bgColor: "bg-blue-100",
             iconColor: "text-blue-600",
         },
@@ -87,7 +77,7 @@ const CategoriesSection = () => {
                         className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 sm:text-base"
                     >
                         {t`View All`}{" "}
-                        <ArrowRight className="w-3 h-3 ml-2 sm:w-4 sm:h-4" />
+                        <ArrowRight className="w-3 h-3 ml-2 sm:w-4 sm:h-4"/>
                     </Link>
                 </div>
 

@@ -340,3 +340,207 @@ msgstr "이미 계정이 있으신가요?"
 
 msgid "Login Now"
 msgstr "지금 로그인"
+
+msgid "Job title, Keyword..."
+msgstr "직무명, 키워드..."
+
+msgid "Find Job"
+msgstr "채용 검색"
+
+msgid "Company Events"
+msgstr "회사 이벤트"
+
+msgid "Experience highlights from recent events, conferences, and workshops — where we bring innovation to life and connect with community."
+msgstr "최근 이벤트, 컨퍼런스, 워크숍의 하이라이트를 만나보세요 — 혁신을 실현하고 커뮤니티와 소통하는 자리입니다."
+
+msgid "Recap Korean Insight Trip 2025"
+msgstr "Korean Insight Trip 2025 다시보기"
+
+msgid "A special journey bringing K-Tech College 2025 candidates closer to Korean enterprises and global work culture. Memorable experiences and clearer views of a global career path."
+msgstr "K-Tech College 2025 지원자들이 한국 기업과 글로벌 업무 문화에 더 가까워지는 특별한 여정. 잊지 못할 경험과 글로벌 커리어 경로에 대한 더 선명한 시야를 제공합니다."
+
+msgid "August"
+msgstr "8월"
+
+msgid "July"
+msgstr "7월"
+
+msgid "June"
+msgstr "6월"
+
+msgid "May"
+msgstr "5월"
+
+msgid "Korea"
+msgstr "한국"
+
+msgid "Event Highlight"
+msgstr "행사 하이라이트"
+
+msgid "Mentoring Day — What Korean Mentors Think"
+msgstr "멘토링 데이 — 한국 멘토들의 생각"
+
+msgid "Honest sharing from mentors about working with Vietnamese candidates and what stands out in the eyes of employers. Don’t miss K-Tech Fest 2025 for more 1:1 mentor sessions!"
+msgstr "베트남 지원자와의 협업, 그리고 채용 담당자의 시선에서 돋보이는 점에 대한 멘토들의 솔직한 이야기. 1:1 멘토 세션이 더 많은 K-Tech Fest 2025도 놓치지 마세요!"
+
+msgid "Ho Chi Minh City"
+msgstr "호치민시"
+
+msgid "Mentoring Day"
+msgstr "멘토링 데이"
+
+msgid "Recap Offline Interview"
+msgstr "오프라인 인터뷰 다시보기"
+
+msgid "Korean tech companies praised the potential of Vietnamese candidates and the role of K-Tech College in global talent matching. Hear their reflections from the on-site interviews."
+msgstr "한국 IT 기업들은 베트남 지원자의 잠재력과 글로벌 인재 매칭에서 K-Tech College의 역할을 높이 평가했습니다. 현장 인터뷰 소감을 직접 들어보세요."
+
+msgid "Interview Series"
+msgstr "인터뷰 시리즈"
+
+msgid "Customer Success Stories"
+msgstr "고객 성공 스토리"
+
+msgid "Direct stories from clients about their transformation journeys and results achieved with our programs and partners."
+msgstr "프로그램 및 파트너와 함께 달성한 변화의 여정을 고객이 직접 들려드립니다."
+
+msgid "Virtual Event"
+msgstr "온라인 이벤트"
+
+msgid "Success Stories"
+msgstr "성공 사례"
+
+msgid "Open Positions"
+msgstr "모집 중 공고"
+
+msgid "Search"
+msgstr "검색"
+
+msgid "Not found"
+msgstr "찾을 수 없습니다"
+
+msgid "Reset"
+msgstr "재설정"
+
+msgid "See Detail"
+msgstr "자세히 보기"
+
+msgid "Please select at least 1 Category to display the list Skills."
+msgstr "기술 목록을 표시하려면 최소 1개의 카테고리를 선택하세요."
+
+msgid "City"
+msgstr "도시"
+
+msgid "Re-applying"
+msgstr "재지원 중"
+
+msgid "Submitting"
+msgstr "제출 중"
+
+msgid "Re-apply"
+msgstr "재지원"
+
+msgid "Apply"
+msgstr "지원하기"
+
+msgid "Cancel"
+msgstr "취소"
+
+msgid "Cover Letter"
+msgstr "자기소개서"
+
+msgid "Phone Number"
+msgstr "전화번호"
+
+msgid "Full Name"
+msgstr "성명"
+
+msgid "Selected File"
+msgstr "선택된 파일"
+
+msgid "Change CV"
+msgstr "이력서 변경"
+
+msgid "Upload CV"
+msgstr "이력서 업로드"
+
+msgid "Upload New CV"
+msgstr "새 이력서 업로드"
+
+msgid "Keep Current CV"
+msgstr "현재 이력서 유지"
+
+msgid "Download"
+msgstr "다운로드"
+
+msgid "View"
+msgstr "보기"
+
+msgid "Previously Submitted CV"
+msgstr "이전에 제출한 이력서"
+
+msgid "Your previous information has been filled in. You can edit if needed."
+msgstr "이전 정보가 자동으로 입력되었습니다. 필요 시 수정할 수 있습니다."
+
+msgid "Loading application details"
+msgstr "지원서 상세 불러오는 중"
+
+msgid "Re-application submitted successfully!"
+msgstr "재지원이 성공적으로 제출되었습니다!"
+
+msgid "Application submitted successfully!"
+msgstr "지원이 성공적으로 제출되었습니다!"
+
+msgid "Please upload a new CV."
+msgstr "새 이력서를 업로드해 주세요."
+
+msgid "Please upload your CV."
+msgstr "이력서를 업로드해 주세요."
+
+msgid "Job saved successfully"
+msgstr "공고가 저장되었습니다"
+
+msgid "Job unsaved"
+msgstr "공고 저장 취소됨"
+
+msgid "You have reached the re-application limit (2 times)."
+msgstr "재지원 한도(2회)에 도달했습니다."
+
+msgid "You re-applied 30 minutes ago. Please wait to try again."
+msgstr "30분 전에 재지원했습니다. 잠시 후 다시 시도해 주세요."
+
+msgid "View Details"
+msgstr "자세히 보기"
+
+msgid "Loading"
+msgstr "로딩 중"
+
+msgid "Profile"
+msgstr "프로필"
+
+msgid "Manage CV"
+msgstr "이력서 관리"
+
+msgid "My Interviews"
+msgstr "내 인터뷰"
+
+msgid "Company Follows"
+msgstr "팔로우한 회사"
+
+msgid "My Jobs"
+msgstr "내 공고"
+
+msgid "Settings"
+msgstr "설정"
+
+msgid "Manage Jobs"
+msgstr "공고 관리"
+
+msgid "Candidates"
+msgstr "지원자"
+
+msgid "Payment History"
+msgstr "결제 내역"
+
+msgid "Upgrade Vip"
+msgstr "VIP 업그레이드"

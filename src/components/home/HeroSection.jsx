@@ -1,30 +1,20 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { MapPin, Search, ChevronDown, Check } from "lucide-react";
-import {
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-} from "@/components/ui/popover";
-import {
-    Command,
-    CommandInput,
-    CommandEmpty,
-    CommandGroup,
-    CommandItem,
-} from "@/components/ui/command";
-import { cn } from "@/lib/utils";
+import React, {useMemo, useState} from "react";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Check, ChevronDown, MapPin, Search} from "lucide-react";
+import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover";
+import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem,} from "@/components/ui/command";
+import {cn} from "@/lib/utils";
 import illustration from "@/assets/images/home-illustration.png";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import {useRouter} from "next/navigation";
 
-import { useJobSearchStore } from "@/store/jobSearchStore";
-import { useGetCitiesQuery } from "@/services/locationService";
-import { t } from "@/i18n/i18n";
+import {useJobSearchStore} from "@/store/jobSearchStore";
+import {useGetCitiesQuery} from "@/services/locationService";
+import {t} from "@/i18n/i18n";
 
 const HeroSection = () => {
     const [keyword, setKeyword] = useState("");
@@ -35,7 +25,7 @@ const HeroSection = () => {
     const setSearchTerm = useJobSearchStore((state) => state.setSearchTerm);
     const router = useRouter();
 
-    const { data: provinces = [] } = useGetCitiesQuery();
+    const {data: provinces = []} = useGetCitiesQuery();
 
     const filteredProvinces = useMemo(() => {
         const topProvinces = [
@@ -80,9 +70,10 @@ const HeroSection = () => {
                         <div className="flex flex-col gap-2 p-2 mb-4 bg-white rounded-lg shadow-lg sm:mb-6 sm:flex-row">
                             {/* Keyword input */}
                             <div className="relative flex-1">
-                                <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 sm:w-5 sm:h-5 left-2 sm:left-3 top-1/2" />
+                                <Search
+                                    className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 sm:w-5 sm:h-5 left-2 sm:left-3 top-1/2"/>
                                 <Input
-                                    placeholder="Job title, Keyword..."
+                                    placeholder={t`Job title, Keyword...`}
                                     className="pl-8 text-sm border-0 sm:pl-10 focus-visible:ring-0 sm:text-base"
                                     value={keyword}
                                     onChange={(e) => setKeyword(e.target.value)}
@@ -99,9 +90,9 @@ const HeroSection = () => {
                                         variant="outline"
                                         className="flex items-center justify-between w-full px-2 py-2 text-sm text-gray-700 bg-white border sm:px-3 sm:w-auto sm:flex-1 sm:text-base"
                                     >
-                                        <MapPin className="w-3 h-3 mr-1 sm:w-4 sm:h-4" />
+                                        <MapPin className="w-3 h-3 mr-1 sm:w-4 sm:h-4"/>
                                         {selectedProvince || "City"}
-                                        <ChevronDown className="w-3 h-3 ml-auto opacity-50" />
+                                        <ChevronDown className="w-3 h-3 ml-auto opacity-50"/>
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-[180px] sm:w-[220px] p-0">
@@ -134,7 +125,7 @@ const HeroSection = () => {
                                                         className={cn(
                                                             "ml-auto w-4 h-4",
                                                             selectedProvince ===
-                                                                name
+                                                            name
                                                                 ? "opacity-100"
                                                                 : "opacity-0"
                                                         )}
@@ -150,7 +141,7 @@ const HeroSection = () => {
                                 className="px-4 text-sm bg-blue-700 sm:px-6 hover:bg-blue-800 sm:text-base"
                                 onClick={handleSearch}
                             >
-                                Find Job
+                                {t`Find Jobs`}
                             </Button>
                         </div>
 

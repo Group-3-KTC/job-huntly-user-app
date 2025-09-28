@@ -1,32 +1,33 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
-import { Dialog } from "@headlessui/react";
-import { X, FileText, Download, Eye } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { toast } from "react-toastify";
+import React, {useEffect, useRef, useState} from "react";
+import {Dialog} from "@headlessui/react";
+import {Download, Eye, FileText, X} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {toast} from "react-toastify";
 import applicationSchema from "@/validation/applicationSchema";
 import {
     useCreateApplicationMutation,
-    useReapplyApplicationMutation,
     useGetApplicationDetailByJobQuery,
+    useReapplyApplicationMutation,
 } from "@/services/applicationService";
+import {t} from "@/i18n/i18n";
 
 const ApplicationModal = ({
-    onClose,
-    jobTitle = "",
-    jobId,
-    isReapply = false,
-}) => {
+                              onClose,
+                              jobTitle = "",
+                              jobId,
+                              isReapply = false,
+                          }) => {
     const fileInputRef = useRef(null);
     const [keepCurrentCV, setKeepCurrentCV] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [createApplication] = useCreateApplicationMutation();
     const [reapplyApplication] = useReapplyApplicationMutation();
-    const { data: applicationDetail, isLoading: isLoadingDetail } =
-        useGetApplicationDetailByJobQuery(jobId, { skip: !isReapply });
+    const {data: applicationDetail, isLoading: isLoadingDetail} =
+        useGetApplicationDetailByJobQuery(jobId, {skip: !isReapply});
 
     const {
         register,
@@ -34,7 +35,7 @@ const ApplicationModal = ({
         setValue,
         watch,
         reset,
-        formState: { errors, isDirty },
+        formState: {errors, isDirty},
     } = useForm({
         resolver: yupResolver(applicationSchema),
         defaultValues: {
@@ -44,7 +45,7 @@ const ApplicationModal = ({
             cvFile: null,
             coverLetter: "",
         },
-        context: { isReapply, keepCurrentCV },
+        context: {isReapply, keepCurrentCV},
     });
 
     const selectedFile = watch("cvFile");
@@ -94,12 +95,12 @@ const ApplicationModal = ({
         }
 
         if (!isReapply && !data.cvFile) {
-            toast.warning("Please upload your CV.");
+            toast.warning(t`Please upload your CV.`);
             return;
         }
 
         if (isReapply && !keepCurrentCV && !data.cvFile) {
-            toast.warning("Please upload a new CV.");
+            toast.warning(t`Please upload a new CV.`);
             return;
         }
 
@@ -124,12 +125,12 @@ const ApplicationModal = ({
         try {
             const mutation = isReapply ? reapplyApplication : createApplication;
             const result = await mutation(
-                isReapply ? { jobId, formData } : formData
+                isReapply ? {jobId, formData} : formData
             ).unwrap();
             toast.success(
                 isReapply
-                    ? "Re-application submitted successfully!"
-                    : "Application submitted successfully!"
+                    ? t`Re-application submitted successfully!`
+                    : t`Application submitted successfully!`
             );
             if (isReapply && result.nextReapplyAt) {
                 toast.info(
@@ -154,11 +155,11 @@ const ApplicationModal = ({
     if (isReapply && isLoadingDetail) {
         return (
             <Dialog open={true} onClose={onClose} className="relative z-50">
-                <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                <div className="fixed inset-0 bg-black/30" aria-hidden="true"/>
                 <div className="fixed inset-0 flex items-center justify-center p-4">
                     <Dialog.Panel className="w-full max-w-lg p-6 bg-white shadow-xl rounded-xl">
                         <p className="text-center">
-                            Loading application details...
+                            {t`Loading application details`}...
                         </p>
                     </Dialog.Panel>
                 </div>
@@ -168,9 +169,10 @@ const ApplicationModal = ({
 
     return (
         <Dialog open={true} onClose={onClose} className="relative z-50">
-            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+            <div className="fixed inset-0 bg-black/30" aria-hidden="true"/>
             <div className="fixed inset-0 flex items-center justify-center p-4">
-                <Dialog.Panel className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto scrollbar-hide">
+                <Dialog.Panel
+                    className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto scrollbar-hide">
                     <div className="flex items-start justify-between">
                         <div>
                             <Dialog.Title className="mb-1 text-lg font-semibold text-blue-600">
@@ -180,8 +182,7 @@ const ApplicationModal = ({
                             </Dialog.Title>
                             {isReapply && (
                                 <p className="text-sm text-gray-600">
-                                    Your previous information has been filled
-                                    in. You can edit if needed.
+                                    {t`Your previous information has been filled in. You can edit if needed.`}
                                 </p>
                             )}
                         </div>
@@ -189,7 +190,7 @@ const ApplicationModal = ({
                             onClick={onClose}
                             className="text-gray-400 hover:text-gray-600"
                         >
-                            <X className="w-5 h-5" />
+                            <X className="w-5 h-5"/>
                         </button>
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)}>
@@ -202,9 +203,9 @@ const ApplicationModal = ({
                                 {isReapply && applicationDetail?.cv && (
                                     <div className="p-3 mb-3 rounded-lg bg-gray-50">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <FileText className="w-4 h-4 text-blue-600" />
+                                            <FileText className="w-4 h-4 text-blue-600"/>
                                             <span className="flex-1 text-sm text-gray-700">
-                                                Previously submitted CV
+                                                {t`Previously Submitted CV`}
                                             </span>
                                             <Button
                                                 variant="outline"
@@ -213,8 +214,8 @@ const ApplicationModal = ({
                                                     handleCVAction("view")
                                                 }
                                             >
-                                                <Eye className="w-3 h-3 mr-1" />{" "}
-                                                View
+                                                <Eye className="w-3 h-3 mr-1"/>{" "}
+                                                {t`View`}
                                             </Button>
                                             {applicationDetail.cvDownload && (
                                                 <Button
@@ -226,8 +227,8 @@ const ApplicationModal = ({
                                                         )
                                                     }
                                                 >
-                                                    <Download className="w-3 h-3 mr-1" />{" "}
-                                                    Download
+                                                    <Download className="w-3 h-3 mr-1"/>{" "}
+                                                    {t`Download`}
                                                 </Button>
                                             )}
                                         </div>
@@ -244,7 +245,7 @@ const ApplicationModal = ({
                                                     handleCVSelection(true)
                                                 }
                                             >
-                                                Keep current CV
+                                                {t`Keep Current CV`}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -257,7 +258,7 @@ const ApplicationModal = ({
                                                 onClick={handleChooseFileClick}
                                                 disabled={isSubmitting}
                                             >
-                                                Upload new CV
+                                                {t`Upload New CV`}
                                             </Button>
                                         </div>
                                     </div>
@@ -271,8 +272,8 @@ const ApplicationModal = ({
                                             disabled={isSubmitting}
                                         >
                                             {selectedFile
-                                                ? "Change CV"
-                                                : "Upload CV"}
+                                                ? t`Change CV`
+                                                : t`Upload CV`}
                                         </Button>
                                         <input
                                             type="file"
@@ -283,7 +284,7 @@ const ApplicationModal = ({
                                         />
                                         {selectedFile && (
                                             <p className="mt-2 text-sm text-gray-700">
-                                                Selected file:{" "}
+                                                {t`Selected File`}:{" "}
                                                 <span className="font-medium">
                                                     {selectedFile.name}
                                                 </span>
@@ -302,7 +303,7 @@ const ApplicationModal = ({
                             <div className="space-y-3 text-sm text-gray-800">
                                 <div>
                                     <label className="block mb-1 font-medium">
-                                        Full Name:
+                                        {t`Full Name`}:
                                     </label>
                                     <input
                                         {...register("fullName")}
@@ -336,7 +337,7 @@ const ApplicationModal = ({
                                 </div>
                                 <div>
                                     <label className="block mb-1 font-medium">
-                                        Phone Number:
+                                        {t`Phone Number`}:
                                     </label>
                                     <input
                                         {...register("phoneNumber")}
@@ -357,7 +358,7 @@ const ApplicationModal = ({
                         {/* Cover Letter */}
                         <div>
                             <label className="block mt-3 mb-1 text-sm font-medium text-gray-700">
-                                Cover Letter:
+                                {t`Cover Letter`}:
                             </label>
                             <textarea
                                 {...register("coverLetter")}
@@ -381,7 +382,7 @@ const ApplicationModal = ({
                                 onClick={onClose}
                                 disabled={isSubmitting}
                             >
-                                Cancel
+                                {t`Cancel`}
                             </Button>
                             <Button
                                 type="submit"
@@ -392,11 +393,11 @@ const ApplicationModal = ({
                             >
                                 {isSubmitting
                                     ? isReapply
-                                        ? "Re-applying..."
-                                        : "Submitting..."
+                                        ? t`Re-applying` + "..."
+                                        : t`Submitting` + "..."
                                     : isReapply
-                                    ? "Re-apply"
-                                    : "Apply"}
+                                        ? t`Re-apply`
+                                        : t`Apply`}
                             </Button>
                         </div>
                     </form>

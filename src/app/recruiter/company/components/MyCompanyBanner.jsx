@@ -4,10 +4,11 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import useMyCompanyStore from "../store/myCompanyStore";
-import { getImageUrl } from "@/lib/utils";
+import {getImageUrl} from "@/lib/utils";
+import {t} from "@/i18n/i18n";
 
 const MyCompanyBanner = () => {
-    const { company } = useMyCompanyStore();
+    const {company} = useMyCompanyStore();
 
     if (!company) return null;
 
@@ -21,7 +22,8 @@ const MyCompanyBanner = () => {
                 })`,
             }}
         >
-            <div className="absolute bottom-0 left-0 flex items-center justify-between w-full px-4 py-4 border rounded-b-lg bg-white/30 backdrop-blur-sm border-white/30">
+            <div
+                className="absolute bottom-0 left-0 flex items-center justify-between w-full px-4 py-4 border rounded-b-lg bg-white/30 backdrop-blur-sm border-white/30">
                 <div className="flex items-center space-x-4">
                     <div className="w-16 h-16 p-1 bg-white border border-gray-300 rounded">
                         <Image
@@ -38,8 +40,8 @@ const MyCompanyBanner = () => {
                         </h1>
                         <div className="mt-2 text-sm text-white drop-shadow-md">
                             <span className={`px-2 py-0.5 mr-2 rounded ${
-                                company.proCompany 
-                                    ? "text-yellow-800 bg-yellow-100" 
+                                company.proCompany
+                                    ? "text-yellow-800 bg-yellow-100"
                                     : "text-gray-800 bg-gray-100"
                             }`}>
                                 {company.proCompany ? "VIP Company" : "Normal"}
@@ -51,19 +53,20 @@ const MyCompanyBanner = () => {
                                 {company.website?.replace("https://", "")}
                             </a>
                             <span className="text-white"> · {company.quantityEmployee}+ employees ·{" "}
-                            {company.followersCount || 0} followers</span>
+                                {company.followersCount || 0} followers</span>
                         </div>
                     </div>
                 </div>
                 <div className="flex space-x-2">
-                    <button className="px-4 py-2 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700">
+                    <button
+                        className="px-4 py-2 text-sm font-semibold text-white transition bg-blue-600 rounded hover:bg-blue-700">
                         Edit Company
                     </button>
-                    <Link 
+                    <Link
                         href="/recruiter/manage-job"
                         className="px-4 py-2 text-sm font-semibold text-white transition bg-green-600 rounded hover:bg-green-700"
                     >
-                        Manage Jobs
+                        {t`Manage Jobs`}
                     </Link>
                 </div>
             </div>
